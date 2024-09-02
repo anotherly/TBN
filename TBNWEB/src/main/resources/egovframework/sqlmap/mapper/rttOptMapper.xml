@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.co.wizbrain.tbn.option.mapper.RttOptMapper">
+<!-- 
+수정일           수정자         수정내용 
+========= ======= ================================================= 
+2020.07.23 정다빈     최초 생성 
+-->
+	
+	<!-- #############통신원 유형################ -->
+		
+	<!-- 통신원유형 대 -->
+	<select id="selectRtt"  resultType="record">
+		select name from CODE_REPORTMEAN_TYPE
+	</select>
+	
+</mapper>

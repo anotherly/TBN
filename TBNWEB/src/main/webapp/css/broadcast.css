@@ -1,0 +1,238 @@
+/* 긴급제보 깝박임 */
+
+/* for MS계열 브라우저 */
+@keyframes blink {
+ 0% {background-color: red;color:yellow;}
+ 50% {background-color: yellow;color:red;}
+}
+ 
+/* for Chrome, Safari */
+@-webkit-keyframes blink {
+ 0% {background-color: red;color:yellow;}
+ 50% {background-color: yellow;color:red;}
+}
+
+.blinkcss {
+ font-weight:bold;
+ animation: blink 1s step-end infinite;
+ -webkit-animation: blink 1s step-end infinite;
+}
+
+/* 방송영역 전체 */
+.broadContainer{
+	width: 100vw;
+    margin: 0px 10px 10px 10px;
+    min-width: 1200px;
+    display: flex;
+    flex-wrap: nowrap;
+    flex-direction: row;
+    justify-content: space-around;
+}
+/* 좌측 전체 */
+.divTodayList{
+	width: 60vw;
+    min-width: 750px;
+    padding: 15px;
+}
+/* 상단 설명창 */
+.searchwrap{
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: space-around;
+    flex-wrap: wrap;
+}
+
+.searchwrap *{
+	font-size: calc(13px + 0.4vw);
+	/* font-size: 1vw; */
+}
+
+/* 방송상태 이미지 */
+#icoBroadExplain{
+	width: 26%;
+    height: 10%;
+}
+
+/* 방송검색창 */
+.broad_sch{
+    width: 100%;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    background: linear-gradient(#F1F1F1,#F2F2F2,#fff,#F2F2F2);
+    border-radius: 14px;
+    justify-content: space-around;
+    border: 1px solid #2b3461;
+    margin-bottom: 15px;
+}
+
+.broad_sch *{
+	
+}
+
+/* 좌측 방송목록 */
+.todayList{
+	overflow:auto;
+	border-bottom: 1px solid #b7b7b7;
+	height: 672px;
+}
+
+/* 우측 스튜디오 */
+.broad-right {
+	width: 40vw;
+	margin-top: 13px;
+	min-width:500px;
+	height: 672px;
+}
+
+.broad-right ul{
+	margin-top: -11px;
+}
+
+/* 테이블헤드 */
+
+.broadcastListHead li{
+	display: table;
+    width: calc(100% - 16px);
+    height: 33px;
+    border-bottom: 1px solid #b7b7b7;
+    text-align: center;
+    border-top: 2px solid #a8b4c4;
+}
+
+ul.broadcastListHead li span {
+	display: table-cell;
+	vertical-align: middle;
+	font-weight: 700;
+	background-color: #f2f2f2;
+	font-size: 16px;
+	
+}
+/* 방송제보목록 */
+ul.broadcastList li {
+    display: table;
+    width: 100%;
+    height: 33px;
+    border-bottom: 1px solid #b7b7b7;
+    text-align: center;
+}
+
+ul.broadcastList li span {
+	display: table-cell;
+    vertical-align: middle;
+    font-weight: bold;
+    border: 1px solid lightgrey;
+    font-size: calc(8px + 0.6vw);
+    line-height: calc(16px + 0.8vw);
+}
+
+/* 스튜디오 목록 */
+.studio-menu{
+	display:flex;
+}
+
+#stdTab1,#stdTab2{
+	width: 200px;
+    height: 40px;
+    font-size: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;		
+    cursor:pointer;
+}
+#stdTab1,#stdTab2 .click{
+    background: lightgray;
+}
+
+.studio-div{
+	overflow: auto;
+    height: 761px;
+    top: 85px;
+    border: 1px solid black;
+}
+
+.studio-div li {
+    display: table;
+    width: 100%;
+    height: 192px;
+    border-bottom: 1px solid #b7b7b7;
+    text-align: center;
+}
+
+.studio-div li span {
+	display: table-cell;
+	vertical-align: middle;
+	font-weight:bold;
+	font-size: 1.5vw;
+	line-height: 2.5vw;
+	border: 1px solid lightgrey;
+}
+/* 전달사항 */
+.broad_message{
+    width: 36vw;
+    height: 798px;
+    font-size: 1.2vw;
+    font-weight: bold;
+    line-height: 2.4vw;
+}
+/* 스튜디오 버튼 */
+.studio-btn{
+	position: relative;
+    top: -24px;
+    left: 408px;
+    width: 200px;
+}
+.studio-btn img {
+    height: 31px;
+    cursor: pointer;
+}
+/* 팝업 스튜디오 목록 */
+.popup_li{
+	display: table;
+    width: 100%;
+    height: 210px;
+    border-bottom: 1px solid #b7b7b7;
+    text-align: center;
+}
+.popup_li span{
+	display: table-cell;
+    vertical-align: middle;
+    font-weight: bold;
+    font-size: 2vw;
+    line-height: 4vw;
+    border: 1px solid lightgrey;
+}
+/* 팝업 전달사항 */
+.broad_message2{
+    width: 36vw;
+    height: 874px;
+    font-size: 2vw;
+    font-weight: bold;
+    line-height: 4vw;
+}
+.pdbtn{
+	/* width: 6vw;
+	height: 2vw;
+	min-width: 70px;
+    min-height: 26px; */
+}
+
+#btn_pdMove button{
+	width: 25px;
+	height: 25px;
+}
+
+#btn_toTheLeft{
+	position: absolute;
+	top: 180px;
+	right: 330px;
+}
+
+#btn_toTheRight{
+	position: absolute;
+	top: 180px;
+	right: 300px;
+}
+

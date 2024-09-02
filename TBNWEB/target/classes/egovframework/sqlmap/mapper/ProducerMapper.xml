@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.co.wizbrain.tbn.map.mapper.ProducerMapper">
+    <!-- <select id="receiptToday" parameterClass="params" resultClass="record">
+		SELECT 	RECEIPT_ID, 
+				FLAG_BROAD, 
+				RECEIPT_TIME,  
+				REPORT_TYPE, 
+				INFORMER_NAME, 
+				INFORMER_TEL,
+				INFORMER_TYPE, 
+				CONTENTS, 
+				MAP
+		FROM 	RECEIPT_TODAY
+		WHERE	USE_AREA = #session_user_region# 
+				AND INCIDENT_FLAG = 'N'
+				AND FLAG_SEND = 'Y' 
+				AND REPORT_TYPE = #search_nonIncidentType#
+				AND REPORT_TYPE2 = #search_reportType2#
+				AND REGION_ID = #search_regionId#
+				AND INFORMER_TYPE = #search_informerType#
+				AND AREA = #search_area#
+						AND FLAG_BROAD = 'N'
+						AND FLAG_BROAD != 'N'
+				AND CONTENTS like '%$search_contents$%'
+		ORDER BY RECEIPT_DAY DESC, RECEIPT_TIME DESC
+	</select> -->
+    
+</mapper>

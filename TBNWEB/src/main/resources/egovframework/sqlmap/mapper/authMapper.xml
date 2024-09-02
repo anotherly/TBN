@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.co.wizbrain.tbn.option.mapper.AuthMapper">
+<!-- 
+수정일           수정자         수정내용 
+========= ======= ================================================= 
+2020.07.23 정다빈     최초 생성 
+-->
+	<!-- DB에 존재하는 모든 URL 호출 (중복 X) -->
+	<resultMap type="authVo" id="authUrlList">
+		<result property="url" 	column="URL"/>
+	</resultMap>
+	<select id="authUrlList" resultMap="authUrlList">
+			SELECT distinct url FROM auth_info
+	</select>
+	
+	<!--  권한만 전체 조회 -->
+	<resultMap type="authVo" id="selectAuthType">
+		<result property="authCode" 	column="AUTH_CODE"/>
+		<result property="authName" 	column="AUTH_NAME"/>
+	</resultMap>
+	<select id="selectAuthType" resultMap="selectAuthType" parameterType="authVo">
+		select * from SYS_AUTH 
+		<if test="authCode neq '999'">
+		    WHERE AUTH_CODE not in('999')
+		</if>
+	</select>
+
+	<!-- 대분류 권한 조회 -->
+	<resultMap type="authVo" id="selectAuth1">
+		<result property="authCode" 	column="AUTH_CODE"/>
+		<result property="authName" 	column="AUTH_NAME"/>
+	</resultMap>
+	<select id="selectAuth1" parameterType="authVo" resultMap="selectAuth1">
+		select * from sys_auth where auth_code !=999 order by auth_code 
+	</select>
+
+	<!-- 중,소분류 권한 조회 --> <!-- AND IDX LIKE #{idx}||'%' -->
+	<resultMap type="authVo" id="selectAuth2">
+		<result property="idx" 			column="IDX"/>
+		<result property="authCode" 	column="AUTH_CODE"/>
+		<result property="url" 			column="URL"/>
+		<result property="authUrlName" 	column="AUTH_URL_NAME"/>
+		<result property="useYn" 		column="USE_YN"/>
+	</resultMap>
+	<select id="selectAuth2" parameterType="authVo" resultMap="selectAuth2">
+		SELECT * 
+		FROM AUTH_INFO 
+			WHERE 1=1
+			AND AUTH_CODE=#{authCode}
+			<choose>
+			    <when test="cdFlag==2">
+					AND LENGTH(IDX)=1			        
+			    </when>
+			    <otherwise>
+			        AND LENGTH(IDX)=2
+			    </otherwise>
+			</choose>
+		ORDER BY AUTH_CODE,IDX
+	</select>
+	
+	<update id="updateAuth" parameterType="java.util.List">
+	    DECLARE BEGIN
+		<foreach collection="list" item="item" separator=";">
+	        UPDATE AUTH_INFO SET USE_YN=#{item.useYn} WHERE IDX=#{item.idx} AND AUTH_CODE=#{item.authCode}
+	    </foreach>
+	    ; END;
+	</update>
+	
+	<!-- 최초 로그인 후 권한조회하여 해당 사용자한테 맞는 최초 화면을 표출 -->
+	
+	
+	<!-- 대메뉴 권한이 없는데 소메뉴 권한이 있을 경우 소메뉴로 보냄 -->
+	<resultMap type="authVo" id="selectAuthUrl">
+		<result property="idx" 			column="IDX"/>
+		<result property="authCode" 	column="AUTH_CODE"/>
+		<result property="url" 			column="URL"/>
+		<result property="authUrlName" 	column="AUTH_URL_NAME"/>
+		<result property="useYn" 		column="USE_YN"/>
+	</resultMap>
+		<select id="selectAuthUrl" parameterType="authVo" resultMap="selectAuthUrl">
+		SELECT * 
+		FROM AUTH_INFO 
+			WHERE 1=1
+			AND AUTH_CODE=#{authCode}
+			AND USE_YN ='Y'
+			<choose>
+			    <!-- 최초 진입 시(url 없음) 세부주소를 비교해야 할 경우 -->
+			    <when test="cdFlag==2">
+			        AND ROWNUM=1		        
+			    </when>
+			    <!-- 사용자 통신원 정보,코드 등을 선택 후 진입 시 (url 존재)
+			     최초 하위코드의 권한이 있는지 없는지 체크해야 할 경우-->
+			    <when test="cdFlag==3">
+			  	    AND IDX LIKE 
+            		(SELECT IDX FROM AUTH_INFO WHERE URL =#{url} and rownum=1)||'%'
+            		and rownum=1  
+			    </when>
+			    <otherwise>
+			        AND URL = #{url}
+			    </otherwise>
+			</choose>
+		ORDER BY AUTH_CODE,IDX
+	</select>
+	
+</mapper>

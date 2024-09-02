@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.co.wizbrain.tbn.option.mapper.AreaOptMapper">
+<!-- 
+수정일           수정자         수정내용 
+========= ======= ================================================= 
+2020.07.23 정다빈     최초 생성 
+-->
+	
+	<!-- #############통신원 유형################ -->
+		
+	<!-- 통신원유형 대 -->
+	<resultMap type="optAreaVo" id="selectAreaOpt">
+		<result property="areaCode" column="AREA_CODE"/>
+		<result property="areaName" column="AREA_NAME"/>
+	</resultMap>
+	<select id="selectAreaOpt1" parameterType="optAreaVo" resultMap="selectAreaOpt">
+		select * from CODE_AREACODE 
+		WHERE 1=1
+		<if test="areaCode != null">
+			AND AREA_CODE=#{areaCode}
+		</if>
+		order by idx asc
+	</select>
+	
+	<!-- 통신원유형 중 -->
+	<resultMap type="optAreaVo" id="selectAreaOpt2">
+		<result property="areaCode" column="AREA_CODE"/>
+		<result property="areaSubCode" column="AREA_SUB_CODE"/>
+		<result property="areaName" column="AREA_SUB_NAME"/>
+	</resultMap>
+	<select id="selectAreaOpt2" parameterType="optAreaVo" resultMap="selectAreaOpt2">
+		select AREA_CODE,AREA_SUB_CODE,AREA_SUB_NAME
+		from CODE_AREA_SUB 
+		WHERE 1=1
+		<if test="areaCode != null">
+			AND AREA_CODE=#{areaCode}
+		</if>
+		order by TO_NUMBER(AREA_SUB_CODE)
+	</select>
+	
+	<!-- 통신원유형 등록 대 -->
+	<insert id="insertAreaOpt1" parameterType="optAreaVo">
+		INSERT INTO CODE_AREACODE(
+			 AREA_CODE
+			,AREA_NAME
+		)
+		VALUES (
+			 (select NVL(max(TO_NUMBER(AREA_CODE))+10,0) from  CODE_AREACODE)
+			,#{areaName}
+		)
+	</insert>
+	
+	<!-- 통신원유형 등록 중 -->
+	<insert id="insertAreaOpt2" parameterType="optAreaVo">
+		INSERT INTO CODE_AREA_SUB(
+			 AREA_CODE
+			,AREA_SUB_CODE
+			,AREA_SUB_NAME
+		)
+		VALUES(
+			#{areaCode}
+			,(
+			 	select NVL(A.tt,'500'||#{areaCode}||1) from
+				(
+					select 
+					substr(max(area_sub_code),0,6)||(to_number(substr(max(area_sub_code),7))+1) as tt
+					from CODE_AREA_SUB 
+					where AREA_CODE=#{areaCode}
+				) A
+			 )
+			,#{areaName}
+		)
+	</insert>
+	
+	<!-- 통신원유형 수정 대 -->
+	<update useGeneratedKeys="false" id="updateAreaOpt1" parameterType="optAreaVo">
+		UPDATE CODE_AREACODE
+		SET
+		<if test="areaName != null">
+			AREA_NAME=#{areaName}
+		</if>
+		WHERE AREA_CODE=#{areaCode}
+	</update>
+	
+	<!-- 통신원유형 수정 중 -->
+	<update useGeneratedKeys="false" id="updateAreaOpt2" parameterType="optAreaVo">
+		UPDATE CODE_AREA_SUB
+		SET
+		<if test="areaName != null">
+			AREA_SUB_NAME=#{areaName}
+		</if>
+		WHERE 1=1
+		<if test="areaSubCode != null">
+			AND AREA_SUB_CODE=#{areaSubCode}
+		</if>
+	</update>
+	
+		<!-- 통신원유형 삭제 대-->
+	<delete id="deleteAreaOpt1">
+		DELETE FROM CODE_AREACODE 
+	        where AREA_CODE in
+			<foreach collection="chkArr" item="item" index="index" separator="," open="(" close=")">
+				#{item}
+	        </foreach>
+	</delete>
+	
+	<!-- 통신원유형 삭제 중-->
+	<delete id="deleteAreaOpt2">
+		DELETE FROM CODE_AREA_SUB
+	        where 1=1
+	        <choose>
+			    <when test="cdFlag == 1">
+			        AND AREA_CODE in
+					<foreach collection="chkArr" item="item" index="index" separator="," open="(" close=")">
+						#{item}
+			        </foreach> 
+			    </when>
+			    <otherwise>
+			        AND AREA_CODE=#{pCode}
+			        AND AREA_SUB_CODE IN
+					<foreach collection="chkArr" item="item" index="index" separator="," open="(" close=")">
+						#{item}
+			        </foreach>			        
+			    </otherwise>
+			</choose> 
+	</delete>
+	
+</mapper>

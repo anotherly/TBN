@@ -1,0 +1,326 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.co.wizbrain.tbn.event.mapper.EventMapper">
+<!-- 
+수정일           수정자         수정내용 
+========= ======= ================================================= 
+2020.07.23 정다빈     최초 생성 
+-->
+
+ <select id="getAllEventListSize" parameterType="eventVo" resultType="java.lang.Integer">
+        SELECT COUNT(EVENT_ID)  
+          FROM (SELECT EVENT_ID, EVENT_NAME, CONTENTS, REGION_ID
+                  FROM EVENT
+                 WHERE 1 = 1
+                 <if test ="EVENT_ID!= null">
+                   AND EVENT_ID = #{EVENT_ID}
+                 </if>
+               ) K
+         WHERE 1 = 1
+         <!-- <if test="searchValue !=null and searchValue neq ''"> 
+           AND searchType LIKE '%'||#{searchValue}||'%'	
+         </if> -->
+    </select>
+
+    <select id="getEventList" parameterType="eventVo" resultType="eventVo">
+        SELECT EVENT_ID, EVENT_NAME, CONTENTS, REGION_ID, EVENT_DATE  
+		  FROM (SELECT EVENT_ID, EVENT_NAME, CONTENTS, REGION_ID
+		             , (SUBSTR(EVENT_DATE, 1, 4) || '-' || SUBSTR(EVENT_DATE, 5, 2) || '-' || SUBSTR(EVENT_DATE, 7, 2)) EVENT_DATE
+		             , ROW_NUMBER() OVER(ORDER BY EVENT_DATE DESC) RNUM
+		          FROM EVENT
+		         WHERE 1 = 1
+		         <if test ="EVENT_ID!= null">
+		           AND EVENT_ID = #{EVENT_ID}
+		         </if>
+		         <if test ="EVENT_ID!= null">
+		           AND EVENT_ID = #{EVENT_ID}
+		         </if>
+		         <if test="searchValue !=null and searchValue neq ''"> 
+					<choose>
+					    <when test="searchType eq 'EVENT_NAME'">
+							AND EVENT_NAME LIKE '%'||#{searchValue}||'%'	        
+					    </when>
+					    <otherwise>
+					        AND CONTENTS LIKE '%'||#{searchValue}||'%'	
+					    </otherwise>
+					</choose>
+				</if>	
+				<if test="REGION_ID !=null and REGION_ID neq ''">
+				 	  AND REGION_ID=#{REGION_ID}
+				 </if>
+		       ) K
+		 WHERE 1 = 1
+    </select>
+    
+    <select id="getEventList2" parameterType="eventVo" resultType="eventVo">
+        SELECT EVENT_ID, EVENT_NAME, CONTENTS, REGION_ID, EVENT_DATE  
+		  FROM (SELECT EVENT_ID, EVENT_NAME, CONTENTS, REGION_ID
+		             , (SUBSTR(EVENT_DATE, 1, 4) || '-' || SUBSTR(EVENT_DATE, 5, 2) || '-' || SUBSTR(EVENT_DATE, 7, 2)) EVENT_DATE
+		             , ROW_NUMBER() OVER(ORDER BY EVENT_DATE DESC) RNUM
+		          FROM EVENT
+		         WHERE 1 = 1
+		         <if test ="EVENT_ID!= null">
+		           AND EVENT_ID = #{EVENT_ID}
+		         </if>
+		       ) K
+		 WHERE 1 = 1
+    </select>
+    
+    
+       
+    <resultMap id="getAttendanceList" type="infrmVO" >
+		<result property="informerId" column="INFORMER_ID"/>
+		<result property="actId" column="ACT_ID"/>
+		<result property="informerName" column="INFORMER_NAME"/>
+		<result property="orgId" column="ORG_ID"/>
+		<result property="phoneCell" column="PHONE_CELL"/>
+		<result property="orgSubId" column="ORG_SUB_ID"/>
+		<result property="phoneHome" column="PHONE_HOME"/>
+		<result property="phoneOffice" column="PHONE_OFFICE"/>
+		<result property="informerType" column="INFORMER_TYPE"/>
+		<result property="informerTypeName" column="INFORMER_TYPE_NAME"/>
+		<result property="memo1" column="MEMO1"/>
+		<result property="memo" column="MEMO"/>
+		<result property="zipcode" column="ZIPCODE"/>
+		<result property="addressHome" column="ADDRESS_HOME"/>
+		<result property="address" column="ADDRESS"/>
+		<result property="zipcode2" column="ZIPCODE2"/>
+		<result property="addressOffice" column="ADDRESS_OFFICE"/>
+		<result property="residentNum" column="RESIDENT_NUM"/>
+		<result property="birthday" column="BIRTHDAY"/>
+		<result property="carNum" column="CAR_NUM"/>
+		<result property="comments" column="COMMENTS"/>
+		<result property="regDate" column="REG_DATE"/>
+		<result property="delDate" column="DEL_DATE"/>
+		<result property="updDate" column="UPD_DATE"/>
+		<result property="localFilePath" column="PHOTO_FILE"/>
+		<result property="individualNameChina" column="INDIVIDUAL_NAME_CHINA"/>
+		<result property="carType" column="CAR_TYPE"/>
+		<result property="trsNo" column="TRS_NO"/>
+		<result property="lastSchool" column="LAST_SCHOOL"/>
+		<result property="areaCode" column="AREA_CODE"/>
+		<result property="honor" column="HONOR"/>
+		<result property="agree" column="AGREE"/>
+		<result property="flagBlacklist" column="FLAG_BLACKLIST"/>
+		<result property="memo2" column="MEMO2"/>
+		<result property="identifiDate" column="IDENTIFI_DATE"/>
+		<result property="flagService" column="FLAG_SERVICE"/>
+		<result property="startDate" column="START_DATE"/>
+		<result property="stopDate" column="STOP_DATE"/>
+		<result property="birthdayDiv" column="BIRTHDAY_DIV"/>
+		<result property="informerJob" column="INFORMER_JOB"/>
+		<result property="flagBroad" column="FLAG_BROAD"/>
+		<result property="flagAct" column="FLAG_ACT"/>
+		<result property="areaName" column="AREA_NAME"/>
+	</resultMap>
+	<select id="getAttendanceList" parameterType="eventVo" resultMap="getAttendanceList">
+        SELECT K.INFORMER_ID, K.ACT_ID, K.FLAG_ACT, K.area_code, D.city as AREA_NAME, K.INFORMER_NAME, K.PHONE_CELL, K.ADDRESS_HOME
+		  FROM (SELECT C.INFORMER_ID, C.ACT_ID, C.FLAG_ACT, C.area_code, C.INFORMER_NAME, C.PHONE_CELL, C.ADDRESS_HOME
+		          FROM EVENT A, EVENT_RECIPIENT B, INFORMER C
+		         WHERE 1 = 1
+		           AND A.EVENT_ID = B.EVENT_ID
+		         <if test ="EVENT_ID!= null">
+		           AND A.EVENT_ID = #{EVENT_ID}
+		         </if>
+		           AND B.INFORMER_ID = C.INFORMER_ID
+		           <![CDATA[
+		           AND C.FLAG_ACT <> 'D'
+		           ]]>
+		       ) K LEFT OUTER JOIN 
+		       (select area_code,city from code_areacode) D
+		       ON K.area_code = D.area_code 
+    </select>
+    
+    
+    <resultMap id="getInformerList4Event" type="infrmVO" >
+		<result property="informerId" column="INFORMER_ID"/>
+		<result property="actId" column="ACT_ID"/>
+		<result property="informerName" column="INFORMER_NAME"/>
+		<result property="orgId" column="ORG_ID"/>
+		<result property="phoneCell" column="PHONE_CELL"/>
+		<result property="orgSubId" column="ORG_SUB_ID"/>
+		<result property="phoneHome" column="PHONE_HOME"/>
+		<result property="phoneOffice" column="PHONE_OFFICE"/>
+		<result property="informerType" column="INFORMER_TYPE"/>
+		<result property="informerTypeName" column="INFORMER_TYPE_NAME"/>
+		<result property="memo1" column="MEMO1"/>
+		<result property="memo" column="MEMO"/>
+		<result property="zipcode" column="ZIPCODE"/>
+		<result property="addressHome" column="ADDRESS_HOME"/>
+		<result property="address" column="ADDRESS"/>
+		<result property="zipcode2" column="ZIPCODE2"/>
+		<result property="addressOffice" column="ADDRESS_OFFICE"/>
+		<result property="residentNum" column="RESIDENT_NUM"/>
+		<result property="birthday" column="BIRTHDAY"/>
+		<result property="carNum" column="CAR_NUM"/>
+		<result property="comments" column="COMMENTS"/>
+		<result property="regDate" column="REG_DATE"/>
+		<result property="delDate" column="DEL_DATE"/>
+		<result property="updDate" column="UPD_DATE"/>
+		<result property="localFilePath" column="PHOTO_FILE"/>
+		<result property="individualNameChina" column="INDIVIDUAL_NAME_CHINA"/>
+		<result property="carType" column="CAR_TYPE"/>
+		<result property="trsNo" column="TRS_NO"/>
+		<result property="lastSchool" column="LAST_SCHOOL"/>
+		<result property="areaCode" column="AREA_CODE"/>
+		<result property="honor" column="HONOR"/>
+		<result property="agree" column="AGREE"/>
+		<result property="flagBlacklist" column="FLAG_BLACKLIST"/>
+		<result property="memo2" column="MEMO2"/>
+		<result property="identifiDate" column="IDENTIFI_DATE"/>
+		<result property="flagService" column="FLAG_SERVICE"/>
+		<result property="startDate" column="START_DATE"/>
+		<result property="stopDate" column="STOP_DATE"/>
+		<result property="birthdayDiv" column="BIRTHDAY_DIV"/>
+		<result property="informerJob" column="INFORMER_JOB"/>
+		<result property="flagBroad" column="FLAG_BROAD"/>
+		<result property="flagAct" column="FLAG_ACT"/>
+		<result property="areaName" column="AREA_NAME"/>
+	</resultMap>
+	<select id="getInformerList4Event" parameterType="eventVo" resultMap="getInformerList4Event">
+        SELECT A.INFORMER_ID, A.ACT_ID, FLAG_ACT, A.AREA_CODE,B.city as AREA_NAME, A.INFORMER_NAME, A.PHONE_CELL
+		  FROM INFORMER A 
+		  left join code_areacode B
+		  on(A.area_code=B.area_code)
+		 WHERE 1 = 1
+		   <![CDATA[
+           AND A.FLAG_ACT <> 'D'
+           ]]>
+		   AND A.INFORMER_ID NOT IN 
+		   (
+		   	SELECT INFORMER_ID 
+                FROM EVENT_RECIPIENT 
+               WHERE 1 = 1
+               <if test ="EVENT_ID!= null">
+                 AND EVENT_ID = #{EVENT_ID}
+               </if>
+           )
+		 <if test ="searchRegion!= null and searchRegion neq ''">
+           AND A.ORG_ID = #{searchRegion}
+         </if>
+         <if test ="searchActYn!= null and searchActYn neq ''">
+           AND A.FLAG_ACT = #{searchActYn}
+         </if>
+         <if test="searchValue !=null and searchValue neq ''">
+		    <choose>
+				<when test="searchType eq 'actId'">
+					AND A.ACT_ID LIKE '%'||#{searchValue}||'%'
+				</when>
+				<when test="searchType eq 'informerName'">
+					AND A.INFORMER_NAME LIKE '%'||#{searchValue}||'%'
+				</when>
+				<otherwise>
+					AND A.phone_cell LIKE '%'||#{searchValue}||'%'
+				</otherwise>					        
+		    </choose>
+		</if>
+		<if test="sDate !=null and eDate !=null">
+	    	AND A.REG_DATE BETWEEN #{sDate} AND TO_DATE(#{eDate}, 'YYYY-MM-DD')+1
+		</if>
+		ORDER BY A.REG_DATE DESC
+    </select>
+    
+    <update id="saveEvent" parameterType="eventVo">
+        INSERT INTO EVENT
+             (
+               EVENT_ID,
+               <if test ="EVENT_NAME!= null">
+               EVENT_NAME,
+               </if>
+               <if test ="EVENT_DATE!= null">
+               EVENT_DATE,
+               </if>
+               <if test ="CONTENTS!= null">
+               CONTENTS,
+               </if>
+               REGION_ID
+             )
+        VALUES
+             (
+               (SELECT TO_CHAR(SYSDATE,'YYYYMM') FROM DUAL) || LPAD(SEQ_EVENT.NEXTVAL,6,'0'),
+               <if test ="EVENT_NAME!= null">
+               #{EVENT_NAME},
+               </if>
+               <if test ="EVENT_DATE!= null">
+               #{EVENT_DATE},
+               </if>
+               <if test ="CONTENTS!= null">
+               #{CONTENTS},
+               </if>
+               #{REGION_ID}
+             )
+    </update>
+    
+    <update id="updateEvent" parameterType="eventVo">
+        UPDATE EVENT SET 
+               <if test ="EVENT_NAME!= null">
+               EVENT_NAME = #{EVENT_NAME},
+               </if>
+               <if test ="EVENT_DATE!= null">
+               EVENT_DATE = #{EVENT_DATE},
+               </if>
+               <if test ="CONTENTS!= null">
+               CONTENTS = #{CONTENTS},
+               </if>
+               REGION_ID = #{REGION_ID}
+         WHERE EVENT_ID = #{EVENT_ID}
+    </update>
+    
+    <update id="saveAttendance">
+        INSERT INTO EVENT_RECIPIENT
+             (
+               EVENT_ID,
+               INFORMER_ID,
+               REG_DATE
+             )
+       	SELECT #{thvo.EVENT_ID}, INFORMER_ID, TO_CHAR(SYSDATE,'YYYYMMDD') FROM INFORMER 
+       	WHERE INFORMER_ID in
+		<foreach collection="chkArr" item="item" index="index" separator="," open="(" close=")">
+			#{item}
+      </foreach>  
+             
+    </update>
+    
+    <update id="updateAttendance" parameterType="eventVo">
+        UPDATE EVENT_RECIPIENT SET 
+               <if test ="EVENT_ID!= null">
+               EVENT_ID = #{EVENT_ID},
+               </if>
+               <if test ="INFORMER_ID!= null">
+               INFORMER_ID = #{INFORMER_ID},
+               </if>
+               REG_DATE = TO_CHAR(SYSDATE,'YYYYMMDD')
+         WHERE INFORMER_ID = #{INFORMER_ID}
+    </update>
+    
+    <update id="deleteEvent" parameterType="eventVo">
+        DELETE 
+          FROM EVENT
+         WHERE EVENT_ID = #{EVENT_ID}
+    </update>
+    
+    <update id="deleteAttendance" parameterType="eventVo">
+        DELETE 
+          FROM EVENT_RECIPIENT
+         WHERE 1 = 1 
+         <if test ="EVENT_ID!= null">
+           AND EVENT_ID = #{EVENT_ID}
+         </if>
+         <if test ="INFORMER_ID!= null">
+           AND INFORMER_ID = #{INFORMER_ID}
+         </if>
+    </update>
+
+     <!--특정 통신원 참여행사 정보 -->
+    <select id="getEvtList" parameterType="eventVo" resultType="eventVo">
+        SELECT A.*,B.* from 
+        EVENT A
+        RIGHT JOIN 
+        (SELECT * FROM EVENT_RECIPIENT WHERE INFORMER_ID=#{INFORMER_ID}) B
+        ON(A.EVENT_ID=B.EVENT_ID)
+    </select>
+    
+    
+</mapper>

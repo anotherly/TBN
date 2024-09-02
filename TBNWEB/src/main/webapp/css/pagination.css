@@ -1,0 +1,63 @@
+.pagination { 
+	font-size:12px; 
+	font-family:Tahoma, Sans-serif;
+	 display:inline-block;
+ 	_display:inline; 
+ 	_zoom:1;
+	}
+        
+.pagination a {
+    text-decoration: none;
+	border: solid 0px #AAE;
+	color: #555;
+}
+
+.pagination a, .pagination span {
+    display: block;
+    float: left;
+    padding: 0.3em 0.5em;
+    margin-right: 5px;
+	margin-bottom: 5px;
+	min-width:1em;
+	text-align:center;
+	font-weight:bold;
+}
+
+.pagination .current {
+    background: #f8f8f8; 
+    color: #ff6600;
+	border: solid 0px #AAE;
+}
+
+.pagination .current.prev, .pagination .current.next{
+	color:#999;
+	border-color:#999;
+	background:#fff;
+}
+
+#pageDiv {
+	height: 25px;
+}
+
+.btnBox {
+	margin-top: -30px;
+}
+
+#Searchresult {
+	margin-top:1px;
+	margin-bottom:0px;
+	border:solid 1px #fff;
+	padding:0px;
+	background:#fff;
+  	width:99%;
+}
+
+#Searchresult p { margin-bottom:1.4em;}
+
+#Searchresult dt {
+    font-weight:bold;
+}
+
+#Searchresult dd {
+    margin-left:25px;
+}

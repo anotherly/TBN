@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.co.wizbrain.tbn.option.mapper.ColorMapper">
+<!-- 
+수정일           수정자         수정내용 
+========= ======= ================================================= 
+2020.07.23 정다빈     최초 생성 
+-->
+	
+	<!-- 제보유형(대,중,소 일괄처리) 조회 -->
+	<resultMap type="optRptVo" id="selectColorRpt">
+		<result property="basLcod" 	column="BAS_LCOD"/>
+		<result property="basScod" 	column="BAS_SCOD"/>
+		<result property="basName" 	column="BAS_NAME"/>
+		<result property="fColor" 	column="F_COLOR"/>
+		<result property="fName" 	column="F_NAME"/>
+		<result property="bColor" 	column="B_COLOR"/>
+		<result property="bName" 	column="B_NAME"/>
+	</resultMap>
+	<select id="selectColorRpt" parameterType="optRptVo" resultMap="selectColorRpt">
+		SELECT 
+			BAS_LCOD
+			,BAS_SCOD
+			,BAS_NAME
+			,F_COLOR
+			,F_NAME
+			,B_COLOR
+			,B_NAME
+		FROM CODE_REPORT_TYPE
+		<if test="basLcod != null">
+			WHERE BAS_LCOD=#{basLcod}
+		</if>
+		<if test="cdFlag != null">
+			<choose>
+			    <when test='cdFlag eq "3"'>
+				    order by TO_NUMBER(BAS_SCOD)
+			    </when>
+			    <otherwise>
+			        order by BAS_SCOD
+			    </otherwise>
+		</choose>
+		</if>
+	</select>
+	
+	<!-- 제보유형 등록 (대중소) -->
+	<insert id="insertColorRpt" parameterType="optRptVo">
+		INSERT INTO CODE_REPORT_TYPE(
+			BAS_LCOD
+			,BAS_SCOD
+			,BAS_NAME
+			<!-- ,F_COLOR
+			,F_NAME
+			,B_COLOR
+			,B_NAME -->
+		)
+		VALUES (
+			#{basLcod},
+			<choose>
+			    <when test="cdFlag == 3">
+				    (
+				        select 
+					    NVL(MAX(TO_NUMBER(bas_scod))+1,1) as tt
+					    FROM code_report_type
+					    WHERE bas_lcod = #{basLcod}     
+				    )
+			    </when>
+			    <when test="cdFlag == 2">
+			        (
+						select 
+						    decode(length(a.tt),1
+						    ,'B'||LPAD(a.tt,2,'0')
+						    ,'B'||a.tt)
+						from 
+						(
+						    select 
+						    NVL(TO_NUMBER(SUBSTR(MAX(bas_scod), 2))+1, 0) as tt
+						    FROM code_report_type
+						    WHERE bas_lcod = #{basLcod}
+						) a
+					)
+				</when>   
+			    <otherwise>
+			        (
+						select 
+						    decode(length(a.tt),1
+						    ,'A'||LPAD(a.tt,2,'0')
+						    ,'A'||a.tt)
+						from 
+						(
+						    select 
+						    NVL(TO_NUMBER(SUBSTR(MAX(bas_scod), 2))+1, 0) as tt
+						    FROM code_report_type
+						    WHERE bas_lcod = #{basLcod}
+						) a
+					)
+			    </otherwise>
+			</choose>
+			,#{basName}
+			<!-- ,#{fColor}
+			,#{fName}
+			,#{bColor}
+			,#{bName} -->
+		)
+	</insert>
+	
+	<!-- 제보유형 수정-->
+	<update useGeneratedKeys="false" id="updateColorRpt" parameterType="optRptVo">
+		UPDATE CODE_REPORT_TYPE
+		SET
+		<choose>
+		    <when test="cdFlag == 1">
+				F_COLOR=#{fColor}
+				,F_NAME=#{fName}
+			</when>
+			<otherwise>
+				B_COLOR=#{bColor}
+				,B_NAME=#{bName}
+			</otherwise>
+		</choose>
+		WHERE BAS_LCOD=#{basLcod} AND BAS_SCOD=#{basScod}
+	</update>
+	
+	<!-- 제보유형 삭제 -->
+	<delete id="deleteColorRpt">
+		DELETE FROM code_report_type 
+		<choose>
+			    <when test="cdFlag == 1">
+			        where bas_scod in
+					<foreach collection="chkArr" item="item" index="index" separator="," open="(" close=")">
+						#{item}
+			        </foreach>
+			        	or regexp_like(bas_lcod,#{pcode}) 
+			    </when>
+			    <when test="cdFlag == 2">
+			        where bas_lcod in
+					<foreach collection="chkArr" item="item" index="index" separator="," open="(" close=")">
+						#{pcode} || #{item}
+			        </foreach>
+			        	or (bas_lcod = #{pcode} and bas_scod in
+					<foreach collection="chkArr" item="item" index="index" separator="," open="(" close=")">
+						#{item}
+			        </foreach>
+			        )
+			    </when>
+			    <otherwise>
+			        WHERE bas_lcod = #{pcode} and bas_scod in
+			        <foreach collection="chkArr" item="item" index="index" separator="," open="(" close=")">
+						#{item}
+			        </foreach>
+			    </otherwise>
+		</choose>
+	</delete>
+	
+	<resultMap type="optColorVo" id="selectColorCode">
+		<result property="colorId" 	column="COLOR_ID"/>
+		<result property="colorCode" 	column="COLOR_CODE"/>
+		<result property="colorName" 	column="COLOR_NAME"/>
+	</resultMap>
+	<select id="selectColorCode"  resultMap="selectColorCode">
+        SELECT COLOR_CODE, COLOR_NAME
+  		FROM CODE_COLOR
+  		ORDER BY COLOR_ID ASC
+    </select>
+</mapper>

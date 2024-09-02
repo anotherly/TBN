@@ -1,0 +1,165 @@
+package kr.co.wizbrain.tbn.receipt.service;
+
+import java.util.List;
+
+import egovframework.rte.psl.dataaccess.util.EgovMap;
+import kr.co.wizbrain.tbn.receipt.vo.AreaCodeVO;
+import kr.co.wizbrain.tbn.receipt.vo.AreaSubCodeVO;
+import kr.co.wizbrain.tbn.receipt.vo.ArteryVO;
+import kr.co.wizbrain.tbn.receipt.vo.CriteriaVO;
+import kr.co.wizbrain.tbn.receipt.vo.InformerStatVO;
+import kr.co.wizbrain.tbn.receipt.vo.InformerTypeVO;
+import kr.co.wizbrain.tbn.receipt.vo.InformerVO;
+import kr.co.wizbrain.tbn.receipt.vo.MissedCallVO;
+import kr.co.wizbrain.tbn.receipt.vo.PersonalMemoVO;
+import kr.co.wizbrain.tbn.receipt.vo.PickUpCallVO;
+import kr.co.wizbrain.tbn.receipt.vo.ReceiptVO;
+import kr.co.wizbrain.tbn.receipt.vo.ReceiveCallVO;
+import kr.co.wizbrain.tbn.receipt.vo.ReportFirstVO;
+import kr.co.wizbrain.tbn.receipt.vo.ReportMeanVO;
+import kr.co.wizbrain.tbn.receipt.vo.ReportTypeVO;
+import kr.co.wizbrain.tbn.receipt.vo.TempSaveVo;
+import kr.co.wizbrain.tbn.receipt.vo.popup.EditVO;
+import kr.co.wizbrain.tbn.receipt.vo.popup.ReceiptSearchVO;
+import kr.co.wizbrain.tbn.receipt.vo.popup.ReceivedStatusVO;
+import kr.co.wizbrain.tbn.user.vo.UserVO;
+
+public interface ReceiptService {
+
+	//전체 사용자 조회
+	//public List<ReceiptVO> selectReceiptList(ReceiptVO ReceiptVO) throws Exception;
+	
+	//제보접수 등록
+	public int insertReceipt(ReceiptVO ReceiptVO) throws Exception;
+	public int updateMonthlyStat(ReceiptVO vo) throws Exception;
+	
+	//통신원(제보접수용) 조회
+	//public InformerVO selectInformerByPhone(String phone_cell) throws Exception;
+	public List<InformerVO> selectInformerByPhone(String phone_cell) throws Exception;
+	public Integer getMonthlyTotal(InformerStatVO vo) throws Exception;
+	
+	//selectBox - reportType(제보유형-대)
+	public List<ReportTypeVO> firstReportType() throws Exception;
+		
+	//reportType(제보유형) 셀렉트박스 변경
+	public List<ReportTypeVO> reportTypeOnChange(String bas_lcod) throws Exception;
+	
+	//selectBox - reportMean(제보처)
+	public List<ReportMeanVO> selectReportMean() throws Exception;
+	
+	//selectBox - informerType(통신원타입)
+	public List<InformerTypeVO> selectInformerType() throws Exception;
+	
+	//selectBox - areaCode(지역구분-대)
+	public List<AreaCodeVO> selectAreaCode() throws Exception;
+
+	//selectBox - areaCode(지역구분-소)
+	public List<AreaSubCodeVO> selectAreaCodeSub(String area_code) throws Exception;
+	
+	//통신원검색(이름)
+	public List<InformerVO> searchInformerByName(String informer_name) throws Exception;
+
+	//통신원검색(번호)
+	public List<InformerVO> searchInformerByPhone(String phone_cell) throws Exception;
+	
+	//통신원검색(코드)
+	public List<InformerVO> searchInformerByCode(String act_id) throws Exception;
+	
+	//통신원검색(ID)
+	public InformerVO selectInformerByID(String INFORMER_ID) throws Exception;
+		
+	//통신원 전달사항 저장
+	public int saveInformerMemo(InformerVO vo) throws Exception;
+	
+	//지역별 도로명 조회
+	public List<ArteryVO> selectArtery(ArteryVO vo) throws Exception;
+
+	//지역별 노드링크 조회
+	public List<ArteryVO> selectNodeLink(ArteryVO vo) throws Exception;
+	
+	//수신목록
+	public List<ReceiveCallVO> selectPickupCall(ReceiveCallVO vo) throws Exception;
+	
+	//부재중목록
+	public List<MissedCallVO> selectMissedCall(String AREA_CODE) throws Exception;
+	
+	//부재중목록 추가
+	public int insertMissedCall(MissedCallVO vo) throws Exception;
+	
+	//STT를 가져오기 위한 부재중목록 객체
+	public MissedCallVO getMissedCallInfoById(MissedCallVO vo) throws Exception;
+	
+	//팝업 - receivedStatus
+	//public List<ReceivedStatusVO> receivedStatusList(String RECEIPT_DAY) throws Exception;
+	public List<ReceivedStatusVO> receivedStatusList(CriteriaVO cri) throws Exception;
+
+	//팝업 - 검색
+	public List<ReceivedStatusVO> searchStatusList(ReceiptSearchVO vo) throws Exception;
+	//public List<ReceivedStatusVO> searchStatusList(CriteriaVO cri) throws Exception;
+	
+	//팝업 - COUNT
+	public int countReceivedStatusList(CriteriaVO vo) throws Exception;
+	
+	//팝업(검색) - COUNT
+	public int countSearchStatusList(ReceiptSearchVO vo) throws Exception;
+	
+	//팝업 - 수정
+	public EditVO selectEditVO(String RECEIPT_ID) throws Exception;
+	
+	//팝업 - 수정등록
+	public int updateReceipt(EditVO vo) throws Exception;
+	
+	//팝업 - 수정결과
+	public ReceivedStatusVO showEditResult(String RECEIPT_ID) throws Exception;
+	
+	//STT Flag update
+	public int updateFlagSTT(String MISSED_CALL_ID) throws Exception; 
+	
+	//개인메모 저장
+	public int updatePersonalMemo(UserVO vo) throws Exception;
+	
+	//개인메모 불러오기
+	public UserVO selectPersonalMemo(UserVO vo) throws Exception;
+	
+	//polling
+	public List<PickUpCallVO> checkIfPickUpInfoExists(PickUpCallVO vo) throws Exception;
+	public int deletePickUpInfo(PickUpCallVO vo) throws Exception;
+	//임시저장
+	public void tempSave(TempSaveVo vo);
+	public List<TempSaveVo> tempsaveList(TempSaveVo vo);
+	public TempSaveVo tempsavePush(TempSaveVo vo);
+	//수신목록 테이블에 추가
+	public void insertReceiveCall(PickUpCallVO vo);
+
+	/*
+	 * 전체접수용 테이블 분할 관련 230118
+	 * */
+	
+	//팝업 - COUNT
+	public int countReceivedStatusListFR(CriteriaVO vo) throws Exception;
+	//팝업(검색) - COUNT
+	public int countSearchStatusListFR(ReceiptSearchVO vo) throws Exception;
+	//팝업 - 리스트조회
+	public List<ReceivedStatusVO> receivedStatusListFR(CriteriaVO cri) throws Exception;
+	//팝업 - 검색
+	public List<ReceivedStatusVO> searchStatusListFR(ReceiptSearchVO vo) throws Exception;
+	
+	public void tempSaveDelete(List<String> chkArr);
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
