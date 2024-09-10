@@ -49,6 +49,8 @@
 				$("#INFORMER_NAME").prop('readonly',true);
 			}
 		});
+		
+		
 	});
 </script>
 

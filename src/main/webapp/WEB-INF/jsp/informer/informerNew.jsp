@@ -290,6 +290,7 @@
                                                 <input type="hidden" class="input_base" id="addressHome" name="addressHome" value="${informerInfo.addressHome}" style="width:250px;" />
                                                 <input type="text" class="input_base" id="addressHome1" name="addressHome1" value="" style="width:250px;" readonly/>
                                                 <input type="text" class="input_base" id="addressHome2" name="addressHome2" value="" style="width:314px;" />
+                                                
                                             </td>
                                         </tr>
                                         <tr>

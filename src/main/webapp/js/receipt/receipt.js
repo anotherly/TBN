@@ -382,6 +382,7 @@ function sentenceForReceiptContent(){
 	if(FLAG_DISASTOR.is(":checked")){
 		str += "<재난>";
 	}
+	
 	//도로명
 	var ARTERY_NAME = $("#ARTERY_NAME").val();
 	if(ARTERY_NAME != ""){
@@ -428,6 +429,36 @@ function appendToReceiptContent(){
 	$("#CONTENT").val(str);
 }
 
+
+// 꺽쇠 추가 함수
+function memoAddSentnece(str) {
+	var changeStr = "";  // 기본 값 변수
+	
+	
+	// 긴급이 체크 된 경우
+	var FLAG_IMPORTANT = $("input:checkbox[id=FLAG_EMERGENCY]");
+	if(FLAG_IMPORTANT.is(":checked")){
+		changeStr += "<긴급>";
+	}
+	var FLAG_DISASTOR = $("input:checkbox[id=FLAG_DISASTOR]");
+	if(FLAG_DISASTOR.is(":checked")){
+		changeStr += "<재난>";
+	}
+	
+	var REPORT_TYPE3 = $("#REPORT_TYPE3").val();
+	var REPORT_TYPE3_STR = "";
+	
+	if(REPORT_TYPE3 != ""){
+		REPORT_TYPE3_STR += " ";
+		REPORT_TYPE3_STR += REPORT_TYPE3;
+		
+		return changeStr + str + REPORT_TYPE3_STR; // 최종 값 반환
+	} else {
+		return changeStr + str;
+	}
+}
+
+
 function saveReceipt(){
 	if(authCode != '2'){
 		alert("권한이 없습니다.");
@@ -441,10 +472,19 @@ function saveReceipt(){
 	}
 	
 	var MEMO = $("#CONTENT");
-	if((MEMO.val() == "")){
+	if((MEMO.val() == "")){ //  메모에 아무런 값도 없고, 긴급 제보가 체크 된 경우
 		var str = sentenceForReceiptContent();
 		MEMO.val(str);
+	} 
+	else { //2024-09-10 : 메모를 작성하고 긴급 제보가 체크 된 경우
+		console.log("<긴급> 메모 추가 함수 실행");
+		
+		var changeMemo = memoAddSentnece(MEMO.val()); // 메모 빈값이 아닌 경우 꺽쇠 추가 ( 함수 미완료 )
+		
+		console.log("바뀌고 난 후 메모 값 : " + changeMemo);
+		MEMO.val(changeMemo); // 함수 실행 후 꺽쇠 추가 된 값 저장
 	}
+	
 	
 	var INFORMER_NONE = $("input:checkbox[id=INFORMER_NONE]");
 	var INFORMER_NAME = $("input:checkbox[id=INFORMER_NAME]").val();
