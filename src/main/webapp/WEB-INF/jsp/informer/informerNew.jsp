@@ -326,7 +326,7 @@
                                         <tr>
                                             <c:set var="nowDate" value="<%=new java.util.Date() %>"/>
                                             <td>
-                                                <input type="text" class="input_base" id="birthday" name="birthday" value="${informerInfo.birthday}" style="width:100px;" maxlength="8" onkeydown='return onlyNumber(event)' onkeyup='removeChar(event)'/>
+                                                <input type="text" class="input_base" id="birthday" name="birthday" value="${informerInfo.birthday}" style="width:100px;" maxlength="8" readonly />
                                                 <input type="radio" class="input_base" id="birthdayDiv2" name="birthdayDiv" value="+" checked />
                                                 <label style="color: #585c5f">양력</label>
                                                 <input type="radio" class="input_base" id="birthdayDiv2" name="birthdayDiv" value="-" />
@@ -385,23 +385,27 @@
 $(document).ready(function(){
 	console.log("통신원 등록/수정 새창 수정반영?");
     var dates = $('#birthday').datepicker({
-        showOn: "button",
+        showOn: "both",
         buttonImage: "<c:url value="/images/ico_calendar.gif"/>",
         buttonText: "달력",
         buttonImageOnly: true,
-        changeMonth: false,
+        changeYear: true, // 연도 선택 가능
+        changeMonth: true, // 월 선택 가능
         numberOfMonths: 1,
         dateFormat: 'yy-mm-dd',
         monthNames: ['년  1 월','년  2 월','년  3 월','년  4 월','년  5 월','년  6 월','년  7 월','년  8 월','년  9 월','년  10 월','년  11 월','년  12 월',],
+        monthNamesShort: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'], // 월 이름 축약형 설정
         dayNamesMin: ['일', '월', '화', '수', '목', '금', '토'],
         showMonthAfterYear:true,
         showAnim: "slide",
+        yearRange: '1930:2030',
         defaultDate: new Date( ),
         onSelect: function(selectedDate) {
             var instance = $(this).data("datepicker");
-            var date = $.datepicker.parseDate(instance.settings.dateFormat || $.datepicker._defaults.dateFormat, selectedDate, instance.settings);
+            var date = $.datepicker.parseDate(instance.settings.dateFormat || $.datepicker._defaults.dateFormat, selectedDate, instance.settings); 
             //dates.not(this).datepicker("option", option, date);
             $("img.ui-datepicker-trigger").attr("style", "margin-left:5px;");
+          
         }
     });
     
@@ -711,6 +715,8 @@ function saveInformer(){
     	//$('#birthday').val(date);
     }
     
+    
+    // 주석 처리 시 date에 하이픈 들어감 : 현재는 하이픈 제거 상태
     var date = $('#birthday').val().replace(/-/g,'');
     $('#birthday').val(date);
     
