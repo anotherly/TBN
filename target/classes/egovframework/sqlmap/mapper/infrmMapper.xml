@@ -276,6 +276,8 @@
 				</if>
 				,BIRTHDAY_DIV
 				,FLAG_BROAD
+				,ZIPCODE
+				,ZIPCODE2
              )
         VALUES
              (
@@ -318,6 +320,8 @@
 			</if>
 			,#{birthdayDiv}
 			,#{flagBroad}
+			,#{zipcode}
+			,#{zipcode2}
              ) 
 	</insert>
 	<!-- 통신원 변경 저장 -->
@@ -357,7 +361,7 @@
 		,MEMO1 = #{memo1}
 		</if>
 		<if test='zipcode != null'>
-		,ZIP_CODE = #{zipcode}
+		,ZIPCODE = #{zipcode}
 		</if>
 		<if test='address != null'>
 		,ADDRESS = #{address}
@@ -366,7 +370,7 @@
 		,ADDRESS_HOME = #{addressHome}
 		</if>
 		<if test='zipcode2 != null'>
-		,ZIP_CODE2 = #{zipcode2}
+		,ZIPCODE2 = #{zipcode2}
 		</if>
 		<if test='addressOffice != null'>
 		,ADDRESS_OFFICE = #{addressOffice}

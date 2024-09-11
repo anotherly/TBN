@@ -288,8 +288,9 @@
                                             	<input type="button" class="input_base" id="searchAddress1" name="searchAddress1" onclick="searchAddress(1);" style="width:60px;" value="주소검색"/>
                                                 <input type="hidden" class="input_base" id="address" name="address" value="${informerInfo.address}" style="width:250px;" />
                                                 <input type="hidden" class="input_base" id="addressHome" name="addressHome" value="${informerInfo.addressHome}" style="width:250px;" />
-                                                <input type="text" class="input_base" id="addressHome1" name="addressHome1" value="" style="width:250px;" readonly/>
-                                                <input type="text" class="input_base" id="addressHome2" name="addressHome2" value="" style="width:314px;" />
+                                                <input type="text" class="input_base" id="adressHome3" name="zipcode" value="${informerInfo.zipcode}" maxlength="5" placeholder="우편번호 입력" onkeyup="onlyNumber(this)" onkeydown="onlyNumber(this)"></input>
+                                                <input type="text" class="input_base" id="addressHome1" name="addressHome1" value="" style="width:204px;" readonly/>
+                                                <input type="text" class="input_base" id="addressHome2" name="addressHome2" value="" style="width:204px;" />
                                                 
                                             </td>
                                         </tr>
@@ -299,8 +300,9 @@
                                             	<!-- <iframe id="addressPage2" class="addressPage" src="https://universeport.kr:8014/addressPage2.jsp"></iframe> -->
                                             	<input type="button" class="input_base" id="searchAddress2" name="searchAddress2" onclick="searchAddress(2);" style="width:60px;" value="주소검색"/>
                                                 <input type="hidden" class="input_base" id="addressOffice" name="addressOffice" value="${informerInfo.addressOffice}" style="width:250px;"/>
-                                                <input type="text" class="input_base" id="addressOffice1" name="addressOffice1" value="" style="width:250px;" readonly/>
-                                                <input type="text" class="input_base" id="addressOffice2" name="addressOffice2" value="" style="width:314px;" />
+                                                <input type="text" class="input_base" id="addressOffice3" name="zipcode2" value="${informerInfo.zipcode2}" maxlength="5" placeholder="우편번호 입력" onkeyup="onlyNumber(this)" onkeydown="onlyNumber(this)"></input>
+                                                <input type="text" class="input_base" id="addressOffice1" name="addressOffice1" value="" style="width:204px;" readonly/>
+                                                <input type="text" class="input_base" id="addressOffice2" name="addressOffice2" value="" style="width:204px;" />
                                             </td>
                                         </tr>
                                         <tr>
