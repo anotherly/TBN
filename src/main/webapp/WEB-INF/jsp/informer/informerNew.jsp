@@ -288,7 +288,7 @@
                                             	<input type="button" class="input_base" id="searchAddress1" name="searchAddress1" onclick="searchAddress(1);" style="width:60px;" value="주소검색"/>
                                                 <input type="hidden" class="input_base" id="address" name="address" value="${informerInfo.address}" style="width:250px;" />
                                                 <input type="hidden" class="input_base" id="addressHome" name="addressHome" value="${informerInfo.addressHome}" style="width:250px;" />
-                                                <input type="text" class="input_base" id="adressHome3" name="zipcode" value="${informerInfo.zipcode}" maxlength="5" placeholder="우편번호 입력" onkeyup="onlyNumber(this)" onkeydown="onlyNumber(this)"></input>
+                                                <input type="text" class="input_base" id="adressHome3" name="zipcode" value="${informerInfo.zipcode}" readonly></input>
                                                 <input type="text" class="input_base" id="addressHome1" name="addressHome1" value="" style="width:204px;" readonly/>
                                                 <input type="text" class="input_base" id="addressHome2" name="addressHome2" value="" style="width:204px;" />
                                                 
@@ -300,7 +300,7 @@
                                             	<!-- <iframe id="addressPage2" class="addressPage" src="https://universeport.kr:8014/addressPage2.jsp"></iframe> -->
                                             	<input type="button" class="input_base" id="searchAddress2" name="searchAddress2" onclick="searchAddress(2);" style="width:60px;" value="주소검색"/>
                                                 <input type="hidden" class="input_base" id="addressOffice" name="addressOffice" value="${informerInfo.addressOffice}" style="width:250px;"/>
-                                                <input type="text" class="input_base" id="addressOffice3" name="zipcode2" value="${informerInfo.zipcode2}" maxlength="5" placeholder="우편번호 입력" onkeyup="onlyNumber(this)" onkeydown="onlyNumber(this)"></input>
+                                                <input type="text" class="input_base" id="addressOffice3" name="zipcode2" value="${informerInfo.zipcode2}" readonly></input>
                                                 <input type="text" class="input_base" id="addressOffice1" name="addressOffice1" value="" style="width:204px;" readonly/>
                                                 <input type="text" class="input_base" id="addressOffice2" name="addressOffice2" value="" style="width:204px;" />
                                             </td>
@@ -570,11 +570,14 @@ function searchAddress(num){
         oncomplete: function(data) { //선택시 입력값 세팅
         	console.log("주소창 : "+data);
         	var chVal = data.address; // 주소 넣기
+        	var postVal = data.zonecode;
         	//window.parent.postMessage({ch1: chVal, chId:"1"}, '*');
         	if(num==1){
         		$("#addressHome1").val(chVal);
+        		$('#adressHome3').val(postVal);
         	}else{
         		$("#addressOffice1").val(chVal);
+        		$('#addressOffice3').val(postVal);
         	}
         }
    }).open();   
@@ -660,16 +663,42 @@ function saveInformer(){
 		}
 	}
 	
-	//집주소
+	//집주소 ( 모든 조건이 일치한 경우 )
 	if ($('#addressHome1').val() != "" && $('#addressHome2').val() != ""){
 		$("#address").val(addressChk("address","--"));
 		$("#addressHome").val(addressChk("addressHome"," "));
 	}
+	
+	// 집주소 ( 우편번호와 도로명 주소는 입력 된 상태인데, 상세 주소가 적히지 않은 경우 )
+	if ($('#addressHome1').val() != "" && $('#addressHome2').val() == "" ) {
+		alert("상세 주소를 입력해 주세요.");
+		$('#addressHome2').focus();
+		return false;
+	}
+	
+	// 집주소 ( 상세 주소는 적혀있는데, 우편번호와 도로명 주소는 입력되지 않은 경우 )
+	if($('#addressHome1').val() == "" && $('#addressHome2').val() != "") {
+		alert("우편번호 및 도로명 주소를 입력해 주세요");
+		return false;
+	}
+	
 	//회사주소
 	if ($('#addressOffice1').val() != "" && $('#addressOffice2').val() != ""){
 		$("#addressOffice").val(addressChk("addressOffice","--"));
 	}
     
+	// 회사 주소 ( 우편 번호와 도로명 주소는 입력 된 상태인데, 상세 주소가 적히지 않은 경우 )
+	if( $('#addressOffice1').val() != "" && $('#addressOffice2').val() == "" ) {
+		alert(" 상세 주소를 입력해 주세요. ");
+		$('#addressOffice2').focus();
+		return false;
+	}
+	
+	// 회사 주소 ( 상세 주소는 적혀있는데, 우편 번호와 도로명 주소는 입력되지 않은 경우 )
+	if( $('#addressOffice1').val() == "" && $('#addressOffice2').val() != "" ) {
+		alert(" 우편번호 및 도로명 주소를 입력해 주세요");
+		return false;
+	}
     
 	//통신원 이력관련
 	var histCode = '';
