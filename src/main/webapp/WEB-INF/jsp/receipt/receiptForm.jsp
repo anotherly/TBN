@@ -248,6 +248,7 @@
 									<input type="text" class="input_sel" name="SEARCH_TEXT3" id="SEARCH_TEXT3" placeholder="통신원검색"
 											onkeyup="if(event.keyCode == 13)searchInformer(3)" style="width:169px; height:22px;" />
 									<img id="rSearch_btn" src="../images/map/btn_sch.png" onclick="searchInformer(3)" />
+									<input type="hidden" id="nowUserArea" value="${login.regionId}">
 									<!-- <input type="button" class="rSearch_btn" value="검색" onclick="searchInformer(3)" /> -->
 								</th>
 							</tr>

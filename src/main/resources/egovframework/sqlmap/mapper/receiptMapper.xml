@@ -264,7 +264,8 @@
 		ON A.INFORMER_TYPE = C.TYPE_ID
 		LEFT OUTER JOIN CODE_AREACODE D
 		ON A.AREA_CODE = D.AREA_CODE
-		WHERE INFORMER_NAME LIKE '%'||#{INFORMER_NAME}||'%'
+		WHERE INFORMER_NAME LIKE '%'||#{informer_name}||'%'
+		AND AREA_CODE = #{areaCode}
 	</select>
 
 	<select id="searchInformerByCode" resultType="informerVO">
@@ -293,9 +294,41 @@
 		ON A.INFORMER_TYPE = C.TYPE_ID
 		LEFT OUTER JOIN CODE_AREACODE D
 		ON A.AREA_CODE = D.AREA_CODE
-		WHERE ACT_ID = #{ACT_ID}
+		WHERE ACT_ID = #{act_id}
+		AND AREA_CODE = #{areaCode}
 	</select>
 
+	<select id="searchInformerByPhone" resultType="informerVO">
+	    SELECT REGEXP_REPLACE(A.PHONE_CELL ,'([[:digit:]]{'||
+		DECODE(SUBSTR(A.PHONE_CELL,0,2
+		),'02',2,3)||'})([[:digit:]]{3,4})([[:digit:]]{4})','\1-\2-\3') AS
+		PHONE_CELL
+		, REGEXP_REPLACE(A.PHONE_HOME ,'([[:digit:]]{'||
+		DECODE(SUBSTR(A.PHONE_HOME,0,2
+		),'02',2,3)||'})([[:digit:]]{3,4})([[:digit:]]{4})','\1-\2-\3') AS
+		PHONE_HOME
+		, A.INFORMER_ID, A.ACT_ID, A.INFORMER_NAME, A.INFORMER_TYPE,
+		A.ADDRESS_HOME, A.ZIPCODE, A.FLAG_BLACKLIST, A.MEMO, A.REG_DATE,
+		A.DEL_DATE, A.UPD_DATE, A.AREA_CODE, A.ORG_ID, A.ORG_SUB_ID
+		, B.ORG_NAME, B.ORG_SNAME, C.TYPE_NAME,D.AREA_NAME
+		FROM INFORMER A
+		LEFT OUTER JOIN (SELECT A.ORG_ID, A.ORG_NAME, A.AREA_CODE, A.IND_TYPE,
+		B.ORG_SID, B.ORG_SNAME
+		FROM ORGANIZATION A LEFT OUTER JOIN ORG_SUB B
+		ON A.ORG_ID = B.ORG_ID AND A.AREA_CODE = B.AREA_CODE AND A.IND_TYPE =
+		B.IND_TYPE) B
+		ON A.ORG_ID = B.ORG_ID AND A.AREA_CODE = B.AREA_CODE AND A.ORG_SUB_ID =
+		B.ORG_SID
+		LEFT OUTER JOIN CODE_INFORMER_TYPE C
+		ON A.INFORMER_TYPE = C.TYPE_ID
+		LEFT OUTER JOIN CODE_AREACODE D
+		ON A.AREA_CODE = D.AREA_CODE
+		WHERE (PHONE_CELL LIKE '%'||#{phone_cell}||'%'
+		OR PHONE_HOME LIKE '%'||#{phone_cell}||'%'
+		OR PHONE_OFFICE LIKE '%'||#{phone_cell}||'%')
+		AND AREA_CODE = #{areaCode}
+	</select>
+	
 	<update id="saveInformerMemo" parameterType="informerVO">
 		UPDATE INFORMER
 		SET MEMO = #{MEMO}

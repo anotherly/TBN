@@ -57,13 +57,13 @@ public interface ReceiptService {
 	public List<AreaSubCodeVO> selectAreaCodeSub(String area_code) throws Exception;
 	
 	//통신원검색(이름)
-	public List<InformerVO> searchInformerByName(String informer_name) throws Exception;
+	public List<InformerVO> searchInformerByName(String informer_name, String areaCode) throws Exception;
 
 	//통신원검색(번호)
-	public List<InformerVO> searchInformerByPhone(String phone_cell) throws Exception;
+	public List<InformerVO> searchInformerByPhone(String phone_cell , String areaCode) throws Exception;
 	
 	//통신원검색(코드)
-	public List<InformerVO> searchInformerByCode(String act_id) throws Exception;
+	public List<InformerVO> searchInformerByCode(String act_id , String areaCode) throws Exception;
 	
 	//통신원검색(ID)
 	public InformerVO selectInformerByID(String INFORMER_ID) throws Exception;

@@ -182,6 +182,7 @@ function searchInformer(idx){
 	console.log("searchInformer");
 
 	var searchText = $("#SEARCH_TEXT" + idx).val();
+	var nowUserArea = $('#nowUserArea').val(); 
 	if (searchText == ''){
 		alert("검색어를 입력해주세요.");
 		return;
@@ -190,7 +191,8 @@ function searchInformer(idx){
 	var url = '/receipt/popUpInformerList.do?SEARCH_TEXT=' 
 				+ escape(encodeURIComponent(searchText))
 				+ "&searchType=" + $("#SEARCHTYPE"+ idx +" option:selected").val()
-				+ "&idx=" + idx;
+				+ "&idx=" + idx
+				+ "&nowUserArea=" + nowUserArea;
 	var windowName = "통신원정보";
 	var popupW = 800; // 팝업 넓이
 	var popupH = 730; // 팝업 높이

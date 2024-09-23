@@ -61,8 +61,8 @@ public class ReceiptServiceImpl implements ReceiptService{
 	}
 
 	@Override
-	public List<InformerVO> searchInformerByName(String informer_name) throws Exception {
-		return receiptMapper.searchInformerByName(informer_name);
+	public List<InformerVO> searchInformerByName(String informer_name , String areaCode) throws Exception {
+		return receiptMapper.searchInformerByName(informer_name , areaCode);
 	}
 
 	@Override
@@ -86,13 +86,13 @@ public class ReceiptServiceImpl implements ReceiptService{
 	}
 
 	@Override
-	public List<InformerVO> searchInformerByPhone(String phone_cell) throws Exception {
-		return receiptMapper.searchInformerByPhone(phone_cell);
+	public List<InformerVO> searchInformerByPhone(String phone_cell , String areaCode) throws Exception {
+		return receiptMapper.searchInformerByPhone(phone_cell, areaCode);
 	}
 
 	@Override
-	public List<InformerVO> searchInformerByCode(String act_id) throws Exception {
-		return receiptMapper.searchInformerByCode(act_id);
+	public List<InformerVO> searchInformerByCode(String act_id , String areaCode) throws Exception {
+		return receiptMapper.searchInformerByCode(act_id, areaCode);
 	}
 
 	@Override

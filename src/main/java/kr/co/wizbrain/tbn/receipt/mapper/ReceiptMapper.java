@@ -58,13 +58,13 @@ public interface ReceiptMapper{
 	public List<AreaSubCodeVO> selectAreaCodeSub(String area_code) throws Exception;
 	
 	//통신원검색(이름)
-	public List<InformerVO> searchInformerByName(String informer_name) throws Exception;
+	public List<InformerVO> searchInformerByName(@Param("informer_name")String informer_name, @Param("areaCode")String areaCode) throws Exception;
 	
 	//통신원검색(번호)
-	public List<InformerVO> searchInformerByPhone(String phone_cell) throws Exception;
+	public List<InformerVO> searchInformerByPhone(@Param("phone_cell")String phone_cell , @Param("areaCode")String areaCode) throws Exception;
 	
 	//통신원검색(코드)
-	public List<InformerVO> searchInformerByCode(String act_id) throws Exception;
+	public List<InformerVO> searchInformerByCode(@Param("act_id")String act_id, @Param("areaCode")String areaCode) throws Exception;
 	
 	//통신원검색(ID)
 	public InformerVO selectInformerByID(String INFORMER_ID) throws Exception;

@@ -388,18 +388,20 @@ public class ReceiptController {
 		ModelAndView mv = new ModelAndView();
 		String searchType = request.getParameter("searchType");
 		String parameter = URLDecoder.decode(request.getParameter("SEARCH_TEXT"),"utf-8");
+		String areaCode = request.getParameter("nowUserArea");
+		
 		System.out.println("Parameter: "+parameter);
 		System.out.println("SearchType: " + searchType);
 		
 		List<InformerVO> informerList = null;
 		if(searchType.equals("1")) {
-			informerList = receiptService.searchInformerByName(parameter);
+			informerList = receiptService.searchInformerByName(parameter , areaCode);
 		} else if(searchType.equals("2")) {
-			informerList = receiptService.searchInformerByCode(parameter);
-		} else if(searchType.equals("3")) {
-			informerList = receiptService.selectInformerByPhone(parameter);
-		} else if(searchType.equals("4")) {//금일접수 편집에서 붎러올경우
-			informerList = receiptService.searchInformerByName(parameter);
+			informerList = receiptService.searchInformerByCode(parameter , areaCode);
+		} else if(searchType.equals("3")) { 
+			informerList = receiptService.searchInformerByPhone(parameter , areaCode);
+		} else if(searchType.equals("4")) {//금일접수 편집에서 불러올경우
+			informerList = receiptService.searchInformerByName(parameter, areaCode);
 		}
 		
 		mv.addObject("informerList", informerList);
