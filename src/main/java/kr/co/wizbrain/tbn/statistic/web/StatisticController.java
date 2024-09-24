@@ -1,6 +1,8 @@
 package kr.co.wizbrain.tbn.statistic.web;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -458,7 +460,7 @@ public class StatisticController extends BaseController{
 		return "hssfExcel";
 	}
 
-	/* 통신월별 일별 제보건수
+	/* 통신원 소속별 일자별 통계 
 	 * @param model
 	 * @return
 	 * @throws Exception
@@ -487,7 +489,42 @@ public class StatisticController extends BaseController{
 		model.addAttribute("org_id", params.get("org_id"));
 		return "hssfExcel";
 	}
-	
+
+	/* 통신원 중소 분류별 통계
+	 * @param model
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping("stats/orgOrgSub.do")
+	public String orgOrgSub(Model model,HttpServletRequest request) throws Exception {
+		
+		ParamsDto params = getParams(true);
+		//문자열        
+		String orgStartDate = request.getParameter("orgStartDate");         
+		String orgEndDate = request.getParameter("orgEndDate");         
+
+		List eraList =  statisticService.statDateCal(orgStartDate,orgEndDate);
+		
+		List sheetNames = new ArrayList();//기관별 시트명
+		List informerListMain =new ArrayList(); //왼쪽 통신원부 
+		List cntListMain =new ArrayList(); //오른쪽 건수
+		
+		List orgOrgSubList = new ArrayList();
+		
+		orgOrgSubList = statisticService.orgOrgSub(params,eraList,orgStartDate,orgEndDate);
+		
+		RecordDto record = (RecordDto) orgOrgSubList.get(0);
+		model.addAttribute("mapping", "orgOrgSub");
+		model.addAttribute("fileName", "통신원 중소 분류별 통계"+params.getString("city")+".xls");
+		model.addAttribute("titleName", "통신원 중소 분류별 통계"+params.getString("city")+".xls");
+		model.addAttribute("sheetNames1", "통신원 중소 분류별 통계");
+		//해당 부분은 위 부분과 대조하여 검토
+		model.addAttribute("orgOrgSub", orgOrgSubList);
+		model.addAttribute("eraList", eraList);
+		model.addAttribute("start_date", params.get("start_date"));
+		model.addAttribute("org_id", params.get("org_id"));
+		return "hssfExcel";
+	}
 
 	/* 사회봉사자 일자별 통계
 	 * @param model

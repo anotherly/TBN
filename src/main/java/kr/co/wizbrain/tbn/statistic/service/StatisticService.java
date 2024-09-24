@@ -176,12 +176,13 @@ public interface StatisticService {
 
 	public List searchStatusListToday(ReceiptSearchVO searchVO);
 	public List searchStatusList(ReceiptSearchVO searchVO);
-
-	public List dayReceiptInfrm(ParamsDto params);
-	public List dayReceiptCnt(ParamsDto params);
+	
 	public List dayReceipt(ParamsDto params);
+	public List orgOrgSub(ParamsDto params,List chkArr,String orgStartDate, String orgEndDate);
 
 	public List orgType(ParamsDto params);
 
 	public List volunteer(ParamsDto params);
+
+	public List statDateCal(String orgStartDate, String orgEndDate);
 }

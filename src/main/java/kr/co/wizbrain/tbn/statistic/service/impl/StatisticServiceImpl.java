@@ -245,16 +245,12 @@ public class StatisticServiceImpl implements StatisticService{
 		return statisticMapper.searchStatusList(searchVO);
 	}
 	@Override
-	public List dayReceiptInfrm(ParamsDto params) {
-		return statisticMapper.dayReceiptInfrm(params);
-	}
-	@Override
-	public List dayReceiptCnt(ParamsDto params) {
-		return statisticMapper.dayReceiptCnt(params);
-	}
-	@Override
 	public List dayReceipt(ParamsDto params) {
 		return statisticMapper.dayReceipt(params);
+	}
+	@Override
+	public List orgOrgSub(ParamsDto params,List chkArr,String orgStartDate, String orgEndDate) {
+		return statisticMapper.orgOrgSub(params,chkArr,orgStartDate,orgEndDate);
 	}
 	@Override
 	public List orgType(ParamsDto params) {
@@ -264,6 +260,10 @@ public class StatisticServiceImpl implements StatisticService{
 	@Override
 	public List volunteer(ParamsDto params) {
 		return statisticMapper.volunteer(params);
+	}
+	@Override
+	public List statDateCal(String orgStartDate, String orgEndDate) {
+		return statisticMapper.statDateCal(orgStartDate,orgEndDate);
 	}
 	
 }

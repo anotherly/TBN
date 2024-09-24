@@ -265,7 +265,7 @@
 		LEFT OUTER JOIN CODE_AREACODE D
 		ON A.AREA_CODE = D.AREA_CODE
 		WHERE INFORMER_NAME LIKE '%'||#{informer_name}||'%'
-		AND AREA_CODE = #{areaCode}
+		AND A.AREA_CODE = #{areaCode}
 	</select>
 
 	<select id="searchInformerByCode" resultType="informerVO">
@@ -295,7 +295,7 @@
 		LEFT OUTER JOIN CODE_AREACODE D
 		ON A.AREA_CODE = D.AREA_CODE
 		WHERE ACT_ID = #{act_id}
-		AND AREA_CODE = #{areaCode}
+		AND A.AREA_CODE = #{areaCode}
 	</select>
 
 	<select id="searchInformerByPhone" resultType="informerVO">
@@ -326,7 +326,7 @@
 		WHERE (PHONE_CELL LIKE '%'||#{phone_cell}||'%'
 		OR PHONE_HOME LIKE '%'||#{phone_cell}||'%'
 		OR PHONE_OFFICE LIKE '%'||#{phone_cell}||'%')
-		AND AREA_CODE = #{areaCode}
+		AND A.AREA_CODE = #{areaCode}
 	</select>
 	
 	<update id="saveInformerMemo" parameterType="informerVO">

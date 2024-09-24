@@ -2016,5 +2016,93 @@
 	        ) H
 	    )
 	</select>    
-
+	
+	<!-- 통신원중소분류 가변 날짜 처리법	 -->
+	<select id="statDateCal" parameterType="params" resultType="record">
+	    <![CDATA[
+			SELECT 'date_'||stat_mon as key_date,stat_mon FROM STAT_TBN_MONRPT
+			WHERE stat_mon >= SUBSTR(#{orgStartDate},0,6) 
+			AND stat_mon <= SUBSTR(#{orgEndDate},0,6) 
+			GROUP BY stat_mon
+			order by stat_mon
+		]]> 
+	</select>	
+	
+	<!-- 통신원 중/소 분류별 통계 -->
+	<select id="orgOrgSub" parameterType="params" resultType="record">
+		SELECT
+			 A.ACT_ID
+			,A.INFORMER_NAME
+	        ,A.PHONE_CELL
+	        ,A.ORG_NAME
+	        ,A.ORG_SNAME
+	        ,A.BIRTHDAY
+			,NVL(
+                <foreach collection="chkArr" item="item" index="i" separator="+">
+                   "${item.KEY_DATE}"
+               </foreach>
+			<!-- t1+t2+t3+t4+t5+t6+t7+t8+t9+t10+t11+t12+t13+t14+t15+t16+t17+t18+t19+t20+t21+t22+t23+t24+t25+t26+t27+t28+t29+t30+t31 -->
+			,0) AS SUM_CNT
+			,
+			<foreach collection="chkArr" item="item" index="i" separator=",">
+                NVL("${item.KEY_DATE}",0) as "${item.KEY_DATE}"
+            </foreach>
+			
+	        <!-- ,NVL(t1,0) AS D1	,NVL(t2,0) AS D2	,NVL(t3,0) AS D3	,NVL(t4,0) AS D4	,NVL(t5,0) AS D5	,NVL(t6,0) AS D6	,NVL(t7,0) AS D7	,NVL(t8,0) AS D8	,NVL(t9,0) AS D9	,NVL(t10,0) AS D10	,NVL(t11,0) AS D11	,NVL(t12,0) AS D12	,NVL(t13,0) AS D13	,NVL(t14,0) AS D14	,NVL(t15,0) AS D15	,NVL(t16,0) AS D16	,NVL(t17,0) AS D17	,NVL(t18,0) AS D18	,NVL(t19,0) AS D19	,NVL(t20,0) AS D20	,NVL(t21,0) AS D21	,NVL(t22,0) AS D22	,NVL(t23,0) AS D23	,NVL(t24,0) AS D24	,NVL(t25,0) AS D25	,NVL(t26,0) AS D26	,NVL(t27,0) AS D27	,NVL(t28,0) AS D28	,NVL(t29,0) AS D29	,NVL(t30,0) AS D30	,NVL(t31,0) AS D31 -->
+		from
+		(
+		    SELECT 
+		         A.informer_id
+		        ,A.act_id
+		        ,A.informer_name
+		        ,A.phone_cell
+		        ,A.BIRTHDAY
+		        ,B.org_id
+		        ,NVL(B.org_name,'정보없음')AS ORG_NAME
+		        ,C.ORG_SID
+		        ,NVL(C.org_sname,'정보없음')AS ORG_SNAME
+		    FROM
+		    INFORMER A
+		    LEFT JOIN
+		    organization B
+		    ON A.ORG_ID = B.ORG_ID
+		    AND A.INFORMER_TYPE = B.IND_TYPE
+		    AND A.AREA_CODE=B.AREA_CODE
+		    LEFT JOIN
+		    ORG_SUB C
+		    ON B.ORG_ID = C.ORG_ID 
+		    AND B.IND_TYPE = C.IND_TYPE 
+		    AND B.AREA_CODE = C.AREA_CODE
+		    AND A.ORG_SUB_ID=C.ORG_SID
+		    where A.area_code=#{params.REGION_ID}
+            AND A.FLAG_ACT ='Y'
+		)A
+		left join
+		(
+            SELECT * FROM(
+                select to_char(receipt_day,'yyyymm') as receipt_day,individual_id from report_receipt
+                        where receipt_day <![CDATA[>=]]> #{orgStartDate}
+                        and receipt_day <![CDATA[<=]]> #{orgEndDate}
+                        and region_id=#{params.REGION_ID}
+                        and individual_id is not null
+            )
+            
+            PIVOT(
+                COUNT(*)
+                FOR receipt_day in 
+                (
+                
+                <foreach collection="chkArr" item="item" index="i" separator=",">
+                    '${item.STAT_MON}' as "${item.KEY_DATE}"
+                </foreach>
+<!--                  1 as t1 	
+                 ,2 as t2 	,3 as t3 	,4 as t4 	,5 as t5 	,6 as t6 	,7 as t7 	,8 as t8 	,9 as t9 	,10 as t10 	,11 as t11 	,12 as t12 	,13 as t13 	,14 as t14 	,15 as t15 	,16 as t16 	,17 as t17 	,18 as t18 	,19 as t19 	,20 as t20 	,21 as t21 	,22 as t22 	,23 as t23 	,24 as t24 	,25 as t25 	,26 as t26 	,27 as t27 	,28 as t28 	,29 as t29 	,30 as t30 	,31 as t31 
+ -->                
+ 				)
+            )          
+		)B
+		on(A.informer_id=B.individual_id)
+		order by TO_NUMBER(ACT_ID) ASC 
+	</select>
+	
 </mapper>

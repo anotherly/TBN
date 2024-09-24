@@ -21,10 +21,31 @@ System.out.println("%%%%%%%%%%%%%%%% : "+monthAgo);
 <script>
 	$(document).ready(function(){
 		console.log("표준화통계 진입");
+		var today = new Date();
+		var year = today.getFullYear();
+		var month = ('0' + (today.getMonth() + 1)).slice(-2);
+		var day = ('0' + today.getDate()).slice(-2);
 		
+		var oneYearAgo = new Date(today.setFullYear(today.getFullYear() - 1));
+		var oyear = oneYearAgo.getFullYear();
+		var omonth = ('0' + (oneYearAgo.getMonth() + 1)).slice(-2);
+		var oday = ('0' + oneYearAgo.getDate()).slice(-2);
+
+		var dateString = year+month+day;
+		var odateString = oyear+omonth+oday;
+		
+		$("#orgStartDate").val(odateString);
+		$('#orgEndDate').val(dateString);
 	});
 	
 	function goStats(url){
+		
+		/* 향후제거필요 임시 */
+		if(url=='stats/orgOrgSub.do'){
+			url+='?orgStartDate='+$("#orgStartDate").val()+'&orgEndDate='+$('#orgEndDate').val();
+		}
+		
+		
 		var stDt=$("#sDate").val();
 		$("#org_id").val($("#orgIdSel").val());
 		//var eDt=$("#eDate").val();
@@ -210,6 +231,18 @@ System.out.println("%%%%%%%%%%%%%%%% : "+monthAgo);
                                         </td>
                                         <td><a href="javascript:goStats('stats/dayReceipt.do');"><img src="../images/btn_excel_down.gif" alt="엑셀다운로드" /></a></td>
                                     </tr>
+                                    <!-- 
+										2024 08 28 장동현 담당 요청사항
+                                     -->
+                                    <tr>
+                                        <td class="txt_left">
+                                        	<img src="../images/ico_excel.gif" alt="" class="mglsub03" /><a href="javascript:goStats('stats/orgOrgSub.do');">통신원 중/소 분류별 통계</a>
+                                        	<input type="text" maxlength='8' id="orgStartDate" name="orgStartDate" style="width:100px;"/> 부터 
+                                        	<input type="text" maxlength='8' id="orgEndDate" name="orgEndDate"  style="width:100px;"/> 까지 
+                                        </td>
+                                        <td><a href="javascript:goStats('stats/orgOrgSub.do');"><img src="../images/btn_excel_down.gif" alt="엑셀다운로드" /></a></td>
+                                    </tr>
+                                    
                                     <tr>
                                         <td class="txt_left"><img src="../images/ico_excel.gif" alt="" class="mglsub03" /><a href="javascript:goStats('stats/volunteer.do');">사회봉사자 일자별 통계</a></td>
                                         <td><a href="javascript:goStats('stats/volunteer.do');"><img src="../images/btn_excel_down.gif" alt="엑셀다운로드" /></a></td>

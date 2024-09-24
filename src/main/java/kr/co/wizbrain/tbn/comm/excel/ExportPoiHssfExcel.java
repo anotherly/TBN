@@ -96,6 +96,8 @@ public class ExportPoiHssfExcel extends AbstractView {
                 receiptDown(model, wb);
             } else if (model.get("mapping").equals("dayReceipt")) {
                 dayReceipt(model, wb);
+            } else if (model.get("mapping").equals("orgOrgSub")) {
+            	orgOrgSub(model, wb);
             } else if (model.get("mapping").equals("volunteer")) {
                 volunteer(model, wb);
             } else if (model.get("mapping").equals("informerDown")) {
@@ -110,7 +112,7 @@ public class ExportPoiHssfExcel extends AbstractView {
             ioe.printStackTrace();
         }
     }
-
+    
     protected void standardInformerType(Map model, HSSFWorkbook wb) {
         List titleMain = (List) model.get("titleMain");
         List headMain = (List) model.get("headMain");
@@ -1536,4 +1538,63 @@ public class ExportPoiHssfExcel extends AbstractView {
 			dataRow[i].createCell(7).setCellValue(record.getRegDate());
 		}
 	}
+    
+
+    protected void orgOrgSub(Map model, HSSFWorkbook wb) {
+        List dataList = (List) model.get("orgOrgSub");
+        List eraList = (List) model.get("eraList");
+        HSSFSheet sheet1 = wb.createSheet(model.get("sheetNames1").toString());
+        HSSFRow titlerow = sheet1.createRow(0);
+        titlerow.createCell(0).setCellValue(model.get("titleName").toString());
+        int rowCnt = 0 + 1;
+        HSSFRow headrow0 = sheet1.createRow(rowCnt);
+        headrow0.createCell(0).setCellValue("건수 : ");
+        headrow0.createCell(1).setCellValue(dataList.size());
+        int rowCnt2 = rowCnt + 1;
+        HSSFRow headrow1 = sheet1.createRow(rowCnt2);
+        headrow1.createCell(0).setCellValue("연번");
+        headrow1.createCell(1).setCellValue("ID");
+        headrow1.createCell(2).setCellValue("성명");
+        headrow1.createCell(3).setCellValue("전화번호");
+        headrow1.createCell(4).setCellValue("중분류");
+        headrow1.createCell(5).setCellValue("소분류");
+        headrow1.createCell(6).setCellValue("생일");
+        headrow1.createCell(7).setCellValue("월계");
+        
+        int nxtCnt =7;
+        
+        for (int i = 1; i <= eraList.size(); i++) {
+        	 RecordDto record1 = (RecordDto) eraList.get(i-1);
+        	 String key_date = record1.getString("KEY_DATE");
+        	 key_date=key_date.replaceAll("date_", "");
+        	 key_date=key_date.substring(0, 4)+"년 "+key_date.substring(4, 6)+"월";
+        	 headrow1.createCell(nxtCnt+i).setCellValue(key_date);
+		}
+        
+        int rowCnt3 = rowCnt2 + 1;
+        HSSFRow[] dataRow = new HSSFRow[dataList.size()];
+        for (int i = 0; i < dataList.size(); i++) {
+            dataRow[i] = sheet1.createRow(rowCnt3 + i);
+            RecordDto record = (RecordDto) dataList.get(i);
+            dataRow[i].createCell(0).setCellValue(i + 1);
+            dataRow[i].createCell(1).setCellValue(record.getString("ACT_ID"));
+            dataRow[i].createCell(2).setCellValue(record.getString("INFORMER_NAME"));
+            dataRow[i].createCell(3).setCellValue(record.getString("PHONE_CELL"));
+            dataRow[i].createCell(4).setCellValue(record.getString("ORG_NAME"));
+            dataRow[i].createCell(5).setCellValue(record.getString("ORG_SNAME"));
+            dataRow[i].createCell(6).setCellValue(record.getString("BIRTHDAY"));
+            dataRow[i].createCell(7).setCellValue(record.getString("SUM_CNT"));
+            
+//            for (int j = 1; j <= 31; j++) {
+//            	dataRow[i].createCell(nxtCnt+j).setCellValue(record.getString("D"+j));
+//            }
+            for (int j = 1; j <= eraList.size(); j++) {
+	           	 RecordDto record2 = (RecordDto) eraList.get(j-1);
+	           	 String key_date = record2.getString("KEY_DATE");
+	           	dataRow[i].createCell(nxtCnt+j).setCellValue(record.getString(key_date));
+	   		}
+        }
+    }
+    
+    
 }

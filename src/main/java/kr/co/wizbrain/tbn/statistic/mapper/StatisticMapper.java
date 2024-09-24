@@ -158,6 +158,13 @@ public interface StatisticMapper{
 
 	public List orgType(ParamsDto params);
 	public List volunteer(ParamsDto params);
+
+	
+	public List statDateCal(@Param("orgStartDate")String orgStartDate,  @Param("orgEndDate")String orgEndDate);
+
+	public List orgOrgSub(@Param("params")ParamsDto params,@Param("chkArr")List chkArr,@Param("orgStartDate")String orgStartDate,  @Param("orgEndDate")String orgEndDate);
+
+	
 }
 
 
