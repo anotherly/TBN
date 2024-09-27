@@ -17,6 +17,7 @@
 	<link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/css/pagination.css" />
 	<link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/css/receipt.css"/>
 	<link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/css/broadcast.css"/>
+	<link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/css/jquery.datetimepicker.min.css"/>
 	
 	<!-- JS -->
 	<script type="text/javascript" charset="utf-8" src="<%=request.getContextPath()%>/js/jquery.js"></script>
@@ -29,6 +30,7 @@
 	<script type="text/javascript" charset="utf-8" src="<%=request.getContextPath()%>/js/autoLoading.js"></script>
 	<script type="text/javascript" charset="utf-8" src="<%=request.getContextPath()%>/js/polling.js"></script>
 	<script type="text/javascript" charset="utf-8" src="<%=request.getContextPath()%>/js/excelParser.js"></script>
+	<script type="text/javascript" charset="utf-8" src="<%=request.getContextPath()%>/js/jquery.datetimepicker.full.min.js"></script>
 	
 	<!-- 제보접수 -->
 	<script type="text/javascript" charset="utf-8" src="<%=request.getContextPath()%>/js/receipt/functionKey.js"></script>

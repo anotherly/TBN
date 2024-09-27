@@ -262,8 +262,8 @@ public class StatisticServiceImpl implements StatisticService{
 		return statisticMapper.volunteer(params);
 	}
 	@Override
-	public List statDateCal(String orgStartDate, String orgEndDate) {
-		return statisticMapper.statDateCal(orgStartDate,orgEndDate);
+	public List statDateCal(String sDate, String eDate) {
+		return statisticMapper.statDateCal(sDate,eDate);
 	}
 	
 }

@@ -90,14 +90,15 @@
 				FROM STAT_INFRM_TYPE
 				WHERE 1=1
 				AND REGION_ID = #{REGION_ID}
-	<choose>
-	    <when test="start_date !=null and start_date neq ''">
+				AND STAT_DATE BETWEEN #{start_date2} AND #{end_date}
+<!-- 	<choose>
+	    <when test="start_date2 !=null and start_date neq ''">
 			AND SUBSTR(STAT_DATE,0,6) = #{start_date}
 		</when>
 		<otherwise>
 			AND SUBSTR(STAT_DATE,0,6) BETWEEN to_char(add_months(sysdate,-1),'yyyymmdd') AND to_char(SYSDATE,'yyyymmdd')
 		</otherwise>
-	</choose>
+	</choose> -->
 			) B
 		ON A.CODE=B.INFORMER_TYPE
 	)TT
@@ -117,14 +118,15 @@
 				(SELECT A.REGION_ID,  A.INFORMER_TYPE, A.ALL_CNT CNT
 				FROM STAT_INFRM_TYPE A
 				WHERE 1=1
-		<choose>
+				AND STAT_DATE BETWEEN #{start_date2} AND #{end_date}
+		<!-- <choose>
 			<when test="start_date !=null and start_date neq ''">
 				AND SUBSTR(STAT_DATE,0,6) = #{start_date}
 			</when>
 			<otherwise>
 				AND SUBSTR(STAT_DATE,0,6) BETWEEN to_char(add_months(sysdate,-1),'yyyymmdd') AND to_char(SYSDATE,'yyyymmdd')
 			</otherwise>
-		</choose>
+		</choose> -->
 				AND A.REGION_ID = #{REGION_ID}
 				) T_CNT
 			ON T_CODE.CODE=T_CNT.INFORMER_TYPE
@@ -138,14 +140,15 @@
 				(SELECT '000' REGION_ID, A.INFORMER_TYPE, A.O_ALL_CNT CNT
 				FROM STAT_INFRM_TYPE A
 				WHERE 1=1
-		<choose>
+				AND STAT_DATE BETWEEN #{start_date2} AND #{end_date}
+		<!-- <choose>
 			<when test="start_date !=null and start_date neq ''">
 				AND SUBSTR(STAT_DATE,0,6) = #{start_date}
 			</when>
 			<otherwise>
 				AND SUBSTR(STAT_DATE,0,6) BETWEEN to_char(add_months(sysdate,-1),'yyyymmdd') AND to_char(SYSDATE,'yyyymmdd')
 			</otherwise>
-		</choose>
+		</choose> -->
 				AND A.REGION_ID = #{REGION_ID}
 				) T_OCNT
 			ON T_OCODE.CODE=T_OCNT.INFORMER_TYPE
@@ -167,14 +170,15 @@
 				FROM STAT_RTT_TYPE
 				WHERE 1=1
 				AND REGION_ID = #{REGION_ID}
-		<choose>
+		<!-- <choose>
 			<when test="start_date !=null and start_date neq ''">
 				AND SUBSTR(STAT_DATE,0,6) = #{start_date}
 			</when>
 			<otherwise>
 				AND SUBSTR(STAT_DATE,0,6) BETWEEN to_char(add_months(sysdate,-1),'yyyymmdd') AND to_char(SYSDATE,'yyyymmdd')
 			</otherwise>
-		</choose>
+		</choose> -->
+		AND STAT_DATE BETWEEN #{start_date2} AND #{end_date} 
 				) B
 		ON A.CODE=B.REPORTMEAN_TYPE
 	)TT
@@ -193,14 +197,15 @@
 			(SELECT A.REGION_ID,  A.REPORTMEAN_TYPE, A.ALL_CNT CNT
 			FROM STAT_RTT_TYPE A
 			WHERE 1=1
-	<choose>
+	<!-- <choose>
 		<when test="start_date !=null and start_date neq ''">
 			AND SUBSTR(STAT_DATE,0,6) = #{start_date}
 		</when>
 		<otherwise>
 			AND SUBSTR(STAT_DATE,0,6) BETWEEN to_char(add_months(sysdate,-1),'yyyymmdd') AND to_char(SYSDATE,'yyyymmdd')
 		</otherwise>
-	</choose>
+	</choose> -->
+			AND STAT_DATE BETWEEN #{start_date2} AND #{end_date}
 			AND A.REGION_ID = #{REGION_ID}
 			) T_CNT
 		ON T_CODE.CODE=T_CNT.REPORTMEAN_TYPE
@@ -213,14 +218,15 @@
 			(SELECT '000' REGION_ID, A.REPORTMEAN_TYPE, A.O_ALL_CNT CNT
 			FROM STAT_RTT_TYPE A
 			WHERE 1=1
-	<choose>
+	<!-- <choose>
 		<when test="start_date !=null and start_date neq ''">
 			AND SUBSTR(STAT_DATE,0,6) = #{start_date}
 		</when>
 		<otherwise>
 			AND SUBSTR(STAT_DATE,0,6) BETWEEN to_char(add_months(sysdate,-1),'yyyymmdd') AND to_char(SYSDATE,'yyyymmdd')
 		</otherwise>
-	</choose>
+	</choose> -->
+	AND STAT_DATE BETWEEN #{start_date2} AND #{end_date}
 			AND A.REGION_ID = #{REGION_ID}
 			) T_OCNT
 		ON T_OCODE.CODE=T_OCNT.REPORTMEAN_TYPE
@@ -242,14 +248,15 @@
 				FROM STAT_RPT_TYPE
 				WHERE 1=1
 				AND REGION_ID = #{REGION_ID}
-	<choose>
+	<!-- <choose>
 		<when test="start_date !=null and start_date neq ''">
 			AND SUBSTR(STAT_DATE,0,6) = #{start_date}
 		</when>
 		<otherwise>
 			AND SUBSTR(STAT_DATE,0,6) BETWEEN to_char(add_months(sysdate,-1),'yyyymmdd') AND to_char(SYSDATE,'yyyymmdd')
 		</otherwise>
-	</choose>
+	</choose> -->
+	AND STAT_DATE BETWEEN #{start_date2} AND #{end_date}
 				) B
 		ON A.CODE=B.REPORT_TYPE
 	)TT
@@ -268,14 +275,15 @@
 			(SELECT A.REGION_ID,  A.REPORT_TYPE, A.ALL_CNT CNT
 			FROM STAT_RPT_TYPE A
 			WHERE 1=1
-	<choose>
+	<!-- <choose>
 		<when test="start_date !=null and start_date neq ''">
 			AND SUBSTR(STAT_DATE,0,6) = #{start_date}
 		</when>
 		<otherwise>
 			AND SUBSTR(STAT_DATE,0,6) BETWEEN to_char(add_months(sysdate,-1),'yyyymmdd') AND to_char(SYSDATE,'yyyymmdd')
 		</otherwise>
-	</choose>
+	</choose> -->
+	AND STAT_DATE BETWEEN #{start_date2} AND #{end_date}
 			AND A.REGION_ID = #{REGION_ID}
 			) T_CNT
 		ON T_CODE.CODE=T_CNT.REPORT_TYPE
@@ -288,14 +296,15 @@
 			(SELECT '000' REGION_ID, A.REPORT_TYPE, A.O_ALL_CNT CNT
 			FROM STAT_RPT_TYPE A
 			WHERE 1=1
-			<choose>
+			<!-- <choose>
 				<when test="start_date !=null and start_date neq ''">
 					AND SUBSTR(STAT_DATE,0,6) = #{start_date}
 				</when>
 				<otherwise>
 					AND SUBSTR(STAT_DATE,0,6) BETWEEN to_char(add_months(sysdate,-1),'yyyymmdd') AND to_char(SYSDATE,'yyyymmdd')
 				</otherwise>
-			</choose>
+			</choose> -->
+			AND STAT_DATE BETWEEN #{start_date2} AND #{end_date}
 			AND A.REGION_ID = #{REGION_ID}
 			) T_OCNT
 		ON T_OCODE.CODE=T_OCNT.REPORT_TYPE
@@ -307,7 +316,7 @@
 	<!-- ###### 표준화통계:교통정보 제공대장 ##### -->
 	<!-- 1.제보자별 현황 -->
 	<select id="informerTypeData" parameterType="params" resultType="record">
-	WITH INFRM AS( SELECT * FROM stat_infrm_type WHERE 1=1 and REGION_ID = #{REGION_ID} and SUBSTR(STAT_DATE,0,6) = #{start_date} <!-- AND #{end_date} -->)
+	WITH INFRM AS( SELECT * FROM stat_infrm_type WHERE 1=1 and REGION_ID = #{REGION_ID} AND STAT_DATE BETWEEN #{start_date2} AND #{end_date} <!-- AND #{end_date} -->)
 	<!--1.1 자체처리 자국/타국-->
     select tt.* from(
 	select '자체처리' as type, region_id,code,SUM(CNT) CNT
@@ -412,7 +421,7 @@
 	
 	<!-- 나.제보수단별 현황 -->
 	<select id="reportmeanTypeData" parameterType="params" resultType="record">
-	WITH RTT AS( SELECT * FROM stat_rtt_type WHERE 1=1 and REGION_ID = #{REGION_ID} and SUBSTR(STAT_DATE,0,6) = #{start_date})
+	WITH RTT AS( SELECT * FROM stat_rtt_type WHERE 1=1 and REGION_ID = #{REGION_ID} AND STAT_DATE BETWEEN #{start_date2} AND #{end_date})
 	<!--2.1 자체처리 자국/타국-->
     select tt.* from(
 	select '자체처리' as type, region_id,code,SUM(CNT) CNT
@@ -517,7 +526,7 @@
 	
 	<!-- 다.제보유형별 현황 -->
 	<select id="reportTypeData" parameterType="params" resultType="record">
-	WITH RPT AS( SELECT * FROM stat_rpt_type WHERE 1=1 and REGION_ID = #{REGION_ID} and SUBSTR(STAT_DATE,0,6) = #{start_date})
+	WITH RPT AS( SELECT * FROM stat_rpt_type WHERE 1=1 and REGION_ID = #{REGION_ID} AND STAT_DATE BETWEEN #{start_date2} AND #{end_date})
 	,CRT AS (select * from code_REPORT_TYPE where bas_lcod='100')
 	
 	<!--3.1 자체처리 자국/타국-->
@@ -625,7 +634,8 @@
 		
 	<!-- 2. 긴급교통정보_방송현황분석  -->
 	<select id="extrBro" parameterType="params" resultType="record">
-		with acci as(
+	    <!-- 수정 전 쿼리 -->
+		<!-- with acci as(
 		select to_char(RECEIPT_DAY,'yyyymmdd') AS key_date
 		,broad_time br_time
 		,receipt_day||trim(receipt_time)||'00' rpt_time
@@ -634,6 +644,7 @@
 		where 1=1 
 		and receipt_day <![CDATA[>=]]> TRUNC(to_date(concat(#{start_date},'01'),'yyyymmdd'), 'MM') 
         and receipt_day <![CDATA[<=]]> last_day(to_date(concat(#{start_date},'01'),'yyyymmdd'))
+        and receipt_day between #{start_date} and #{end_date}
 		and region_id=#{REGION_ID}
 		and FLAG_IMPORTANT='Y'
 		)
@@ -645,7 +656,33 @@
 		where br_time is not null and mm <![CDATA[ <= ]]> 5
 		group by key_date)b
 		on(a.key_date=b.key_date)
-		order by a.key_date
+		order by a.key_date -->
+		
+		<!-- 수정 후 쿼리 -->
+		WITH acci AS (
+    		SELECT 
+        		TO_CHAR(RECEIPT_DAY, 'yyyymmdd') AS key_date,
+        		broad_time br_time,
+        		receipt_day || TRIM(receipt_time) || '00' rpt_time,
+        		ROUND((TO_DATE(broad_time, 'YYYYMMDDHH24MISS') - TO_DATE(TO_CHAR(receipt_day, 'yyyymmdd') || TRIM(receipt_time) || '00', 'YYYYMMDDHH24MISS')) * 24 * 60, 2) AS mm    
+    		FROM report_receipt
+    		WHERE 1=1 
+        	AND receipt_day BETWEEN #{start_date2} AND #{end_date}
+        	AND region_id = #{REGION_ID}
+        	AND FLAG_IMPORTANT = 'Y'
+		)
+		SELECT a.key_date,a.cnt1, NVL(b.cnt2, 0) AS cnt2 
+		FROM (
+    		SELECT key_date,COUNT(key_date) AS cnt1 
+    		FROM acci 
+   			GROUP BY key_date
+		) a
+		LEFT JOIN (
+    		SELECT key_date, COUNT(key_date) AS cnt2 FROM acci 
+    		WHERE br_time IS NOT NULL AND mm <![CDATA[ <= ]]> 5
+    		GROUP BY key_date
+		) b ON a.key_date = b.key_date
+		ORDER BY a.key_date
 	</select>
 	
 	<!-- 2.1  재난제보 건수  -->
@@ -831,13 +868,13 @@
 	<select id="receiptUseDaily" parameterType="params" resultType="record">
 	SELECT A.REGION_ID, A.STAT_DATE, A.INFORMER_TYPE, SUM(ALL_CNT) CNT
 	FROM STAT_INFRM_TYPE A
-	WHERE SUBSTR(A.STAT_DATE,0,6) = #{start_date}
+	WHERE STAT_DATE BETWEEN #{start_date2} AND #{end_date}
 	AND A.REGION_ID = #{REGION_ID}
 	group by A.REGION_ID, A.STAT_DATE, A.INFORMER_TYPE
 	UNION ALL
 	SELECT '000' REGION_ID, A.STAT_DATE, A.INFORMER_TYPE, SUM(O_ALL_CNT) CNT
 	FROM STAT_INFRM_TYPE A
-	WHERE SUBSTR(A.STAT_DATE,0,6) = #{start_date}
+	WHERE  STAT_DATE BETWEEN #{start_date2} AND #{end_date}
 	AND A.REGION_ID = #{REGION_ID}
 	GROUP BY A.STAT_DATE, A.INFORMER_TYPE
 	ORDER BY STAT_DATE, INFORMER_TYPE, REGION_ID DESC

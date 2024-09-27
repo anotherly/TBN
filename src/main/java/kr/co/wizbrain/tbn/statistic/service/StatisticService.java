@@ -184,5 +184,5 @@ public interface StatisticService {
 
 	public List volunteer(ParamsDto params);
 
-	public List statDateCal(String orgStartDate, String orgEndDate);
+	public List statDateCal(String sDate, String eDate);
 }

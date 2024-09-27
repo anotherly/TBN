@@ -193,7 +193,7 @@ public class StatisticController extends BaseController{
 		model.addAttribute("titleName", "긴급교통정보 처리건수 실적"+params.getString("city"));
 		model.addAttribute("sheetNames1", "긴급교통정보 처리건수 실적");
 		model.addAttribute("Data", Data);
-		model.addAttribute("start_date", params.get("start_date"));
+		model.addAttribute("start_date", params.get("start_date2"));
 		
 		return "hssfExcel";
 	}
@@ -500,10 +500,10 @@ public class StatisticController extends BaseController{
 		
 		ParamsDto params = getParams(true);
 		//문자열        
-		String orgStartDate = request.getParameter("orgStartDate");         
-		String orgEndDate = request.getParameter("orgEndDate");         
+		String orgStartDate = request.getParameter("start_date2");         
+		String orgEndDate = request.getParameter("end_date");   
 
-		List eraList =  statisticService.statDateCal(orgStartDate,orgEndDate);
+		List eraList =  statisticService.statDateCal(orgStartDate,orgEndDate); 
 		
 		List sheetNames = new ArrayList();//기관별 시트명
 		List informerListMain =new ArrayList(); //왼쪽 통신원부 
