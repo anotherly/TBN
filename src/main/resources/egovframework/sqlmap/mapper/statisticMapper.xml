@@ -1746,7 +1746,7 @@
 		from dual
 	</insert>
 	
-	<!-- 월별 통신원 건수 기존 것 삭제 후 갱신  (임시)(adsoft 미사용시 제거 필요) -->
+<!-- 월별 통신원 건수 기존 것 삭제 후 갱신  (임시)(adsoft 미사용시 제거 필요) -->
 	<delete id="schmonInfrmDelete" parameterType="userVO">
 		DELETE FROM stat_tbn_monrpt 
 		where stat_mon = to_char(sysdate-1,'yyyymm')
@@ -1781,7 +1781,7 @@
 		(
 		    select individual_id , count(individual_id) as bf_cnt
 		    from report_receipt 
-		    where receipt_day <![CDATA[>=]]> TRUNC(SYSDATE-1, 'MM') and receipt_day <![CDATA[<=]]> last_day(SYSDATE-1)
+		    where receipt_day <![CDATA[>=]]> add_months(TRUNC(SYSDATE-1, 'MM'),-1) and receipt_day <![CDATA[<]]> add_months(last_day(SYSDATE-1),-1) 
 		    group by individual_id
 		)c
 		ON (a.ind_id = c.individual_id)
