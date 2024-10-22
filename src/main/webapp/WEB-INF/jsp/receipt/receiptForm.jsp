@@ -64,20 +64,10 @@
 			$("#CONTENT").css("font-size",$("#fsSlt").val());
 		});
 	     
-		
+		//더미 달력 제거
 		$("#ui-datepicker-div").remove();
-		//데이트타임피커
-		var toDate = new Date();
-		$('#START_DAY').datetimepicker({
-			 format:"YYYY-MM-DD HH:mm",
-			 //defaultDate:moment().subtract(1, 'months'),
-			 maxDate : moment()
-		});
-		$('#END_DAY').datetimepicker({
-			format:"YYYY-MM-DD HH:mm",
-			 //defaultDate:moment(),
-			 maxDate : moment()
-		});  
+		//데이트타임피커 common.js에 생성한 함수 참조(달력생성)
+		dateFunc('START_DAY','END_DAY');
 		
 		$("#INFORMER_NONE").on("click", function(){
 			console.log("시민제보자 체크 클릭");
@@ -91,8 +81,6 @@
 				$("#INFORMER_NAME").prop('readonly',true);
 			}
 		});
-		
-		
 	});
 </script>
 
@@ -253,55 +241,26 @@
 							<tr>
 								<th class="txt_leftb" scope="row">시작시간</th>
 								<td>
-									<!-- <input class="input_sel" type="text" name="START_DAY" id="START_DAY" style="width: 150px;" readonly /> 
-									<input type="text" name="STARTTIMEHH" id="STARTTIMEHH" 
+									<div class='input-group date' id='datetimepicker1' style="width: 100%;">
+										<input type='text' style="font-size:14px;width: 120px;margin-right: 10px;"
+										class="form-control dt_search" name="START_DAY" id="START_DAY" required/>
+										<input type="text" name="STARTTIMEHH" id="STARTTIMEHH" 
 											maxlength="2" style="width:15px; height:20px;" onkeyup="onlyNumber(this)" /> : 
-									<input type="text" name="STARTTIMEMI" id="STARTTIMEMI" 
-											maxlength="2" style="width:15px; height:20px;" onkeyup="onlyNumber(this)" /> -->
-											
-									<div class='input-group date' id='datetimepicker1'>
-										<input type='text' style ="font-size:14px;"class="form-control dt_search" name="START_DAY" id="START_DAY" required/>
-										<!-- <span class="input-group-addon">
-											<span class="glyphicon glyphicon-calendar"></span>
-										</span> -->
+										<input type="text" name="STARTTIMEMI" id="STARTTIMEMI" 
+											maxlength="2" style="width:15px; height:20px;" onkeyup="onlyNumber(this)" /> 
 									</div>
 								</td>
 								<td class="txt_leftb">종료시간</td>
 								<td colspan="2">
-								
-									<div class='input-group date' id='datetimepicker2'>
-										<input type="text" style ="font-size:14px;" class="form-control dt_search" id="END_DAY" name="END_DAY" style="width:180px;"required/>
-										<!-- <span class="input-group-addon">
-											<span class="glyphicon glyphicon-calendar"></span>
-										</span> -->
-									</div>
-								
-								<!-- 
-									<input class="input_sel" type="text" name="END_DAY" id="END_DAY" style="width: 150px;" readonly />
-									<input type="text" name="ENDTIMEHH" id="ENDTIMEHH" 
+									<div class='input-group date' id='datetimepicker2' style="width: 100%;">
+										<input type="text" style="font-size:14px;width: 170px;margin-right: 10px;" 
+										class="form-control dt_search" id="END_DAY" name="END_DAY" style="width:180px;"required/>
+										<input type="text" name="ENDTIMEHH" id="ENDTIMEHH" 
 											maxlength="2" style="width:15px; height:20px;" onkeyup="onlyNumber(this)" /> : 
-									<input type="text" name="ENDTIMEMI" id="ENDTIMEMI" 
-											maxlength="2" style="width:15px; height:20px;" onkeyup="onlyNumber(this)" /> -->
+										<input type="text" name="ENDTIMEMI" id="ENDTIMEMI" 
+											maxlength="2" style="width:15px; height:20px;" onkeyup="onlyNumber(this)" />
+									</div>
 								</td>
-								<!-- <td>
-								
-								<div class="form_daterange" style="display: inline-flex;align-items: center;gap: 5px;" id="schDtBody">
-									<div class='input-group date' id='datetimepicker1'>
-										<input type='text' class="form-control dt_search" name="START_DAY" id="START_DAY" required/>
-										<span class="input-group-addon">
-											<span class="glyphicon glyphicon-calendar"></span>
-										</span>
-									</div>
-									 ~ 
-									<div class='input-group date' id='datetimepicker2'>
-										<input type="text" class="form-control dt_search" id="END_DAY" name="END_DAY" required/>
-										<span class="input-group-addon">
-											<span class="glyphicon glyphicon-calendar"></span>
-										</span>
-									</div>
-								</div>
-								
-								</td> -->
 							</tr>
 						</tbody>
 					</table>
@@ -343,14 +302,14 @@
 								<td class="txt_leftb mglsot">이름</td>
 								<td class="txt_leftb">
 									<input type="checkbox" name="INFORMER_NONE" title="자동검색" value="Y" id="INFORMER_NONE" /> 시민제보자
-									<input type="text" class="input_sel" name="INDIVIDUAL_NAME" id="INFORMER_NAME" style="width: 170px;" value="" readonly/>
+									<input type="text" class="input_sel" name="INDIVIDUAL_NAME" id="INFORMER_NAME" style="width: 183px;" value="" readonly/>
 								</td>
 							</tr>
 							<tr>
 								<th class="txt_leftb" scope="row">연락처</th>
 								<td><input type="text" class="input_sel" maxlength="13" name="PHONE_CELL" id="PHONE_CELL" value="" style="width:170px;" readonly/></td>
 								<td class="txt_leftb mglsot">집전화</td>
-								<td><input type="text" class="input_sel" maxlength="13" name="PHONE_HOME" id="PHONE_HOME" value="" style="width:170px;" readonly/></td>
+								<td><input type="text" class="input_sel" maxlength="13" name="PHONE_HOME" id="PHONE_HOME" value="" style="width:266px;" readonly/></td>
 							</tr>
 							<tr>
 								<th class="txt_leftb" scope="row">주소</th>

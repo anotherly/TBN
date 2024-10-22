@@ -3,9 +3,15 @@
 <%@taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
-	<link rel="stylesheet" href="<%=request.getContextPath()%>/calender/jquery-ui.css"/>
-    <script src="<%=request.getContextPath()%>/calender/jquery-ui.js"></script>
-	<script type="text/javascript" charset="utf-8" src="<%=request.getContextPath()%>/js/jquery.form.js"></script>
+<script type="text/javascript" charset="utf-8" src="<%=request.getContextPath()%>/js/jquery.form.js"></script>
+
+<!-- DateTimePicker -->
+<script src="<%=request.getContextPath()%>/calender/moment.js"></script>
+<script src="<%=request.getContextPath()%>/calender/mo_ko.js"></script>
+<script src="<%=request.getContextPath()%>/calender/bootstrap-datetimepicker.js"></script>
+<link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/calender/no-boot-calendar-custom.css" />
+<link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/calender/datetimepickerstyle.css" />
+
 <div id="contentWrap"  style="width:1030px;">
 <!-- <div id="posi"><a href="/main.do"><img src="../images/ico_home.gif" alt="home" /></a>제보자관리 > 제보자관리</div> -->
 <div id="searchDiv">
@@ -24,14 +30,12 @@
 				 					등록일 : 
 				 					</td>
 				 					<td style="width:205px;">
-				 						<input type="text" id="dateText1" class="dateText" name="sDate" style="text-align:center" maxlength="8" size=10 onkeydown='return onlyNumber(event)' onkeyup='removeChar(event)' onclick="dateFunc">
+				 						<input type="text" id="sDate" class="dateText" name="sDate" style="text-align:center" maxlength="8" size=10 onkeydown='return onlyNumber(event)' onkeyup='removeChar(event)' onclick="dateFunc">
 				 						 ~ 
-				 						<input type="text" id="dateText2" class="dateText" name="eDate" style="text-align:center" maxlength="8" size=10 onkeydown='return onlyNumber(event)' onkeyup='removeChar(event)' onclick="dateFunc">
+				 						<input type="text" id="eDate" class="dateText" name="eDate" style="text-align:center" maxlength="8" size=10 onkeydown='return onlyNumber(event)' onkeyup='removeChar(event)' onclick="dateFunc">
 				 					</td>
 				                    <td>
-                                         
-                                        	<select class="table_sel"  style="width:100px;" id="areaCodeSel" name="areaCode">
-                                        	
+                                        <select class="table_sel"  style="width:100px;" id="areaCodeSel" name="areaCode">
                                         	 <c:choose>
                                              		<c:when test="${fn:length(informerAreaList)==1}">
                                              	
@@ -40,14 +44,13 @@
 														<option value="" selected><c:out value="소속"/></option>	
 	                                             	</c:otherwise>
 	                                         </c:choose>
-                                        	
-                                                <c:forEach var="informerArea" items="${informerAreaList}">
-                                                    <option value="${informerArea.areaCode}" 
-                                                     <c:if test="${informerArea.areaCode eq informerInfo.areaCode}">selected</c:if>>
-                                                     ${informerArea.areaName}
-                                                    </option>
-                                                </c:forEach>
-                                            </select>
+                                             <c:forEach var="informerArea" items="${informerAreaList}">
+                                                 <option value="${informerArea.areaCode}" 
+                                                  <c:if test="${informerArea.areaCode eq informerInfo.areaCode}">selected</c:if>>
+														${informerArea.areaName}
+                                                 </option>
+                                             </c:forEach>
+                                         </select>
 				                    </td>
                                    	<td id="tdItype">
                                      	<select class="table_sel" style="width:120px;" id="informerTypeSel" name="informerType">
@@ -126,8 +129,8 @@ $(document).ready(function(){
 	fromDate = getFormatDate(fromDate);
 	var toDate = getFormatDate(new Date());
 	
-	var infrmCalender = dateFunc("dateText","dateText1","dateText2",search,fromDate,toDate);
-	
+	//var infrmCalender = dateFunc("dateText","dateText1","dateText2",search,fromDate,toDate);
+	dateFunc('sDate','eDate',fromDate,toDate);
 	
 	
 	//최초에는 미사용이므로 비활성화

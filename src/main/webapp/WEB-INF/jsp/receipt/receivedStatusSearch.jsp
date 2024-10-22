@@ -3,7 +3,7 @@
 
 <script>
 	$(document).ready(function(){
-		console.log("금일접수현황 검색결과");
+		console.log("receivedStatusSearch");
 	});
 </script>
           <p class="list_result txt_i10"><img src="../images/ico_result.gif" alt="" />검색결과 <label id="labelCnt">${receiptTodayListSize }건</label></p>

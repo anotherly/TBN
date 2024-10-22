@@ -25,13 +25,13 @@ abbr,acronym{border:0;font-variant:normal;}
 sup{vertical-align:text-top;}
 sub{vertical-align:text-bottom;}
 input,textarea,select{font-family:inherit;font-size:inherit;font-weight:inherit;}
-input,textarea,select{*font-size:100%; color:#777777;font-family: auto;}
+input,textarea,select{*font-size:100%; /* color:#777777; */font-family: auto;}
 legend{display:none;}
 
 
 /* Base CSS */
-html, body {width:100%; font-family:"돋움", dotum, "굴림", gulim, arial; color:#777777;}
-body {font-size:12px; line-height:18px;color:#585c5f;}
+html, body {width:100%; font-family:"돋움", dotum, "굴림", gulim, arial; /* color:#777777; */}
+body {font-size:12px; line-height:18px;/* color:#585c5f; */}
 img{vertical-align:middle;}
 button{cursor:pointer;}
 input,select, button{vertical-align:middle;}

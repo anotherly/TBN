@@ -4,7 +4,7 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <script>
 	$(document).ready(function(){
-		console.log("금일접수현황 리스트");
+		console.log("receivedStatusList");
 	});
 </script>
 <c:forEach var="toadysListVO" items="${receivedStatusList}" varStatus="num">

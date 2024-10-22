@@ -19,11 +19,6 @@ input[type="checkbox"] {
 	height:31px;
 }
 
-body {
-	overflow-y: scroll;
-	overflow-x: scroll;
-}
-
 /* 화면 레이아웃 구성 */
 body {
 	margin: 0px;
@@ -32,7 +27,7 @@ body {
 
 .container {
 	width: 1900px;
-	height: 950px;
+	/* height: 950px; */
 	display: grid;
 	grid-template-rows: 20px 50px 800px 50px;
 	row-gap: 5px;
@@ -1710,6 +1705,7 @@ tr.studio_top td:last-child{
 	font-weight: bold;
 	/*font-size: 11px;*/
 	vertical-align: middle;
+	color:black;
 }
 
 .ft14 {
@@ -1916,7 +1912,7 @@ tr.studio_top td:last-child{
 	padding-bottom: 2px;
 }
 
-.admin_table {
+.admin_table{
 	background: #f5f5f5;
 	border: 1px solid #99c4ce;
 	padding: 10px;
@@ -1924,7 +1920,6 @@ tr.studio_top td:last-child{
 	font-weight: bold;
 	padding: 10px;
 	margin-top: 20px;
-	color: #1e5fb3;
 }
 
 .admin_table tr td {
@@ -1932,7 +1927,12 @@ tr.studio_top td:last-child{
 	padding-bottom: 5px;
 }
 
+/* .admin_table tr:nth-child(2) :not(:first-child){
+	color: #1e5fb3;
+} */
+
 .admin_table_line {
+	color: #1e5fb3;;
 	border-bottom: 1px solid #99c4ce;
 }
 

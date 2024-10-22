@@ -11,11 +11,17 @@
 <link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/css/pagination.css" />
 <link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/css/jquery-ui-1.9.0.custom.css" rel="stylesheet"  />
 <script  type="text/javascript" charset="utf-8" src="<%=request.getContextPath()%>/js/jquery.js"></script>
-	<script  type="text/javascript" charset="utf-8"  src="<%=request.getContextPath()%>/js/common.js"></script>
-	<script type="text/javascript" charset="utf-8" src="<%=request.getContextPath()%>/js/jquery.pagination.js"></script>
-	<script type="text/javascript" charset="utf-8" src="<%=request.getContextPath()%>/js/jquery.form.js"></script>
-	<link rel="stylesheet" href="<%=request.getContextPath()%>/calender/jquery-ui.css"/>
-    <script src="<%=request.getContextPath()%>/calender/jquery-ui.js"></script>
+<script  type="text/javascript" charset="utf-8"  src="<%=request.getContextPath()%>/js/common.js"></script>
+<script type="text/javascript" charset="utf-8" src="<%=request.getContextPath()%>/js/jquery.pagination.js"></script>
+<script type="text/javascript" charset="utf-8" src="<%=request.getContextPath()%>/js/jquery.form.js"></script>
+
+<!-- DateTimePicker -->
+<script src="<%=request.getContextPath()%>/calender/moment.js"></script>
+<script src="<%=request.getContextPath()%>/calender/mo_ko.js"></script>
+<script src="<%=request.getContextPath()%>/calender/bootstrap-datetimepicker.js"></script>
+<link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/calender/no-boot-calendar-custom.css" />
+<link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/calender/datetimepickerstyle.css" />
+
 <!-- 주소 관련 api -->
 <script src="<%=request.getContextPath()%>/js/address/address.js"></script>
 </head>
@@ -328,11 +334,20 @@
                                         <tr>
                                             <c:set var="nowDate" value="<%=new java.util.Date() %>"/>
                                             <td>
-                                                <input type="text" class="input_base" id="birthday" name="birthday" value="${informerInfo.birthday}" style="width:100px;" maxlength="8" readonly />
-                                                <input type="radio" class="input_base" id="birthdayDiv2" name="birthdayDiv" value="+" checked />
-                                                <label style="color: #585c5f">양력</label>
-                                                <input type="radio" class="input_base" id="birthdayDiv2" name="birthdayDiv" value="-" />
-                                                <label style="color: #585c5f">음력</label>
+												<!-- <input type='text' class="form-control dt_search" name="birthday" id="birthday"/> -->
+												<!-- <input type="text" name="birthday" id="birthday" class="dateText" style="text-align:center" maxlength="8" size=10 /> -->
+												
+												<div class='input-group date' id='datetimepicker1' style="display: inline;">
+													<input type='text' class="dateText" name="birthday" id="birthday"/>
+													<input type="radio" class="input_base" id="birthdayDiv2" name="birthdayDiv" value="+" checked />
+	                                                <label style="color: #585c5f">양력</label>
+	                                                <input type="radio" class="input_base" id="birthdayDiv2" name="birthdayDiv" value="-" />
+	                                                <label style="color: #585c5f">음력</label>
+												</div>
+												
+												<div style="position:relative;">
+													
+												</div>
                                             </td><%-- <fmt:formatDate value="${nowDate}" pattern="yyyy-MM-dd" /> --%>
                                             <c:if test="${informerInfo.informerId eq null }">
 						                        <td><fmt:formatDate value="${nowDate}" pattern="yyyy-MM-dd" /></td>
@@ -385,54 +400,9 @@
 </div>
 <script>
 $(document).ready(function(){
-	console.log("통신원 등록/수정 새창 수정반영?");
-    var dates = $('#birthday').datepicker({
-        showOn: "both",
-        buttonImage: "<c:url value="/images/ico_calendar.gif"/>",
-        buttonText: "달력",
-        buttonImageOnly: true,
-        changeYear: true, // 연도 선택 가능
-        changeMonth: true, // 월 선택 가능
-        numberOfMonths: 1,
-        dateFormat: 'yy-mm-dd',
-        monthNames: ['년  1 월','년  2 월','년  3 월','년  4 월','년  5 월','년  6 월','년  7 월','년  8 월','년  9 월','년  10 월','년  11 월','년  12 월',],
-        monthNamesShort: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'], // 월 이름 축약형 설정
-        dayNamesMin: ['일', '월', '화', '수', '목', '금', '토'],
-        showMonthAfterYear:true,
-        showAnim: "slide",
-        yearRange: '1930:2030',
-        defaultDate: new Date( ),
-        onSelect: function(selectedDate) {
-            var instance = $(this).data("datepicker");
-            var date = $.datepicker.parseDate(instance.settings.dateFormat || $.datepicker._defaults.dateFormat, selectedDate, instance.settings); 
-            //dates.not(this).datepicker("option", option, date);
-            $("img.ui-datepicker-trigger").attr("style", "margin-left:5px;");
-          
-        }
-    });
-    
-    var dates2 = $('#identifiDate').datepicker({
-        showOn: "button",
-        buttonImage: "../images/ico_calendar.gif",
-        buttonText: "달력",
-        buttonImageOnly: true,
-        changeMonth: false,
-        numberOfMonths: 1,
-        dateFormat: 'yy-mm-dd',
-        monthNames: ['년  1 월','년  2 월','년  3 월','년  4 월','년  5 월','년  6 월','년  7 월','년  8 월','년  9 월','년  10 월','년  11 월','년  12 월',],
-        dayNamesMin: ['일', '월', '화', '수', '목', '금', '토'],
-        showMonthAfterYear:true,
-        showAnim: "slide",
-        defaultDate: new Date( ),
-        onSelect: function(selectedDate) {
-            var instance = $(this).data("datepicker");
-            var date = $.datepicker.parseDate(instance.settings.dateFormat || $.datepicker._defaults.dateFormat, selectedDate, instance.settings);
-            //dates.not(this).datepicker("option", option, date);
-            $("img.ui-datepicker-trigger").attr("style", "margin-left:5px;");
-        }
-    });
-    $("img.ui-datepicker-trigger").attr("style", "margin-left:5px;");
-    
+	console.log("통신원 등록/수정 새창 수정반영");
+	dateFunc("birthday","","${informerInfo.birthday}");
+	
     //상세페이지의 경우 주소 분할
     var tagHome = "${informerInfo.address}";
     var tagOfs = "${informerInfo.addressOffice}";

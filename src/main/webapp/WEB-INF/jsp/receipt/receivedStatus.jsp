@@ -36,7 +36,7 @@ $(document).ready(function() {
 	isPause = false;
 	onSearch = false;
 	editOpenTotal = 0;
-	console.log("금일접수");
+	console.log("receivedStatus");
 	changeAutoLoadingFlag();
 	//서울교통방송의 경우 교통방송 전체로
 	if(opener.lgnArea == '080'){

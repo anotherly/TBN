@@ -8,7 +8,7 @@
 var sflag = 0;//시민체크플레그
 	$(function(){
 		
-		console.log("편집하는 jsp");
+		console.log("editResultListjsp");
 		reportTypeOnChange('REPORT_TYPE_EDIT','REPORT_TYPE2_EDIT');
 		
 		if($('#FLAG_SIMIN').is(':checked')){
@@ -150,7 +150,7 @@ var sflag = 0;//시민체크플레그
 <div style="width:150px;">
 	<input type="hidden" id="INFORMER_ID" value=${editVO.INDIVIDUAL_ID }  name="INFORMER_ID" />
 	<input type="text" id="INFORMER_NAME" value=${editVO.INDIVIDUAL_NAME }  name="INFORMER_NAME" style="width:80px;"/>
-	<img id="r2Search_btn" src="../images/map/btn_sch.png" onclick="searchEditInformer(4)">
+	<img id="r2Search_btn" src="../images/map/btn_sch.png" onclick="searchEditInformer(4)" onkeyup="if(event.keyCode == 13)searchInformer(4)" >
 	<br/>	
 	<c:choose>
 		<c:when test="${editVO.TYPE_NAME == '시민'}">

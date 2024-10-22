@@ -5,6 +5,12 @@
 */
 
 /*############################BOOTSTRAP 부분##########################################  */
+
+/* 색 상 고 정 */
+.dateText>table *, .input-group input>table *{
+	color:black !important;
+}
+
 /* 달력 버튼부 */
 .input-group-addon:last-child {
     border-left: 0;
@@ -56,6 +62,9 @@
 
 .input-group input{
 	height: 26px;
+    text-align: center;
+    font-weight: bold;
+    color: black;
 }
 
 @font-face {

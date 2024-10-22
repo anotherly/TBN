@@ -669,23 +669,6 @@ function calculDate(){
 }
 
 function dtTbSetting(){
-    var col_eng = [
-        { title: "Name" },
-        { title: "Position" },
-        { title: "Office" },
-        { title: "Extn." },
-        { title: "Start date" },
-        { title: "Salary" }
-    ];
- 
-    var col_kor = [
-        { title: "이름" },
-        { title: "직위" },
-        { title: "오피스" },
-        { title: "내선" },
-        { title: "입사일" },
-        { title: "연봉" }
-    ];
  
     // DataTables Default
     lang_eng = {
@@ -766,91 +749,56 @@ function getFormatDate(date){
 /************************************************************************
 함수명 : dateFunc
 설 명 : 달력 관련 함수
-인 자 : 1. className : datepicker를 사용하는 input들의 공통된 class
-	   2. id1 : 시작일 input의 id값
-	   3. id2 : 종료일 input의 id값 (기간이 아니라 날짜 input이 1개라면 안 넣어도 무방)
-	   4. callback : 날짜 초기지정 또는 날짜 변경후 실행할 callback함수(안 넣어도 무방)
-	   5. sdt : 시작일 (안 넝어도 무방)
-	   6. edt : 종료일 (안 넝어도 무방)
+인 자 : 
+	   1. id1 : 시작일 input의 id값
+	   2. id2 : 종료일 input의 id값 (기간이 아니라 날짜 input이 1개라면 안 넣어도 무방)
+	   3. sdt : 시작일 디폴트 날짜 (안 넝어도 무방)
+	   4. edt : 종료일 디폴트 날짜 (안 넝어도 무방)
+	   5. format : ex 'YYYY-MM-DD' (안 넣을경우 디폴트 년월일)
+	   6. callback : 날짜 초기지정 또는 날짜 변경후 실행할 callback함수(안 넣어도 무방)
 사용법 : datepicker를 사용하려는 input이 포함된 jsp에서 document ready 시점에 사용
 작성일 : 2020-05-08
 작성자 : 솔루션사업팀 정다빈
 수정일        수정자       수정내용
 ----------- ------ -------------------
 2020.05.08   정다빈       최초작성
+2024.10.22   정다빈       datetimepicker 로 변경
 ************************************************************************/
-function dateFunc(className,id1,id2,callback,sdt,edt){
-	$("."+className).datepicker({
-		dateFormat : "yy-mm-dd",//날짜 포맷
-		prevText : "이전 달", //왼쪽 화살표 -> 이전 달 표기
-		nextText : "다음 달", //오른쪽 화살표 -> 다음 달 표기
-		//minDate : 0, // 최소 날짜 범위 제한 
-		maxDate : 0, //최대 날짜 범위 제한
-		//달력에 표기되는 달 명
-		monthNames : ["1월","2월","3월","4월","5월","6월","7월","8월","9월","10월","11월","12월"],
-		//월 약자 명
-		monthNamesShort : ["1","2","3","4","5","6","7","8","9","10","11","12"],
-		//표시할 요일 이름 설정
-		dayNames : ["일요일","월요일","화요일","수요일","목요일","금요일","토요일"],
-		//화면에 도시되는 표시할 요일 약자 이름 설정
-		dayNamesMin : ["일","월","화","수","목","금","토"],
-		showMonthAfterYear :true,//true로 설정하면 달이 년 후에 나온다 기본값은 달 년
-		yearSuffix:"년"//년도 뒤에 붙는 글자
+function dateFunc(id1,id2,sdt,edt,format,callback){
+	
+	var fmt="YYYY-MM-DD";
+	if(typeof format !== "undefined" && typeof format != ""){
+		fmt=format;
+	}
+	
+	$('#'+id1).datetimepicker({
+		 format:fmt,
+		 maxDate : moment()
+	}).on('dp.change',function(e){// 변경 상황 있을 때 사용   
+		/*console.log("날짜변경");
+		alert("날짜변경");*/
 	});
+	
+	if(typeof id2 !== "undefined" && typeof id2 != ""){
+		$('#'+id2).datetimepicker({
+			format:fmt,
+			 maxDate : moment()
+		}).on('dp.change',function(e){// 변경 상황 있을 때 사용   
+			
+		});
+	}
 	
 	//별도의 지정한 날짜가 있을 경우 사용
-	if(typeof sdt !== "undefined" && typeof edt !== "undefined"){
-		$("#"+id1).datepicker("setDate",sdt);
-		if(typeof id2 !== "undefined"){
-			$("#"+id2).datepicker("setDate", edt);
-		}
-	}else{// 별도 지정한 날짜 없을시 : 금일~금일
-		$("#"+id1).datepicker("setDate",getFormatDate(new Date()));
-		if(typeof id2 !== "undefined"){
-			$("#"+id2).datepicker("setDate", getFormatDate(new Date()));
-		}
+	if(typeof sdt !== "undefined" && typeof sdt != ""){
+		$("#"+id1).val(sdt);
+	}else{
+		$("#"+id1).val(moment().format('YYYY-MM-DD'));
 	}
-	
-//	var fromDate = new Date(new Date().setMonth(new Date().getMonth() - 1));
-//	fromDate = getFormatDate(fromDate);
-//	var toDate = getFormatDate(new Date());
-//	
-//	//시작일과 종료일의 초기 설정 
-//	$("#"+id1).datepicker("setDate",fromDate);
-//	if(typeof id2 !== "undefined"){
-//		$("#"+id2).datepicker("setDate", toDate);
-//	}
-	
-	//날짜 유효성 검사 시 기존 상태 저장 값
-	var day1 = $("#"+id1).val();
-	if(typeof id2 !== "undefined"){
-		var day2 = $("#"+id2).val();
+	if(typeof edt !== "undefined" && typeof edt != ""){
+		$("#"+id2).val(edt);
+	}else{
+		$("#"+id2).val(moment().format('YYYY-MM-DD'));
 	}
-	$("."+className).change(function() {
-		//기간 비교 (시작일과 종료일이 모두 존재시)
-		if(typeof id2 !== "undefined"){
-			var startDate = $("#"+id1).val().replace(/-/gi,"");
-			var endDate = $("#"+id2).val().replace(/-/gi,"");
-			//종료일이 시작일 이전이 아닐 경우
-			if(parseStrToDate(startDate)<=parseStrToDate(endDate)){
-				day1 = $("#"+id1).val();
-				day2 = $("#"+id2).val();
-			}else{
-				if($(this).attr("id")==id1){
-					//alert("시작일은 종료일 이후일 수 없습니다");
-					$(this).val(day2);
-				}else{
-					//alert("종료일은 시작일 이전일 수 없습니다");
-					$(this).val(day1);
-				}
-			}
-		}
-		
-		if(typeof callback !=="undefined"){
-			callback();
-		}
-	});
-	
 }
 
 /************************************************************************
