@@ -368,13 +368,14 @@ function generateSearchURL(frm, crtPage){
 	return url;
 }
 
+//메모(제보내용)가 없을 경우 내용 조합
 function sentenceForReceiptContent(){
 	console.log("sentenceForReceiptContent");
 
 	var str = "";
 	
 	//긴급체크
-	var FLAG_IMPORTANT = $("input:checkbox[id=FLAG_EMERGENCY]");
+/*	var FLAG_IMPORTANT = $("input:checkbox[id=FLAG_EMERGENCY]");
 	if(FLAG_IMPORTANT.is(":checked")){
 		str += "<긴급>";
 	}
@@ -382,7 +383,7 @@ function sentenceForReceiptContent(){
 	if(FLAG_DISASTOR.is(":checked")){
 		str += "<재난>";
 	}
-	
+*/	
 	//도로명
 	var ARTERY_NAME = $("#ARTERY_NAME").val();
 	if(ARTERY_NAME != ""){
@@ -430,10 +431,9 @@ function appendToReceiptContent(){
 }
 
 
-// 꺽쇠 추가 함수
-function memoAddSentnece(str) {
+// 꺽쇠 추가 함수(재난,긴급 등)
+function memoAddSentnece() {
 	var changeStr = "";  // 기본 값 변수
-	
 	
 	// 긴급이 체크 된 경우
 	var FLAG_IMPORTANT = $("input:checkbox[id=FLAG_EMERGENCY]");
@@ -444,8 +444,9 @@ function memoAddSentnece(str) {
 	if(FLAG_DISASTOR.is(":checked")){
 		changeStr += "<재난>";
 	}
+	return changeStr;
 	
-	var REPORT_TYPE3 = $("#REPORT_TYPE3").val();
+	/*var REPORT_TYPE3 = $("#REPORT_TYPE3").val();
 	var REPORT_TYPE3_STR = "";
 	
 	if(REPORT_TYPE3 != ""){
@@ -455,7 +456,7 @@ function memoAddSentnece(str) {
 		return changeStr + str + REPORT_TYPE3_STR; // 최종 값 반환
 	} else {
 		return changeStr + str;
-	}
+	}*/
 }
 
 
@@ -470,21 +471,29 @@ function saveReceipt(){
 	if(!isProperInput(form)){
 		return;
 	}
+	//제보내용 객체 생성
+	var str="";
+	//긴급,중요 꺽쇠표시
+	str = memoAddSentnece();
 	
 	var MEMO = $("#CONTENT");
-	if((MEMO.val() == "")){ //  메모에 아무런 값도 없고, 긴급 제보가 체크 된 경우
-		var str = sentenceForReceiptContent();
-		MEMO.val(str);
-	} 
-	else { //2024-09-10 : 메모를 작성하고 긴급 제보가 체크 된 경우
+	//메모가 없을 경우 
+	//하위 유형,도로 등을 조합하여 내용 생성
+	if((MEMO.val() == "")){ 
+		str += sentenceForReceiptContent();
+	}else{
+		str +=$("#CONTENT").val();
+	}
+	MEMO.val(str);
+	
+	/*else { //2024-09-10 : 메모를 작성하고 긴급 제보가 체크 된 경우
 		console.log("<긴급> 메모 추가 함수 실행");
 		
 		var changeMemo = memoAddSentnece(MEMO.val()); // 메모 빈값이 아닌 경우 꺽쇠 추가 ( 함수 미완료 )
 		
 		console.log("바뀌고 난 후 메모 값 : " + changeMemo);
 		MEMO.val(changeMemo); // 함수 실행 후 꺽쇠 추가 된 값 저장
-	}
-	
+	}*/
 	
 	var INFORMER_NONE = $("input:checkbox[id=INFORMER_NONE]");
 	var INFORMER_NAME = $("input:checkbox[id=INFORMER_NAME]").val();

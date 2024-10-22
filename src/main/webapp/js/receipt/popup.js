@@ -13,6 +13,7 @@ function getEditPage(resultId, rnum){
 	}
 }
 //금일접수현황 편집 후 반영
+//나중에 nowuserarea 서버단에서 처리하게 바꿔야 함
 function updateReceipt(receiptID, rnum){
 	console.log("업데이트 금일접수");
 	var RNUM = rnum;

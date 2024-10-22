@@ -17,8 +17,6 @@
 <link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/css/broadcast.css"/>
 <link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/css/receipt.css"/>
 
-<script type="text/javascript" charset="utf-8" src="<c:url value='/js/common/ui.js'/>"></script>
-<script type="text/javascript" charset="utf-8" src="<c:url value="/js/common/util.js"/>"></script>
 <script  type="text/javascript" charset="utf-8" src="<%=request.getContextPath()%>/js/jquery.js"></script>
 <script type="text/javascript" charset="utf-8" src="<%=request.getContextPath()%>/js/jquery.form.js"></script>
 <script type="text/javascript" charset="utf-8" src="<%=request.getContextPath()%>/js/jquery.pagination.js"></script>
@@ -110,9 +108,9 @@ function goStats(url){
 								<li><a href="/receipt/fullReceivedHistory.do">
 									<img src="../images/h1_0103_off.gif" alt="전체접수이력" /></a>
 								</li>
-								<li><a href="/receipt/imsFromUtic.do">
+								<!-- <li><a href="/receipt/imsFromUtic.do">
 									<img src="../images/h1_0104_off.gif" alt="돌발접수이력" /></a>
-								</li>
+								</li> -->
 								<!-- <li><a href="<c:url value="/receipt/lostReceived.do" />"><img
 										src="../images/h1_0105_off.gif" alt="분실물현황" /></a></li> -->
 							</ul>

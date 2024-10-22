@@ -1,6 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<link rel="stylesheet" href="<%=request.getContextPath()%>/calender/jquery-ui.css"/>
+<!-- <link rel="stylesheet" href="request.getContextPath()%>/calender/jquery-ui.css"/> -->
 <script type="text/javascript" charset="utf-8" src="<%=request.getContextPath()%>/js/jquery.form.js"></script>
 <script>
 	$(function(){
@@ -45,7 +45,9 @@
 			if(e.which == 17) isCtrl = false;
 		}
 		//폴링 부분
+		//제보접수-통신원정보
 		pollingForCall = setInterval(() => checkIfPickUpInfoExists(), 2000);
+		//수신전화 목록
 		pollingForPickup = setInterval(() => startPickupCallPolling(), 5000);
 		//pollingForMissedCall = setInterval(() => startMissedCallPolling(), 1000);
 		

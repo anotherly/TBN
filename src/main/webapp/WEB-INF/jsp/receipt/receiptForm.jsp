@@ -4,10 +4,54 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 
 <script type="text/javascript" charset="utf-8" src="<%=request.getContextPath()%>/js/receipt/receipt.js"></script>
-<link rel="stylesheet" href="<%=request.getContextPath()%>/calender/jquery-ui.css"/>
-<script src="<%=request.getContextPath()%>/calender/jquery-ui.js"></script>
+<!-- 
+	<link rel="stylesheet" href="request.getContextPath()%>/calender/jquery-ui.css"/>
+	<script src="request.getContextPath()%>/calender/jquery-ui.js"></script> 
+-->
 <script type="text/javascript" charset="utf-8" src="<%=request.getContextPath()%>/js/jquery.form.js"></script>
 <script type="text/javascript" charset="utf-8" src="<%=request.getContextPath()%>/js/timeDate.js"></script>
+
+<!-- DateTimePicker -->
+<script src="<%=request.getContextPath()%>/calender/moment.js"></script>
+<script src="<%=request.getContextPath()%>/calender/mo_ko.js"></script>
+<script src="<%=request.getContextPath()%>/calender/bootstrap-datetimepicker.js"></script>
+<link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/calender/no-boot-calendar-custom.css" />
+<link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/calender/datetimepickerstyle.css" />
+
+
+<style>
+.receipt-tbody input,textarea,select{
+	color:black;
+	font-weight:bold;
+}
+.receipt-tbody>tr>th:first-child {
+	width:160px;
+}
+.receipt-tbody>tr>td:nth-child(2) input{
+	width:180px;
+}
+.receipt-tbody>tr>td:nth-child(2) select{
+	width:186px;
+}
+
+.receipt-tbody>tr>td:nth-child(3){
+	width: 30px;
+    padding-left: 20px;
+}
+
+.receipt-tbody>tr>td:nth-child(4){
+	/* width: 30px; */
+    padding-left: 10px;
+}
+
+.receipt-tbody>tr>td:nth-child(4) input{
+	width:230px;
+}
+.receipt-tbody>tr>td:nth-child(4) select{
+	width:230px;
+}
+
+</style>
 
 <script>
 	$(function(){
@@ -19,24 +63,22 @@
 			console.log("폰트사이즈 체인지");
 			$("#CONTENT").css("font-size",$("#fsSlt").val());
 		});
+	     
 		
 		$("#ui-datepicker-div").remove();
-		$('#START_DAY, #END_DAY').datepicker({
-			changeMonth: false,
-			numberOfMonths: 1,
-			dateFormat: 'yy-mm-dd',
-			monthNames: ['년  1 월','년  2 월','년  3 월','년  4 월','년  5 월','년  6 월','년  7 월','년  8 월','년  9 월','년  10 월','년  11 월','년  12 월',],
-		    dayNamesMin: ['일', '월', '화', '수', '목', '금', '토'],
-		    showMonthAfterYear:true,
-		    defaultDate: new Date(),
-			onSelect: function(selectedDate) {
-				var option = this.id == "START_DAY" ? "minDate" : "maxDate";
-				var instance = $(this).data("datepicker");
-				var date = $.datepicker.parseDate(instance.settings.dateFormat || $.datepicker._defaults.dateFormat, selectedDate, instance.settings);
-				dates.not(this).datepicker("option", option, date);
-				$("img.ui-datepicker-trigger").attr("style", "margin-left:5px;");
-			}
+		//데이트타임피커
+		var toDate = new Date();
+		$('#START_DAY').datetimepicker({
+			 format:"YYYY-MM-DD HH:mm",
+			 //defaultDate:moment().subtract(1, 'months'),
+			 maxDate : moment()
 		});
+		$('#END_DAY').datetimepicker({
+			format:"YYYY-MM-DD HH:mm",
+			 //defaultDate:moment(),
+			 maxDate : moment()
+		});  
+		
 		$("#INFORMER_NONE").on("click", function(){
 			console.log("시민제보자 체크 클릭");
 			if($(this).is(":checked")){
@@ -85,7 +127,7 @@
 							<option value="60px">60px</option>
 						</select>
 					</div>
-					<table summary="제보정보작성" border="0" cellpadding="0" cellspacing="0">
+					<table summary="제보정보작성" class="receipt-table" border="0" cellpadding="0" cellspacing="0" style="width: 100%;">
 						<caption>제보정보작성</caption>
 						<colgroup>
 							<col width="70" />
@@ -94,14 +136,14 @@
 							<col width="100" />
 							<col width="*" />
 						</colgroup>
-						<tbody>
+						<tbody class="receipt-tbody">
 							<tr>
 							    <th class="txt_leftb pat8" scope="row">접수자</th>
 							    <td colspan="1" class="pat8 txt_leftb" style="text-align:left;" >${login.userName}
 							    	<input type="hidden" id="RECEPTION_ID" name="RECEPTION_ID" value="${login.userId}" readonly/>
 							    	<input type="hidden" id="RECEPTION_NAME" name="RECEPTION_NAME" value="${login.userName}" readonly/>
 							    </td>
-								<td id="chk_top" class="txt_leftb" style="width: 300px;" colspan="2">
+								<td id="chk_top" class="txt_leftb" style="width: 352px;" colspan="2">
 									<input type="checkbox" name="FLAG_STT" id="FLAG_STT" value="Y" style="display:none;"/>
 									<input type="hidden" id="MISSED_CALL_ID" name="MISSED_CALL_ID" />
 				                	<input type="checkbox" name="FLAG_DISASTOR" id="FLAG_DISASTOR" value="Y" /> 재난제보
@@ -122,12 +164,14 @@
 			                    <td colspan="3" class="bodb1_1">
 			                    	<!-- <input type="hidden" class="input_sel" name="ARTERY_ID" id="ARTERY_ID" /> -->
 			                    	<input type="text" class="input_sel" name="ARTERY_NAME" id="ARTERY_NAME" placeholder="도로명 입력(필수)" 
-			                    			style="width:210px; background-color:rgba(0,64,128,0.1);" autocomplete="off" />
+			                    			style=" background-color:rgba(0,64,128,0.1);" autocomplete="off" />
 			                    	<input type="hidden" class="input_sel" name="ARTERY_ID" id="ARTERY_ID" />
 			                    	<input type="text" class="input_sel" name="LANE" id="LANE" style="width:120px;" 
 			                    			maxlength="1" placeholder="차선 입력(숫자 입력)" autocomplete="off"  onkeyup="onlyNumber(this)"/>
-			                    <img src="../images/btn_sentence.png" alt="제보내용으로삽입" style="position:absolute; right:35px; top:130px; height:89px; width:50px; cursor:pointer;"
-			                    			onclick="appendToReceiptContent()" />
+			                    </td>
+			                    <td rowspan="2">
+			                    <img src="../images/btn_sentence.png" alt="제보내용으로삽입" onclick="appendToReceiptContent()" 
+			                    style="position:absolute; right:35px; top:130px; height:89px; width:50px; cursor:pointer;"/>
 			                    </td>
 		                    </tr>
 		                    <tr>
@@ -136,24 +180,25 @@
 		                    		<!-- F_LINK_ID/T_LINK_ID로 F_NODE_NAME/T_NODE_NAME 가져오기 -->
 		                    		<input type="hidden" name="F_LINK_ID" id="F_LINK_ID" />
 		                    		<input type="text" class="input_sel" name="F_NODE_NAME" id="F_NODE_NAME" maxlength="30"
-		                    				placeholder="시작지점 입력(필수)" style="width:210px; background-color:rgba(0,64,128,0.1);" autocomplete="off" />
+		                    				placeholder="시작지점 입력(필수)" style=" background-color:rgba(0,64,128,0.1);" autocomplete="off" />
 		                      		~
 		                      		<input type="hidden" name="T_LINK_ID" id="T_LINK_ID" />
 		                      		<input type="text" class="input_sel" name="T_NODE_NAME" id="T_NODE_NAME" maxlength="30"
-		                      				placeholder="종료지점 입력(필수)" style="width:210px; background-color:rgba(0,64,128,0.1);" autocomplete="off" />
+		                      				style="width: 246px;"
+		                      				placeholder="종료지점 입력(필수)" style=" background-color:rgba(0,64,128,0.1);" autocomplete="off" />
 		                      	</td>
 		                  	</tr>
 		                  	<tr><!-- 후미상황 셀렉트박스 -->
 								<th class="txt_leftb" scope="row">&nbsp;</th>
 								<td colspan="3">
-									<input type="text" class="input_sel" style="width:448px;" name="REPORT_TYPE3" id="REPORT_TYPE3" 
+									<input type="text" class="input_sel" style="width:454px;" name="REPORT_TYPE3" id="REPORT_TYPE3" 
 											placeholder="후미상황 입력" maxlength="150" autocomplete="off" />
 								</td>
 							</tr>
 							<tr>
 								<th class="txt_leftb" scope="row">제보유형*</th>
-								<td colspan="3">
-									<select class="r_table_sel" style="width:250px; background-color:rgba(0,64,128,0.1);" name="REPORT_TYPE" id="REPORT_TYPE" 
+								<td colspan="4">
+									<select class="r_table_sel" style="background-color:rgba(0,64,128,0.1);" name="REPORT_TYPE" id="REPORT_TYPE" 
 									        onchange="reportTypeOnChange('REPORT_TYPE','REPORT_TYPE2')">
 										<!-- 
 											충북교통방송만 제보유형 대 중 표출
@@ -169,27 +214,27 @@
 										</c:forEach>
 									</select>
 									
-									<select class="r_table_sel" style="width:273px; background-color:rgba(0,64,128,0.1);" name="REPORT_TYPE2" id="REPORT_TYPE2"></select>
+									<select class="r_table_sel" style="width: 334px; background-color:rgba(0,64,128,0.1);" name="REPORT_TYPE2" id="REPORT_TYPE2"></select>
 								</td>
 							</tr>
 							<tr>
 								<th class="txt_leftb" scope="row">연락처</th>
-								<td><input type="text" class="input_sel" name="R_TEL" id="LOSS_TEL" style="width: 200px;" maxlength="13" value="" onkeydown='return onlyNumber(event)' onkeyup='removeChar(event)' readonly/></td>
-								<td class="txt_leftb">지역구분</td>
-								<td colspan="3">
-									<select class="r_table_sel" name="REGION_ID" id="AREA_CODE" style="width: 130px;"
+								<td><input type="text" class="input_sel" name="R_TEL" id="LOSS_TEL" maxlength="13" value="" onkeydown='return onlyNumber(event)' onkeyup='removeChar(event)' readonly/></td>
+								<td class="txt_leftb" rowspan="2">지역구분</td>
+								<td colspan="3" rowspan="2">
+									<select class="r_table_sel" name="REGION_ID" id="AREA_CODE"
 															onChange="selectAreaCodeSub()">
 										<c:forEach var="areaCodeVO" items="${areaCodeList}">
 											<option value=${areaCodeVO.AREA_CODE }>${areaCodeVO.AREA_NAME }</option>
 										</c:forEach>
 									</select> 
-									<select class="r_table_sel" name="AREA_ID" id="AREA_CODE_SUB" style="width: 96px;"></select>
+									<select class="r_table_sel" name="AREA_ID" id="AREA_CODE_SUB"></select>
 								</td>
 							</tr>
 							<tr>
 								<th class="txt_leftb" scope="row">제보처</th>
 								<td colspan="3">
-									<select name="REPORTER_TYPE" id="REPORTMEAN_TYPE" class="r_table_sel" style="width: 206px;">
+									<select name="REPORTER_TYPE" id="REPORTMEAN_TYPE" class="r_table_sel">
 									<option value="">제보처 선택</option>
 										<c:forEach var="reportMeanVO" items="${reportMeanTypeList}">
 											<option value=${reportMeanVO.ID }>${reportMeanVO.NAME }</option>
@@ -200,26 +245,63 @@
 							<tr>
 								<th class="txt_leftb" scope="row">X좌표*</th>
 								<td><input class="input_sel" type="text" name="X_COORDINATE" id="X_COORDINATE" value="" 
-											style="width:200px; background-color:rgba(0,64,128,0.1);" readonly/></td>
+											style=" background-color:rgba(0,64,128,0.1);" readonly/></td>
 								<td class="txt_leftb">Y좌표*</td>
 								<td colspan="2"><input class="input_sel" type="text" name="Y_COORDINATE" id="Y_COORDINATE" value="" 
-											style="width:200px; background-color:rgba(0,64,128,0.1);" readonly/></td>
+											style=" background-color:rgba(0,64,128,0.1);" readonly/></td>
 							</tr>
 							<tr>
 								<th class="txt_leftb" scope="row">시작시간</th>
-								<td><input class="input_sel" type="text" name="START_DAY" id="START_DAY" style="width: 150px;" readonly /> 
+								<td>
+									<!-- <input class="input_sel" type="text" name="START_DAY" id="START_DAY" style="width: 150px;" readonly /> 
 									<input type="text" name="STARTTIMEHH" id="STARTTIMEHH" 
 											maxlength="2" style="width:15px; height:20px;" onkeyup="onlyNumber(this)" /> : 
 									<input type="text" name="STARTTIMEMI" id="STARTTIMEMI" 
-											maxlength="2" style="width:15px; height:20px;" onkeyup="onlyNumber(this)" />
+											maxlength="2" style="width:15px; height:20px;" onkeyup="onlyNumber(this)" /> -->
+											
+									<div class='input-group date' id='datetimepicker1'>
+										<input type='text' style ="font-size:14px;"class="form-control dt_search" name="START_DAY" id="START_DAY" required/>
+										<!-- <span class="input-group-addon">
+											<span class="glyphicon glyphicon-calendar"></span>
+										</span> -->
+									</div>
 								</td>
 								<td class="txt_leftb">종료시간</td>
-								<td colspan="2"><input class="input_sel" type="text" name="END_DAY" id="END_DAY" style="width: 150px;" readonly /> 
+								<td colspan="2">
+								
+									<div class='input-group date' id='datetimepicker2'>
+										<input type="text" style ="font-size:14px;" class="form-control dt_search" id="END_DAY" name="END_DAY" style="width:180px;"required/>
+										<!-- <span class="input-group-addon">
+											<span class="glyphicon glyphicon-calendar"></span>
+										</span> -->
+									</div>
+								
+								<!-- 
+									<input class="input_sel" type="text" name="END_DAY" id="END_DAY" style="width: 150px;" readonly />
 									<input type="text" name="ENDTIMEHH" id="ENDTIMEHH" 
 											maxlength="2" style="width:15px; height:20px;" onkeyup="onlyNumber(this)" /> : 
 									<input type="text" name="ENDTIMEMI" id="ENDTIMEMI" 
-											maxlength="2" style="width:15px; height:20px;" onkeyup="onlyNumber(this)" />
+											maxlength="2" style="width:15px; height:20px;" onkeyup="onlyNumber(this)" /> -->
 								</td>
+								<!-- <td>
+								
+								<div class="form_daterange" style="display: inline-flex;align-items: center;gap: 5px;" id="schDtBody">
+									<div class='input-group date' id='datetimepicker1'>
+										<input type='text' class="form-control dt_search" name="START_DAY" id="START_DAY" required/>
+										<span class="input-group-addon">
+											<span class="glyphicon glyphicon-calendar"></span>
+										</span>
+									</div>
+									 ~ 
+									<div class='input-group date' id='datetimepicker2'>
+										<input type="text" class="form-control dt_search" id="END_DAY" name="END_DAY" required/>
+										<span class="input-group-addon">
+											<span class="glyphicon glyphicon-calendar"></span>
+										</span>
+									</div>
+								</div>
+								
+								</td> -->
 							</tr>
 						</tbody>
 					</table>
@@ -239,7 +321,7 @@
 							<tr>
 								<th colspan="2" class="txt_leftb">
 									<div class="rpt-informer"><div class="rpt-ifm-image"></div><h3>통신원 정보</h3></div>
-								<th colspan="2">
+								<th colspan="2" style="padding-top: 7px;">
 									<select id="SEARCHTYPE3" name="SEARCHTYPE3" class="r_table_sel" style="width:100px;">
 										<option value="1">이름</option>
 										<option value="2">ID</option>
@@ -304,17 +386,14 @@
 								<td colspan="3">
 									<textarea class="r_table_sel" name="MEMO_INFORMER" id="MEMO" rows="5" cols="60" style="resize:none; width:470px; height:70px;"></textarea>
 									<button type="button" id="btn_informerSend" class="noCursor" onclick="saveNewInformerMemo()" disabled>
-										<img src="../images/ico_informerSend.png" style="width:50px; height:78px;"/>
+										<img src="../images/ico_informerSend.png" style="width:50px; height:85px;"/>
 									</button>
 								</td>
 							</tr>
 						</tbody>
 					</table>
-				</div> 
-				<!-- 통신원 정보 끝-->
-				<div class="edit_bottom">
-				<!-- 등록버튼 시작-->
-					<div class="btnArg" style="position:absolute;top: 690px;left:220px;">
+					<!-- 등록버튼 시작-->
+					<div class="btnArg">
 						<img src="../images/btn_save1.png" alt="확인" title="등록"
 							class="poin" onclick="saveReceipt()" style="cursor: pointer;width: 92px;height: 30px;" /> 
 						<img src="../images/btn_reset1.png" alt="내용지우기" title="내용지우기"
@@ -322,8 +401,9 @@
 						<img src="../images/tempsave_btn.png" alt="임시저장" title="임시저장"
 							class="poin" onclick="tempsave()" style="cursor: pointer;width: 92px;height: 30px;" />
 					</div> 
-				<!-- 등록버튼 끝-->
-				</div>
+					<!-- 등록버튼 끝-->
+				</div> 
+				<!-- 통신원 정보 끝-->
 			</div>
 		</div>
 		<!-- //contents -->

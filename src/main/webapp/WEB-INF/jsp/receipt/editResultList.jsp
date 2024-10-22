@@ -39,6 +39,7 @@ var sflag = 0;//시민체크플레그
 
 	function searchEditInformer(idx){
 		console.log("searchInformer");
+		console.log("areacode : "+'${login.regionId}');
 		if(sflag != 1){//시민 아닐때
 			console.log("searchInformer OK");
 			var searchText = $("#INFORMER_NAME").val();
@@ -50,6 +51,7 @@ var sflag = 0;//시민체크플레그
 			var url = '/receipt/popUpInformerList.do?SEARCH_TEXT=' 
 						+ escape(encodeURIComponent(searchText))
 						+ "&searchType=4"
+						+ "&nowUserArea=${login.regionId}"
 						+ "&idx=" + idx;
 			var windowName = "통신원정보";
 			var popupW = 800; // 팝업 넓이

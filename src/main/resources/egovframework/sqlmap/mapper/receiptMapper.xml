@@ -1132,16 +1132,7 @@
 	
 	<!-- ################# 전체접수용 테이블 분할 관련 230118 ################ -->
 	
-	<!-- 최초 전체접수 진입 시 -->
-	<select id="countReceivedStatusListFR" resultType="int">
-		SELECT COUNT(RECEIPT_ID) FROM REPORT_RECEIPT
-		WHERE RECEIPT_DAY = #{RECEIPT_DAY}
-       	<if test="!AREA_CODE.equals('080')">
-       		AND REGION_ID = #{AREA_CODE}
-       	</if>
-	</select>
-	
-	<!-- 전체접수 행 갯수 파악 -->
+	<!--최초 전체접수 진입 시 / 전체접수 행 갯수 파악 -->
 	<select id="countSearchStatusListFR" resultType="int">
         SELECT COUNT(RECEIPT_ID) FROM 
         	(
@@ -1150,8 +1141,8 @@
 					AND REGION_ID = #{AREA_CODE}
 				</if>
 				<if test="!START_DAY.equals('') and START_DAY != null and !END_DAY.equals('') and END_DAY != null">
-					AND RECEIPT_DAY BETWEEN TO_CHAR(TO_DATE(#{START_DAY}, 'YYYY-MM-DD'), 'YYYYMMDD')
-					AND TO_CHAR(TO_DATE(#{END_DAY}, 'YYYY-MM-DD'), 'YYYYMMDD')
+					AND RECEIPT_DAY BETWEEN TO_DATE(#{START_DAY}, 'YYYY-MM-DD')
+									    AND TO_DATE(#{END_DAY}, 'YYYY-MM-DD')
 				</if>
 				<if test="!REPORT_TYPE.equals('') and REPORT_TYPE != null">
 						AND REPORT_TYPE = #{REPORT_TYPE}
@@ -1230,64 +1221,8 @@
 				
 			 )
 	</select>
-	
-	
-	<select id="receivedStatusListFR" resultType="receivedStatusVO">
-     
-        SELECT ROWNUM AS SEQ, H.* 
-		FROM(
-		    SELECT  
-		    FROM(SELECT ROW_NUMBER() OVER(ORDER BY RECEIPT_DT ASC) AS RNUM, G.* 
-		        FROM(
-		        	SELECT A.RECEIPT_ID
-	                    , TO_CHAR(A.RECEIPT_DAY,'YYYY-MM-DD') AS RECEIPT_DAY
-	                    , A.RECEIPT_DAY||A.RECEIPT_TIME AS RECEIPT_DT
-	                    , A.FLAG_SEND 
-	                    , A.FLAG_BROD 
-	                    , DECODE(A.X_COORDINATE , '' , 'N' , 'Y') AS FLAG_MAP  
-	                    , TO_CHAR(TO_DATE(A.RECEIPT_TIME , 'HH24MI') , 'HH24:MI') AS RECEIPT_TIME
-	                    , C.BAS_NAME AS REPORT_TYPE
-	                    , C.F_COLOR
-	                    , C.B_COLOR
-	                    , D.BAS_NAME AS REPORT_TYPE2
-	                    , A.INDIVIDUAL_ID
-	                    , A.INDIVIDUAL_NAME
-	                    , B.TYPE_NAME
-	                    , A.RECEPTION_ID
-	                    , A.RECEPTION_NAME
-	                    , A.MEMO
-	                    , E.NAME AS REPORTER_TYPE
-	                    , F.AREA_NAME AS REGION_NAME
-	                    , A.FLAG_IMPORTANT
-	                    , A.FLAG_DISASTOR
-	                    ,TO_CHAR(TO_DATE(A.BROAD_TIME,'YYYYMMDDHH24MISS'),'HH24:MI') AS BROAD_TIME
-		            FROM REPORT_RECEIPT A
-		            LEFT OUTER JOIN CODE_INFORMER_TYPE B
-		                ON A.INDIVIDUAL_TYPE = B.TYPE_ID
-		            LEFT OUTER JOIN (SELECT * FROM CODE_REPORT_TYPE
-		                        WHERE BAS_LCOD='100') C
-		                ON A.REPORT_TYPE = C.BAS_SCOD
-		            LEFT OUTER JOIN CODE_REPORT_TYPE D
-		                ON D.BAS_SCOD = A.REPORT_TYPE2
-		                AND D.BAS_LCOD = A.REPORT_TYPE
-		            LEFT OUTER JOIN CODE_REPORTMEAN_TYPE E
-		                ON A.REPORTER_TYPE = E.ID
-		            LEFT OUTER JOIN CODE_AREACODE F
-		                ON A.REGION_ID = F.AREA_CODE
-		            WHERE A. RECEIPT_DAY = #{RECEIPT_DAY}
-		            	<if test="!AREA_CODE.equals('080')">
-		            		AND REGION_ID = #{AREA_CODE}
-		            	</if>
-		            ) G
-		        ORDER BY RNUM DESC
-		        )H
-		    )
-		<![CDATA[
-		WHERE  SEQ > #{startRow} AND SEQ <= (#{startRow} + #{size})
-        ]]>
-	</select>
-	
 
+	<!-- 전체접수현황 최초/검색 -->
 	<select id="searchStatusListFR" resultType="receivedStatusVO" fetchSize="10000">
         SELECT * 
 		FROM(
@@ -1325,8 +1260,8 @@
 							AND REGION_ID = #{AREA_CODE}
 						</if>
 						<if test="!START_DAY.equals('') and START_DAY != null and !END_DAY.equals('') and END_DAY != null">
-							AND RECEIPT_DAY BETWEEN TO_CHAR(TO_DATE(#{START_DAY}, 'YYYY-MM-DD'), 'YYYYMMDD')
-											    AND TO_CHAR(TO_DATE(#{END_DAY}, 'YYYY-MM-DD'), 'YYYYMMDD')
+							AND RECEIPT_DAY BETWEEN TO_DATE(#{START_DAY}, 'YYYY-MM-DD')
+											    AND TO_DATE(#{END_DAY}, 'YYYY-MM-DD')
 						</if>
 						<!-- 시간대별 검색 -->
 						<if test="!RECEIPT_TIME.equals('') and RECEIPT_TIME != null">

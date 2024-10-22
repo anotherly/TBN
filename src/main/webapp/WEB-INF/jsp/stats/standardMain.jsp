@@ -25,71 +25,11 @@ System.out.println("%%%%%%%%%%%%%%%% : "+monthAgo);
 		var year = today.getFullYear();
 		var month = ('0' + (today.getMonth() + 1)).slice(-2);
 		var day = ('0' + today.getDate()).slice(-2);
-		
-		var oneYearAgo = new Date(today.setFullYear(today.getFullYear() - 1));
-		var oyear = oneYearAgo.getFullYear();
-		var omonth = ('0' + (oneYearAgo.getMonth() + 1)).slice(-2);
-		var oday = ('0' + oneYearAgo.getDate()).slice(-2);
 
 		var dateString = year+month+day;
-		var odateString = oyear+omonth+oday;
-		
-		$("#orgStartDate").val(odateString);
-		$('#orgEndDate').val(dateString);
 		
 		
-		// 오늘 날짜를 가져오기
-	    var today = new Date();
-	    // 포맷에 맞게 오늘 날짜를 문자열로 변환 (예: 'YYYY-MM-DD HH:mm')
-	    var formattedDate = today.toISOString().slice(0, 19).replace('T', ' ');
-	    
-		$.datetimepicker.setLocale('ko');
-	    $('#StartDateTime').datetimepicker({
-	        i18n: {
-	            ko: {
-	                months: [
-	                    '1월', '2월', '3월', '4월', '5월', '6월',
-	                    '7월', '8월', '9월', '10월', '11월', '12월'
-	                ],
-	                dayOfWeek: [
-	                    "일", "월", "화", "수", "목", "금", "토"
-	                ]
-	            }
-	        },
-	        value: formattedDate,
-	        onChangeDateTime: function(currentDateTime) {
-	        	
-	        	// 값 어떻게 넘어오는지 확인하려고 만든 로그
-	            console.log(".val() :" + $('#StartDateTime').val());
-	            console.log("선택 값 : " + currentDateTime);
-	        }
-	    });
-	    
-	 	// 한 달 뒤 날짜 계산
-	    var nextMonth = new Date(today.setMonth(today.getMonth() + 1));
-	    // 포맷에 맞게 한 달 뒤 날짜를 문자열로 변환 (예: 'YYYY-MM-DD HH:mm')
-	    var formattedDateN = nextMonth.toISOString().slice(0, 19).replace('T', ' ');
-	    
-	    $('#EndDateTime').datetimepicker({
-	        i18n: {
-	            ko: {
-	                months: [
-	                    '1월', '2월', '3월', '4월', '5월', '6월',
-	                    '7월', '8월', '9월', '10월', '11월', '12월'
-	                ],
-	                dayOfWeek: [
-	                    "일", "월", "화", "수", "목", "금", "토"
-	                ]
-	            }
-	        },
-	        value: formattedDateN,
-	        onChangeDateTime: function(currentDateTime) {
-	        	
-	        	// 값 어떻게 넘어오는지 확인하려고 만든 로그
-	            console.log(".val() :" + $('#EndDateTime').val());
-	            console.log("선택 값 : " + currentDateTime);
-	        }
-	    });
+		
 	});
 	
 	function goStats(url){
@@ -109,8 +49,6 @@ System.out.println("%%%%%%%%%%%%%%%% : "+monthAgo);
 		/* if($("#eDate").val().length==1){
 			eDt="0"+eDt;
 		} */
-		
-		
 		
 		console.log("통계 서브밋?");
 		$('#start_date').val($('#sYear').val()+stDt)
@@ -168,77 +106,32 @@ System.out.println("%%%%%%%%%%%%%%%% : "+monthAgo);
                             <div class="wrap_top"></div>
                             <div class="wrap_center">
                                 <fieldset class="searchField">
-                                <legend>금일접수현황 검색조건</legend>
-								방송국선택 : 
-						       <select id="areaOptSel" name="REGION_ID">
-		                            <c:forEach var="informerRegion" items="${informerRegionList}" varStatus="idx">
-		                                <option value="${informerRegion.areaCode}" ><c:out value="${informerRegion.areaName}"/></option>
-		                            </c:forEach>
-								</select>
-								기준년
-								<!-- 
-								fmt:parseDate : String 형을 받아서 원하는 포맷으로 Date 형태로 변경 
-								fmt:formatDate : Date 형을 받아서 원하는 포맷으로 날짜형태를 변경 
-								-->
-								<input type="hidden" id="start_date" name="start_date" maxlength="15"  class="input_base" readonly="readonly"  alt="시작일" title="" value="" style="width:70px;align:center;"/>
-								<input type="hidden" id="start_date2" name="start_date2" maxlength="15" readonly>
-								<input type="hidden" id="end_date" name="end_date" maxlength="15" class="input_base" readonly alt="종료일" value="" title="" style="width:70px; align:center;">
-								<input type="hidden" id="city" name="city" maxlength="15"  class="input_base" readonly="readonly"  alt="" title="" value="" style="width:70px;align:center;"/>
-								<input type="hidden" id="org_id" name="org_id" maxlength="15"  class="input_base" readonly="readonly"  alt="" title="" value="" style="width:70px;align:center;"/>
-						        <%-- <c:set var="today" value="<%=beforeMonth%>" />
-                                <c:set var="datetime"><fmt:parseDate value="${today}" pattern="YYYY" /></c:set>
-                                 --%>
-                                <c:set var="today" value="<%=monthAgo%>" />
-                                <c:set var="datetime"><fmt:formatDate value="${today}" pattern="yyyy" /></c:set>
-                                <select id="sYear" name="sYear">
-		                            <c:forEach var="i" begin="0" end="10">
-			                            <c:choose>
-											<c:when test="${i == 0}">
-				                                <option value="${datetime}" selected>${datetime}년</option>
-				                            </c:when>
-				                            <c:otherwise>
-				                                <option value="${datetime-i}" >${datetime-i}년</option>
-				                            </c:otherwise>		                            
-			                            </c:choose>
-		                            </c:forEach>
-								</select>
-								기준월
-						        <%-- <c:set var="today" value="<%=beforeMonth%>" />
-                                <c:set var="datetime"><fmt:parseDate value="${today}" pattern="MM" /></c:set> 
-                                --%>
-                                <c:set var="today" value="<%=monthAgo%>" />
-                                <c:set var="datetime"><fmt:formatDate value="${today}" pattern="MM" /></c:set>
-                                <select id="sDate" name="sDate">
-		                            <c:forEach var="i" begin="01" end="12">
-			                            <c:choose>
-											<c:when test="${i == datetime}">
-				                                <option value="${i}" selected>${i}월</option>
-				                            </c:when>
-				                            <c:otherwise>
-				                                <option value="${i}" >${i}월</option>
-				                            </c:otherwise>		                            
-			                            </c:choose>
-		                            </c:forEach>
-								</select>
-								시작일 :
-								<input type="text" id="StartDateTime" autocomplete="off">
-								종료일 :
-								<input type="text" id="EndDateTime" autocomplete="off">
-						        <%-- ~ 
-								종료월
-						        <input type="hidden" id="end_date" name="end_date" maxlength="15"  class="input_base"  readonly="readonly" alt="종료일" title="" value="" style="width:70px;align:center;"/>
-						        <select id="eDate" name="eDate">
-		                            <c:forEach var="i" begin="01" end="12">
-			                            <c:choose>
-											<c:when test="${i == datetime}">
-				                                <option value="${i}" selected>${i}월</option>
-				                            </c:when>
-				                            <c:otherwise>
-				                                <option value="${i}" >${i}월</option>
-				                            </c:otherwise>		                            
-			                            </c:choose>
-		                            </c:forEach>
-								</select> --%>
+	                                <legend>금일접수현황 검색조건</legend>
+									방송국선택 : 
+							       <select id="areaOptSel" name="REGION_ID">
+			                            <c:forEach var="informerRegion" items="${informerRegionList}" varStatus="idx">
+			                                <option value="${informerRegion.areaCode}" ><c:out value="${informerRegion.areaName}"/></option>
+			                            </c:forEach>
+									</select>
+									
+									<input type="hidden" id="city" name="city" maxlength="15"  class="input_base" readonly="readonly"  alt="" title="" value="" style="width:70px;align:center;"/>
+									<input type="hidden" id="org_id" name="org_id" maxlength="15"  class="input_base" readonly="readonly"  alt="" title="" value="" style="width:70px;align:center;"/>
+									<div class="form_daterange" style="display: inline-flex;align-items: center;gap: 5px;" id="schDtBody">
+									시작일 : 
+									<div class='input-group date' id='datetimepicker1'>
+										<input type='text' class="form-control dt_search" name="start_date" id="start_date" required/>
+										<span class="input-group-addon">
+											<span class="glyphicon glyphicon-calendar"></span>
+										</span>
+									</div>
+									 종료일 :  
+									<div class='input-group date' id='datetimepicker2'>
+										<input type="text" class="form-control dt_search" id="end_date" name="end_date" required/>
+										<span class="input-group-addon">
+											<span class="glyphicon glyphicon-calendar"></span>
+										</span>
+									</div>
+								</div>
                                 </fieldset>
                             </div>
                             <div class="wrap_bottom"></div>

@@ -1293,7 +1293,7 @@ tr.studio_top td:last-child{
     padding-left: 15px;
     margin-top: 10px;
     background: url(../images/div-gray1.png);
-    background-size: contain;
+    background-size: cover;
     border: 2px solid #e1e1e1;
     box-shadow: 5px 0px 6px 1px rgb(0 0 0 / 40%);
 }
@@ -1382,8 +1382,7 @@ tr.studio_top td:last-child{
 
 .btnArg {
 	text-align: center;
-	padding: 7px;
-	margin-top: 5px;
+	margin-top: 7px;
 }
 
 .btnArg img{
@@ -1710,6 +1709,7 @@ tr.studio_top td:last-child{
 	text-align: left;
 	font-weight: bold;
 	/*font-size: 11px;*/
+	vertical-align: middle;
 }
 
 .ft14 {

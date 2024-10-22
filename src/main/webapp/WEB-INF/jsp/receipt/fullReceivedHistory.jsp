@@ -6,8 +6,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>TBN한국교통방송 제보접수시스템</title>
 
-<link rel="stylesheet" type="text/css" href="<c:url value='/css/layout.css'/>" />
-<link rel="stylesheet" type="text/css" href="/resources/demos/style.css"/>
+<link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/css/layout.css" />
 
 <script type="text/javascript" src="<%=request.getContextPath()%>/js/jqFR/jquery-3.6.0.js"></script>
 <link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/js/jqFR/jQueryUI-v1.13.0.css"/>
@@ -15,7 +14,6 @@
 
 <link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/css/broadcast.css"/>
 <link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/css/receipt.css"/>
-
 
 <script type="text/javascript" charset="utf-8"  src="<%=request.getContextPath()%>/js/common.js"></script>
 <script type="text/javascript" charset="utf-8" src="<%=request.getContextPath()%>/js/jquery.pagination.js"></script>
@@ -28,7 +26,12 @@
 <script type="text/javascript" charset="utf-8" src="<%=request.getContextPath()%>/js/timeDate.js"></script>
 <script type="text/javascript" charset="utf-8" src="<%=request.getContextPath()%>/js/paging.js"></script>
 
-
+	<!-- DateTimePicker -->
+	<script src="<%=request.getContextPath()%>/calender/moment.js"></script>
+	<script src="<%=request.getContextPath()%>/calender/mo_ko.js"></script>
+	<script src="<%=request.getContextPath()%>/calender/bootstrap-datetimepicker.js"></script>
+	<link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/calender/no-boot-calendar-custom.css" />
+	<link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/calender/datetimepickerstyle.css" />
 
 <script>
 	$(document).ready(function() {
@@ -46,46 +49,44 @@
 		
 		var todaysDate = yesturdate("");
 		currentPage = 1;
+
+		//데이트타임피커
+		var toDate = new Date();
+		$('#datetimepicker1').datetimepicker({
+			 format:"YYYY-MM-DD" ,
+			 //defaultDate:moment().subtract(1, 'months'),
+			 maxDate : moment()
+		});
+		$('#datetimepicker2').datetimepicker({
+			 format:"YYYY-MM-DD",
+			 //defaultDate:moment(),
+			 maxDate : moment()
+		});
 		
-		$("#START_DAY").val(yesturdate("-"));
-		$("#END_DAY").val(yesturdate("-"));
+		//기존에 검색한 이력이 있다면 기존 날짜를,
+		//없다면(최초진입) 어제 날짜를
 		console.log(opener.lgnArea);
+		if(typeof opener.allSchVo !== "undefined"){
+			putAllForm(opener.allSchVo);
+		}else{
+			$("#START_DAY").val(yesturdate("-"));
+			$("#END_DAY").val(yesturdate("-"));
+		}
 		
-		var totalAjax = ajaxMethod("/receipt/getTotalPageFR.ajax", {"RECEIPT_DAY" : todaysDate, "startRow" : currentPage, "AREA_CODE":opener.lgnArea});
+		searchFullStatus('fullReceivedHistorySearch');
+		
+		/* var totalAjax = ajaxMethod("/receipt/getTotalPageFR.ajax", 
+				{"START_DAY" : $("#START_DAY").val(),"END_DAY": $("#END_DAY").val(), "startRow" : currentPage, "AREA_CODE":opener.lgnArea});
 		totalPage = totalAjax.totalPage;
 		$("#resultListTotal span").text(totalAjax.totalSize);
 		if(totalAjax.totalSize == 0){
 			$("#broadcastList").load("/receipt/noResult.do");
-		} else{
-			//이전 전체접수 검색결과가 존재할경우 반영
-			if(typeof opener.allSchVo !== "undefined"){
-				//폼에 vo값 채우고 검색
-				putAllForm(opener.allSchVo);
-				searchFullStatus('fullReceivedHistorySearch');
-			}else{
-				$("#broadcastList").load("/receipt/receivedStatusListFR.do", {"RECEIPT_DAY" : todaysDate, "startRow" : currentPage, "AREA_CODE":opener.lgnArea});
-			} 
-			
-		}
-
-		var dates = $('#START_DAY, #END_DAY').datepicker({
-			changeMonth: false,
-			numberOfMonths: 1,
-			dateFormat: 'yy-mm-dd',
-			monthNames: ['년  1 월','년  2 월','년  3 월','년  4 월','년  5 월','년  6 월','년  7 월','년  8 월','년  9 월','년  10 월','년  11 월','년  12 월',],
-		    dayNamesMin: ['일', '월', '화', '수', '목', '금', '토'],
-		    showMonthAfterYear:true,
-		    //전체접수는 테이블분리로 어제걸로 검색
-		    defaultDate: new Date(new Date().setDate(new Date().getDate() - 1)),
-			onSelect: function(selectedDate) {
-				var option = this.id == "START_DAY" ? "minDate" : "maxDate";
-				var instance = $(this).data("datepicker");
-				var date = $.datepicker.parseDate(instance.settings.dateFormat || $.datepicker._defaults.dateFormat, selectedDate, instance.settings);
-				dates.not(this).datepicker("option", option, date);
-				$("img.ui-datepicker-trigger").attr("style", "margin-left:5px;");
-			}
-		});
+		}else{
+			$("#broadcastList").load("/receipt/receivedStatusListFR.do"
+					, {"START_DAY" : $("#START_DAY").val(),"END_DAY": $("#END_DAY").val(),"startRow" : currentPage, "AREA_CODE":opener.lgnArea});
+		} */
 		
+		/* 스크롤 관련(수정예정) */
 		$("#TodayList").scroll(function(){
 			var scrollTop = $(this).scrollTop();
 			var innerHeight = $(this).innerHeight();
@@ -132,9 +133,9 @@
 									<li><a href="/receipt/fullReceivedHistory.do">
 										<img src="../images/h1_0103.gif" alt="전체접수이력" /></a>
 									</li>
-									<li><a href="/receipt/imsFromUtic.do">
+									<!-- <li><a href="/receipt/imsFromUtic.do">
 										<img src="../images/h1_0104_off.gif" alt="돌발접수이력" /></a>
-									</li>
+									</li> -->
 									<!-- <li><a href="<c:url value="/receipt/lostReceived.do" />"><img
 											src="../images/h1_0105_off.gif" alt="분실물현황" /></a></li> -->
 								</ul>
@@ -213,10 +214,25 @@
 							</option>
 						</c:forEach>
 					</select> 
-					
-					<input class="input_base" type="text" name="START_DAY" id="START_DAY" style="width:90px; height:21px; font-size:14px; text-align:center;" readonly/> ~ 
+					<div class="form_daterange" style="display: inline-flex;align-items: center;gap: 5px;" id="schDtBody">
+						<div class='input-group date' id='datetimepicker1'>
+							<input type='text' class="form-control dt_search" name="START_DAY" id="START_DAY" required/>
+							<span class="input-group-addon">
+								<span class="glyphicon glyphicon-calendar"></span>
+							</span>
+						</div>
+						 ~ 
+						<div class='input-group date' id='datetimepicker2'>
+							<input type="text" class="form-control dt_search" id="END_DAY" name="END_DAY" required/>
+							<span class="input-group-addon">
+								<span class="glyphicon glyphicon-calendar"></span>
+							</span>
+						</div>
+					</div>
+<!-- 					<input class="input_base" type="text" name="START_DAY" id="START_DAY" style="width:90px; height:21px; font-size:14px; text-align:center;" readonly/> ~ 
 					<input class="input_base" type="text" name="END_DAY" id="END_DAY" style="width:90px; height:21px;font-size:14px; text-align:center;" readonly/>
-					<br/>
+ -->
+ 					<br/>
 					통신원 :  
 					<input type="text" name="INDIVIDUAL_NAME" id="INDIVIDUAL_NAME" class="input_base"
 							onkeyup="if(event.keyCode == 13)searchFullStatus('fullReceivedHistorySearch');" maxlength="30" style="width:100px; height:21px;" />

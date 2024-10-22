@@ -4,7 +4,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 	<meta name ="viewport" http-equiv="Content-Type" 
-	content="width-deivce-width,initial-scale=1.0,minimum-scale=1.0, maximum-scale=1.0,user-scale=1.0,text/html; charset=utf-8 " />
+	content="width-deivce-width,initial-scale=1.0,minimum-scale=1.0, maximum-scale=1.0,user-scale=1.0,text/html, charset=utf-8 " />
 	<title>tbn교통방송 제보접수시스템</title>
 	<!-- Custom style -->
 	<link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/css/reset.css"/>
@@ -17,8 +17,7 @@
 	<link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/css/pagination.css" />
 	<link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/css/receipt.css"/>
 	<link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/css/broadcast.css"/>
-	<link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/css/jquery.datetimepicker.min.css"/>
-	
+
 	<!-- JS -->
 	<script type="text/javascript" charset="utf-8" src="<%=request.getContextPath()%>/js/jquery.js"></script>
 	<script type="text/javascript" charset="utf-8" src="<%=request.getContextPath()%>/js/common.js"></script>
@@ -30,7 +29,18 @@
 	<script type="text/javascript" charset="utf-8" src="<%=request.getContextPath()%>/js/autoLoading.js"></script>
 	<script type="text/javascript" charset="utf-8" src="<%=request.getContextPath()%>/js/polling.js"></script>
 	<script type="text/javascript" charset="utf-8" src="<%=request.getContextPath()%>/js/excelParser.js"></script>
-	<script type="text/javascript" charset="utf-8" src="<%=request.getContextPath()%>/js/jquery.datetimepicker.full.min.js"></script>
+		
+	<!-- DateTimePicker -->
+	<script src="<%=request.getContextPath()%>/calender/moment.js"></script>
+	<script src="<%=request.getContextPath()%>/calender/mo_ko.js"></script>
+	<script src="<%=request.getContextPath()%>/calender/bootstrap-datetimepicker.js"></script>
+	<link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/calender/no-boot-calendar-custom.css" />
+	<link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/calender/datetimepickerstyle.css" />
+	
+	<!--
+	<script type="text/javascript" charset="utf-8" src="%=request.getContextPath()%>/js/jquery.datetimepicker.full.min.js"></script> 
+	<link rel="stylesheet" type="text/css" href="%=request.getContextPath()%>/css/jquery.datetimepicker.min.css"/> 
+	-->
 	
 	<!-- 제보접수 -->
 	<script type="text/javascript" charset="utf-8" src="<%=request.getContextPath()%>/js/receipt/functionKey.js"></script>
@@ -71,7 +81,7 @@
 		
 	</script>
 </head>
-	<body style="background: url(../images/lgn-bg1.jpg);background-size:cover;">
-		<div id="changeBody"></div>
-	</body>
+<body style="background: url(../images/lgn-bg1.jpg);background-size:cover;">
+	<div id="changeBody"></div>
+</body>
 </html>

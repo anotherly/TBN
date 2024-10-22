@@ -4,7 +4,7 @@ function startMissedCallPolling(){
 	$("#missedCallList").load("/receipt/missedCallList.do?AREA_CODE="+lgnArea);
 	
 }
-
+//수신전화 목록 풀링(주기 5초)
 function startPickupCallPolling(){
 	clearInterval(pollingForMissedCall);
 	//console.log("수신목록1 : "+currentTimeSmall());
