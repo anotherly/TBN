@@ -234,8 +234,8 @@ public class StatisticController extends BaseController{
 			monList.add(i);
 		}
 		params.add("monList", monList);*/
-		List headList = statisticService.monInfrmList(params);	//무 제보자 통신원 목록
-		List Data = statisticService.monInfrmCnt(params);	//무 제보자 통신원 목록
+		List headList = statisticService.monInfrmList(params);	//제보자 리스트
+		List Data = statisticService.monInfrmCnt(params);	//월별 건수
 		
 		model.addAttribute("mapping", "muJebo");
 		model.addAttribute("fileName", "월별 제보자별 제보건수("+params.getString("start_date")+") "+params.getString("city")+".xls");

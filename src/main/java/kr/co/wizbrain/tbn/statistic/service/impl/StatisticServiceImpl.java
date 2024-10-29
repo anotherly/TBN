@@ -36,161 +36,359 @@ public class StatisticServiceImpl implements StatisticService{
 	
 	@Resource(name="statisticMapper")
 	private StatisticMapper statisticMapper;
-
+	
+	
+	/**********************************************************************************************************************************************************/
+	// 기간별 통계                                                                                                                                                                                                                                                                                              //
+	/**********************************************************************************************************************************************************/
+	
 	//월별 제보자별 총 제보건수 집계
 	@Override
 	public List<StatisticVO> getReceiptCntList(StatisticVO stvo) {
 		return statisticMapper.getReceiptCntList(stvo);
 	}
+	
 	//전체 방송국 표출	
 	@Override
 	public List selectArea() {
 		return statisticMapper.selectArea();
 	}
-	// 1. 교통정보 제공대장
-	//1.1 - 통신원 유형별 현황 sheet
-	//1.1.0  통신원 유형 title
+		
+	
+	
+	
+		
+	// 가. 교통 정보 제공 대장
+	
+	// 1) 통신원 유형별 현황
+	// 1-1) 통신원 유형 title & 교통 정보 수집 건수 및 활용 실적 - 제보자 유형 title
 	@Override
 	public List selectInfrm() {
 		return statisticMapper.selectInfrm();
 	}
-	//1.1.1 , 5.1.1  통신원 별 전체건수
+	
+	// 1-2	&	6-1) 통신원별 전체 건수 & 교통 정보 수집 건수 및 활용 실적 - 제보자 유형 별 건수
 	@Override
 	public List informerTypeAll(ParamsDto params) throws Exception {
 		return statisticMapper.informerTypeAll(params);
 	}
-	//1.1.2 , 5.1.2 통신원별 자국/타국 전체건수
+
+	// 1-3	&	6-2) 통신원별 자국/ 타국 전체 건수 & 교통 정보 수집 건수 및 활용 실적 - 제보자 유형별 자국/ 타국 건수
 	@Override
 	public List informerTypeOurOther(ParamsDto params) throws Exception {
 		return statisticMapper.informerTypeOurOther(params);
 	}
-	//1.1.3 통신원 유형별 상세 데이터
+	
+	// 1-4) 통신원 유형별 상세 데이터
+	@Override
 	public List informerTypeData(ParamsDto params) throws Exception {
 		return statisticMapper.informerTypeData(params);
 	}
 	
-	//1.2 - 제보수단별 현황 sheet
-	//1.2.0 - 제보수단 title
+	
+	// 2) 제보 수단별 현황
+	// 2-1) 제보 수단 title
 	@Override
 	public List selectRtt() {
 		return statisticMapper.selectRtt();
 	}
-	//1.2.1 제보수단별 전체건수
+
+	// 2-2) 제보 수단별 전체 건수
 	public List reportmeanTypeAll(ParamsDto params) throws Exception {
 		return statisticMapper.reportmeanTypeAll(params);
 	}
-	//1.2.2 제보수단별 자국/타국 건수
+
+	// 2-3) 제보 수단 별 상세 데이터
 	public List reportmeanTypeOurOther(ParamsDto params) throws Exception {
 		return statisticMapper.reportmeanTypeOurOther(params);
 	}
-	//1.2.3 제보수단별 상세 데이터
+	// 2-4) 제보 수단 별 상세 데이터
 	public List reportmeanTypeData(ParamsDto params) throws Exception {
 		return statisticMapper.reportmeanTypeData(params);
 	}
 	
-	//1.3 - 제보유형별 현황 sheet
-	//1.3.0 - 제보유형별 title
+	
+	// 3) 제보 유형별 현황
+	// 3-1) 제보 유형별 title
 	@Override
 	public List selectRpt() {
 		return statisticMapper.selectRpt();
 	}
-	//1.3.1 제보유형별 전체건수
+
+	// 3-2) 제보 유형별 전체 건수
 	public List reportTypeAll(ParamsDto params) throws Exception {
 		return statisticMapper.reportTypeAll(params);
 	}
-	//1.3.2 제보유형별 자국/타국 건수
+
+	// 3-3) 제보 유형별 자국/타국 건수
 	public List reportTypeOurOther(ParamsDto params) throws Exception {
 		return statisticMapper.reportTypeOurOther(params);
 	}
-	//1.3.3 제보유형별 상세 데이터
+
+	// 3-4) 제보 유형별 상세 데이터
 	public List reportTypeData(ParamsDto params) throws Exception {
 		return statisticMapper.reportTypeData(params);
 	}
-
-	//2. 긴급교통정보_방송현황분석
+	
+	
+	
+	
+	
+	// 나. 긴급 교통 정보_ 방송 현황 분석
 	@Override
 	public List extrBro(ParamsDto params) {
 		return statisticMapper.extrBro(params);
 	}
-	//3. 재난 제보건수
+	
+	
+	
+	
+	// 다. 재난 제보 건수
 	@Override
 	public List disastorStat(ParamsDto params) {
 		return statisticMapper.disastorStat(params);
 	}
-	//4. 월별 제보자별 제보건수
-	//4.1 제보자 리스트
-	@Override
-	public List monInfrmList(ParamsDto params) {
-		return statisticMapper.muJeboList(params);
-	}
-	//4.2 월별 건수
-	@Override
-	public List monInfrmCnt(ParamsDto params) {
-		return statisticMapper.monInfrmCnt(params);
-	}
-	//5. 무 제보자 현황
+	
+	
+	
+	
+	// 라. 무제보자 현황
 	@Override
 	public List muJeboList(ParamsDto params) {
 		return statisticMapper.muJeboList(params);
 	}
 	
-	@Override
-	public List monthReceipt(ParamsDto params) {
-		return statisticMapper.monthReceipt(params);
-	}
-	@Override
-	public List monthOurReceipt(ParamsDto params) {
-		return statisticMapper.monthOurReceipt(params);
-	}
-	@Override
-	public List monthOtherReceipt(ParamsDto params) throws Exception {
-		return statisticMapper.monthOtherReceipt(params);
-	}
-	@Override
-	public List monthInformer(ParamsDto params) throws Exception {
-		return statisticMapper.monthInformer(params);
-	}
-	@Override
-	public List monthInformer1Inform(ParamsDto params) throws Exception {
-		return statisticMapper.monthInformer1Inform(params);
-	}
+	
+	
+	
+	// 마. 교통 정보 수집 건수 및 활용 실적
+	
+	// 1) 수집 건수
+	// 1-1) 가. 1-1) selectInfrm()
+	// 1-2) 가. 1-2) informerTypeAll(params)
+	// 1-3) 가. 1-3) informerTypeOurOther(params)
+	
+	// 1-4) 일별 상세
 	@Override
 	public List receiptUseDaily(ParamsDto params) {
 		return statisticMapper.receiptUseDaily(params);
 	}
+	
+	
+	// 2) 활용 실적
+	// 2-1) 가. 1-1) selectInfrm()
+	
+	// 2-2) 월별 합계
 	@Override
 	public List monthSendYNA07A08(ParamsDto params) {
 		return statisticMapper.monthSendYNA07A08(params);
 	}
+	
+	// 2-3) 일별 방송국별 데이터
 	@Override
 	public List dailyRegionSendYNA07A08(ParamsDto params) {
 		return statisticMapper.dailyRegionSendYNA07A08(params);
 	}
+	
+	
+	
+	
+	
+	// 바. 통신원 중/소 분류별 통계
+	
+	// 1) 통신원 중소 분류별 통계
+	// 1-1) 
 	@Override
-	public List korLxInfrm(ParamsDto params) {
-		return statisticMapper.korLxInfrm(params);
+	public List statDateCal(ParamsDto params) {
+		return statisticMapper.statDateCal(params);
 	}
+	
+	// 1-2)
 	@Override
-	public List korLxMonCnt(ParamsDto params) {
-		return statisticMapper.korLxMonCnt(params);
+	public List orgOrgSub(ParamsDto params) {
+		return statisticMapper.orgOrgSub(params);
 	}
+	
+	
+	
+	
+	
+	
+	
+	/**********************************************************************************************************************************************************/
+	// 월별 통계                                                                                                                                                                                                                                                                                              //
+	/**********************************************************************************************************************************************************/
+	
+	
+	// 가. 월별 제보자별 제보 건수
+	
+	// 1. 월별 제보자별 제보 건수
+	// 1-1) 제보자 리스트
 	@Override
-	public List krGasInfrm(ParamsDto params) {
-		return statisticMapper.krGasInfrm(params);
+	public List monInfrmList(ParamsDto params) {
+		return statisticMapper.muJeboList(params);
 	}
+	
+	// 1-2) 월별 건수
 	@Override
-	public List krGasMonCnt(ParamsDto params) {
-		return statisticMapper.krGasMonCnt(params);
+	public List monInfrmCnt(ParamsDto params) {
+		return statisticMapper.monInfrmCnt(params);
 	}
-
+	
+	
+	
+	
+	
+	// 나. 교통 통신원 제보 건수 및 접수 직원 가공 건수
+	
+	// 1-1) 제보자 유형 title => 가. 1-1) selectInfrm()
+	
+	// 1-2) 월별 전체 수집 건수
 	@Override
-	public List informerStats(ParamsDto params) {
-		return statisticMapper.informerStats(params);
+	public List monthReceipt(ParamsDto params) {
+		return statisticMapper.monthReceipt(params);
 	}
+	
+	// 1-3) 월별 자국 수집 건수
+	@Override
+	public List monthOurReceipt(ParamsDto params) {
+		return statisticMapper.monthOurReceipt(params);
+	}
+	
+	// 1-4) 월별 타국 수집 건수
+	@Override
+	public List monthOtherReceipt(ParamsDto params) throws Exception {
+		return statisticMapper.monthOtherReceipt(params);
+	}
+	
+	// 1-5) 월별 제보자 수
+	@Override
+	public List monthInformer(ParamsDto params) throws Exception {
+		return statisticMapper.monthInformer(params);
+	}
+	
+	// 1-6) 월별 1건 이상 제보자 수
+	@Override
+	public List monthInformer1Inform(ParamsDto params) throws Exception {
+		return statisticMapper.monthInformer1Inform(params);
+	}
+	
+	
+	
+	
+	
+	// 다. 돌발 교통 정보 표출 실적
+	
+	// 1) 돌발 교통 정보 수집 건수
+	// 1-1) 무제보자 통신원 목록
 	@Override
 	public List nationalIncident(ParamsDto params) {
 		return statisticMapper.nationalIncident(params);
 	}
+	
+	
+	
+	
+	
+	// 라. 교통 정보 수집원 현황
+	
+	// 1) 교통 정보 수집원 현황
+	// 1-1) 교통정보 수집원 현황
+	@Override
+	public List informerStats(ParamsDto params) {
+		return statisticMapper.informerStats(params);
+	}
+	
+	
+	
+	
+	
+	// 마. 한국 가스 기술 공사 제보 실적
+	
+	// 1) 가스기술공사 제보 실적
+	// 1-1) 제보자 유형별 건수
+	@Override
+	public List krGasMonCnt(ParamsDto params) {
+		return statisticMapper.krGasMonCnt(params);
+	}
+	
+	
+	
+	
+	// 바. 한국 국토 정보 공사 제보 현황
+	
+	// 1) 국토정보공사 제보 현황
+	// 1-1) 제보자 유형별 건수
+	@Override
+	public List korLxMonCnt(ParamsDto params) {
+		return statisticMapper.korLxMonCnt(params);
+	}
+	
+	
+	
+	
+	
+	// 사. 통신원 소속별 일자별 통계
+	
+	// 1) 일자별 제보 건수
+	@Override
+	public List dayReceipt(ParamsDto params) {
+		return statisticMapper.dayReceipt(params);
+	}
+	
+	
+	
+	
+	
+	// 아. 사회 봉사자 일자별 통계
+	
+	// 1) 일자별 제보 건수
+	@Override
+	public List volunteer(ParamsDto params) {
+		return statisticMapper.volunteer(params);
+	}
+	
+	
+	
+	
+	
+	// 자. 연간 제보자별 제보 현황
+	
+	
+	
+	
+	
+	// 차. 연간 지회(통신원 중분류) 실적 평가
+	
+	
+	
+	
+	
+	// 카. 제보자별 제보 현황
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	/**********************************************************************************************************************************************************/
+	// 컨트롤러 미 구현 기능들                                                                                                                                                                                                                                                                                              //
+	/**********************************************************************************************************************************************************/
+	
+	@Override
+	public List korLxInfrm(ParamsDto params) {
+		return statisticMapper.korLxInfrm(params);
+	}
+	
+	@Override
+	public List krGasInfrm(ParamsDto params) {
+		return statisticMapper.krGasInfrm(params);
+	}
+	
 	@Override
 	public void statInfrmType(String areaCode, String ifmId1) {
 		 statisticMapper.statInfrmType(areaCode,ifmId1);
@@ -216,34 +414,20 @@ public class StatisticServiceImpl implements StatisticService{
 	public void schmonInfrmDelete(){
 		statisticMapper.schmonInfrmDelete();
 	}
+	
 	@Override
 	public List searchStatusListToday(ReceiptSearchVO searchVO) {
 		return statisticMapper.searchStatusListToday(searchVO);
 	}
+	
 	@Override
 	public List searchStatusList(ReceiptSearchVO searchVO) {
 		return statisticMapper.searchStatusList(searchVO);
 	}
-	@Override
-	public List dayReceipt(ParamsDto params) {
-		return statisticMapper.dayReceipt(params);
-	}
-	@Override
-	public List orgOrgSub(ParamsDto params) {
-		return statisticMapper.orgOrgSub(params);
-	}
+	
 	@Override
 	public List orgType(ParamsDto params) {
 		return statisticMapper.orgType(params);
-	}
-	
-	@Override
-	public List volunteer(ParamsDto params) {
-		return statisticMapper.volunteer(params);
-	}
-	@Override
-	public List statDateCal(ParamsDto params) {
-		return statisticMapper.statDateCal(params);
 	}
 	
 }

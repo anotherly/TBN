@@ -10,7 +10,29 @@
 <script src="<%=request.getContextPath()%>/calender/bootstrap-datetimepicker.js"></script>
 <link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/calender/no-boot-calendar-custom.css" />
 <link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/calender/datetimepickerstyle.css" />
-
+<style>
+	/* 24-10-29 : 통계에서 기간별/월별 버튼 관련 스타일 추가 */
+	.stat_btn { /* 버튼 공통 스타일 */
+		width:106px;
+		height:38px;
+		
+		border-radius : 10px;
+		font-size : 16px;
+		
+		background-color: #d7d7d7;
+		border : 1px solid #a5a5a5 !important;
+		box-shadow: 0px 4px 5px #a5a5a5;
+		
+		font-weight : bold;
+		color : white;
+	}
+	
+	.stat_now_btn {
+		background-color:#137072;
+		border : 1px solid #135252 !important;
+	}
+	
+</style>
 <script>
 	$(document).ready(function(){
 		console.log("표준화통계 진입");
@@ -50,6 +72,9 @@
         <!-- contents -->
                 <div id="contents">
                     <h1 class='content-title'>방송국별 통계</h1>
+                    
+                    <button class="stat_btn stat_now_btn">기간별</button>
+                    <button class="stat_btn">월별</button>
                     <!-- board_list -->
                     <div class="board_list">
                         <!-- 검색조건 영역 시작 -->
