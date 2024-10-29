@@ -34,7 +34,7 @@ import kr.co.wizbrain.tbn.statistic.service.StatisticService;
 
 /**
  * 사용자 컨트롤러 클래스
- * @author 미래전략사업팀 정다빈
+ * @author  정다빈
  * @since 2020.07.23
  * @version 1.0
  * @see
@@ -43,7 +43,8 @@ import kr.co.wizbrain.tbn.statistic.service.StatisticService;
  *
  *   수정일            수정자              수정내용
  *  -------    -------- ---------------------------
- *  2020.07.23  정다빈           최초 생성
+ *  2021.11.   정다빈     최초 생성
+ *  2024.10.24 정다빈     항목별 index 부여 및 개편
  */
 
 @Controller
@@ -84,7 +85,6 @@ public class StatisticController extends BaseController{
 		logger.debug("▶▶▶▶▶▶▶.보내려는 url : "+url);
 		return url;
 	}
-
 	
 	/** 표준화통계
 	 * @param model
@@ -130,10 +130,10 @@ public class StatisticController extends BaseController{
 		List dataMain = new ArrayList();
 		
 		//제보자별 현황
-		List headList = statisticService.selectInfrm();	//제보자 유형 title
-		List sumList = statisticService.informerTypeAll(params);	//제보자 유형별 건수
-		List sumOurOtherList = statisticService.informerTypeOurOther(params);	//제보자 유형별 자국/타국 건수
-		List dataList = statisticService.informerTypeData(params);	//제보자 유형별 상세 데이터
+		List headList = statisticService.selectInfrm();	//1.1.0  통신원 유형 title
+		List sumList = statisticService.informerTypeAll(params);	//1.1.1 통신원 별 전체건수
+		List sumOurOtherList = statisticService.informerTypeOurOther(params);	//1.1.2 통신원별 자국/타국 전체건수
+		List dataList = statisticService.informerTypeData(params);	//1.1.3 통신원 유형별 상세 데이터
 		
 		titleMain.add(0,"제보자별 현황");
 		headMain.add(0, headList);
@@ -142,10 +142,10 @@ public class StatisticController extends BaseController{
 		dataMain.add(0, dataList);
 		
 		//제보수단별 현황
-		headList = statisticService.selectRtt();	//제보수단 title
-		sumList = statisticService.reportmeanTypeAll(params);	//제보수단별 건수
-		sumOurOtherList = statisticService.reportmeanTypeOurOther(params);	//제보수단별 자국/타국 건수
-		dataList = statisticService.reportmeanTypeData(params);	//제보자 유형별 상세 데이터
+		headList = statisticService.selectRtt();	//1.2.0 - 제보수단 title
+		sumList = statisticService.reportmeanTypeAll(params);	//1.2.1 제보수단별 전체건수
+		sumOurOtherList = statisticService.reportmeanTypeOurOther(params);	//1.2.2 제보수단별 자국/타국 건수
+		dataList = statisticService.reportmeanTypeData(params);	//1.2.3 제보수단별 상세 데이터
 		
 		titleMain.add(1,"제보수단별 현황");
 		headMain.add(1, headList);
@@ -186,7 +186,7 @@ public class StatisticController extends BaseController{
 	public String extrBro(Model model,HttpServletRequest request) throws Exception {
 		
 		ParamsDto params = getParams(true);
-		List Data = statisticService.extrBro(params);	//무 제보자 통신원 목록
+		List Data = statisticService.extrBro(params);//2. 긴급교통정보_방송현황분석
 		
 		model.addAttribute("mapping", "extrBro");
 		model.addAttribute("fileName", "긴급교통정보_방송현황분석"+params.getString("city")+".xls");
@@ -197,7 +197,7 @@ public class StatisticController extends BaseController{
 		
 		return "hssfExcel";
 	}
-	/*2.1 재난 제보건수
+	/*3. 재난 제보건수
 	 * @param model
 	 * @return
 	 * @throws Exception
@@ -218,7 +218,7 @@ public class StatisticController extends BaseController{
 		return "hssfExcel";
 	}
 	
-	/*3. 월별 제보자별 제보건수
+	/*4. 월별 제보자별 제보건수
 	 * @param model
 	 * @return
 	 * @throws Exception
@@ -234,8 +234,8 @@ public class StatisticController extends BaseController{
 			monList.add(i);
 		}
 		params.add("monList", monList);*/
-		List headList = statisticService.muJeboList(params);	//무 제보자 통신원 목록
-		List Data = statisticService.muJeboCnt(params);	//무 제보자 통신원 목록
+		List headList = statisticService.monInfrmList(params);	//무 제보자 통신원 목록
+		List Data = statisticService.monInfrmCnt(params);	//무 제보자 통신원 목록
 		
 		model.addAttribute("mapping", "muJebo");
 		model.addAttribute("fileName", "월별 제보자별 제보건수("+params.getString("start_date")+") "+params.getString("city")+".xls");
@@ -264,8 +264,8 @@ public class StatisticController extends BaseController{
 			monList.add(i);
 		}
 		params.add("monList", monList);*/
-		List headList = statisticService.muJeboList2(params);	//무 제보자 통신원 목록
-		List Data = statisticService.muJeboList2(params);	//무 제보자 통신원 목록
+		List headList = statisticService.muJeboList(params);	//무 제보자 통신원 목록
+		List Data = statisticService.muJeboList(params);	//무 제보자 통신원 목록
 		
 		model.addAttribute("mapping", "muJebo2");
 		model.addAttribute("fileName", "무 제보자 현황("+params.getString("start_date")+") "+params.getString("city")+".xls");
@@ -500,18 +500,15 @@ public class StatisticController extends BaseController{
 		
 		ParamsDto params = getParams(true);
 		//문자열        
-		String orgStartDate = request.getParameter("start_date2");         
-		String orgEndDate = request.getParameter("end_date");   
-
-		List eraList =  statisticService.statDateCal(orgStartDate,orgEndDate); 
-		
+		List eraList =  statisticService.statDateCal(params); 
+		params.add("chkArr", eraList);
 		List sheetNames = new ArrayList();//기관별 시트명
 		List informerListMain =new ArrayList(); //왼쪽 통신원부 
 		List cntListMain =new ArrayList(); //오른쪽 건수
 		
 		List orgOrgSubList = new ArrayList();
 		
-		orgOrgSubList = statisticService.orgOrgSub(params,eraList,orgStartDate,orgEndDate);
+		orgOrgSubList = statisticService.orgOrgSub(params);
 		
 		RecordDto record = (RecordDto) orgOrgSubList.get(0);
 		model.addAttribute("mapping", "orgOrgSub");

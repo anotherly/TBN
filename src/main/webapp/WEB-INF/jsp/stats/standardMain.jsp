@@ -19,18 +19,14 @@
 		var stdate=moment().subtract(1, 'months').startOf('month').format('YYYY-MM-DD');
 		var endate=moment().subtract(1, 'months').endOf('month').format('YYYY-MM-DD');
 		//common.js에 생성한 함수 참조(달력생성)
-		dateFunc('start_date','end_date',stdate,endate);
+		dateFunc('stdt','edt',stdate,endate);
 	});
 	
 	function goStats(url){
-		/* 향후제거필요 임시 */
-		if(url=='stats/orgOrgSub.do'){
-			url+='?orgStartDate='+$("#orgStartDate").val()+'&orgEndDate='+$('#orgEndDate').val();
-		}
 		$("#org_id").val($("#orgIdSel").val());
 		console.log("통계 서브밋?");
-		var startDate = $('#start_date').val();
-		var endDate = $('#end_date').val();
+		var startDate = $('#stdt').val();
+		var endDate = $('#edt').val();
 		if(startDate == "" || endDate == "") {
 			alert("시작일과 종료일을 올바르게 선택해주세요.");
 			return false;
@@ -38,13 +34,14 @@
 			alert("종료일은 시작일 이전일 수 없습니다.");
 			return false;
 		} else {
+			$('#start_date').val(startDate.replaceAll("-",""));
+			$('#end_date').val(endDate.replaceAll("-",""));
 			$('#city').val("("+$("#areaOptSel option:selected").text().substr(0,2)+")");
 			rkFlag = true;
 			frmExcel.action = '<c:url value="/"/>'+url;
 			frmExcel.submit();
 			rkFlag = true;
 		}
-		
 	}
 	
 </script>
@@ -57,29 +54,29 @@
                     <div class="board_list">
                         <!-- 검색조건 영역 시작 -->
                         <form id="frmExcel" name="frmExcel" method="post">
-                       <!--  <input type="hidden" id="start_date" name="start_date">
-                        <input type="hidden" id="end_date" name="end_date"> -->
                         <div class="rounding_wrap mgt10">
                             <div class="wrap_top"></div>
                             <div class="wrap_center">
                                 <fieldset class="searchField">
-	                                <legend>금일접수현황 검색조건</legend>
+	                                <legend>통계관리 검색조건</legend>
 									방송국선택 : 
 							       <select id="areaOptSel" name="REGION_ID">
 			                            <c:forEach var="informerRegion" items="${informerRegionList}" varStatus="idx">
 			                                <option value="${informerRegion.areaCode}" ><c:out value="${informerRegion.areaName}"/></option>
 			                            </c:forEach>
 									</select>
-									<input type="hidden" id="city" name="city" maxlength="15"  class="input_base" readonly="readonly"  alt="" title="" value="" style="width:70px;align:center;"/>
-									<input type="hidden" id="org_id" name="org_id" maxlength="15"  class="input_base" readonly="readonly"  alt="" title="" value="" style="width:70px;align:center;"/>
+									<input type="hidden" id="start_date" name="start_date">
+                        			<input type="hidden" id="end_date" name="end_date"> 
+									<input type="hidden" id="city" name="city"/>
+									<input type="hidden" id="org_id" name="org_id"/>
 									<div class="form_daterange" style="display: inline-flex;align-items: center;gap: 5px;" id="schDtBody">
 										시작일 : 
 										<div class='input-group date' id='datetimepicker1'>
-											<input type='text' class="form-control dt_search" name="start_date" id="start_date" required/>
+											<input type='text' class="form-control dt_search" name="stdt" id="stdt" required/>
 										</div>
 										 종료일 :  
 										<div class='input-group date' id='datetimepicker2'>
-											<input type="text" class="form-control dt_search" id="end_date" name="end_date" required/>
+											<input type="text" class="form-control dt_search" id="edt" name="edt" required/>
 										</div>
 										
 									</div> 
@@ -175,8 +172,6 @@
                                     <tr>
                                         <td class="txt_left">
                                         	<img src="../images/ico_excel.gif" alt="" class="mglsub03" /><a href="javascript:goStats('stats/orgOrgSub.do');">통신원 중/소 분류별 통계</a>
-											<!-- <input type="text" maxlength='8' id="orgStartDate" name="orgStartDate" style="width:100px;"/> 부터 
-                                        	<input type="text" maxlength='8' id="orgEndDate" name="orgEndDate"  style="width:100px;"/> 까지  -->
                                         </td>
                                         <td><a href="javascript:goStats('stats/orgOrgSub.do');"><img src="../images/btn_excel_down.gif" alt="엑셀다운로드" /></a></td>
                                     </tr>

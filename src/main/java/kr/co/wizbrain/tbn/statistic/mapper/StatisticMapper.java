@@ -15,7 +15,7 @@ import kr.co.wizbrain.tbn.statistic.vo.StatisticVO;
 
 /**
  * 사용자 매퍼 클래스
- * @author 미래전략사업팀 정다빈
+ * @author  정다빈
  * @since 2020.07.23
  * @version 1.0
  * @see
@@ -29,26 +29,54 @@ import kr.co.wizbrain.tbn.statistic.vo.StatisticVO;
 
 @Mapper("statisticMapper")
 public interface StatisticMapper{
+	
 	//월별 제보자별 총 제보건수 집계
 	public List<StatisticVO> getReceiptCntList(StatisticVO stvo);
-
-	public List reportmeanTypeAll(ParamsDto params);
-
-	public List reportmeanTypeOurOther(ParamsDto params);
-
-	public List reportmeanTypeData(ParamsDto params);
-
-	public List reportTypeAll(ParamsDto params);
-
-	public List reportTypeOurOther(ParamsDto params);
-
-	public List reportTypeData(ParamsDto params);
-
-	public List informerTypeAll(ParamsDto params);
-
-	public List informerTypeOurOther(ParamsDto params);
-
-	public List informerTypeData(ParamsDto params);
+	//전체 방송국 표출
+	public List selectArea();
+	
+	// 1. 교통정보 제공대장
+	//1.1 - 통신원 유형별 현황 sheet
+	//1.1.0  통신원 유형 title
+	public List selectInfrm();
+	//1.1.1 , 5.1.1  통신원 별 전체건수
+	public List informerTypeAll(ParamsDto params) throws Exception;
+	//1.1.2 , 5.1.2 통신원별 자국/타국 전체건수
+	public List informerTypeOurOther(ParamsDto params) throws Exception;
+	//1.1.3 통신원 유형별 상세 데이터
+	public List informerTypeData(ParamsDto params) throws Exception;
+	
+	//1.2 - 제보수단별 현황 sheet
+	//1.2.0 - 제보수단 title
+	public List selectRtt();
+	//1.2.1 제보수단별 전체건수
+	public List reportmeanTypeAll(ParamsDto params) throws Exception;
+	//1.2.2 제보수단별 자국/타국 건수
+	public List reportmeanTypeOurOther(ParamsDto params) throws Exception;
+	//1.2.3 제보수단별 상세 데이터
+	public List reportmeanTypeData(ParamsDto params) throws Exception;
+	
+	//1.3 - 제보유형별 현황 sheet
+	//1.3.0 - 제보유형별 title
+	public List selectRpt();
+	//1.3.1 제보유형별 전체건수
+	public List reportTypeAll(ParamsDto params) throws Exception;
+	//1.3.2 제보유형별 자국/타국 건수	
+	public List reportTypeOurOther(ParamsDto params) throws Exception;
+	//1.3.3 제보유형별 상세 데이터
+	public List reportTypeData(ParamsDto params) throws Exception ;
+	
+	//2. 긴급교통정보_방송현황분석
+	public List extrBro(ParamsDto params);
+	//3. 재난 제보건수
+	public List disastorStat(ParamsDto params);
+	//4. 월별 제보자별 제보건수
+	//4.1 제보자 리스트
+	public List monInfrmList(ParamsDto params);
+	//4.2 월별 건수
+	public List monInfrmCnt(ParamsDto params);
+	//5. 무 제보자 현황
+	public List muJeboList(ParamsDto params);
 	
 	//<!-- 표준화통계: 제보자별 일별 상세 -->
 	public List receiptUseDaily(ParamsDto params);
@@ -101,14 +129,6 @@ public interface StatisticMapper{
 	//<!-- 전국통계: 방송국별 일별 전송건수 -->
 	public List dailyReceiptSend(ParamsDto params);
 
-	public List selectInfrm();
-
-	public List selectRtt();
-
-	public List selectRpt();
-	
-	public List selectArea();
-
 	public List monthOurReceipt(ParamsDto params);
 
 	public List monthOtherReceipt(ParamsDto params);
@@ -125,16 +145,6 @@ public interface StatisticMapper{
 
 	public List krGasMonCnt(ParamsDto params);
 
-	public List muJeboList(ParamsDto params);
-	
-	public List muJeboList2(ParamsDto params);
-
-	public List muJeboCnt(ParamsDto params);
-
-	public List extrBro(ParamsDto params);
-	
-	public List disastorStat(ParamsDto params);
-
 	public List informerStats(ParamsDto params);
 
 	public void statInfrmType(@Param("areaCode")String areaCode, @Param("ifmId1")String ifmId1);
@@ -149,21 +159,20 @@ public interface StatisticMapper{
 	
 	public void schmonInfrmInsert();
 
-	public List searchStatusListToday(ReceiptSearchVO searchVO);
-	public List searchStatusList(ReceiptSearchVO searchVO);
-
 	public List dayReceiptInfrm(ParamsDto params);
 	public List dayReceiptCnt(ParamsDto params);
 	public List dayReceipt(ParamsDto params);
 
 	public List orgType(ParamsDto params);
 	public List volunteer(ParamsDto params);
+	
+	public List statDateCal(ParamsDto params);
+
+	public List orgOrgSub(ParamsDto params);
 
 	
-	public List statDateCal(@Param("orgStartDate")String orgStartDate,  @Param("orgEndDate")String orgEndDate);
-
-	public List orgOrgSub(@Param("params")ParamsDto params,@Param("chkArr")List chkArr,@Param("orgStartDate")String orgStartDate,  @Param("orgEndDate")String orgEndDate);
-
+	public List searchStatusListToday(ReceiptSearchVO searchVO);
+	public List searchStatusList(ReceiptSearchVO searchVO);
 	
 }
 

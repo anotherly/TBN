@@ -27,7 +27,8 @@ import kr.co.wizbrain.tbn.statistic.vo.StatisticVO;
  *
  *   수정일            수정자              수정내용
  *  -------    -------- ---------------------------
- *  2020.07.23  정다빈           최초 생성
+ *  2021.11.   정다빈     최초 생성
+ *  2024.10.24 정다빈     항목별 index 부여 및 개편
  */
 
 @Service("statisticService")
@@ -36,105 +37,103 @@ public class StatisticServiceImpl implements StatisticService{
 	@Resource(name="statisticMapper")
 	private StatisticMapper statisticMapper;
 
+	//월별 제보자별 총 제보건수 집계
 	@Override
 	public List<StatisticVO> getReceiptCntList(StatisticVO stvo) {
 		return statisticMapper.getReceiptCntList(stvo);
 	}
-	/** 표준화통계: 교통정보 수집건수 및 활용실적 - 제보자별 전체건수
-	 * @param params
-	 * @return
-	 * @throws Exception
-	 */
-	public List informerTypeAll(ParamsDto params) throws Exception {
-		return statisticMapper.informerTypeAll(params);
-	}
-	
-	/** 표준화통계: 교통정보 수집건수 및 활용실적 - 제보자별 자국/타국
-	 * @param params
-	 * @return
-	 * @throws Exception
-	 */
-	public List informerTypeOurOther(ParamsDto params) throws Exception {
-		return statisticMapper.informerTypeOurOther(params);
-	}
-	
-	/** 표준화통계: 교통정보 제공대장 - 제보자별 현황
-	 * @param params
-	 * @return
-	 * @throws Exception
-	 */
-	public List informerTypeData(ParamsDto params) throws Exception {
-		return statisticMapper.informerTypeData(params);
-	}
-	/** 표준화통계: 교통정보 수집건수 및 활용실적 - 제보수단별 전체건수
-	 * @param params
-	 * @return
-	 * @throws Exception
-	 */
-	public List reportmeanTypeAll(ParamsDto params) throws Exception {
-		return statisticMapper.reportmeanTypeAll(params);
-	}
-	
-	/** 표준화통계: 교통정보 수집건수 및 활용실적 - 제보수단별 자국/타국
-	 * @param params
-	 * @return
-	 * @throws Exception
-	 */
-	public List reportmeanTypeOurOther(ParamsDto params) throws Exception {
-		return statisticMapper.reportmeanTypeOurOther(params);
-	}
-	
-	/** 표준화통계: 교통정보 제공대장 - 제보수단별 현황
-	 * @param params
-	 * @return
-	 * @throws Exception
-	 */
-	public List reportmeanTypeData(ParamsDto params) throws Exception {
-		return statisticMapper.reportmeanTypeData(params);
-	}
-	
-	/** 표준화통계: 교통정보 수집건수 및 활용실적 - 제보유형별 전체건수
-	 * @param params
-	 * @return
-	 * @throws Exception
-	 */
-	public List reportTypeAll(ParamsDto params) throws Exception {
-		return statisticMapper.reportTypeAll(params);
-	}
-	
-	/** 표준화통계: 교통정보 수집건수 및 활용실적 - 제보유형별 자국/타국
-	 * @param params
-	 * @return
-	 * @throws Exception
-	 */
-	public List reportTypeOurOther(ParamsDto params) throws Exception {
-		return statisticMapper.reportTypeOurOther(params);
-	}
-	
-	/** 표준화통계: 교통정보 제공대장 - 제보유형별 현황
-	 * @param params
-	 * @return
-	 * @throws Exception
-	 */
-	public List reportTypeData(ParamsDto params) throws Exception {
-		return statisticMapper.reportTypeData(params);
-	}
-	@Override
-	public List selectInfrm() {
-		return statisticMapper.selectInfrm();
-	}
-	@Override
-	public List selectRtt() {
-		return statisticMapper.selectRtt();
-	}
-	@Override
-	public List selectRpt() {
-		return statisticMapper.selectRpt();
-	}
+	//전체 방송국 표출	
 	@Override
 	public List selectArea() {
 		return statisticMapper.selectArea();
 	}
+	// 1. 교통정보 제공대장
+	//1.1 - 통신원 유형별 현황 sheet
+	//1.1.0  통신원 유형 title
+	@Override
+	public List selectInfrm() {
+		return statisticMapper.selectInfrm();
+	}
+	//1.1.1 , 5.1.1  통신원 별 전체건수
+	@Override
+	public List informerTypeAll(ParamsDto params) throws Exception {
+		return statisticMapper.informerTypeAll(params);
+	}
+	//1.1.2 , 5.1.2 통신원별 자국/타국 전체건수
+	@Override
+	public List informerTypeOurOther(ParamsDto params) throws Exception {
+		return statisticMapper.informerTypeOurOther(params);
+	}
+	//1.1.3 통신원 유형별 상세 데이터
+	public List informerTypeData(ParamsDto params) throws Exception {
+		return statisticMapper.informerTypeData(params);
+	}
+	
+	//1.2 - 제보수단별 현황 sheet
+	//1.2.0 - 제보수단 title
+	@Override
+	public List selectRtt() {
+		return statisticMapper.selectRtt();
+	}
+	//1.2.1 제보수단별 전체건수
+	public List reportmeanTypeAll(ParamsDto params) throws Exception {
+		return statisticMapper.reportmeanTypeAll(params);
+	}
+	//1.2.2 제보수단별 자국/타국 건수
+	public List reportmeanTypeOurOther(ParamsDto params) throws Exception {
+		return statisticMapper.reportmeanTypeOurOther(params);
+	}
+	//1.2.3 제보수단별 상세 데이터
+	public List reportmeanTypeData(ParamsDto params) throws Exception {
+		return statisticMapper.reportmeanTypeData(params);
+	}
+	
+	//1.3 - 제보유형별 현황 sheet
+	//1.3.0 - 제보유형별 title
+	@Override
+	public List selectRpt() {
+		return statisticMapper.selectRpt();
+	}
+	//1.3.1 제보유형별 전체건수
+	public List reportTypeAll(ParamsDto params) throws Exception {
+		return statisticMapper.reportTypeAll(params);
+	}
+	//1.3.2 제보유형별 자국/타국 건수
+	public List reportTypeOurOther(ParamsDto params) throws Exception {
+		return statisticMapper.reportTypeOurOther(params);
+	}
+	//1.3.3 제보유형별 상세 데이터
+	public List reportTypeData(ParamsDto params) throws Exception {
+		return statisticMapper.reportTypeData(params);
+	}
+
+	//2. 긴급교통정보_방송현황분석
+	@Override
+	public List extrBro(ParamsDto params) {
+		return statisticMapper.extrBro(params);
+	}
+	//3. 재난 제보건수
+	@Override
+	public List disastorStat(ParamsDto params) {
+		return statisticMapper.disastorStat(params);
+	}
+	//4. 월별 제보자별 제보건수
+	//4.1 제보자 리스트
+	@Override
+	public List monInfrmList(ParamsDto params) {
+		return statisticMapper.muJeboList(params);
+	}
+	//4.2 월별 건수
+	@Override
+	public List monInfrmCnt(ParamsDto params) {
+		return statisticMapper.monInfrmCnt(params);
+	}
+	//5. 무 제보자 현황
+	@Override
+	public List muJeboList(ParamsDto params) {
+		return statisticMapper.muJeboList(params);
+	}
+	
 	@Override
 	public List monthReceipt(ParamsDto params) {
 		return statisticMapper.monthReceipt(params);
@@ -183,26 +182,7 @@ public class StatisticServiceImpl implements StatisticService{
 	public List krGasMonCnt(ParamsDto params) {
 		return statisticMapper.krGasMonCnt(params);
 	}
-	@Override
-	public List muJeboList(ParamsDto params) {
-		return statisticMapper.muJeboList(params);
-	}
-	@Override
-	public List muJeboList2(ParamsDto params) {
-		return statisticMapper.muJeboList2(params);
-	}
-	@Override
-	public List muJeboCnt(ParamsDto params) {
-		return statisticMapper.muJeboCnt(params);
-	}
-	@Override
-	public List extrBro(ParamsDto params) {
-		return statisticMapper.extrBro(params);
-	}
-	@Override
-	public List disastorStat(ParamsDto params) {
-		return statisticMapper.disastorStat(params);
-	}
+
 	@Override
 	public List informerStats(ParamsDto params) {
 		return statisticMapper.informerStats(params);
@@ -249,8 +229,8 @@ public class StatisticServiceImpl implements StatisticService{
 		return statisticMapper.dayReceipt(params);
 	}
 	@Override
-	public List orgOrgSub(ParamsDto params,List chkArr,String orgStartDate, String orgEndDate) {
-		return statisticMapper.orgOrgSub(params,chkArr,orgStartDate,orgEndDate);
+	public List orgOrgSub(ParamsDto params) {
+		return statisticMapper.orgOrgSub(params);
 	}
 	@Override
 	public List orgType(ParamsDto params) {
@@ -262,8 +242,8 @@ public class StatisticServiceImpl implements StatisticService{
 		return statisticMapper.volunteer(params);
 	}
 	@Override
-	public List statDateCal(String sDate, String eDate) {
-		return statisticMapper.statDateCal(sDate,eDate);
+	public List statDateCal(ParamsDto params) {
+		return statisticMapper.statDateCal(params);
 	}
 	
 }

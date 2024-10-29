@@ -6,77 +6,28 @@
 <!-- 
 수정일           수정자         수정내용 
 ========= ======= ================================================= 
-2020.07.23 정다빈     최초 생성 
+2021.11.   정다빈     최초 생성
+2024.10.24 정다빈     항목별 index 부여 및 개편  
 -->
-
-	<!-- 제보유형 대제목 -->
-<select id="selectRpt" parameterType="optRptVo" resultType="record">
-		SELECT 
-			BAS_LCOD as PARENT_CODE
-			,BAS_SCOD AS CODE
-			,BAS_NAME AS CODE_NAME
-			,F_COLOR
-			,F_NAME
-			,B_COLOR
-			,B_NAME
-		FROM CODE_REPORT_TYPE
-		where BAS_LCOD='100'
-</select>
-
-	<!-- 제보수단 대제목 -->
-<select id="selectRtt" resultType="record">
-		SELECT 
-			'600' AS PARENT_CODE
-			,ID AS CODE
-			,NAME AS CODE_NAME
-		FROM CODE_REPORTMEAN_TYPE
-</select>
-
-	<!-- 제보자별 대제목 -->
-<select id="selectInfrm" parameterType="optRptVo" resultType="record">
-		SELECT 
-			'200' AS PARENT_CODE
-			,TYPE_ID AS CODE
-			,TYPE_NAME AS CODE_NAME
-		FROM CODE_INFORMER_TYPE
-</select>
-
-	<!-- 제보자별 대제목 -->
-<select id="selectArea" parameterType="optAreaVo" resultType="record">
-		SELECT 
-		'500', 
-		AREA_CODE as CODE, 
-		AREA_NAME as CODE_NAME
+	
+	<!-- 0. 전체 방송국 표출 -->
+	<select id="selectArea" parameterType="optAreaVo" resultType="record">
+		SELECT '500', AREA_CODE as CODE, AREA_NAME as CODE_NAME
 		FROM CODE_AREACODE
-</select>
-
-
-      <!-- 월별 제보 건수 -->
-     <resultMap type="statVo" id="getReceiptCntList">
-		<result property="monthVar" column="MONTH_VAR"/>
-		<result property="stateDt" column="STATE_DT"/>
-		<result property="stateCnt" column="STATE_CNT"/>
-	</resultMap>
-    <select id="getReceiptCntList" parameterType="statVo" resultMap="getReceiptCntList">
-		SELECT B.MONTH_VAR, nvl(A.STATE_YEAR,${stateDt}) as STATE_DT, NVL(A.mon_cnt, 0) MON_CNT
-		  FROM (
-		        SELECT ind_id, SUBSTR(stat_mon, 0, 4) STATE_YEAR, SUBSTR(stat_mon, 5, 6) STATE_MONTH, mon_cnt
-		          FROM stat_tbn_monrpt
-		         WHERE 1 = 1
-		         <if test="indId != null">
-                   AND ind_id = ${indId}
-		         </if>
-		           AND SUBSTR(stat_mon, 0, 4) = ${stateDt}
-		       ) A RIGHT OUTER JOIN 
-		       <![CDATA[
-               (SELECT LPAD(LEVEL, 2,'0') MONTH_VAR FROM DUAL CONNECT BY LEVEL <= 12) B
-               ]]>
-		 ON A.STATE_MONTH = B.MONTH_VAR
-		 WHERE 1 = 1
-		 ORDER BY B.MONTH_VAR ASC
-    </select>
-    
-    <!--★★★★★★ 1 & 5: 제보자별 전체건수  -->
+	</select>
+	
+	<!-- @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ -->
+	<!-- 1. 교통정보 제공대장 -->
+	<!-- 1.1 - 통신원 유형별 현황 sheet -->
+    <!-- 1.1.0  통신원 유형 title -->
+	<select id="selectInfrm" parameterType="optRptVo" resultType="record">
+			SELECT 
+				'200' AS PARENT_CODE
+				,TYPE_ID AS CODE
+				,TYPE_NAME AS CODE_NAME
+			FROM CODE_INFORMER_TYPE
+	</select>
+    <!-- 1.1.1 통신원 별 전체건수 -->
 	<select id="informerTypeAll" parameterType="params" resultType="record">
 	 SELECT 
 	 TT.CODE,SUM(TT.CNT) CNT 
@@ -90,584 +41,515 @@
 				FROM STAT_INFRM_TYPE
 				WHERE 1=1
 				AND REGION_ID = #{REGION_ID}
-				AND STAT_DATE BETWEEN #{start_date2} AND #{end_date}
-<!-- 	<choose>
-	    <when test="start_date2 !=null and start_date neq ''">
-			AND SUBSTR(STAT_DATE,0,6) = #{start_date}
-		</when>
-		<otherwise>
-			AND SUBSTR(STAT_DATE,0,6) BETWEEN to_char(add_months(sysdate,-1),'yyyymmdd') AND to_char(SYSDATE,'yyyymmdd')
-		</otherwise>
-	</choose> -->
+				AND STAT_DATE BETWEEN #{start_date} AND #{end_date}
 			) B
 		ON A.CODE=B.INFORMER_TYPE
 	)TT
     GROUP BY TT.CODE
     ORDER BY TT.CODE 
 	</select>
-	<!--★★★★★★ 1 & 5: 제보자별 자국/타국 전체건수-->
+	<!-- 1.1.2 통신원별 자국/타국 전체건수 -->
 	<select id="informerTypeOurOther" parameterType="params" resultType="record">
-	 SELECT 
-	 TT.CODE, TT.REGION_ID,SUM(TT.CNT) CNT 
-	 FROM   
- 	 (    
-		SELECT T_CODE.CODE, NVL(T_CNT.REGION_ID,#{REGION_ID}) REGION_ID, NVL(T_CNT.CNT,0) CNT
-		FROM 
-		(SELECT TYPE_ID AS CODE FROM CODE_INFORMER_TYPE) T_CODE
+		 SELECT 
+		 TT.CODE, TT.REGION_ID,SUM(TT.CNT) CNT 
+		 FROM   
+	 	 (    
+			SELECT T_CODE.CODE, NVL(T_CNT.REGION_ID,#{REGION_ID}) REGION_ID, NVL(T_CNT.CNT,0) CNT
+			FROM 
+			(SELECT TYPE_ID AS CODE FROM CODE_INFORMER_TYPE) T_CODE
+				LEFT OUTER JOIN
+					(SELECT A.REGION_ID,  A.INFORMER_TYPE, A.ALL_CNT CNT
+					FROM STAT_INFRM_TYPE A
+					WHERE 1=1
+					AND STAT_DATE BETWEEN #{start_date} AND #{end_date}
+					AND A.REGION_ID = #{REGION_ID}
+					) T_CNT
+				ON T_CODE.CODE=T_CNT.INFORMER_TYPE
+			
+			UNION ALL
+			
+			SELECT T_OCODE.CODE, NVL(T_OCNT.REGION_ID,'000') REGION_ID, NVL(T_OCNT.CNT,0) CNT
+			FROM 
+			(SELECT TYPE_ID AS CODE FROM CODE_INFORMER_TYPE) T_OCODE
+				LEFT OUTER JOIN
+					(SELECT '000' REGION_ID, A.INFORMER_TYPE, A.O_ALL_CNT CNT
+					FROM STAT_INFRM_TYPE A
+					WHERE 1=1
+					AND STAT_DATE BETWEEN #{start_date} AND #{end_date}
+					AND A.REGION_ID = #{REGION_ID}
+					) T_OCNT
+				ON T_OCODE.CODE=T_OCNT.INFORMER_TYPE
+	    )TT
+	    GROUP BY TT.CODE,TT.REGION_ID
+	    ORDER BY TT.CODE, TT.REGION_ID DESC
+	</select>
+	
+	<!-- 1.1.3 통신원 유형별 상세 데이터 -->
+	<select id="informerTypeData" parameterType="params" resultType="record">
+		WITH INFRM AS( SELECT * FROM stat_infrm_type WHERE 1=1 and REGION_ID = #{REGION_ID} AND STAT_DATE BETWEEN #{start_date} AND #{end_date} <!-- AND #{end_date} -->)
+		<!--1.1.3.1 자체처리 자국/타국-->
+	    select tt.* from(
+		select '자체처리' as type, region_id,code,SUM(CNT) CNT
+		from( 
+		select b.region_id,a.type_id as code,nvl(b.send_n,0) as cnt from code_informer_type a 
+		left join INFRM b on a.type_id=b.informer_type 
+		union all
+		select '000',a.type_id as code,nvl(b.o_send_n,0) as cnt from code_informer_type a 
+		left join INFRM b on a.type_id=b.informer_type )t GROUP BY CODE,REGION_ID ORDER BY CODE, REGION_ID DESC)tt
+		<!--1.1.3.2 방송요청 자국/타국-->
+		union all
+	    select tt.* from(
+		select '방송요청' as type, region_id,code,SUM(CNT) CNT
+		from( 
+		select b.region_id,a.type_id as code,nvl(b.send_y,0) as cnt from code_informer_type a 
+		left join INFRM b on a.type_id=b.informer_type
+		union all
+		select '000',a.type_id as code,nvl(b.o_send_y,0) as cnt from code_informer_type a left join INFRM b 
+		on a.type_id=b.informer_type )t GROUP BY CODE,REGION_ID ORDER BY CODE, REGION_ID DESC)tt
+		<!--1.1.3.3 방송:합계 자국/타국-->
+		union all
+	    select tt.* from(
+		select '방송' as type, region_id,code,SUM(CNT) CNT
+		from(
+		select b.region_id,a.type_id as code,nvl(b.broad_y,0) as cnt from code_informer_type a 
+		left join INFRM b on a.type_id=b.informer_type
+		union all
+		select '000',a.type_id as code,nvl(b.o_broad_y,0) as cnt from code_informer_type a 
+		left join INFRM b on a.type_id=b.informer_type )t GROUP BY CODE,REGION_ID ORDER BY CODE, REGION_ID DESC)tt
+		<!--1.1.3.4 방송:스튜디오(pd) 자국/타국-->
+		union all
+	    select tt.* from(
+		select '방송_STUDIO' as type, region_id,code,SUM(CNT) CNT
+		from(
+		select b.region_id,a.type_id as code,nvl(b.broad_p,0) as cnt from code_informer_type a 
+		left join INFRM b on a.type_id=b.informer_type
+		union all
+		select '000',a.type_id as code,nvl(b.o_broad_p,0) as cnt from code_informer_type a 
+		left join INFRM b on a.type_id=b.informer_type )t GROUP BY CODE,REGION_ID ORDER BY CODE, REGION_ID DESC)tt
+		<!--1.1.3.5 방송:캐스터 자국/타국-->
+		union all
+	    select tt.* from(
+		select '방송_CASTER' as type, region_id,code,SUM(CNT) CNT
+		from(
+		select b.region_id,a.type_id as code,nvl(b.broad_c,0) as cnt from code_informer_type a 
+		left join INFRM b on a.type_id=b.informer_type
+		union all
+		select '000',a.type_id as code,nvl(b.o_broad_c,0) as cnt from code_informer_type a 
+		left join INFRM b on a.type_id=b.informer_type )t GROUP BY CODE,REGION_ID ORDER BY CODE, REGION_ID DESC)tt
+		<!--1.1.3.6 비방송 자국/타국-->
+		union all
+	    select tt.* from(
+		select '비방송' as type, region_id,code,SUM(CNT) CNT
+		from(
+		select b.region_id,a.type_id as code,nvl(b.broad_n,0) as cnt from code_informer_type a 
+		left join INFRM b on a.type_id=b.informer_type
+		union all
+		select '000',a.type_id as code,nvl(b.o_broad_n,0) as cnt from code_informer_type a 
+		left join INFRM b on a.type_id=b.informer_type )t GROUP BY CODE,REGION_ID ORDER BY CODE, REGION_ID DESC)tt
+		<!--1.1.3.7 중요:전송 자국/타국-->
+		union all
+	    select tt.* from(
+		select '전송건수' as type, region_id,code,SUM(CNT) CNT
+		from(
+		select b.region_id,a.type_id as code,nvl(b.imp_y,0) as cnt from code_informer_type a 
+		left join INFRM b on a.type_id=b.informer_type
+		union all
+		select '000',a.type_id as code,nvl(b.o_imp_y,0) as cnt from code_informer_type a 
+		left join INFRM b on a.type_id=b.informer_type )t GROUP BY CODE,REGION_ID ORDER BY CODE, REGION_ID DESC)tt
+		<!--1.1.3.8 중요:방송 자국/타국-->
+		union all
+	    select tt.* from(
+		select '방송건수' as type, region_id,code,SUM(CNT) CNT
+		from(
+		select b.region_id,a.type_id as code,nvl(b.impbro_y,0) as cnt from code_informer_type a 
+		left join INFRM b on a.type_id=b.informer_type
+		union all
+		select '000',a.type_id as code,nvl(b.o_impbro_y,0) as cnt from code_informer_type a 
+		left join INFRM b on a.type_id=b.informer_type )t GROUP BY CODE,REGION_ID ORDER BY CODE, REGION_ID DESC)tt
+		<!--1.1.3.9 중요:방송:스튜디오(pd) 자국/타국-->
+		union all
+	    select tt.* from(
+		select '중요제보_STUDIO' as type, region_id,code,SUM(CNT) CNT
+		from(
+		select b.region_id,a.type_id as code,nvl(b.impbro_p,0) as cnt from code_informer_type a 
+		left join INFRM b on a.type_id=b.informer_type
+		union all
+		select '000',a.type_id as code,nvl(b.o_impbro_p,0) as cnt from code_informer_type a 
+		left join INFRM b on a.type_id=b.informer_type )t GROUP BY CODE,REGION_ID ORDER BY CODE, REGION_ID DESC)tt
+		<!--1.1.3.10 중요:방송:캐스터 자국/타국-->
+		union all
+	    select tt.* from(
+		select '중요제보_CASTER' as type, region_id,code,SUM(CNT) CNT
+		from(
+		select b.region_id,a.type_id as code,nvl(b.impbro_c,0) as cnt from code_informer_type a 
+		left join INFRM b on a.type_id=b.informer_type
+		union all
+		select '000',a.type_id as code,nvl(b.o_impbro_c,0) as cnt from code_informer_type a 
+		left join INFRM b on a.type_id=b.informer_type )t GROUP BY CODE,REGION_ID ORDER BY CODE, REGION_ID DESC)tt
+	</select>
+	
+	<!-- @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ -->
+	
+	<!-- 1.2 - 제보수단별 현황 sheet -->
+	<!-- 1.2.0 - 제보수단 title -->
+	<select id="selectRtt" resultType="record">
+			SELECT 
+				'600' AS PARENT_CODE
+				,ID AS CODE
+				,NAME AS CODE_NAME
+			FROM CODE_REPORTMEAN_TYPE
+	</select>
+	
+	<!-- 1.2.1 제보수단별 전체건수 -->
+	<select id="reportmeanTypeAll" parameterType="params" resultType="record">
+		SELECT 
+		 TT.CODE,SUM(TT.CNT) CNT 
+		 FROM   
+	 	 (    	
+		SELECT A.CODE, NVL(B.CNT,0) CNT
+		FROM (SELECT ID AS CODE FROM CODE_REPORTMEAN_TYPE) A
 			LEFT OUTER JOIN
-				(SELECT A.REGION_ID,  A.INFORMER_TYPE, A.ALL_CNT CNT
-				FROM STAT_INFRM_TYPE A
+				( SELECT REPORTMEAN_TYPE, ALL_CNT + O_ALL_CNT CNT
+					FROM STAT_RTT_TYPE
+					WHERE 1=1
+					AND REGION_ID = #{REGION_ID}
+			AND STAT_DATE BETWEEN #{start_date} AND #{end_date} 
+					) B
+			ON A.CODE=B.REPORTMEAN_TYPE
+		)TT
+	    GROUP BY TT.CODE
+	    ORDER BY TT.CODE 	
+	</select>
+	
+	<!-- 1.2.2 제보수단별 자국/타국 건수 -->
+	<select id="reportmeanTypeOurOther" parameterType="params" resultType="record">
+		 SELECT 
+		 TT.CODE, TT.REGION_ID,SUM(TT.CNT) CNT 
+		 FROM   
+	 	 (    
+		SELECT T_CODE.CODE, NVL(T_CNT.REGION_ID,#{REGION_ID}) REGION_ID, NVL(T_CNT.CNT,0) CNT
+		FROM (SELECT ID AS CODE FROM CODE_REPORTMEAN_TYPE) T_CODE
+			LEFT OUTER JOIN
+				(SELECT A.REGION_ID,  A.REPORTMEAN_TYPE, A.ALL_CNT CNT
+				FROM STAT_RTT_TYPE A
 				WHERE 1=1
-				AND STAT_DATE BETWEEN #{start_date2} AND #{end_date}
-		<!-- <choose>
-			<when test="start_date !=null and start_date neq ''">
-				AND SUBSTR(STAT_DATE,0,6) = #{start_date}
-			</when>
-			<otherwise>
-				AND SUBSTR(STAT_DATE,0,6) BETWEEN to_char(add_months(sysdate,-1),'yyyymmdd') AND to_char(SYSDATE,'yyyymmdd')
-			</otherwise>
-		</choose> -->
+				AND STAT_DATE BETWEEN #{start_date} AND #{end_date}
 				AND A.REGION_ID = #{REGION_ID}
 				) T_CNT
-			ON T_CODE.CODE=T_CNT.INFORMER_TYPE
+			ON T_CODE.CODE=T_CNT.REPORTMEAN_TYPE
 		
 		UNION ALL
 		
 		SELECT T_OCODE.CODE, NVL(T_OCNT.REGION_ID,'000') REGION_ID, NVL(T_OCNT.CNT,0) CNT
-		FROM 
-		(SELECT TYPE_ID AS CODE FROM CODE_INFORMER_TYPE) T_OCODE
+		FROM (SELECT ID AS CODE FROM CODE_REPORTMEAN_TYPE) T_OCODE
 			LEFT OUTER JOIN
-				(SELECT '000' REGION_ID, A.INFORMER_TYPE, A.O_ALL_CNT CNT
-				FROM STAT_INFRM_TYPE A
+				(SELECT '000' REGION_ID, A.REPORTMEAN_TYPE, A.O_ALL_CNT CNT
+				FROM STAT_RTT_TYPE A
 				WHERE 1=1
-				AND STAT_DATE BETWEEN #{start_date2} AND #{end_date}
-		<!-- <choose>
-			<when test="start_date !=null and start_date neq ''">
-				AND SUBSTR(STAT_DATE,0,6) = #{start_date}
-			</when>
-			<otherwise>
-				AND SUBSTR(STAT_DATE,0,6) BETWEEN to_char(add_months(sysdate,-1),'yyyymmdd') AND to_char(SYSDATE,'yyyymmdd')
-			</otherwise>
-		</choose> -->
+		AND STAT_DATE BETWEEN #{start_date} AND #{end_date}
 				AND A.REGION_ID = #{REGION_ID}
 				) T_OCNT
-			ON T_OCODE.CODE=T_OCNT.INFORMER_TYPE
-    )TT
-    GROUP BY TT.CODE,TT.REGION_ID
-    ORDER BY TT.CODE, TT.REGION_ID DESC
-	</select>
-	
-	<!--★★★★★★ 1 & 5: 제보수단별 전체건수 -->
-	<select id="reportmeanTypeAll" parameterType="params" resultType="record">
-	SELECT 
-	 TT.CODE,SUM(TT.CNT) CNT 
-	 FROM   
- 	 (    	
-	SELECT A.CODE, NVL(B.CNT,0) CNT
-	FROM (SELECT ID AS CODE FROM CODE_REPORTMEAN_TYPE) A
-		LEFT OUTER JOIN
-			( SELECT REPORTMEAN_TYPE, ALL_CNT + O_ALL_CNT CNT
-				FROM STAT_RTT_TYPE
-				WHERE 1=1
-				AND REGION_ID = #{REGION_ID}
-		<!-- <choose>
-			<when test="start_date !=null and start_date neq ''">
-				AND SUBSTR(STAT_DATE,0,6) = #{start_date}
-			</when>
-			<otherwise>
-				AND SUBSTR(STAT_DATE,0,6) BETWEEN to_char(add_months(sysdate,-1),'yyyymmdd') AND to_char(SYSDATE,'yyyymmdd')
-			</otherwise>
-		</choose> -->
-		AND STAT_DATE BETWEEN #{start_date2} AND #{end_date} 
-				) B
-		ON A.CODE=B.REPORTMEAN_TYPE
-	)TT
-    GROUP BY TT.CODE
-    ORDER BY TT.CODE 	
-	</select>
-	<!--★★★★★★ 1 & 5: 제보수단별 자국/타국 전체건수-->
-	<select id="reportmeanTypeOurOther" parameterType="params" resultType="record">
-	 SELECT 
-	 TT.CODE, TT.REGION_ID,SUM(TT.CNT) CNT 
-	 FROM   
- 	 (    
-	SELECT T_CODE.CODE, NVL(T_CNT.REGION_ID,#{REGION_ID}) REGION_ID, NVL(T_CNT.CNT,0) CNT
-	FROM (SELECT ID AS CODE FROM CODE_REPORTMEAN_TYPE) T_CODE
-		LEFT OUTER JOIN
-			(SELECT A.REGION_ID,  A.REPORTMEAN_TYPE, A.ALL_CNT CNT
-			FROM STAT_RTT_TYPE A
-			WHERE 1=1
-	<!-- <choose>
-		<when test="start_date !=null and start_date neq ''">
-			AND SUBSTR(STAT_DATE,0,6) = #{start_date}
-		</when>
-		<otherwise>
-			AND SUBSTR(STAT_DATE,0,6) BETWEEN to_char(add_months(sysdate,-1),'yyyymmdd') AND to_char(SYSDATE,'yyyymmdd')
-		</otherwise>
-	</choose> -->
-			AND STAT_DATE BETWEEN #{start_date2} AND #{end_date}
-			AND A.REGION_ID = #{REGION_ID}
-			) T_CNT
-		ON T_CODE.CODE=T_CNT.REPORTMEAN_TYPE
-	
-	UNION ALL
-	
-	SELECT T_OCODE.CODE, NVL(T_OCNT.REGION_ID,'000') REGION_ID, NVL(T_OCNT.CNT,0) CNT
-	FROM (SELECT ID AS CODE FROM CODE_REPORTMEAN_TYPE) T_OCODE
-		LEFT OUTER JOIN
-			(SELECT '000' REGION_ID, A.REPORTMEAN_TYPE, A.O_ALL_CNT CNT
-			FROM STAT_RTT_TYPE A
-			WHERE 1=1
-	<!-- <choose>
-		<when test="start_date !=null and start_date neq ''">
-			AND SUBSTR(STAT_DATE,0,6) = #{start_date}
-		</when>
-		<otherwise>
-			AND SUBSTR(STAT_DATE,0,6) BETWEEN to_char(add_months(sysdate,-1),'yyyymmdd') AND to_char(SYSDATE,'yyyymmdd')
-		</otherwise>
-	</choose> -->
-	AND STAT_DATE BETWEEN #{start_date2} AND #{end_date}
-			AND A.REGION_ID = #{REGION_ID}
-			) T_OCNT
-		ON T_OCODE.CODE=T_OCNT.REPORTMEAN_TYPE
-		)TT
-    GROUP BY TT.CODE,TT.REGION_ID
-    ORDER BY TT.CODE, TT.REGION_ID DESC
-	</select>
-	
-	<!--★★★★★★ 1 & 5: 제보유형별 전체건수 -->
-	<select id="reportTypeAll" parameterType="params" resultType="record">
-	 SELECT 
-	 TT.CODE,SUM(TT.CNT) CNT 
-	 FROM   
- 	 (   
-	SELECT A.CODE, NVL(B.CNT,0) CNT
-	FROM (SELECT BAS_SCOD AS CODE FROM CODE_REPORT_TYPE WHERE BAS_LCOD='100') A
-		LEFT OUTER JOIN
-			( SELECT REPORT_TYPE, ALL_CNT + O_ALL_CNT CNT
-				FROM STAT_RPT_TYPE
-				WHERE 1=1
-				AND REGION_ID = #{REGION_ID}
-	<!-- <choose>
-		<when test="start_date !=null and start_date neq ''">
-			AND SUBSTR(STAT_DATE,0,6) = #{start_date}
-		</when>
-		<otherwise>
-			AND SUBSTR(STAT_DATE,0,6) BETWEEN to_char(add_months(sysdate,-1),'yyyymmdd') AND to_char(SYSDATE,'yyyymmdd')
-		</otherwise>
-	</choose> -->
-	AND STAT_DATE BETWEEN #{start_date2} AND #{end_date}
-				) B
-		ON A.CODE=B.REPORT_TYPE
-	)TT
-    GROUP BY TT.CODE
-    ORDER BY TT.CODE 
-	</select>
-	<!--★★★★★★ 1 & 5: 제보유형별 자국/타국 전체건수-->
-	<select id="reportTypeOurOther" parameterType="params" resultType="record">
-	 SELECT 
-	 TT.CODE, TT.REGION_ID,SUM(TT.CNT) CNT 
-	 FROM   
- 	 ( 
-	SELECT T_CODE.CODE, NVL(T_CNT.REGION_ID,#{REGION_ID}) REGION_ID, NVL(T_CNT.CNT,0) CNT
-	FROM (SELECT BAS_SCOD AS CODE FROM CODE_REPORT_TYPE WHERE BAS_LCOD='100') T_CODE
-		LEFT OUTER JOIN
-			(SELECT A.REGION_ID,  A.REPORT_TYPE, A.ALL_CNT CNT
-			FROM STAT_RPT_TYPE A
-			WHERE 1=1
-	<!-- <choose>
-		<when test="start_date !=null and start_date neq ''">
-			AND SUBSTR(STAT_DATE,0,6) = #{start_date}
-		</when>
-		<otherwise>
-			AND SUBSTR(STAT_DATE,0,6) BETWEEN to_char(add_months(sysdate,-1),'yyyymmdd') AND to_char(SYSDATE,'yyyymmdd')
-		</otherwise>
-	</choose> -->
-	AND STAT_DATE BETWEEN #{start_date2} AND #{end_date}
-			AND A.REGION_ID = #{REGION_ID}
-			) T_CNT
-		ON T_CODE.CODE=T_CNT.REPORT_TYPE
-	
-	UNION ALL
-	
-	SELECT T_OCODE.CODE, NVL(T_OCNT.REGION_ID,'000') REGION_ID, NVL(T_OCNT.CNT,0) CNT
-	FROM (SELECT BAS_SCOD AS CODE FROM CODE_REPORT_TYPE WHERE BAS_LCOD='100') T_OCODE
-		LEFT OUTER JOIN
-			(SELECT '000' REGION_ID, A.REPORT_TYPE, A.O_ALL_CNT CNT
-			FROM STAT_RPT_TYPE A
-			WHERE 1=1
-			<!-- <choose>
-				<when test="start_date !=null and start_date neq ''">
-					AND SUBSTR(STAT_DATE,0,6) = #{start_date}
-				</when>
-				<otherwise>
-					AND SUBSTR(STAT_DATE,0,6) BETWEEN to_char(add_months(sysdate,-1),'yyyymmdd') AND to_char(SYSDATE,'yyyymmdd')
-				</otherwise>
-			</choose> -->
-			AND STAT_DATE BETWEEN #{start_date2} AND #{end_date}
-			AND A.REGION_ID = #{REGION_ID}
-			) T_OCNT
-		ON T_OCODE.CODE=T_OCNT.REPORT_TYPE
-	)TT
-    GROUP BY TT.CODE,TT.REGION_ID
-    ORDER BY TT.CODE, TT.REGION_ID DESC
-	</select>
-	
-	<!-- ###### 표준화통계:교통정보 제공대장 ##### -->
-	<!-- 1.제보자별 현황 -->
-	<select id="informerTypeData" parameterType="params" resultType="record">
-	WITH INFRM AS( SELECT * FROM stat_infrm_type WHERE 1=1 and REGION_ID = #{REGION_ID} AND STAT_DATE BETWEEN #{start_date2} AND #{end_date} <!-- AND #{end_date} -->)
-	<!--1.1 자체처리 자국/타국-->
-    select tt.* from(
-	select '자체처리' as type, region_id,code,SUM(CNT) CNT
-	from( 
-	select b.region_id,a.type_id as code,nvl(b.send_n,0) as cnt from code_informer_type a 
-	left join INFRM b on a.type_id=b.informer_type 
-	union all
-	select '000',a.type_id as code,nvl(b.o_send_n,0) as cnt from code_informer_type a 
-	left join INFRM b on a.type_id=b.informer_type )t GROUP BY CODE,REGION_ID ORDER BY CODE, REGION_ID DESC)tt
-	<!--1.2 방송요청 자국/타국-->
-	union all
-    select tt.* from(
-	select '방송요청' as type, region_id,code,SUM(CNT) CNT
-	from( 
-	select b.region_id,a.type_id as code,nvl(b.send_y,0) as cnt from code_informer_type a 
-	left join INFRM b on a.type_id=b.informer_type
-	union all
-	select '000',a.type_id as code,nvl(b.o_send_y,0) as cnt from code_informer_type a left join INFRM b 
-	on a.type_id=b.informer_type )t GROUP BY CODE,REGION_ID ORDER BY CODE, REGION_ID DESC)tt
-	<!--1.3 방송:합계 자국/타국-->
-	union all
-    select tt.* from(
-	select '방송' as type, region_id,code,SUM(CNT) CNT
-	from(
-	select b.region_id,a.type_id as code,nvl(b.broad_y,0) as cnt from code_informer_type a 
-	left join INFRM b on a.type_id=b.informer_type
-	union all
-	select '000',a.type_id as code,nvl(b.o_broad_y,0) as cnt from code_informer_type a 
-	left join INFRM b on a.type_id=b.informer_type )t GROUP BY CODE,REGION_ID ORDER BY CODE, REGION_ID DESC)tt
-	<!--1.4 방송:스튜디오(pd) 자국/타국-->
-	union all
-    select tt.* from(
-	select '방송_STUDIO' as type, region_id,code,SUM(CNT) CNT
-	from(
-	select b.region_id,a.type_id as code,nvl(b.broad_p,0) as cnt from code_informer_type a 
-	left join INFRM b on a.type_id=b.informer_type
-	union all
-	select '000',a.type_id as code,nvl(b.o_broad_p,0) as cnt from code_informer_type a 
-	left join INFRM b on a.type_id=b.informer_type )t GROUP BY CODE,REGION_ID ORDER BY CODE, REGION_ID DESC)tt
-	<!--1.5 방송:캐스터 자국/타국-->
-	union all
-    select tt.* from(
-	select '방송_CASTER' as type, region_id,code,SUM(CNT) CNT
-	from(
-	select b.region_id,a.type_id as code,nvl(b.broad_c,0) as cnt from code_informer_type a 
-	left join INFRM b on a.type_id=b.informer_type
-	union all
-	select '000',a.type_id as code,nvl(b.o_broad_c,0) as cnt from code_informer_type a 
-	left join INFRM b on a.type_id=b.informer_type )t GROUP BY CODE,REGION_ID ORDER BY CODE, REGION_ID DESC)tt
-	<!--1.6 비방송 자국/타국-->
-	union all
-    select tt.* from(
-	select '비방송' as type, region_id,code,SUM(CNT) CNT
-	from(
-	select b.region_id,a.type_id as code,nvl(b.broad_n,0) as cnt from code_informer_type a 
-	left join INFRM b on a.type_id=b.informer_type
-	union all
-	select '000',a.type_id as code,nvl(b.o_broad_n,0) as cnt from code_informer_type a 
-	left join INFRM b on a.type_id=b.informer_type )t GROUP BY CODE,REGION_ID ORDER BY CODE, REGION_ID DESC)tt
-	<!--1.7 중요:전송 자국/타국-->
-	union all
-    select tt.* from(
-	select '전송건수' as type, region_id,code,SUM(CNT) CNT
-	from(
-	select b.region_id,a.type_id as code,nvl(b.imp_y,0) as cnt from code_informer_type a 
-	left join INFRM b on a.type_id=b.informer_type
-	union all
-	select '000',a.type_id as code,nvl(b.o_imp_y,0) as cnt from code_informer_type a 
-	left join INFRM b on a.type_id=b.informer_type )t GROUP BY CODE,REGION_ID ORDER BY CODE, REGION_ID DESC)tt
-	<!--1.8 중요:방송 자국/타국-->
-	union all
-    select tt.* from(
-	select '방송건수' as type, region_id,code,SUM(CNT) CNT
-	from(
-	select b.region_id,a.type_id as code,nvl(b.impbro_y,0) as cnt from code_informer_type a 
-	left join INFRM b on a.type_id=b.informer_type
-	union all
-	select '000',a.type_id as code,nvl(b.o_impbro_y,0) as cnt from code_informer_type a 
-	left join INFRM b on a.type_id=b.informer_type )t GROUP BY CODE,REGION_ID ORDER BY CODE, REGION_ID DESC)tt
-	<!--1.9 중요:방송:스튜디오(pd) 자국/타국-->
-	union all
-    select tt.* from(
-	select '중요제보_STUDIO' as type, region_id,code,SUM(CNT) CNT
-	from(
-	select b.region_id,a.type_id as code,nvl(b.impbro_p,0) as cnt from code_informer_type a 
-	left join INFRM b on a.type_id=b.informer_type
-	union all
-	select '000',a.type_id as code,nvl(b.o_impbro_p,0) as cnt from code_informer_type a 
-	left join INFRM b on a.type_id=b.informer_type )t GROUP BY CODE,REGION_ID ORDER BY CODE, REGION_ID DESC)tt
-	<!--1.10 중요:방송:캐스터 자국/타국-->
-	union all
-    select tt.* from(
-	select '중요제보_CASTER' as type, region_id,code,SUM(CNT) CNT
-	from(
-	select b.region_id,a.type_id as code,nvl(b.impbro_c,0) as cnt from code_informer_type a 
-	left join INFRM b on a.type_id=b.informer_type
-	union all
-	select '000',a.type_id as code,nvl(b.o_impbro_c,0) as cnt from code_informer_type a 
-	left join INFRM b on a.type_id=b.informer_type )t GROUP BY CODE,REGION_ID ORDER BY CODE, REGION_ID DESC)tt
-    
-	</select>
-	
-	<!-- 나.제보수단별 현황 -->
-	<select id="reportmeanTypeData" parameterType="params" resultType="record">
-	WITH RTT AS( SELECT * FROM stat_rtt_type WHERE 1=1 and REGION_ID = #{REGION_ID} AND STAT_DATE BETWEEN #{start_date2} AND #{end_date})
-	<!--2.1 자체처리 자국/타국-->
-    select tt.* from(
-	select '자체처리' as type, region_id,code,SUM(CNT) CNT
-	from( 
-	select b.region_id,a.id as code,nvl(b.send_n,0) as cnt from code_REPORTMEAN_TYPE a 
-	left join RTT b on a.id=b.REPORTMEAN_TYPE 
-	union all
-	select '000',a.id as code,nvl(b.o_send_n,0) as cnt from code_REPORTMEAN_TYPE a 
-	left join RTT b on a.id=b.REPORTMEAN_TYPE )t GROUP BY CODE,REGION_ID ORDER BY CODE, REGION_ID DESC)tt
-	<!--2.2 방송요청 자국/타국-->
-	union all
-    select tt.* from(
-	select '방송요청' as type, region_id,code,SUM(CNT) CNT
-	from( 
-	select b.region_id,a.id as code,nvl(b.send_y,0) as cnt from code_REPORTMEAN_TYPE a 
-	left join RTT b on a.id=b.REPORTMEAN_TYPE
-	union all
-	select '000',a.id as code,nvl(b.o_send_y,0) as cnt from code_REPORTMEAN_TYPE a left join RTT b 
-	on a.id=b.REPORTMEAN_TYPE )t GROUP BY CODE,REGION_ID ORDER BY CODE, REGION_ID DESC)tt
-	<!--2.3 방송:합계 자국/타국-->
-	union all
-    select tt.* from(
-	select '방송' as type, region_id,code,SUM(CNT) CNT
-	from(
-	select b.region_id,a.id as code,nvl(b.broad_y,0) as cnt from code_REPORTMEAN_TYPE a 
-	left join RTT b on a.id=b.REPORTMEAN_TYPE
-	union all
-	select '000',a.id as code,nvl(b.o_broad_y,0) as cnt from code_REPORTMEAN_TYPE a 
-	left join RTT b on a.id=b.REPORTMEAN_TYPE )t GROUP BY CODE,REGION_ID ORDER BY CODE, REGION_ID DESC)tt
-	<!--2.4 방송:스튜디오(pd) 자국/타국-->
-	union all
-    select tt.* from(
-	select '방송_STUDIO' as type, region_id,code,SUM(CNT) CNT
-	from(
-	select b.region_id,a.id as code,nvl(b.broad_p,0) as cnt from code_REPORTMEAN_TYPE a 
-	left join RTT b on a.id=b.REPORTMEAN_TYPE
-	union all
-	select '000',a.id as code,nvl(b.o_broad_p,0) as cnt from code_REPORTMEAN_TYPE a 
-	left join RTT b on a.id=b.REPORTMEAN_TYPE )t GROUP BY CODE,REGION_ID ORDER BY CODE, REGION_ID DESC)tt
-	<!--2.5 방송:캐스터 자국/타국-->
-	union all
-    select tt.* from(
-	select '방송_CASTER' as type, region_id,code,SUM(CNT) CNT
-	from(
-	select b.region_id,a.id as code,nvl(b.broad_c,0) as cnt from code_REPORTMEAN_TYPE a 
-	left join RTT b on a.id=b.REPORTMEAN_TYPE
-	union all
-	select '000',a.id as code,nvl(b.o_broad_c,0) as cnt from code_REPORTMEAN_TYPE a 
-	left join RTT b on a.id=b.REPORTMEAN_TYPE )t GROUP BY CODE,REGION_ID ORDER BY CODE, REGION_ID DESC)tt
-	<!--2.6 비방송 자국/타국-->
-	union all
-    select tt.* from(
-	select '비방송' as type, region_id,code,SUM(CNT) CNT
-	from(
-	select b.region_id,a.id as code,nvl(b.broad_n,0) as cnt from code_REPORTMEAN_TYPE a 
-	left join RTT b on a.id=b.REPORTMEAN_TYPE
-	union all
-	select '000',a.id as code,nvl(b.o_broad_n,0) as cnt from code_REPORTMEAN_TYPE a 
-	left join RTT b on a.id=b.REPORTMEAN_TYPE )t GROUP BY CODE,REGION_ID ORDER BY CODE, REGION_ID DESC)tt
-	<!--2.7 중요:전송 자국/타국-->
-	union all
-    select tt.* from(
-	select '전송건수' as type, region_id,code,SUM(CNT) CNT
-	from(
-	select b.region_id,a.id as code,nvl(b.imp_y,0) as cnt from code_REPORTMEAN_TYPE a 
-	left join RTT b on a.id=b.REPORTMEAN_TYPE
-	union all
-	select '000',a.id as code,nvl(b.o_imp_y,0) as cnt from code_REPORTMEAN_TYPE a 
-	left join RTT b on a.id=b.REPORTMEAN_TYPE )t GROUP BY CODE,REGION_ID ORDER BY CODE, REGION_ID DESC)tt
-	<!--2.8 중요:방송 자국/타국-->
-	union all
-    select tt.* from(
-	select '방송건수' as type, region_id,code,SUM(CNT) CNT
-	from(
-	select b.region_id,a.id as code,nvl(b.impbro_y,0) as cnt from code_REPORTMEAN_TYPE a 
-	left join RTT b on a.id=b.REPORTMEAN_TYPE
-	union all
-	select '000',a.id as code,nvl(b.o_impbro_y,0) as cnt from code_REPORTMEAN_TYPE a 
-	left join RTT b on a.id=b.REPORTMEAN_TYPE )t GROUP BY CODE,REGION_ID ORDER BY CODE, REGION_ID DESC)tt
-	<!--2.9 중요:방송:스튜디오(pd) 자국/타국-->
-	union all
-    select tt.* from(
-	select '중요제보_STUDIO' as type, region_id,code,SUM(CNT) CNT
-	from(
-	select b.region_id,a.id as code,nvl(b.impbro_p,0) as cnt from code_REPORTMEAN_TYPE a 
-	left join RTT b on a.id=b.REPORTMEAN_TYPE
-	union all
-	select '000',a.id as code,nvl(b.o_impbro_p,0) as cnt from code_REPORTMEAN_TYPE a 
-	left join RTT b on a.id=b.REPORTMEAN_TYPE )t GROUP BY CODE,REGION_ID ORDER BY CODE, REGION_ID DESC)tt
-	<!--2.10 중요:방송:캐스터 자국/타국-->
-	union all
-    select tt.* from(
-	select '중요제보_CASTER' as type, region_id,code,SUM(CNT) CNT
-	from(
-	select b.region_id,a.id as code,nvl(b.impbro_c,0) as cnt from code_REPORTMEAN_TYPE a 
-	left join RTT b on a.id=b.REPORTMEAN_TYPE
-	union all
-	select '000',a.id as code,nvl(b.o_impbro_c,0) as cnt from code_REPORTMEAN_TYPE a 
-	left join RTT b on a.id=b.REPORTMEAN_TYPE )t GROUP BY CODE,REGION_ID ORDER BY CODE, REGION_ID DESC)tt
-    
-	</select>
-	
-	<!-- 다.제보유형별 현황 -->
-	<select id="reportTypeData" parameterType="params" resultType="record">
-	WITH RPT AS( SELECT * FROM stat_rpt_type WHERE 1=1 and REGION_ID = #{REGION_ID} AND STAT_DATE BETWEEN #{start_date2} AND #{end_date})
-	,CRT AS (select * from code_REPORT_TYPE where bas_lcod='100')
-	
-	<!--3.1 자체처리 자국/타국-->
-    select tt.* from(
-	select '자체처리' as type, region_id,code,SUM(CNT) CNT
-	from( 
-	select b.region_id,a.bas_scod as code,nvl(b.send_n,0) as cnt from CRT a 
-	left join RPT b on a.bas_scod=b.REPORT_TYPE 
-	union all
-	select '000',a.bas_scod as code,nvl(b.o_send_n,0) as cnt from CRT a 
-	left join RPT b on a.bas_scod=b.REPORT_TYPE )t GROUP BY CODE,REGION_ID ORDER BY CODE, REGION_ID DESC)tt
-	<!--3.2 방송요청 자국/타국-->
-	union all
-    select tt.* from(
-	select '방송요청' as type, region_id,code,SUM(CNT) CNT
-	from( 
-	select b.region_id,a.bas_scod as code,nvl(b.send_y,0) as cnt from CRT a 
-	left join RPT b on a.bas_scod=b.REPORT_TYPE
-	union all
-	select '000',a.bas_scod as code,nvl(b.o_send_y,0) as cnt from CRT a left join RPT b 
-	on a.bas_scod=b.REPORT_TYPE )t GROUP BY CODE,REGION_ID ORDER BY CODE, REGION_ID DESC)tt
-	<!--3.3 방송:합계 자국/타국-->
-	union all
-    select tt.* from(
-	select '방송' as type, region_id,code,SUM(CNT) CNT
-	from(
-	select b.region_id,a.bas_scod as code,nvl(b.broad_y,0) as cnt from CRT a 
-	left join RPT b on a.bas_scod=b.REPORT_TYPE
-	union all
-	select '000',a.bas_scod as code,nvl(b.o_broad_y,0) as cnt from CRT a 
-	left join RPT b on a.bas_scod=b.REPORT_TYPE )t GROUP BY CODE,REGION_ID ORDER BY CODE, REGION_ID DESC)tt
-	<!--3.4 방송:스튜디오(pd) 자국/타국-->
-	union all
-    select tt.* from(
-	select '방송_STUDIO' as type, region_id,code,SUM(CNT) CNT
-	from(
-	select b.region_id,a.bas_scod as code,nvl(b.broad_p,0) as cnt from CRT a 
-	left join RPT b on a.bas_scod=b.REPORT_TYPE
-	union all
-	select '000',a.bas_scod as code,nvl(b.o_broad_p,0) as cnt from CRT a 
-	left join RPT b on a.bas_scod=b.REPORT_TYPE )t GROUP BY CODE,REGION_ID ORDER BY CODE, REGION_ID DESC)tt
-	<!--3.5 방송:캐스터 자국/타국-->
-	union all
-    select tt.* from(
-	select '방송_CASTER' as type, region_id,code,SUM(CNT) CNT
-	from(
-	select b.region_id,a.bas_scod as code,nvl(b.broad_c,0) as cnt from CRT a 
-	left join RPT b on a.bas_scod=b.REPORT_TYPE
-	union all
-	select '000',a.bas_scod as code,nvl(b.o_broad_c,0) as cnt from CRT a 
-	left join RPT b on a.bas_scod=b.REPORT_TYPE )t GROUP BY CODE,REGION_ID ORDER BY CODE, REGION_ID DESC)tt
-	<!--3.6 비방송 자국/타국-->
-	union all
-    select tt.* from(
-	select '비방송' as type, region_id,code,SUM(CNT) CNT
-	from(
-	select b.region_id,a.bas_scod as code,nvl(b.broad_n,0) as cnt from CRT a 
-	left join RPT b on a.bas_scod=b.REPORT_TYPE
-	union all
-	select '000',a.bas_scod as code,nvl(b.o_broad_n,0) as cnt from CRT a 
-	left join RPT b on a.bas_scod=b.REPORT_TYPE )t GROUP BY CODE,REGION_ID ORDER BY CODE, REGION_ID DESC)tt
-	<!--3.7 중요:전송 자국/타국-->
-	union all
-    select tt.* from(
-	select '전송건수' as type, region_id,code,SUM(CNT) CNT
-	from(
-	select b.region_id,a.bas_scod as code,nvl(b.imp_y,0) as cnt from CRT a 
-	left join RPT b on a.bas_scod=b.REPORT_TYPE
-	union all
-	select '000',a.bas_scod as code,nvl(b.o_imp_y,0) as cnt from CRT a 
-	left join RPT b on a.bas_scod=b.REPORT_TYPE )t GROUP BY CODE,REGION_ID ORDER BY CODE, REGION_ID DESC)tt
-	<!--3.8 중요:방송 자국/타국-->
-	union all
-    select tt.* from(
-	select '방송건수' as type, region_id,code,SUM(CNT) CNT
-	from(
-	select b.region_id,a.bas_scod as code,nvl(b.impbro_y,0) as cnt from CRT a 
-	left join RPT b on a.bas_scod=b.REPORT_TYPE
-	union all
-	select '000',a.bas_scod as code,nvl(b.o_impbro_y,0) as cnt from CRT a 
-	left join RPT b on a.bas_scod=b.REPORT_TYPE )t GROUP BY CODE,REGION_ID ORDER BY CODE, REGION_ID DESC)tt
-	<!--3.9 중요:방송:스튜디오(pd) 자국/타국-->
-	union all
-    select tt.* from(
-	select '중요제보_STUDIO' as type, region_id,code,SUM(CNT) CNT
-	from(
-	select b.region_id,a.bas_scod as code,nvl(b.impbro_p,0) as cnt from CRT a 
-	left join RPT b on a.bas_scod=b.REPORT_TYPE
-	union all
-	select '000',a.bas_scod as code,nvl(b.o_impbro_p,0) as cnt from CRT a 
-	left join RPT b on a.bas_scod=b.REPORT_TYPE )t GROUP BY CODE,REGION_ID ORDER BY CODE, REGION_ID DESC)tt
-	<!--3.10 중요:방송:캐스터 자국/타국-->
-	union all
-    select tt.* from(
-	select '중요제보_CASTER' as type, region_id,code,SUM(CNT) CNT
-	from(
-	select b.region_id,a.bas_scod as code,nvl(b.impbro_c,0) as cnt from CRT a 
-	left join RPT b on a.bas_scod=b.REPORT_TYPE
-	union all
-	select '000',a.bas_scod as code,nvl(b.o_impbro_c,0) as cnt from CRT a 
-	left join RPT b on a.bas_scod=b.REPORT_TYPE )t GROUP BY CODE,REGION_ID ORDER BY CODE, REGION_ID DESC)tt
+			ON T_OCODE.CODE=T_OCNT.REPORTMEAN_TYPE
+			)TT
+	    GROUP BY TT.CODE,TT.REGION_ID
+	    ORDER BY TT.CODE, TT.REGION_ID DESC
 	</select>
 
+	<!-- 1.2.3 제보수단별 상세 데이터 -->
+	<select id="reportmeanTypeData" parameterType="params" resultType="record">
+		WITH RTT AS( SELECT * FROM stat_rtt_type WHERE 1=1 and REGION_ID = #{REGION_ID} AND STAT_DATE BETWEEN #{start_date} AND #{end_date})
+		<!--1.2.3.1 자체처리 자국/타국-->
+	    select tt.* from(
+		select '자체처리' as type, region_id,code,SUM(CNT) CNT
+		from( 
+		select b.region_id,a.id as code,nvl(b.send_n,0) as cnt from code_REPORTMEAN_TYPE a 
+		left join RTT b on a.id=b.REPORTMEAN_TYPE 
+		union all
+		select '000',a.id as code,nvl(b.o_send_n,0) as cnt from code_REPORTMEAN_TYPE a 
+		left join RTT b on a.id=b.REPORTMEAN_TYPE )t GROUP BY CODE,REGION_ID ORDER BY CODE, REGION_ID DESC)tt
+		<!--1.2.3.2 방송요청 자국/타국-->
+		union all
+	    select tt.* from(
+		select '방송요청' as type, region_id,code,SUM(CNT) CNT
+		from( 
+		select b.region_id,a.id as code,nvl(b.send_y,0) as cnt from code_REPORTMEAN_TYPE a 
+		left join RTT b on a.id=b.REPORTMEAN_TYPE
+		union all
+		select '000',a.id as code,nvl(b.o_send_y,0) as cnt from code_REPORTMEAN_TYPE a left join RTT b 
+		on a.id=b.REPORTMEAN_TYPE )t GROUP BY CODE,REGION_ID ORDER BY CODE, REGION_ID DESC)tt
+		<!--1.2.3.3 방송:합계 자국/타국-->
+		union all
+	    select tt.* from(
+		select '방송' as type, region_id,code,SUM(CNT) CNT
+		from(
+		select b.region_id,a.id as code,nvl(b.broad_y,0) as cnt from code_REPORTMEAN_TYPE a 
+		left join RTT b on a.id=b.REPORTMEAN_TYPE
+		union all
+		select '000',a.id as code,nvl(b.o_broad_y,0) as cnt from code_REPORTMEAN_TYPE a 
+		left join RTT b on a.id=b.REPORTMEAN_TYPE )t GROUP BY CODE,REGION_ID ORDER BY CODE, REGION_ID DESC)tt
+		<!--1.2.3.4 방송:스튜디오(pd) 자국/타국-->
+		union all
+	    select tt.* from(
+		select '방송_STUDIO' as type, region_id,code,SUM(CNT) CNT
+		from(
+		select b.region_id,a.id as code,nvl(b.broad_p,0) as cnt from code_REPORTMEAN_TYPE a 
+		left join RTT b on a.id=b.REPORTMEAN_TYPE
+		union all
+		select '000',a.id as code,nvl(b.o_broad_p,0) as cnt from code_REPORTMEAN_TYPE a 
+		left join RTT b on a.id=b.REPORTMEAN_TYPE )t GROUP BY CODE,REGION_ID ORDER BY CODE, REGION_ID DESC)tt
+		<!--1.2.3.5 방송:캐스터 자국/타국-->
+		union all
+	    select tt.* from(
+		select '방송_CASTER' as type, region_id,code,SUM(CNT) CNT
+		from(
+		select b.region_id,a.id as code,nvl(b.broad_c,0) as cnt from code_REPORTMEAN_TYPE a 
+		left join RTT b on a.id=b.REPORTMEAN_TYPE
+		union all
+		select '000',a.id as code,nvl(b.o_broad_c,0) as cnt from code_REPORTMEAN_TYPE a 
+		left join RTT b on a.id=b.REPORTMEAN_TYPE )t GROUP BY CODE,REGION_ID ORDER BY CODE, REGION_ID DESC)tt
+		<!--1.2.3.6 비방송 자국/타국-->
+		union all
+	    select tt.* from(
+		select '비방송' as type, region_id,code,SUM(CNT) CNT
+		from(
+		select b.region_id,a.id as code,nvl(b.broad_n,0) as cnt from code_REPORTMEAN_TYPE a 
+		left join RTT b on a.id=b.REPORTMEAN_TYPE
+		union all
+		select '000',a.id as code,nvl(b.o_broad_n,0) as cnt from code_REPORTMEAN_TYPE a 
+		left join RTT b on a.id=b.REPORTMEAN_TYPE )t GROUP BY CODE,REGION_ID ORDER BY CODE, REGION_ID DESC)tt
+		<!--1.2.3.7 중요:전송 자국/타국-->
+		union all
+	    select tt.* from(
+		select '전송건수' as type, region_id,code,SUM(CNT) CNT
+		from(
+		select b.region_id,a.id as code,nvl(b.imp_y,0) as cnt from code_REPORTMEAN_TYPE a 
+		left join RTT b on a.id=b.REPORTMEAN_TYPE
+		union all
+		select '000',a.id as code,nvl(b.o_imp_y,0) as cnt from code_REPORTMEAN_TYPE a 
+		left join RTT b on a.id=b.REPORTMEAN_TYPE )t GROUP BY CODE,REGION_ID ORDER BY CODE, REGION_ID DESC)tt
+		<!--1.2.3.8 중요:방송 자국/타국-->
+		union all
+	    select tt.* from(
+		select '방송건수' as type, region_id,code,SUM(CNT) CNT
+		from(
+		select b.region_id,a.id as code,nvl(b.impbro_y,0) as cnt from code_REPORTMEAN_TYPE a 
+		left join RTT b on a.id=b.REPORTMEAN_TYPE
+		union all
+		select '000',a.id as code,nvl(b.o_impbro_y,0) as cnt from code_REPORTMEAN_TYPE a 
+		left join RTT b on a.id=b.REPORTMEAN_TYPE )t GROUP BY CODE,REGION_ID ORDER BY CODE, REGION_ID DESC)tt
+		<!--1.2.3.9 중요:방송:스튜디오(pd) 자국/타국-->
+		union all
+	    select tt.* from(
+		select '중요제보_STUDIO' as type, region_id,code,SUM(CNT) CNT
+		from(
+		select b.region_id,a.id as code,nvl(b.impbro_p,0) as cnt from code_REPORTMEAN_TYPE a 
+		left join RTT b on a.id=b.REPORTMEAN_TYPE
+		union all
+		select '000',a.id as code,nvl(b.o_impbro_p,0) as cnt from code_REPORTMEAN_TYPE a 
+		left join RTT b on a.id=b.REPORTMEAN_TYPE )t GROUP BY CODE,REGION_ID ORDER BY CODE, REGION_ID DESC)tt
+		<!--1.2.3.10 중요:방송:캐스터 자국/타국-->
+		union all
+	    select tt.* from(
+		select '중요제보_CASTER' as type, region_id,code,SUM(CNT) CNT
+		from(
+		select b.region_id,a.id as code,nvl(b.impbro_c,0) as cnt from code_REPORTMEAN_TYPE a 
+		left join RTT b on a.id=b.REPORTMEAN_TYPE
+		union all
+		select '000',a.id as code,nvl(b.o_impbro_c,0) as cnt from code_REPORTMEAN_TYPE a 
+		left join RTT b on a.id=b.REPORTMEAN_TYPE )t GROUP BY CODE,REGION_ID ORDER BY CODE, REGION_ID DESC)tt
+	</select>
+	
+	<!-- @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ -->
+	
+	<!-- 1.3 - 제보유형별 현황 sheet -->
+	<!-- 1.3.0 - 제보유형별 title -->
+	<select id="selectRpt" parameterType="optRptVo" resultType="record">
+			SELECT 
+				BAS_LCOD as PARENT_CODE
+				,BAS_SCOD AS CODE
+				,BAS_NAME AS CODE_NAME
+				,F_COLOR
+				,F_NAME
+				,B_COLOR
+				,B_NAME
+			FROM CODE_REPORT_TYPE
+			where BAS_LCOD='100'
+	</select>
+	<!-- 1.3.1 제보유형별 전체건수 -->
+	<select id="reportTypeAll" parameterType="params" resultType="record">
+		 SELECT 
+		 TT.CODE,SUM(TT.CNT) CNT 
+		 FROM   
+	 	 (   
+		SELECT A.CODE, NVL(B.CNT,0) CNT
+		FROM (SELECT BAS_SCOD AS CODE FROM CODE_REPORT_TYPE WHERE BAS_LCOD='100') A
+			LEFT OUTER JOIN
+				( SELECT REPORT_TYPE, ALL_CNT + O_ALL_CNT CNT
+					FROM STAT_RPT_TYPE
+					WHERE 1=1
+					AND REGION_ID = #{REGION_ID}
+		AND STAT_DATE BETWEEN #{start_date} AND #{end_date}
+					) B
+			ON A.CODE=B.REPORT_TYPE
+		)TT
+	    GROUP BY TT.CODE
+	    ORDER BY TT.CODE 
+	</select>
+	<!-- 1.3.2 제보유형별 자국/타국 건수 -->
+	<select id="reportTypeOurOther" parameterType="params" resultType="record">
+		 SELECT 
+		 TT.CODE, TT.REGION_ID,SUM(TT.CNT) CNT 
+		 FROM   
+	 	 ( 
+		SELECT T_CODE.CODE, NVL(T_CNT.REGION_ID,#{REGION_ID}) REGION_ID, NVL(T_CNT.CNT,0) CNT
+		FROM (SELECT BAS_SCOD AS CODE FROM CODE_REPORT_TYPE WHERE BAS_LCOD='100') T_CODE
+			LEFT OUTER JOIN
+				(SELECT A.REGION_ID,  A.REPORT_TYPE, A.ALL_CNT CNT
+				FROM STAT_RPT_TYPE A
+				WHERE 1=1
+		AND STAT_DATE BETWEEN #{start_date} AND #{end_date}
+				AND A.REGION_ID = #{REGION_ID}
+				) T_CNT
+			ON T_CODE.CODE=T_CNT.REPORT_TYPE
+		
+		UNION ALL
+		
+		SELECT T_OCODE.CODE, NVL(T_OCNT.REGION_ID,'000') REGION_ID, NVL(T_OCNT.CNT,0) CNT
+		FROM (SELECT BAS_SCOD AS CODE FROM CODE_REPORT_TYPE WHERE BAS_LCOD='100') T_OCODE
+			LEFT OUTER JOIN
+				(SELECT '000' REGION_ID, A.REPORT_TYPE, A.O_ALL_CNT CNT
+				FROM STAT_RPT_TYPE A
+				WHERE 1=1
+				AND STAT_DATE BETWEEN #{start_date} AND #{end_date}
+				AND A.REGION_ID = #{REGION_ID}
+				) T_OCNT
+			ON T_OCODE.CODE=T_OCNT.REPORT_TYPE
+		)TT
+	    GROUP BY TT.CODE,TT.REGION_ID
+	    ORDER BY TT.CODE, TT.REGION_ID DESC
+	</select>
+	
+	<!-- 1.3.3 제보유형별 상세 데이터 -->
+	<select id="reportTypeData" parameterType="params" resultType="record">
+		WITH RPT AS( SELECT * FROM stat_rpt_type WHERE 1=1 and REGION_ID = #{REGION_ID} AND STAT_DATE BETWEEN #{start_date} AND #{end_date})
+		,CRT AS (select * from code_REPORT_TYPE where bas_lcod='100')
+		
+		<!--3.1 자체처리 자국/타국-->
+	    select tt.* from(
+		select '자체처리' as type, region_id,code,SUM(CNT) CNT
+		from( 
+		select b.region_id,a.bas_scod as code,nvl(b.send_n,0) as cnt from CRT a 
+		left join RPT b on a.bas_scod=b.REPORT_TYPE 
+		union all
+		select '000',a.bas_scod as code,nvl(b.o_send_n,0) as cnt from CRT a 
+		left join RPT b on a.bas_scod=b.REPORT_TYPE )t GROUP BY CODE,REGION_ID ORDER BY CODE, REGION_ID DESC)tt
+		<!--3.2 방송요청 자국/타국-->
+		union all
+	    select tt.* from(
+		select '방송요청' as type, region_id,code,SUM(CNT) CNT
+		from( 
+		select b.region_id,a.bas_scod as code,nvl(b.send_y,0) as cnt from CRT a 
+		left join RPT b on a.bas_scod=b.REPORT_TYPE
+		union all
+		select '000',a.bas_scod as code,nvl(b.o_send_y,0) as cnt from CRT a left join RPT b 
+		on a.bas_scod=b.REPORT_TYPE )t GROUP BY CODE,REGION_ID ORDER BY CODE, REGION_ID DESC)tt
+		<!--3.3 방송:합계 자국/타국-->
+		union all
+	    select tt.* from(
+		select '방송' as type, region_id,code,SUM(CNT) CNT
+		from(
+		select b.region_id,a.bas_scod as code,nvl(b.broad_y,0) as cnt from CRT a 
+		left join RPT b on a.bas_scod=b.REPORT_TYPE
+		union all
+		select '000',a.bas_scod as code,nvl(b.o_broad_y,0) as cnt from CRT a 
+		left join RPT b on a.bas_scod=b.REPORT_TYPE )t GROUP BY CODE,REGION_ID ORDER BY CODE, REGION_ID DESC)tt
+		<!--3.4 방송:스튜디오(pd) 자국/타국-->
+		union all
+	    select tt.* from(
+		select '방송_STUDIO' as type, region_id,code,SUM(CNT) CNT
+		from(
+		select b.region_id,a.bas_scod as code,nvl(b.broad_p,0) as cnt from CRT a 
+		left join RPT b on a.bas_scod=b.REPORT_TYPE
+		union all
+		select '000',a.bas_scod as code,nvl(b.o_broad_p,0) as cnt from CRT a 
+		left join RPT b on a.bas_scod=b.REPORT_TYPE )t GROUP BY CODE,REGION_ID ORDER BY CODE, REGION_ID DESC)tt
+		<!--3.5 방송:캐스터 자국/타국-->
+		union all
+	    select tt.* from(
+		select '방송_CASTER' as type, region_id,code,SUM(CNT) CNT
+		from(
+		select b.region_id,a.bas_scod as code,nvl(b.broad_c,0) as cnt from CRT a 
+		left join RPT b on a.bas_scod=b.REPORT_TYPE
+		union all
+		select '000',a.bas_scod as code,nvl(b.o_broad_c,0) as cnt from CRT a 
+		left join RPT b on a.bas_scod=b.REPORT_TYPE )t GROUP BY CODE,REGION_ID ORDER BY CODE, REGION_ID DESC)tt
+		<!--3.6 비방송 자국/타국-->
+		union all
+	    select tt.* from(
+		select '비방송' as type, region_id,code,SUM(CNT) CNT
+		from(
+		select b.region_id,a.bas_scod as code,nvl(b.broad_n,0) as cnt from CRT a 
+		left join RPT b on a.bas_scod=b.REPORT_TYPE
+		union all
+		select '000',a.bas_scod as code,nvl(b.o_broad_n,0) as cnt from CRT a 
+		left join RPT b on a.bas_scod=b.REPORT_TYPE )t GROUP BY CODE,REGION_ID ORDER BY CODE, REGION_ID DESC)tt
+		<!--3.7 중요:전송 자국/타국-->
+		union all
+	    select tt.* from(
+		select '전송건수' as type, region_id,code,SUM(CNT) CNT
+		from(
+		select b.region_id,a.bas_scod as code,nvl(b.imp_y,0) as cnt from CRT a 
+		left join RPT b on a.bas_scod=b.REPORT_TYPE
+		union all
+		select '000',a.bas_scod as code,nvl(b.o_imp_y,0) as cnt from CRT a 
+		left join RPT b on a.bas_scod=b.REPORT_TYPE )t GROUP BY CODE,REGION_ID ORDER BY CODE, REGION_ID DESC)tt
+		<!--3.8 중요:방송 자국/타국-->
+		union all
+	    select tt.* from(
+		select '방송건수' as type, region_id,code,SUM(CNT) CNT
+		from(
+		select b.region_id,a.bas_scod as code,nvl(b.impbro_y,0) as cnt from CRT a 
+		left join RPT b on a.bas_scod=b.REPORT_TYPE
+		union all
+		select '000',a.bas_scod as code,nvl(b.o_impbro_y,0) as cnt from CRT a 
+		left join RPT b on a.bas_scod=b.REPORT_TYPE )t GROUP BY CODE,REGION_ID ORDER BY CODE, REGION_ID DESC)tt
+		<!--3.9 중요:방송:스튜디오(pd) 자국/타국-->
+		union all
+	    select tt.* from(
+		select '중요제보_STUDIO' as type, region_id,code,SUM(CNT) CNT
+		from(
+		select b.region_id,a.bas_scod as code,nvl(b.impbro_p,0) as cnt from CRT a 
+		left join RPT b on a.bas_scod=b.REPORT_TYPE
+		union all
+		select '000',a.bas_scod as code,nvl(b.o_impbro_p,0) as cnt from CRT a 
+		left join RPT b on a.bas_scod=b.REPORT_TYPE )t GROUP BY CODE,REGION_ID ORDER BY CODE, REGION_ID DESC)tt
+		<!--3.10 중요:방송:캐스터 자국/타국-->
+		union all
+	    select tt.* from(
+		select '중요제보_CASTER' as type, region_id,code,SUM(CNT) CNT
+		from(
+		select b.region_id,a.bas_scod as code,nvl(b.impbro_c,0) as cnt from CRT a 
+		left join RPT b on a.bas_scod=b.REPORT_TYPE
+		union all
+		select '000',a.bas_scod as code,nvl(b.o_impbro_c,0) as cnt from CRT a 
+		left join RPT b on a.bas_scod=b.REPORT_TYPE )t GROUP BY CODE,REGION_ID ORDER BY CODE, REGION_ID DESC)tt
+	</select>
+	
 	<!-- @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ -->
 		
 	<!-- 2. 긴급교통정보_방송현황분석  -->
 	<select id="extrBro" parameterType="params" resultType="record">
-	    <!-- 수정 전 쿼리 -->
-		<!-- with acci as(
-		select to_char(RECEIPT_DAY,'yyyymmdd') AS key_date
-		,broad_time br_time
-		,receipt_day||trim(receipt_time)||'00' rpt_time
-		,ROUND(( TO_DATE(broad_time, 'YYYYMMDDHH24MISS') - TO_DATE(to_char(receipt_day,'yyyymmdd')||trim(receipt_time)||'00', 'YYYYMMDDHH24MISS') ) * 24 * 60, 2) AS mm    
-		from report_receipt
-		where 1=1 
-		and receipt_day <![CDATA[>=]]> TRUNC(to_date(concat(#{start_date},'01'),'yyyymmdd'), 'MM') 
-        and receipt_day <![CDATA[<=]]> last_day(to_date(concat(#{start_date},'01'),'yyyymmdd'))
-        and receipt_day between #{start_date} and #{end_date}
-		and region_id=#{REGION_ID}
-		and FLAG_IMPORTANT='Y'
-		)
-		
-		select a.key_date,a.cnt1,nvl(b.cnt2,0) cnt2 from
-		(select key_date,count(key_date)as cnt1 from acci group by key_date)a
-		left join
-		(select key_date,count(key_date)as cnt2 from acci 
-		where br_time is not null and mm <![CDATA[ <= ]]> 5
-		group by key_date)b
-		on(a.key_date=b.key_date)
-		order by a.key_date -->
 		
 		<!-- 수정 후 쿼리 -->
 		WITH acci AS (
     		SELECT 
-        		TO_CHAR(RECEIPT_DAY, 'yyyymmdd') AS key_date,
+        		TO_CHAR(RECEIPT_DAY, 'YYYYMMDD') AS key_date,
         		broad_time br_time,
         		receipt_day || TRIM(receipt_time) || '00' rpt_time,
-        		ROUND((TO_DATE(broad_time, 'YYYYMMDDHH24MISS') - TO_DATE(TO_CHAR(receipt_day, 'yyyymmdd') || TRIM(receipt_time) || '00', 'YYYYMMDDHH24MISS')) * 24 * 60, 2) AS mm    
+        		ROUND((TO_DATE(broad_time, 'YYYYMMDDHH24MISS') - TO_DATE(TO_CHAR(receipt_day, 'YYYYMMDD') || TRIM(receipt_time) || '00', 'YYYYMMDDHH24MISS')) * 24 * 60, 2) AS mm    
     		FROM report_receipt
     		WHERE 1=1 
-        	AND receipt_day BETWEEN #{start_date2} AND #{end_date}
+        	AND receipt_day BETWEEN #{start_date} AND #{end_date}
         	AND region_id = #{REGION_ID}
         	AND FLAG_IMPORTANT = 'Y'
 		)
@@ -685,15 +567,15 @@
 		ORDER BY a.key_date
 	</select>
 	
-	<!-- 2.1  재난제보 건수  -->
+	<!-- 3. 재난제보 건수  -->
 	<select id="disastorStat" parameterType="params" resultType="record">
 		with acci as(
-				select to_char(RECEIPT_DAY,'yyyymmdd') AS key_date
+				select to_char(RECEIPT_DAY,'YYYYMMDD') AS key_date
 		        ,FLAG_DISASTOR
 				from report_receipt
 				where 1=1 
-				and receipt_day <![CDATA[>=]]> TRUNC(to_date(concat(#{start_date},'01'),'yyyymmdd'), 'MM') 
-		        and receipt_day <![CDATA[<=]]> last_day(to_date(concat(#{start_date},'01'),'yyyymmdd'))
+				and receipt_day <![CDATA[>=]]> TRUNC(to_date(#{start_date},'YYYYMMDD'), 'MM') 
+		        and receipt_day <![CDATA[<=]]> last_day(to_date(#{start_date},'YYYYMMDD'))
 				and region_id=#{REGION_ID}
 		)
 		select a.key_date,a.cnt1,nvl(b.cnt2,0) cnt2 from	
@@ -711,8 +593,9 @@
 	
 	<!-- @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ -->
 	
-	<!-- 3.1 월별건수 통신원 리스트  -->
-	<select id="muJeboList" parameterType="params" resultType="record">
+	<!-- 4. 월별 제보자별 제보건수  -->
+	<!-- 4.1 제보자 리스트 -->
+	<select id="monInfrmList" parameterType="params" resultType="record">
 	    <!--통신원 정보(방송국별,통신원타입 : 통신원)-->
 	    with infrm as(
 		select a.*,b.org_name from
@@ -730,8 +613,8 @@
 		order by a.act_id asc
 	</select>
 	
-	<!-- 3.2 월별건수 통신원 현황(수)  -->
-	<select id="muJeboCnt" parameterType="params" resultType="record">
+	<!-- 4.2 월별 건수  -->
+	<select id="monInfrmCnt" parameterType="params" resultType="record">
 	    <!--통신원 정보(방송국별,통신원타입 : 통신원)-->
 	    with infrm as(
 		select a.*,b.org_name from
@@ -756,8 +639,8 @@
 	</select>
 	
 	
-	<!-- 03. 무제보 통신원 현황  -->
-	<select id="muJeboList2" parameterType="params" resultType="record">
+	<!-- 5. 무 제보자 현황  -->
+	<select id="muJeboList" parameterType="params" resultType="record">
 		<!--통신원 정보(방송국별,통신원타입 : 통신원)-->
 	    SELECT T.* FROM
         (
@@ -868,13 +751,13 @@
 	<select id="receiptUseDaily" parameterType="params" resultType="record">
 	SELECT A.REGION_ID, A.STAT_DATE, A.INFORMER_TYPE, SUM(ALL_CNT) CNT
 	FROM STAT_INFRM_TYPE A
-	WHERE STAT_DATE BETWEEN #{start_date2} AND #{end_date}
+	WHERE STAT_DATE BETWEEN #{start_date} AND #{end_date}
 	AND A.REGION_ID = #{REGION_ID}
 	group by A.REGION_ID, A.STAT_DATE, A.INFORMER_TYPE
 	UNION ALL
 	SELECT '000' REGION_ID, A.STAT_DATE, A.INFORMER_TYPE, SUM(O_ALL_CNT) CNT
 	FROM STAT_INFRM_TYPE A
-	WHERE  STAT_DATE BETWEEN #{start_date2} AND #{end_date}
+	WHERE  STAT_DATE BETWEEN #{start_date} AND #{end_date}
 	AND A.REGION_ID = #{REGION_ID}
 	GROUP BY A.STAT_DATE, A.INFORMER_TYPE
 	ORDER BY STAT_DATE, INFORMER_TYPE, REGION_ID DESC
@@ -992,40 +875,40 @@
 					,nvl((
 						select count(receipt_id) from monicd 
 						where region_id=#{REGION_ID} 
-						and receipt_day <![CDATA[>=]]> TRUNC(to_date(concat(#{start_date}-#{item},'01'),'yyyymmdd'), 'MM') 
-						and receipt_day <![CDATA[<=]]> last_day(to_date(concat(#{start_date}-#{item},'01'),'yyyymmdd'))
+						and receipt_day <![CDATA[>=]]> TRUNC(to_date(concat(#{start_date}-#{item},'01'),'YYYYMMDD'), 'MM') 
+						and receipt_day <![CDATA[<=]]> last_day(to_date(concat(#{start_date}-#{item},'01'),'YYYYMMDD'))
 						and report_type='A02'
 						group by report_type)
 					,0) as CNT1
 					,nvl((
 						select count(receipt_id) from monicd 
 						where region_id=#{REGION_ID} 
-						and receipt_day <![CDATA[>=]]> TRUNC(to_date(concat(#{start_date}-#{item},'01'),'yyyymmdd'), 'MM') 
-						and receipt_day <![CDATA[<=]]> last_day(to_date(concat(#{start_date}-#{item},'01'),'yyyymmdd'))
+						and receipt_day <![CDATA[>=]]> TRUNC(to_date(concat(#{start_date}-#{item},'01'),'YYYYMMDD'), 'MM') 
+						and receipt_day <![CDATA[<=]]> last_day(to_date(concat(#{start_date}-#{item},'01'),'YYYYMMDD'))
 						and report_type='A03'
 						group by report_type)
 					,0) as CNT2
 					,nvl((
 						select count(receipt_id) from monicd 
 						where region_id=#{REGION_ID} 
-						and receipt_day <![CDATA[>=]]> TRUNC(to_date(concat(#{start_date}-#{item},'01'),'yyyymmdd'), 'MM') 
-						and receipt_day <![CDATA[<=]]> last_day(to_date(concat(#{start_date}-#{item},'01'),'yyyymmdd'))
+						and receipt_day <![CDATA[>=]]> TRUNC(to_date(concat(#{start_date}-#{item},'01'),'YYYYMMDD'), 'MM') 
+						and receipt_day <![CDATA[<=]]> last_day(to_date(concat(#{start_date}-#{item},'01'),'YYYYMMDD'))
 						and report_type='A04'
 						group by report_type)
 					,0) as CNT3
 					,nvl((
 						select count(receipt_id) from monicd 
 						where region_id=#{REGION_ID} 
-						and receipt_day <![CDATA[>=]]> TRUNC(to_date(concat(#{start_date}-#{item},'01'),'yyyymmdd'), 'MM') 
-						and receipt_day <![CDATA[<=]]> last_day(to_date(concat(#{start_date}-#{item},'01'),'yyyymmdd'))
+						and receipt_day <![CDATA[>=]]> TRUNC(to_date(concat(#{start_date}-#{item},'01'),'YYYYMMDD'), 'MM') 
+						and receipt_day <![CDATA[<=]]> last_day(to_date(concat(#{start_date}-#{item},'01'),'YYYYMMDD'))
 						and report_type='A06'
 						and report_type2 ='B00' group by report_type)
 					,0) as CNT4
 					,nvl((
 						select count(receipt_id) from monicd 
 						where region_id=#{REGION_ID} 
-						and receipt_day <![CDATA[>=]]> TRUNC(to_date(concat(#{start_date}-#{item},'01'),'yyyymmdd'), 'MM') 
-						and receipt_day <![CDATA[<=]]> last_day(to_date(concat(#{start_date}-#{item},'01'),'yyyymmdd'))
+						and receipt_day <![CDATA[>=]]> TRUNC(to_date(concat(#{start_date}-#{item},'01'),'YYYYMMDD'), 'MM') 
+						and receipt_day <![CDATA[<=]]> last_day(to_date(concat(#{start_date}-#{item},'01'),'YYYYMMDD'))
 						and report_type='A06'
 						and report_type2 !='B00' group by report_type)
 					,0) as CNT5
@@ -1296,8 +1179,8 @@
 		(
             SELECT * FROM(
                 select to_number(substr(receipt_day,7,8)) as receipt_day,individual_id from report_receipt
-                        where receipt_day <![CDATA[>=]]> TRUNC(to_date(concat(#{start_date},'01'),'yyyymmdd'), 'MM') 
-                        and receipt_day <![CDATA[<=]]> last_day(to_date(concat(#{start_date},'01'),'yyyymmdd'))
+                        where receipt_day <![CDATA[>=]]> TRUNC(to_date(#{start_date},'YYYYMMDD'), 'MM') 
+                        and receipt_day <![CDATA[<=]]> last_day(to_date(#{start_date},'YYYYMMDD'))
                         and region_id=#{REGION_ID}
                         and individual_id is not null
             )
@@ -1382,8 +1265,8 @@
 		(
             SELECT * FROM(
                 select to_number(substr(receipt_day,7,8)) as receipt_day,individual_id from report_receipt
-                        where receipt_day <![CDATA[>=]]> TRUNC(to_date(concat(#{start_date},'01'),'yyyymmdd'), 'MM') 
-                        and receipt_day <![CDATA[<=]]> last_day(to_date(concat(#{start_date},'01'),'yyyymmdd'))
+                        where receipt_day <![CDATA[>=]]> TRUNC(to_date(#{start_date},'YYYYMMDD'), 'MM') 
+                        and receipt_day <![CDATA[<=]]> last_day(to_date(#{start_date},'YYYYMMDD'))
                         and region_id=#{REGION_ID}
                         and individual_id is not null
             )
@@ -1458,7 +1341,7 @@
 			select a.* from 
 			(select receipt_id ,individual_id ,INDIVIDUAL_TYPE,report_type,region_id
 			,FLAG_SEND ,FLAG_IMPORTANT ,FLAG_BROD ,BROAD_TIME		
-			from report_receipt where receipt_day=to_char(sysdate-1,'yyyymmdd') 
+			from report_receipt where receipt_day=to_char(sysdate-1,'YYYYMMDD') 
 		    and region_id=#{areaCode}
 		    AND INDIVIDUAL_TYPE=#{ifmId1}
 			)a
@@ -1471,7 +1354,7 @@
 			
 			select receipt_id ,individual_id ,INDIVIDUAL_TYPE,report_type,region_id
 			,FLAG_SEND ,FLAG_IMPORTANT ,FLAG_BROD ,BROAD_TIME		
-			from report_receipt where receipt_day=to_char(sysdate-1,'yyyymmdd') 
+			from report_receipt where receipt_day=to_char(sysdate-1,'YYYYMMDD') 
 		    and region_id=#{areaCode}
 		    AND INDIVIDUAL_TYPE=#{ifmId1}
 		    
@@ -1482,7 +1365,7 @@
 		    select a.* from 
 		    (select receipt_id ,individual_id ,INDIVIDUAL_TYPE,report_type,region_id
 		    ,FLAG_SEND ,FLAG_IMPORTANT ,FLAG_BROD ,BROAD_TIME		
-		    from report_receipt where receipt_day=to_char(sysdate-1,'yyyymmdd') 
+		    from report_receipt where receipt_day=to_char(sysdate-1,'YYYYMMDD') 
 		    and region_id=#{areaCode}
 		    AND INDIVIDUAL_TYPE=#{ifmId1}
 		    )a
@@ -1492,7 +1375,7 @@
 		    where a.region_id!=b.area_code
 		)
 		select 
-		to_char(sysdate-1,'yyyymmdd')
+		to_char(sysdate-1,'YYYYMMDD')
 		,#{areaCode}
 		,#{ifmId1}
 		,(select count(receipt_id) from our) 
@@ -1569,7 +1452,7 @@
 			select a.* from 
 			(select receipt_id ,individual_id ,INDIVIDUAL_TYPE,report_type,region_id
 			,FLAG_SEND ,FLAG_IMPORTANT ,FLAG_BROD ,BROAD_TIME		
-			from report_receipt where receipt_day=to_char(sysdate-1,'yyyymmdd') 
+			from report_receipt where receipt_day=to_char(sysdate-1,'YYYYMMDD') 
 		    and region_id=#{areaCode}
 		    AND REPORT_TYPE=#{basScod}
 			)a
@@ -1583,7 +1466,7 @@
 			
 			select receipt_id ,individual_id ,INDIVIDUAL_TYPE,report_type,region_id
 			,FLAG_SEND ,FLAG_IMPORTANT ,FLAG_BROD ,BROAD_TIME		
-			from report_receipt where receipt_day=to_char(sysdate-1,'yyyymmdd') 
+			from report_receipt where receipt_day=to_char(sysdate-1,'YYYYMMDD') 
 		    and region_id=#{areaCode}
 		    AND REPORT_TYPE=#{basScod}
 		    
@@ -1595,7 +1478,7 @@
 		    select a.*  from 
 		    (select receipt_id ,individual_id ,INDIVIDUAL_TYPE,report_type,region_id
 		    ,FLAG_SEND ,FLAG_IMPORTANT ,FLAG_BROD ,BROAD_TIME		
-		    from report_receipt where receipt_day=to_char(sysdate-1,'yyyymmdd') 
+		    from report_receipt where receipt_day=to_char(sysdate-1,'YYYYMMDD') 
 		    and region_id=#{areaCode}
 		    AND REPORT_TYPE=#{basScod}
 		    )a
@@ -1605,7 +1488,7 @@
 		    where a.region_id!=b.area_code
 		)
 		select 
-		to_char(sysdate-1,'yyyymmdd')
+		to_char(sysdate-1,'YYYYMMDD')
 		,#{areaCode}
 		,#{basScod}
 		,(select count(receipt_id) from our) 
@@ -1680,7 +1563,7 @@
 			select a.* from 
 			(select receipt_id ,individual_id ,INDIVIDUAL_TYPE,report_type,region_id
 			,FLAG_SEND ,FLAG_IMPORTANT ,FLAG_BROD ,BROAD_TIME		
-			from report_receipt where receipt_day=to_char(sysdate-1,'yyyymmdd') 
+			from report_receipt where receipt_day=to_char(sysdate-1,'YYYYMMDD') 
 		    and region_id=#{areaCode}
 		    AND REPORTER_TYPE=#{ifmId1}
 			)a
@@ -1694,7 +1577,7 @@
 			
 			select receipt_id ,individual_id ,INDIVIDUAL_TYPE,report_type,region_id
 			,FLAG_SEND ,FLAG_IMPORTANT ,FLAG_BROD ,BROAD_TIME		
-			from report_receipt where receipt_day=to_char(sysdate-1,'yyyymmdd') 
+			from report_receipt where receipt_day=to_char(sysdate-1,'YYYYMMDD') 
 		    and region_id=#{areaCode}
 		    AND REPORTER_TYPE=#{ifmId1}
 		    
@@ -1706,7 +1589,7 @@
 		    select a.* from 
 		    (select receipt_id ,individual_id ,INDIVIDUAL_TYPE,report_type,region_id
 		    ,FLAG_SEND ,FLAG_IMPORTANT ,FLAG_BROD ,BROAD_TIME		
-		    from report_receipt where receipt_day=to_char(sysdate-1,'yyyymmdd') 
+		    from report_receipt where receipt_day=to_char(sysdate-1,'YYYYMMDD') 
 		    and region_id=#{areaCode}
 		    AND REPORTER_TYPE=#{ifmId1}
 		    )a
@@ -1716,7 +1599,7 @@
 		    where a.region_id!=b.area_code
 		)
 		select 
-		to_char(sysdate-1,'yyyymmdd')
+		to_char(sysdate-1,'YYYYMMDD')
 		,#{areaCode}
 		,#{ifmId1}
 		,(select count(receipt_id) from our) 
@@ -1805,7 +1688,7 @@
 		    FROM(SELECT ROW_NUMBER() OVER(ORDER BY RECEIPT_DT ASC) AS RNUM, G.*
 		        FROM(
 				SELECT A.RECEIPT_ID
-					, TO_CHAR(A.RECEIPT_DAY,'YYYY-MM-DD') AS RECEIPT_DAY
+					, TO_CHAR(A.RECEIPT_DAY,'YYYYMMDD') AS RECEIPT_DAY
 					, A.RECEIPT_DAY||A.RECEIPT_TIME AS RECEIPT_DT
 					, A.FLAG_SEND 
 					, A.FLAG_BROD 
@@ -1848,8 +1731,8 @@
 							AND REGION_ID = #{AREA_CODE}
 						</if>
 						<if test="!START_DAY.equals('') and START_DAY != null and !END_DAY.equals('') and END_DAY != null">
-							AND RECEIPT_DAY BETWEEN TO_CHAR(TO_DATE(#{START_DAY}, 'YYYY-MM-DD'), 'YYYYMMDD')
-											    AND TO_CHAR(TO_DATE(#{END_DAY}, 'YYYY-MM-DD'), 'YYYYMMDD')
+							AND RECEIPT_DAY BETWEEN TO_CHAR(TO_DATE(#{START_DAY}, 'YYYYMMDD'), 'YYYYMMDD')
+											    AND TO_CHAR(TO_DATE(#{END_DAY}, 'YYYYMMDD'), 'YYYYMMDD')
 						</if>
 						<if test="!FLAG_IMPORTANT.equals('') and FLAG_IMPORTANT != null">
 							<if test='FLAG_IMPORTANT.equals("N")'>
@@ -1933,7 +1816,7 @@
 		    FROM(SELECT ROW_NUMBER() OVER(ORDER BY RECEIPT_DT ASC) AS RNUM, G.*
 		        FROM(
 				SELECT A.RECEIPT_ID
-					, TO_CHAR(A.RECEIPT_DAY,'YYYY-MM-DD') AS RECEIPT_DAY
+					, TO_CHAR(A.RECEIPT_DAY,'YYYYMMDD') AS RECEIPT_DAY
 					, A.RECEIPT_DAY||A.RECEIPT_TIME AS RECEIPT_DT
 					, A.FLAG_SEND 
 					, A.FLAG_BROD 
@@ -1976,8 +1859,8 @@
 							AND REGION_ID = #{AREA_CODE}
 						</if>
 						<if test="!START_DAY.equals('') and START_DAY != null and !END_DAY.equals('') and END_DAY != null">
-							AND RECEIPT_DAY BETWEEN TO_CHAR(TO_DATE(#{START_DAY}, 'YYYY-MM-DD'), 'YYYYMMDD')
-											    AND TO_CHAR(TO_DATE(#{END_DAY}, 'YYYY-MM-DD'), 'YYYYMMDD')
+							AND RECEIPT_DAY BETWEEN TO_CHAR(TO_DATE(#{START_DAY}, 'YYYYMMDD'), 'YYYYMMDD')
+											    AND TO_CHAR(TO_DATE(#{END_DAY}, 'YYYYMMDD'), 'YYYYMMDD')
 						</if>
 						<if test="!FLAG_IMPORTANT.equals('') and FLAG_IMPORTANT != null">
 							<if test='FLAG_IMPORTANT.equals("N")'>
@@ -2057,11 +1940,20 @@
 	<!-- 통신원중소분류 가변 날짜 처리법	 -->
 	<select id="statDateCal" parameterType="params" resultType="record">
 	    <![CDATA[
-			SELECT 'date_'||stat_mon as key_date,stat_mon FROM STAT_TBN_MONRPT
-			WHERE stat_mon >= SUBSTR(#{orgStartDate},0,6) 
-			AND stat_mon <= SUBSTR(#{orgEndDate},0,6) 
-			GROUP BY stat_mon
-			order by stat_mon
+			
+			SELECT
+			'date_'||dt as key_date,
+			dt AS stat_mon
+			FROM
+			(
+				SELECT
+				TO_CHAR(TO_DATE(#{start_date},'YYYYMMDD'),'YYYYMM')  + (LEVEL-1)  AS dt
+				FROM DUAL
+				CONNECT BY LEVEL <= 
+				TO_CHAR(TO_DATE(#{end_date},'YYYYMMDD'),'YYYYMM')
+				- TO_CHAR(TO_DATE(#{start_date},'YYYYMMDD'),'YYYYMM') +1
+			) A
+						
 		]]> 
 	</select>	
 	
@@ -2111,16 +2003,16 @@
 		    AND B.IND_TYPE = C.IND_TYPE 
 		    AND B.AREA_CODE = C.AREA_CODE
 		    AND A.ORG_SUB_ID=C.ORG_SID
-		    where A.area_code=#{params.REGION_ID}
+		    where A.area_code=#{REGION_ID}
             AND A.FLAG_ACT ='Y'
 		)A
 		left join
 		(
             SELECT * FROM(
                 select to_char(receipt_day,'yyyymm') as receipt_day,individual_id from report_receipt
-                        where receipt_day <![CDATA[>=]]> #{orgStartDate}
-                        and receipt_day <![CDATA[<=]]> #{orgEndDate}
-                        and region_id=#{params.REGION_ID}
+                        where receipt_day <![CDATA[>=]]> #{start_date}
+                        and receipt_day <![CDATA[<=]]> #{end_date}
+                        and region_id=#{REGION_ID}
                         and individual_id is not null
             )
             
@@ -2136,10 +2028,35 @@
                  ,2 as t2 	,3 as t3 	,4 as t4 	,5 as t5 	,6 as t6 	,7 as t7 	,8 as t8 	,9 as t9 	,10 as t10 	,11 as t11 	,12 as t12 	,13 as t13 	,14 as t14 	,15 as t15 	,16 as t16 	,17 as t17 	,18 as t18 	,19 as t19 	,20 as t20 	,21 as t21 	,22 as t22 	,23 as t23 	,24 as t24 	,25 as t25 	,26 as t26 	,27 as t27 	,28 as t28 	,29 as t29 	,30 as t30 	,31 as t31 
  -->                
  				)
-            )          
+            )
 		)B
 		on(A.informer_id=B.individual_id)
 		order by TO_NUMBER(ACT_ID) ASC 
 	</select>
-	
+
+	<!-- 월별 제보 건수 -->
+	<resultMap type="statVo" id="getReceiptCntList">
+		<result property="monthVar" column="MONTH_VAR"/>
+		<result property="stateDt" column="STATE_DT"/>
+		<result property="stateCnt" column="STATE_CNT"/>
+	</resultMap>
+	<select id="getReceiptCntList" parameterType="statVo" resultMap="getReceiptCntList">
+		SELECT B.MONTH_VAR, nvl(A.STATE_YEAR,${stateDt}) as STATE_DT, NVL(A.mon_cnt, 0) MON_CNT
+		  FROM (
+		        SELECT ind_id, SUBSTR(stat_mon, 0, 4) STATE_YEAR, SUBSTR(stat_mon, 5, 6) STATE_MONTH, mon_cnt
+		          FROM stat_tbn_monrpt
+		         WHERE 1 = 1
+		         <if test="indId != null">
+                   AND ind_id = ${indId}
+		         </if>
+		           AND SUBSTR(stat_mon, 0, 4) = ${stateDt}
+		       ) A RIGHT OUTER JOIN 
+		       <![CDATA[
+               (SELECT LPAD(LEVEL, 2,'0') MONTH_VAR FROM DUAL CONNECT BY LEVEL <= 12) B
+               ]]>
+		 ON A.STATE_MONTH = B.MONTH_VAR
+		 WHERE 1 = 1
+		 ORDER BY B.MONTH_VAR ASC
+    </select>
+
 </mapper>
