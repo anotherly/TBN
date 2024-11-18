@@ -2,7 +2,7 @@ package kr.co.wizbrain.tbn.receipt.service;
 
 import java.util.List;
 
-import egovframework.rte.psl.dataaccess.util.EgovMap;
+import kr.co.wizbrain.tbn.notice.vo.NoticeVO;
 import kr.co.wizbrain.tbn.receipt.vo.AreaCodeVO;
 import kr.co.wizbrain.tbn.receipt.vo.AreaSubCodeVO;
 import kr.co.wizbrain.tbn.receipt.vo.ArteryVO;
@@ -11,11 +11,9 @@ import kr.co.wizbrain.tbn.receipt.vo.InformerStatVO;
 import kr.co.wizbrain.tbn.receipt.vo.InformerTypeVO;
 import kr.co.wizbrain.tbn.receipt.vo.InformerVO;
 import kr.co.wizbrain.tbn.receipt.vo.MissedCallVO;
-import kr.co.wizbrain.tbn.receipt.vo.PersonalMemoVO;
 import kr.co.wizbrain.tbn.receipt.vo.PickUpCallVO;
 import kr.co.wizbrain.tbn.receipt.vo.ReceiptVO;
 import kr.co.wizbrain.tbn.receipt.vo.ReceiveCallVO;
-import kr.co.wizbrain.tbn.receipt.vo.ReportFirstVO;
 import kr.co.wizbrain.tbn.receipt.vo.ReportMeanVO;
 import kr.co.wizbrain.tbn.receipt.vo.ReportTypeVO;
 import kr.co.wizbrain.tbn.receipt.vo.TempSaveVo;
@@ -28,6 +26,21 @@ public interface ReceiptService {
 
 	//전체 사용자 조회
 	//public List<ReceiptVO> selectReceiptList(ReceiptVO ReceiptVO) throws Exception;
+	
+	// 24-11-11 : 공지사항 조회
+	public List<NoticeVO> selectNotice(String today) throws Exception;
+	
+	//24-11-12 : 하루동안 보지않음 조회
+	public List<NoticeVO> selectShow(String user, String noticeId) throws Exception;
+	
+	//24-11-12 : 공지사항 한개만 조회
+	public List<NoticeVO> selectOneNotice(String noticeId) throws Exception;
+	
+	// 24-11-12 : 하루동안 보지않음 등록
+	public void insertShow(String today,String user,String noticeId) throws Exception;
+	
+	// 24-11-13 : 하루동안 보지않음 업데이트
+	public void updateShow(String today,String user,String noticeId) throws Exception;
 	
 	//제보접수 등록
 	public int insertReceipt(ReceiptVO ReceiptVO) throws Exception;
@@ -120,6 +133,7 @@ public interface ReceiptService {
 	
 	//개인메모 불러오기
 	public UserVO selectPersonalMemo(UserVO vo) throws Exception;
+	
 	
 	//polling
 	public List<PickUpCallVO> checkIfPickUpInfoExists(PickUpCallVO vo) throws Exception;

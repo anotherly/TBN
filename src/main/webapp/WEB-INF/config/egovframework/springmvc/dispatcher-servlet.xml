@@ -76,6 +76,7 @@
 			<mvc:mapping path="/informer/event/eventMain.do"/>
 			<mvc:mapping path="/option/codeMng.do"/>
 			<mvc:mapping path="/option/auth/authList.do"/>
+			<mvc:mapping path="/notice/notice.do"/> <!-- 24-11-13 : 공지사항 추가 -->
             <mvc:exclude-mapping path="/login/**.do"/>
             <mvc:exclude-mapping path="/user/reloadOrKill.do"/>
             <mvc:exclude-mapping path="redirect:/"/>

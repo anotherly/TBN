@@ -358,8 +358,8 @@ function goMenuSite(goUrl,thDiv){
 	//기존 달력 삭제 및 재생성
 	$("#ui-datepicker-div").remove();
 
-	//console.log("주소 이동 : "+goUrl);
-	//console.log("대상 div : "+thDiv);
+	console.log("주소 이동 : "+goUrl);
+	console.log("대상 div : "+thDiv);
 	if(typeof thDiv ==="undefinded" || thDiv =='' || thDiv==null){
 		thDiv="mainDiv";
 	}

@@ -6,12 +6,12 @@
 <script type="text/javascript" charset="utf-8" src="<%=request.getContextPath()%>/js/jquery.form.js"></script>
 
 <!-- DateTimePicker -->
-<script src="<%=request.getContextPath()%>/calender/moment.js"></script>
-<script src="<%=request.getContextPath()%>/calender/mo_ko.js"></script>
-<script src="<%=request.getContextPath()%>/calender/bootstrap-datetimepicker.js"></script>
-<link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/calender/no-boot-calendar-custom.css" />
-<link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/calender/datetimepickerstyle.css" />
-
+<!-- <script src="<=request.getContextPath()%>/calender/moment.js"></script>
+<script src="<=request.getContextPath()%>/calender/mo_ko.js"></script>
+<script src="<=request.getContextPath()%>/calender/bootstrap-datetimepicker.js"></script>
+<link rel="stylesheet" type="text/css" href="<=request.getContextPath()%>/calender/no-boot-calendar-custom.css" />
+<link rel="stylesheet" type="text/css" href="<=request.getContextPath()%>/calender/datetimepickerstyle.css" />
+ -->
 <div id="contentWrap"  style="width:1030px;">
 <!-- <div id="posi"><a href="/main.do"><img src="../images/ico_home.gif" alt="home" /></a>제보자관리 > 제보자관리</div> -->
 <div id="searchDiv">

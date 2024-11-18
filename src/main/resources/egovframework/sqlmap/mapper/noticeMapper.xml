@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper
+	namespace="kr.co.wizbrain.tbn.notice.mapper.NoticeMapper">
+	
+	<!--  24-11-14 : 전체 공지사항 조회 -->
+	<select id="noticeList" resultType="kr.co.wizbrain.tbn.notice.vo.NoticeVO">
+		select *
+		from notice_info
+		
+		<include refid="search"></include>
+		ORDER BY START_DATE DESC 
+	</select>
+	
+	<sql id="search">
+	    <!-- 조건을 하나만 추가하도록 수정, where는 한 번만 사용 -->
+	        <choose>
+	            <!-- 검색어와 날짜가 모두 있을 경우 -->
+	            <when test="searchText != '' and searchDate != ''">
+	            where
+	                START_DATE = #{searchDate}
+	                AND (WRITER_NAME LIKE '%' || #{searchText} || '%' 
+	                     OR NOTICE_TITLE LIKE '%' || #{searchText} || '%' 
+	                     OR START_DATE LIKE '%' || #{searchText} || '%')
+	            </when>
+	            
+	            <!-- 전체 검색인 경우 (키워드와 searchDate 없을 때) -->
+	            <when test="searchText == '' and searchDate == ''">
+	            where
+	                WRITER_NAME LIKE '%' || #{searchText} || '%'
+	                OR NOTICE_TITLE LIKE '%' || #{searchText} || '%'
+	                OR START_DATE LIKE '%' || #{searchText} || '%'
+	            </when>
+	            
+	            <!-- 검색어만 있는 경우 -->
+	            <when test="searchText != '' and searchDate == ''">
+	            where
+	                WRITER_NAME LIKE '%' || #{searchText} || '%'
+	                OR NOTICE_TITLE LIKE '%' || #{searchText} || '%'
+	                OR START_DATE LIKE '%' || #{searchText} || '%'
+	            </when>
+	            
+	            <!-- 기준일만 있는 경우 -->
+	            <otherwise>
+	                where START_DATE = #{searchDate}
+	            </otherwise>
+	        </choose>
+	</sql>
+	
+	
+	<!--  24-11-15 : 공지사항 등록 -->
+	<insert id="insertNotice" parameterType="kr.co.wizbrain.tbn.notice.vo.NoticeVO">
+		insert into notice_info(WRITER_ID,NOTICE_ID,WRITER_NAME,START_DATE,END_DATE,NOTICE_TITLE,NOTICE_CONTENT,NOTICE_TYPE)
+		values(#{WRITER_ID},DBMS_RANDOM.STRING('X', 10),#{WRITER_NAME},#{START_DATE},#{END_DATE},#{NOTICE_TITLE},#{NOTICE_CONTENT},#{NOTICE_TYPE})
+	</insert>
+	
+	
+	<!--  24-11-15 : 공지사항 상세 조회  -->
+	<select id="detailNotice" resultType="kr.co.wizbrain.tbn.notice.vo.NoticeVO">
+		select *
+		from notice_info
+		where notice_id = #{noticeId}
+	</select>
+	
+	<!-- 24-11-15 : 공지사항 수정  -->
+	<update id="updateNotice" parameterType="kr.co.wizbrain.tbn.notice.vo.NoticeVO">
+		update notice_info
+		set END_DATE = #{END_DATE},
+		NOTICE_TITLE = #{NOTICE_TITLE},
+		NOTICE_CONTENT = #{NOTICE_CONTENT},
+		NOTICE_TYPE = #{NOTICE_TYPE}
+		where notice_id = #{NOTICE_ID}
+	</update>
+	
+	<!--  24-11-15 : 공지사항 삭제 -->
+	<delete id="deleteNotice">
+		delete notice_info
+		where notice_id = #{noticeId}
+	</delete>
+	
+	<select id="selectNotice" resultType="kr.co.wizbrain.tbn.notice.vo.NoticeVO">
+		<![CDATA[
+		    SELECT * 
+		    FROM (
+		        SELECT * 
+		        FROM notice_info 
+		        WHERE start_date <= #{today} 
+		        AND end_date >= #{today}
+		        ORDER BY start_date DESC
+		    ) 
+		    WHERE ROWNUM = 1
+    	]]>
+	</select>
+</mapper>

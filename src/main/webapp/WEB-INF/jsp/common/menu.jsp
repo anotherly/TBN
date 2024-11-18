@@ -63,4 +63,7 @@
 				<li id="/option/auth/authList.do" class="goUrlMenu"><a>등급관리</a></li>
 			</ul>
 		</li>
+		<li>
+			<a id="/notice/notice.do" class="goUrlMenu">공지사항</a>
+		</li>
 	</ul>

@@ -19,13 +19,12 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import kr.co.wizbrain.tbn.cid.TcpAndWebClient;
-import kr.co.wizbrain.tbn.comm.ParamsDto;
-import kr.co.wizbrain.tbn.comm.RSSParser;
-import kr.co.wizbrain.tbn.map.vo.ImsVO;
+import kr.co.wizbrain.tbn.notice.vo.NoticeVO;
 import kr.co.wizbrain.tbn.receipt.service.ReceiptService;
 import kr.co.wizbrain.tbn.receipt.vo.AreaCodeVO;
 import kr.co.wizbrain.tbn.receipt.vo.AreaSubCodeVO;
@@ -109,6 +108,41 @@ public class ReceiptController {
 //		return mv;
 //	}
 	
+	// 24-11-11 : 제보접수 페이지 이동 시 공지사항 조회
+	@RequestMapping(value="/selectNotice.ajax")
+	public @ResponseBody ModelAndView selectNotice(@RequestParam("today")String today) throws Exception {
+		
+		ModelAndView mav = new ModelAndView("jsonView");
+		List<NoticeVO> NoticeList = receiptService.selectNotice(today);
+		
+		mav.addObject("NoticeList", NoticeList);	
+		return mav;
+	}
+	
+	//24-11-12 : 하루동안 숨김인지 조회
+	@RequestMapping(value="/selectShow.ajax")
+	public @ResponseBody ModelAndView selectShow(@RequestParam("user")String user, @RequestParam("noticeId")String noticeId) throws Exception {
+		
+		ModelAndView mav = new ModelAndView("jsonView");
+		List<NoticeVO> ShowList = receiptService.selectShow(user,noticeId);
+		List<NoticeVO> NoticeList = receiptService.selectOneNotice(noticeId);
+		mav.addObject("showList" , ShowList);
+		mav.addObject("noticeList",NoticeList);
+		return mav;
+	}
+	
+	// 24-11-12 : 하루동안 숨김 없을 때 등록
+	@RequestMapping(value= "/insertShow.ajax")
+	public void insertShow(@RequestParam("today")String today,@RequestParam("user")String user,@RequestParam("noticeId")String noticeId) throws Exception {
+		receiptService.insertShow(today,user,noticeId);
+	}
+	
+	// 24-11-13 : 하루동안 숨김 클릭 시 업데이트 처리
+	@RequestMapping(value="/updateShow.ajax")
+	public void updateShow(@RequestParam("today")String today,@RequestParam("user")String user,@RequestParam("noticeId")String noticeId) throws Exception {
+		receiptService.updateShow(today,user,noticeId);
+	}
+	
 	@RequestMapping("/receipt/checkIfPickUpInfoExists.ajax")
 	public ModelAndView checkIfPickUpInfoExists(PickUpCallVO vo) throws Exception {
 		logger.debug("---------------------checkIfPickUpInfoExists---------------------");
@@ -118,6 +152,8 @@ public class ReceiptController {
 		mv.addObject("data", list);
 		return mv;
 	}
+	
+
 	
 //	@RequestMapping("/receipt/checkIfPickUpInfoExists.ajax")
 //	public ModelAndView checkIfPickUpInfoExists(PickUpCallVO vo) throws Exception {

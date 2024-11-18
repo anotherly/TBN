@@ -5,6 +5,7 @@ import java.util.List;
 import org.apache.ibatis.annotations.Param;
 
 import egovframework.rte.psl.dataaccess.mapper.Mapper;
+import kr.co.wizbrain.tbn.notice.vo.NoticeVO;
 import kr.co.wizbrain.tbn.receipt.vo.AreaCodeVO;
 import kr.co.wizbrain.tbn.receipt.vo.AreaSubCodeVO;
 import kr.co.wizbrain.tbn.receipt.vo.ArteryVO;
@@ -13,7 +14,6 @@ import kr.co.wizbrain.tbn.receipt.vo.InformerStatVO;
 import kr.co.wizbrain.tbn.receipt.vo.InformerTypeVO;
 import kr.co.wizbrain.tbn.receipt.vo.InformerVO;
 import kr.co.wizbrain.tbn.receipt.vo.MissedCallVO;
-import kr.co.wizbrain.tbn.receipt.vo.PersonalMemoVO;
 import kr.co.wizbrain.tbn.receipt.vo.PickUpCallVO;
 import kr.co.wizbrain.tbn.receipt.vo.ReceiptVO;
 import kr.co.wizbrain.tbn.receipt.vo.ReceiveCallVO;
@@ -34,6 +34,21 @@ public interface ReceiptMapper{
 	public int insertReceipt(ReceiptVO ReceiptVO) throws Exception;
 	public int updateMonthlyStat(ReceiptVO vo) throws Exception;
 
+	// 24-11-11 : 공지사항 조회
+	public List<NoticeVO> selectNotice(String today) throws Exception;
+	
+	//24-11-12 : 하루동안 보지않음 조회
+	public List<NoticeVO> selectShow(@Param("user") String user, @Param("noticeId") String noticeId) throws Exception;
+	
+	// 24-11-12 : 공지사항 한개만 조회
+	public List<NoticeVO> selectOneNotice(String noticeId) throws Exception;
+	
+	// 24-11-12 : 하루동안 보지않음 등록
+	public void insertShow(@Param("today")String today,@Param("user")String user,@Param("noticeId")String noticeId) throws Exception;
+	
+	//24-11-13 : 하루동안 보지않음 업데이트
+	public void updateShow(@Param("today")String today,@Param("user")String user,@Param("noticeId")String noticeId) throws Exception;
+	
 	//통신원(제보접수용) 조회
 	//public InformerVO selectInformerByPhone(String phone_cell) throws Exception;
 	public List<InformerVO> selectInformerByPhone(String phone_cell) throws Exception;

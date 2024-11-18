@@ -3332,4 +3332,126 @@ ul #tempSaveTb li span:nth-child(3){
 }
 
 
+/* 24-11-12 : 공지사항 모달창 관련 스타일 설정 */
+.notice_container {
+    width: 600px;
+    height: auto;
+
+    top: 50%;
+    margin-top: -300px;
+
+    left: 50%;
+    margin-left: -300px;
+
+    background-color: white;
+    border-radius: 10px;
+    border: 0.5px solid #747474;
+
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.notice_title{
+    width: 500px;
+    margin-top: 40px;
+}
+
+.title_t{
+    width: 500px;
+    height : 40px;
+}
+
+.title_t > h2 {
+	font-size : 26px;
+}
+
+.writer_info{
+    width: 500px;
+    display: flex;
+}
+
+/* .line {
+    width: 500px;
+    border-bottom: 0.5px solid #747474;
+
+    margin-bottom: 10px;
+} */
+
+
+#input_writer, #input_writeDate, #input_content {
+	font-size : 14px;
+}
+
+.show24 {
+	font-size : 14px;
+	height : 30px;
+	display: flex;
+    align-items: center;
+}
+
+.show24 > input {
+	margin-right :10px;
+	width : 18px;
+	height: 18px;
+}
+
+.line {
+    width: 500px;
+    border-bottom: 0.5px solid #747474;
+
+    margin-bottom: 10px;
+    margin-top: 10px;
+}
+
+.writer_div, .writeDate_div{
+    display: flex;
+    align-items: center;
+
+    margin-right: 20px;
+}
+
+.writer_img {
+    width: 21px;
+    height: 21px;
+
+    margin-right: 5px;
+
+    background-image: url('../images/writer.svg');
+    background-size: cover;
+}
+
+.writeDate_img {
+    width: 21px;
+    height: 21px;
+
+    margin-right: 5px;
+    
+    background-image: url('../images/writeDate.svg');
+    background-size: cover;
+}
+
+.notice_content{
+    width: 500px;
+}
+
+.notice_cancle {
+    width: 500px;
+
+    margin-top: 5px;
+    margin-bottom: 40px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.cancle_img {
+    width: 30px;
+    height: 30px;
+
+    background-image: url('../images/cancle.svg');
+    background-size: cover;
+}
 

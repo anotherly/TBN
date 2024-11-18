@@ -7,6 +7,7 @@ import javax.annotation.Resource;
 
 import org.springframework.stereotype.Service;
 
+import kr.co.wizbrain.tbn.notice.vo.NoticeVO;
 import kr.co.wizbrain.tbn.receipt.mapper.ReceiptMapper;
 import kr.co.wizbrain.tbn.receipt.service.ReceiptService;
 import kr.co.wizbrain.tbn.receipt.vo.AreaCodeVO;
@@ -17,7 +18,6 @@ import kr.co.wizbrain.tbn.receipt.vo.InformerStatVO;
 import kr.co.wizbrain.tbn.receipt.vo.InformerTypeVO;
 import kr.co.wizbrain.tbn.receipt.vo.InformerVO;
 import kr.co.wizbrain.tbn.receipt.vo.MissedCallVO;
-import kr.co.wizbrain.tbn.receipt.vo.PersonalMemoVO;
 import kr.co.wizbrain.tbn.receipt.vo.PickUpCallVO;
 import kr.co.wizbrain.tbn.receipt.vo.ReceiptVO;
 import kr.co.wizbrain.tbn.receipt.vo.ReceiveCallVO;
@@ -38,6 +38,36 @@ public class ReceiptServiceImpl implements ReceiptService{
 	//제보접수 등록
 	public int insertReceipt(ReceiptVO ReceiptVO) throws Exception {
 		return receiptMapper.insertReceipt(ReceiptVO);
+	}
+	
+	//24-11-11 : 공지사항 조회
+	@Override
+	public List<NoticeVO> selectNotice(String today) throws Exception {
+		return receiptMapper.selectNotice(today);
+	}
+	
+	//24-11-12 : 하루동안 보지않음 조회
+	@Override
+	public List<NoticeVO> selectShow(String user, String noticeId) throws Exception {
+		return receiptMapper.selectShow(user, noticeId);
+	}
+	
+	// 24-11-12 : 공지사항 한개만 조회
+	@Override
+	public List<NoticeVO> selectOneNotice(String noticeId) throws Exception {
+		return receiptMapper.selectOneNotice(noticeId);
+	}
+	
+	// 24-11-12 : 하루동안 보지않음 등록
+	@Override
+	public void insertShow(String today, String user, String noticeId) throws Exception {
+		receiptMapper.insertShow(today,user,noticeId);
+	}
+	
+	//24-11-13 : 하루동안 보지않음 업데이트
+	@Override
+	public void updateShow(String today, String user, String noticeId) throws Exception {
+		receiptMapper.updateShow(today,user,noticeId);
 	}
 	
 	@Override

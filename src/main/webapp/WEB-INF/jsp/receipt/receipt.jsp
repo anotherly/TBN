@@ -89,6 +89,10 @@
 			
 		}); */
 		
+		
+		
+
+		
 	});
 	
 </script>
@@ -96,6 +100,11 @@
 <form name="receiptFrm" id="receiptFrm" action="../receipt/receiptSave.do" onsubmit="return false;">
 	
 </form>
+
+<!-- 24-11-12 : 공지사항 모달창 -->
+<div id="input_notice">
+
+</div>
 
 <!-- rightWrap -->
 <div id="rightWrap">
