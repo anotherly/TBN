@@ -367,6 +367,34 @@ public class StatisticController extends BaseController{
 		return "hssfExcel";
 	}
 
+	//24-11-19 : 제보자별 제보현황 컨트롤러
+	@RequestMapping("/stats/informerReceipt.do")
+	public String informerReport(Model model, HttpServletRequest request) throws Exception {
+		ParamsDto params = getParams(true);
+		
+		// 통계 데이터
+		List dataList = statisticService.informerReport(params);
+		
+		// 총 인원수 뽑기
+		String allInformer = statisticService.allInformer(params);
+		
+		// 총 건수 뽑기
+		String allReport = statisticService.allReport(params);
+				
+		model.addAttribute("mapping", "informerReport");
+		model.addAttribute("fileName", "제보자별 제보현황"+params.getString("city")+".xls");
+		
+		model.addAttribute("sheetNames1", "제보자별 제보현황");
+		model.addAttribute("dataList", dataList);
+		model.addAttribute("start_date",params.get("start_date"));
+		model.addAttribute("end_date",params.get("end_date"));
+		model.addAttribute("allInformer",allInformer);
+		model.addAttribute("allReport",allReport);
+		
+		return "hssfExcel";
+	}
+	
+	
 	/**전국통계: 돌발 교통정보 표출실적
 	 * @param model
 	 * @return

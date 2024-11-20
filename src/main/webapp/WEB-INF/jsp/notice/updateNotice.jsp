@@ -5,7 +5,6 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<jsp:include page="../common/all.jsp" flush="false" />
 <title>tbn교통방송 제보접수시스템</title>
 <style>
 	th,td {
@@ -32,6 +31,9 @@
 </style>
 <script>
 	$(document).ready(function(){
+		
+		console.log("찍기 2");
+		
 		$("#menu").load("/common/menu.do");
 		
 		$('#endDate').datepicker({
@@ -64,7 +66,25 @@
 		var isCheck = checkForm();
 		
 		if(isCheck) {
-			$('#updateForm').submit();
+			$.ajax({
+				url : "/notice/update.do",
+				data : $('#updateForm').serialize(),
+				type : "post",
+				async : false,
+	            dataType: 'json',
+				success : function(data) {	
+					console.log("요청 성공"+data);
+					
+					alert('저장되었습니다.');
+
+					var val = true;
+					opener.search(val);
+					self.close();
+				},
+				error : function(xhr, status, error) {
+					console.log('공지사항 불러오기 ajax 요청에 문제가 있습니다.');
+				}
+			});
 		} else {
 			return false;
 		}
@@ -72,7 +92,7 @@
 	});
 	
 	$('.cancleButton').on('click', function() {
-		history.back();
+		self.close();
 	});
 	
 	
@@ -100,29 +120,12 @@
 	}
 	
 	});
+	
 </script>
 </head>
 <body style="background:none;">
-	<div id="changeBody">
-		<div id="container" class="container">
-			<div id='loginId' class="loginId" style="margin:3px 150px 0 0;">
-				<div>
-					<strong style="font-family: auto;">
-					<c:if test="${login.authCode ne 999}">${login.regionName}</c:if> 
-					${login.userName}</strong>님이 로그인하셨습니다.
-					<a href="${path}/login/logout.do" style="color:mediumblue; font-weight:700;">로그아웃</a>
-	 					<a href="#" onclick="openPersonalMemo();" style="color:green; font-weight:700;">개인메모</a>	
-	 			</div>
-			</div>
-			<div id="header" class="header">
-				<div id='logo' class="logo">
-					<a href="${path}"><img src="../images/util_logo_tbn.png" alt="tbn한국교통방송 제보접수시스템"/></a>
-				</div>
-				<div id="menu" class="menu-bar"></div>
-			</div>
-		
-		
-			<div id="mainDiv" class="mainDiv" style="flex-direction:column; align-items: center;">
+<h1 class="content-title" style="margin-top: 100px; margin-left:160px;">공지사항 수정</h1>
+<div id="mainDiv" class="mainDiv" style="flex-direction:column; align-items: center;  width: 1200px;">
 			    <form action="/notice/update.do" method="post" id="updateForm"> <!-- from 및 테이블 만들어 수정/상세에서도 사용 -->
 			        <div class="insertTable" style="width: 880px; height: 500px; ">
 			            <table style="width: 100%; height: 100%;">
@@ -151,7 +154,7 @@
 			                <tr style="border-bottom: 1px solid black;">
 			                    <th>공지사항 내용 </th>
 			                    <td colspan='3'>
-			                        <textarea style="resize:none; width: 100%; height: 90%; box-sizing: border-box;" id="notice_content" name="NOTICE_CONTENT" maxlength="1000" wrap="hard">${uList[0].NOTICE_CONTENT}"</textarea>
+			                        <textarea style="resize:none; width: 100%; height: 90%; box-sizing: border-box;" id="notice_content" name="NOTICE_CONTENT" maxlength="1000" wrap="hard">${uList[0].NOTICE_CONTENT}</textarea>
 			                    </td>
 			                </tr>
 			            </table>
@@ -166,7 +169,5 @@
 			        <button class="cancleButton">취소</button>
 			    </div>
 			</div>
-		</div>
-	</div>
 </body>
 </html>

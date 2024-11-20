@@ -71,9 +71,6 @@
 	<script  type="text/javascript" charset="utf-8"  src="<%=request.getContextPath()%>/js/option/reportType.js"></script>
 	<script  type="text/javascript" charset="utf-8"  src="<%=request.getContextPath()%>/js/option/colorCode.js"></script>
 </head>
-<script>
-	alert("asdfasd");
-</script>
 <body>
 	
 </body>

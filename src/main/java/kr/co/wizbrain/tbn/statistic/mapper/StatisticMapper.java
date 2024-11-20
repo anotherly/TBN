@@ -59,6 +59,15 @@ public interface StatisticMapper{
 	// 1-4) 통신원 유형별 상세 데이터
 	public List informerTypeData(ParamsDto params) throws Exception;
 	
+	// 24-11-19 : 제보자별 제보현황
+	public List informerReport(ParamsDto params) throws Exception;
+	
+	// 24-11-20 : 제보자별 제보현황 - 총 인원수
+	public String allInformer(ParamsDto params) throws Exception;
+	
+	// 24-11-20 : 제보자별 제보현황 - 총 건수
+	public String allReport(ParamsDto params) throws Exception;
+	
 	
 	
 	// 2) 제보 수단별 현황

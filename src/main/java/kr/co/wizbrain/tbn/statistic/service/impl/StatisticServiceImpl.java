@@ -86,6 +86,26 @@ public class StatisticServiceImpl implements StatisticService{
 	}
 	
 	
+	// 24-11-19 : 제보자별 제보현황
+	@Override
+	public List informerReport(ParamsDto params) throws Exception {
+		return statisticMapper.informerReport(params);
+	}
+	
+	// 24-11-20 : 제보자별 제보현황 - 총 인원수
+	@Override
+	public String allInformer(ParamsDto params) throws Exception {
+		return statisticMapper.allInformer(params);
+	}
+	
+	// 24-11-20 : 제보자별 제보현황 - 총 건수
+	@Override
+	public String allReport(ParamsDto params) throws Exception {
+		return statisticMapper.allReport(params);
+	}
+	
+	
+	
 	// 2) 제보 수단별 현황
 	// 2-1) 제보 수단 title
 	@Override

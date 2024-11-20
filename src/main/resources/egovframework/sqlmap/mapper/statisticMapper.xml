@@ -359,6 +359,169 @@
 		left join RTT b on a.id=b.REPORTMEAN_TYPE )t GROUP BY CODE,REGION_ID ORDER BY CODE, REGION_ID DESC)tt
 	</select>
 	
+	
+	<!--  24-1-20 : 제보자별 제보현황 -->
+	<select id="informerReport" parameterType="params" resultType="java.util.HashMap">
+	 <![CDATA[
+        	SELECT /*+ INDEX(IFM IFM) INDEX(RPT RPT)*/
+            RPT.INDIVIDUAL_ID AS 통신원ID,
+            RPT.INDIVIDUAL_NAME AS 통신원이름, 
+            CIT.TYPE_NAME AS 유형,
+            NVL(RPT.ORG_NAME, '0') AS 통신원소속,  
+            ORG.ORG_SNAME AS 소속상세,
+            IFM.PHONE_CELL AS 연락처,
+            -- 제보건수
+            COUNT(*) AS 제보건수,
+            COUNT(CASE WHEN RPT.FLAG_BROD = 'Y' THEN 1 END) AS 방송건수,
+            COUNT(CASE WHEN RPT.FLAG_IMPORTANT = 'Y' THEN 1 END) AS 주요제보,
+            COUNT(CASE WHEN RPT.REPORT_TYPE = 'A00' THEN 1 END) AS 제보건수_원활,
+            COUNT(CASE WHEN RPT.REPORT_TYPE = 'A01' THEN 1 END) AS 제보건수_정체,
+            COUNT(CASE WHEN RPT.REPORT_TYPE = 'A02' THEN 1 END) AS 제보건수_공사,
+            COUNT(CASE WHEN RPT.REPORT_TYPE = 'A03' THEN 1 END) AS 제보건수_행사,
+            COUNT(CASE WHEN RPT.REPORT_TYPE = 'A04' THEN 1 END) AS 제보건수_사고,
+            COUNT(CASE WHEN RPT.REPORT_TYPE = 'A05' THEN 1 END) AS 제보건수_기상,
+            COUNT(CASE WHEN RPT.REPORT_TYPE = 'A06' THEN 1 END) AS 제보건수_기타,
+            COUNT(CASE WHEN RPT.REPORT_TYPE = 'A07' THEN 1 END) AS 제보건수_안내,
+            COUNT(CASE WHEN RPT.REPORT_TYPE = 'A08' THEN 1 END) AS 제보건수_기관통보,
+            -- 방송건수
+            COUNT(CASE WHEN RPT.REPORT_TYPE = 'A00' AND RPT.FLAG_BROD = 'Y' THEN 1 END) AS 방송건수_원활,
+            COUNT(CASE WHEN RPT.REPORT_TYPE = 'A01' AND RPT.FLAG_BROD = 'Y' THEN 1 END) AS 방송건수_정체,
+            COUNT(CASE WHEN RPT.REPORT_TYPE = 'A02' AND RPT.FLAG_BROD = 'Y' THEN 1 END) AS 방송건수_공사,
+            COUNT(CASE WHEN RPT.REPORT_TYPE = 'A03' AND RPT.FLAG_BROD = 'Y' THEN 1 END) AS 방송건수_행사,
+            COUNT(CASE WHEN RPT.REPORT_TYPE = 'A04' AND RPT.FLAG_BROD = 'Y' THEN 1 END) AS 방송건수_사고,
+            COUNT(CASE WHEN RPT.REPORT_TYPE = 'A05' AND RPT.FLAG_BROD = 'Y' THEN 1 END) AS 방송건수_기상,
+            COUNT(CASE WHEN RPT.REPORT_TYPE = 'A06' AND RPT.FLAG_BROD = 'Y' THEN 1 END) AS 방송건수_기타,
+            COUNT(CASE WHEN RPT.REPORT_TYPE = 'A07' AND RPT.FLAG_BROD = 'Y' THEN 1 END) AS 방송건수_안내,
+            COUNT(CASE WHEN RPT.REPORT_TYPE = 'A08' AND RPT.FLAG_BROD = 'Y' THEN 1 END) AS 방송건수_기관통보
+	        FROM report_receipt RPT
+	        JOIN informer IFM ON IFM.INFORMER_ID = RPT.INDIVIDUAL_ID
+	        JOIN code_informer_type CIT ON IFM.INFORMER_TYPE = CIT.TYPE_ID
+	        JOIN org_sub ORG ON ORG.ORG_ID = IFM.ORG_ID
+	        JOIN CODE_REPORT_TYPE CRT ON RPT.REPORT_TYPE = CRT.BAS_SCOD
+	        WHERE RPT.REGION_ID = #{REGION_ID}
+	          AND RPT.RECEIPT_DAY <= TO_DATE(#{end_date}, 'YY/MM/DD') 
+	          AND RPT.RECEIPT_DAY >= TO_DATE(#{start_date}, 'YY/MM/DD')
+	        GROUP BY 
+	            RPT.INDIVIDUAL_ID,
+	            RPT.INDIVIDUAL_NAME,
+	            CIT.TYPE_NAME,
+	            RPT.ORG_NAME,
+	            ORG.ORG_SNAME,
+	            IFM.PHONE_CELL
+        ]]>
+
+	</select>
+
+
+	<!-- 24-11-20 : 제보자별 제보현황 - 총 인원수 구하기 -->
+	<select id="allInformer" parameterType="params" resultType="String">
+	<![CDATA[
+		SELECT COUNT(*) AS 총결과수
+		FROM (
+		    SELECT /*+ INDEX(IFM IFM) INDEX(RPT RPT)*/
+		        RPT.INDIVIDUAL_ID AS 통신원ID,
+		        RPT.INDIVIDUAL_NAME AS 통신원이름, 
+		        CIT.TYPE_NAME AS 유형,
+		        NVL(IFM.ORG_NAME, '0') AS 통신원소속, 
+		        ORG.ORG_SNAME AS 소속상세,
+		        IFM.PHONE_CELL AS 연락처,
+		        -- 제보건수
+		        COUNT(*) AS 제보건수,
+		        COUNT(CASE WHEN RPT.FLAG_BROD = 'Y' THEN 1 END) AS 방송건수,
+		        COUNT(CASE WHEN RPT.FLAG_IMPORTANT = 'Y' THEN 1 END) AS 주요제보,
+		        COUNT(CASE WHEN RPT.REPORT_TYPE = 'A00' THEN 1 END) AS 제보건수_원활,
+		        COUNT(CASE WHEN RPT.REPORT_TYPE = 'A01' THEN 1 END) AS 제보건수_정체,
+		        COUNT(CASE WHEN RPT.REPORT_TYPE = 'A02' THEN 1 END) AS 제보건수_공사,
+		        COUNT(CASE WHEN RPT.REPORT_TYPE = 'A03' THEN 1 END) AS 제보건수_행사,
+		        COUNT(CASE WHEN RPT.REPORT_TYPE = 'A04' THEN 1 END) AS 제보건수_사고,
+		        COUNT(CASE WHEN RPT.REPORT_TYPE = 'A05' THEN 1 END) AS 제보건수_기상,
+		        COUNT(CASE WHEN RPT.REPORT_TYPE = 'A06' THEN 1 END) AS 제보건수_기타,
+		        COUNT(CASE WHEN RPT.REPORT_TYPE = 'A07' THEN 1 END) AS 제보건수_안내,
+		        COUNT(CASE WHEN RPT.REPORT_TYPE = 'A08' THEN 1 END) AS 제보건수_기관통보,
+		        -- 방송건수
+		        COUNT(CASE WHEN RPT.REPORT_TYPE = 'A00' AND RPT.FLAG_BROD = 'Y' THEN 1 END) AS 방송건수_원활,
+		        COUNT(CASE WHEN RPT.REPORT_TYPE = 'A01' AND RPT.FLAG_BROD = 'Y' THEN 1 END) AS 방송건수_정체,
+		        COUNT(CASE WHEN RPT.REPORT_TYPE = 'A02' AND RPT.FLAG_BROD = 'Y' THEN 1 END) AS 방송건수_공사,
+		        COUNT(CASE WHEN RPT.REPORT_TYPE = 'A03' AND RPT.FLAG_BROD = 'Y' THEN 1 END) AS 방송건수_행사,
+		        COUNT(CASE WHEN RPT.REPORT_TYPE = 'A04' AND RPT.FLAG_BROD = 'Y' THEN 1 END) AS 방송건수_사고,
+		        COUNT(CASE WHEN RPT.REPORT_TYPE = 'A05' AND RPT.FLAG_BROD = 'Y' THEN 1 END) AS 방송건수_기상,
+		        COUNT(CASE WHEN RPT.REPORT_TYPE = 'A06' AND RPT.FLAG_BROD = 'Y' THEN 1 END) AS 방송건수_기타,
+		        COUNT(CASE WHEN RPT.REPORT_TYPE = 'A07' AND RPT.FLAG_BROD = 'Y' THEN 1 END) AS 방송건수_안내,
+		        COUNT(CASE WHEN RPT.REPORT_TYPE = 'A08' AND RPT.FLAG_BROD = 'Y' THEN 1 END) AS 방송건수_기관통보
+		    FROM report_receipt RPT
+		    JOIN informer IFM ON IFM.INFORMER_ID = RPT.INDIVIDUAL_ID
+		    JOIN code_informer_type CIT ON IFM.INFORMER_TYPE = CIT.TYPE_ID
+		    JOIN org_sub ORG ON ORG.ORG_ID = IFM.ORG_ID
+		    JOIN CODE_REPORT_TYPE CRT ON RPT.REPORT_TYPE = CRT.BAS_SCOD
+		    WHERE RPT.REGION_ID = #{REGION_ID}
+	          AND RPT.RECEIPT_DAY <= TO_DATE(#{end_date}, 'YY/MM/DD') 
+	          AND RPT.RECEIPT_DAY >= TO_DATE(#{start_date}, 'YY/MM/DD')
+		    GROUP BY 
+		        RPT.INDIVIDUAL_ID,
+		        RPT.INDIVIDUAL_NAME,
+		        CIT.TYPE_NAME,
+		        IFM.ORG_NAME,
+		        ORG.ORG_SNAME,
+		        IFM.PHONE_CELL
+		) ]]>
+	</select>
+
+	<!-- 24-11-20 : 제보자별 제보현황 - 총 건수 구하기 -->
+	<select id="allReport" parameterType="params" resultType="String">
+	<![CDATA[
+		SELECT sum(제보건수) AS 총건수
+		FROM (
+		    SELECT /*+ INDEX(IFM IFM) INDEX(RPT RPT)*/
+		        RPT.INDIVIDUAL_ID AS 통신원ID,
+		        RPT.INDIVIDUAL_NAME AS 통신원이름, 
+		        CIT.TYPE_NAME AS 유형,
+		        NVL(IFM.ORG_NAME, '0') AS 통신원소속, 
+		        ORG.ORG_SNAME AS 소속상세,
+		        IFM.PHONE_CELL AS 연락처,
+		        -- 제보건수
+		        COUNT(*) AS 제보건수,
+		        COUNT(CASE WHEN RPT.FLAG_BROD = 'Y' THEN 1 END) AS 방송건수,
+		        COUNT(CASE WHEN RPT.FLAG_IMPORTANT = 'Y' THEN 1 END) AS 주요제보,
+		        COUNT(CASE WHEN RPT.REPORT_TYPE = 'A00' THEN 1 END) AS 제보건수_원활,
+		        COUNT(CASE WHEN RPT.REPORT_TYPE = 'A01' THEN 1 END) AS 제보건수_정체,
+		        COUNT(CASE WHEN RPT.REPORT_TYPE = 'A02' THEN 1 END) AS 제보건수_공사,
+		        COUNT(CASE WHEN RPT.REPORT_TYPE = 'A03' THEN 1 END) AS 제보건수_행사,
+		        COUNT(CASE WHEN RPT.REPORT_TYPE = 'A04' THEN 1 END) AS 제보건수_사고,
+		        COUNT(CASE WHEN RPT.REPORT_TYPE = 'A05' THEN 1 END) AS 제보건수_기상,
+		        COUNT(CASE WHEN RPT.REPORT_TYPE = 'A06' THEN 1 END) AS 제보건수_기타,
+		        COUNT(CASE WHEN RPT.REPORT_TYPE = 'A07' THEN 1 END) AS 제보건수_안내,
+		        COUNT(CASE WHEN RPT.REPORT_TYPE = 'A08' THEN 1 END) AS 제보건수_기관통보,
+		        -- 방송건수
+		        COUNT(CASE WHEN RPT.REPORT_TYPE = 'A00' AND RPT.FLAG_BROD = 'Y' THEN 1 END) AS 방송건수_원활,
+		        COUNT(CASE WHEN RPT.REPORT_TYPE = 'A01' AND RPT.FLAG_BROD = 'Y' THEN 1 END) AS 방송건수_정체,
+		        COUNT(CASE WHEN RPT.REPORT_TYPE = 'A02' AND RPT.FLAG_BROD = 'Y' THEN 1 END) AS 방송건수_공사,
+		        COUNT(CASE WHEN RPT.REPORT_TYPE = 'A03' AND RPT.FLAG_BROD = 'Y' THEN 1 END) AS 방송건수_행사,
+		        COUNT(CASE WHEN RPT.REPORT_TYPE = 'A04' AND RPT.FLAG_BROD = 'Y' THEN 1 END) AS 방송건수_사고,
+		        COUNT(CASE WHEN RPT.REPORT_TYPE = 'A05' AND RPT.FLAG_BROD = 'Y' THEN 1 END) AS 방송건수_기상,
+		        COUNT(CASE WHEN RPT.REPORT_TYPE = 'A06' AND RPT.FLAG_BROD = 'Y' THEN 1 END) AS 방송건수_기타,
+		        COUNT(CASE WHEN RPT.REPORT_TYPE = 'A07' AND RPT.FLAG_BROD = 'Y' THEN 1 END) AS 방송건수_안내,
+		        COUNT(CASE WHEN RPT.REPORT_TYPE = 'A08' AND RPT.FLAG_BROD = 'Y' THEN 1 END) AS 방송건수_기관통보
+		    FROM report_receipt RPT
+		    JOIN informer IFM ON IFM.INFORMER_ID = RPT.INDIVIDUAL_ID
+		    JOIN code_informer_type CIT ON IFM.INFORMER_TYPE = CIT.TYPE_ID
+		    JOIN org_sub ORG ON ORG.ORG_ID = IFM.ORG_ID
+		    JOIN CODE_REPORT_TYPE CRT ON RPT.REPORT_TYPE = CRT.BAS_SCOD
+		   WHERE RPT.REGION_ID = #{REGION_ID}
+	          AND RPT.RECEIPT_DAY <= TO_DATE(#{end_date}, 'YY/MM/DD') 
+	          AND RPT.RECEIPT_DAY >= TO_DATE(#{start_date}, 'YY/MM/DD')
+		    GROUP BY 
+		        RPT.INDIVIDUAL_ID,
+		        RPT.INDIVIDUAL_NAME,
+		        CIT.TYPE_NAME,
+		        IFM.ORG_NAME,
+		        ORG.ORG_SNAME,
+		        IFM.PHONE_CELL
+		)]]>
+	</select>
+	
+	
+	
+	
 	<!-- @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ -->
 	
 	<!-- 1.3 - 제보유형별 현황 sheet -->

@@ -93,4 +93,5 @@
 		    WHERE ROWNUM = 1
     	]]>
 	</select>
+	
 </mapper>

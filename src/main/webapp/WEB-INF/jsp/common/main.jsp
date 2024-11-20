@@ -238,7 +238,7 @@
 			            <div class="writer_info">
 			                <div class="writer_div">
 			                    <div class="writer_img"></div>
-			                    <p id="input_riter"></p>
+			                    <p id="input_writer"></p>
 			                </div>
 			                <div class="writeDate_div">
 			                    <div class="writeDate_img"></div>

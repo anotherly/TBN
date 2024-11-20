@@ -43,7 +43,7 @@ public class NoticeController {
 		logger.debug("▶▶▶▶▶▶▶.request.getRequestURI() : "+request.getRequestURI());
 		logger.debug("▶▶▶▶▶▶▶.request.getContextPath() : "+request.getContextPath());
 		
-		ModelAndView mav = new ModelAndView();
+		ModelAndView mav = new ModelAndView("jsonView");
 		
 		// 공지사항 전체 조회 (목록)
 		List<NoticeVO> noticeList = noticeService.noticeList(searchText,searchDate);
@@ -51,22 +51,31 @@ public class NoticeController {
 		
 		url = request.getRequestURI().substring(request.getContextPath().length()).split(".do")[0];
 		logger.debug("▶▶▶▶▶▶▶.보내려는 url : "+url);
-		
-		mav.setViewName(url);
+
+		mav.setViewName("/notice/notice");
 		return mav;
 	}
 	
 	// 24-11-15 : 공지사항 등록 페이지로 이동
 	@RequestMapping(value="/notice/goInsert.do")
-	public String goInsertNotice() throws Exception{
-		return "notice/insertNotice";
+	public ModelAndView goInsertNotice() throws Exception{
+		ModelAndView mav = new ModelAndView("jsonView");
+		mav.setViewName("/notice/insertNotice");
+		
+		return mav;
 	}
 	
 	// 24-11-15 : 공지사항 등록 처리
 	@RequestMapping(value="/notice/insert.do")
-	public String insertNotice(@ModelAttribute NoticeVO vo) throws Exception{
+	public ModelAndView insertNotice(@ModelAttribute NoticeVO vo) throws Exception{
 		noticeService.insertNotice(vo);
-		return "redirect:/notice/notice.do";
+		
+		String msg = "success";
+		ModelAndView mav = new ModelAndView("jsonView");
+		mav.addObject("msg", msg);
+		
+		return mav;
+
 	}
 	
 	// 24-11-15 : 공지사항 상세
@@ -95,17 +104,26 @@ public class NoticeController {
 	
 	// 24-11-15 : 공지사항 수정 처리
 	@RequestMapping(value="/notice/update.do")
-	public String updateNotice(@ModelAttribute NoticeVO vo) throws Exception {
+	public ModelAndView updateNotice(@ModelAttribute NoticeVO vo) throws Exception {
 		noticeService.updateNotice(vo);
 		
-		return "redirect:/notice/notice.do";
+		String msg = "success";
+		ModelAndView mav = new ModelAndView("jsonView");
+		mav.addObject("msg", msg);
+		
+		return mav;
 	}
 	
 	// 24-11-15 : 공지사항 삭제 처리
 	@RequestMapping(value="/notice/delete.do")
-	public String deleteNotice(@RequestParam("noticeId")String noticeId) throws Exception {
+	public ModelAndView deleteNotice(@RequestParam("noticeId")String noticeId) throws Exception {
 		noticeService.deleteNotice(noticeId);
-		return "redirect:/notice/notice.do";
+		
+		String msg = "success";
+		ModelAndView mav = new ModelAndView("jsonView");
+		mav.addObject("msg", msg);
+		
+		return mav;
 	}
 	
 	// 24-11-11 : 제보접수 페이지 이동 시 공지사항 조회

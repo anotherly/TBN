@@ -102,6 +102,8 @@ public class ExportPoiHssfExcel extends AbstractView {
                 volunteer(model, wb);
             } else if (model.get("mapping").equals("informerDown")) {
                 informerDown(model, wb);
+            } else if (model.get("mapping").equals("informerReport")) {
+            	informerReport(model, wb);
             }
             ServletOutputStream outputStream = response.getOutputStream();
             response.setContentType(super.getContentType());
@@ -1540,6 +1542,155 @@ public class ExportPoiHssfExcel extends AbstractView {
 	}
     
 
+    // 24-11-20 :제보자별 제보현황
+    protected void informerReport(Map model, HSSFWorkbook wb) {
+    	int rowCnt = 0;
+		List dataList = (List) model.get("dataList");
+		
+		// 뽑으려는 통계 제목
+		String title = "제보자별 제보현황";
+				
+		// 통계제목 밑 총 인원 텍스트 구하기
+		String allInformerVal = (String) model.get("allInformer");
+		String allInformer = "총 인원 : " + allInformerVal +"명";
+		
+		// 통계 제목 밑 총 건수 텍스트 구하기
+		String allReportVal = (String) model.get("allReport");
+		String allReport = "총 건수 : " + allReportVal +"건";
+		
+		// 통계 제목 밑 일자 변환
+		String getStartDate = (String) model.get("start_date");
+		String startY = getStartDate.substring(0,4) + "년 ";
+		String startM = getStartDate.substring(4,6) + "월 ";
+		String startD = getStartDate.substring(6,8) + "일 ~ ";
+				
+		String startDate = startY + startM + startD;
+				
+		String getEndDate = (String) model.get("end_date");
+		String endY = getEndDate.substring(0,4) + "년 ";
+		String endM = getEndDate.substring(4,6) + "월 ";
+		String endD = getEndDate.substring(6,8) + "일";
+				
+		String endDate = endY + endM + endD;
+				
+		HSSFSheet sheet1 = wb.createSheet(model.get("sheetNames1").toString());
+		HSSFRow titlerow = sheet1.createRow(rowCnt);
+		
+		sheet1.addMergedRegion(new CellRangeAddress(0, 0, 0, 26)); // 타이틀 셀 병합
+		titlerow.createCell(0).setCellValue("제보자별 제보현황");// 제목 넣음
+		
+		rowCnt++; //1
+		// 시작일 ~ 종료일
+		HSSFRow daterow = sheet1.createRow(rowCnt);
+		sheet1.addMergedRegion(new CellRangeAddress(1, 1, 0, 26));
+		daterow.createCell(0).setCellValue(startDate + endDate);
+		
+		rowCnt++; //2
+		// 공백 행 하나 생성
+		HSSFRow emptyRow1 = sheet1.createRow(rowCnt);
+		
+		rowCnt++; //3
+		// 총 인원수 및 총 건수 행 생성
+		HSSFRow subTitle1 = sheet1.createRow(rowCnt);
+		sheet1.addMergedRegion(new CellRangeAddress(2, 2, 0, 2)); // 총인원 수 셀 병합
+		sheet1.addMergedRegion(new CellRangeAddress(2, 2, 4, 6)); // 총 건수 셀 병합
+		
+		subTitle1.createCell(0).setCellValue(allInformer);
+		subTitle1.createCell(2).setCellValue(allReport);
+		
+		rowCnt++; // 4
+		// 통계 열 만들기
+		HSSFRow rowTitle1 = sheet1.createRow(rowCnt);
+		rowCnt++; // 5
+		HSSFRow rowTitle2 = sheet1.createRow(rowCnt);
+		
+		sheet1.addMergedRegion(new CellRangeAddress(4, 5, 0, 0)); // ID 행 병합
+		sheet1.addMergedRegion(new CellRangeAddress(4, 5, 1, 1)); // 통신원 이름 행 병합
+		sheet1.addMergedRegion(new CellRangeAddress(4, 5, 2, 2)); // 통신원 유형 행 병합
+		sheet1.addMergedRegion(new CellRangeAddress(4, 5, 3, 3)); // 통신원 소속 행 병합
+		sheet1.addMergedRegion(new CellRangeAddress(4, 5, 4, 4)); // 통신원 소속 상세 행 병합
+		sheet1.addMergedRegion(new CellRangeAddress(4, 5, 5, 5)); // 통신원 연락처 행 병합
+		sheet1.addMergedRegion(new CellRangeAddress(4, 5, 6, 6)); // 제보건수 행 병합
+		sheet1.addMergedRegion(new CellRangeAddress(4, 5, 7, 7)); // 방송건수 행 병합
+		sheet1.addMergedRegion(new CellRangeAddress(4, 5, 8, 8)); // 주요제보 행 병합	
+		sheet1.addMergedRegion(new CellRangeAddress(4, 4, 9, 17)); // 제보건수 상세 행 병합
+		sheet1.addMergedRegion(new CellRangeAddress(4, 4, 18, 26)); // 방송건수 상세 행 병합
+		
+		rowTitle1.createCell(0).setCellValue("통신원 ID");
+		rowTitle1.createCell(1).setCellValue("통신원 이름");
+		rowTitle1.createCell(2).setCellValue("통신원 유형");
+		rowTitle1.createCell(3).setCellValue("통신원 소속");
+		rowTitle1.createCell(4).setCellValue("소속 상세");
+		rowTitle1.createCell(5).setCellValue("연락처");
+		rowTitle1.createCell(6).setCellValue("제보건수");
+		rowTitle1.createCell(7).setCellValue("방송건수");
+		rowTitle1.createCell(8).setCellValue("주요제보");
+		rowTitle1.createCell(9).setCellValue("제보건수");
+		rowTitle1.createCell(18).setCellValue("방송건수");
+		
+		// 제보건수 상세 열
+		rowTitle2.createCell(9).setCellValue("원활");
+		rowTitle2.createCell(10).setCellValue("정체");
+		rowTitle2.createCell(11).setCellValue("공사");
+		rowTitle2.createCell(12).setCellValue("행사");
+		rowTitle2.createCell(13).setCellValue("사고");
+		rowTitle2.createCell(14).setCellValue("기상");
+		rowTitle2.createCell(15).setCellValue("기타");
+		rowTitle2.createCell(16).setCellValue("안내");
+		rowTitle2.createCell(17).setCellValue("기관통보");
+		
+		// 방송건수 상세 열
+		rowTitle2.createCell(18).setCellValue("원활");
+		rowTitle2.createCell(19).setCellValue("정체");
+		rowTitle2.createCell(20).setCellValue("공사");
+		rowTitle2.createCell(21).setCellValue("행사");
+		rowTitle2.createCell(22).setCellValue("사고");
+		rowTitle2.createCell(23).setCellValue("기상");
+		rowTitle2.createCell(24).setCellValue("기타");
+		rowTitle2.createCell(25).setCellValue("안내");
+		rowTitle2.createCell(26).setCellValue("기관통보");
+		
+		rowCnt++;
+		HSSFRow[] dataRow = new HSSFRow[dataList.size()];
+		// 받아온 개수만큼 데이터 삽입
+		for(int i = 0; i < dataList.size(); i++){
+			dataRow[i] = sheet1.createRow(rowCnt + i);
+			
+			// dataList에서 각 row를 가져오고, 이를 Map으로 캐스팅
+		    Map<String, Object> record = (Map<String, Object>) dataList.get(i);
+		    
+		    // record의 각 필드를 Map을 통해 접근
+		    dataRow[i].createCell(0).setCellValue(record.get("통신원ID").toString());
+		    dataRow[i].createCell(1).setCellValue(record.get("통신원이름").toString());
+		    dataRow[i].createCell(2).setCellValue(record.get("유형").toString());
+		    dataRow[i].createCell(3).setCellValue("0".equals(record.get("통신원소속")) ? "비등록" : record.get("통신원소속").toString());
+		    dataRow[i].createCell(4).setCellValue(record.get("소속상세").toString());
+		    dataRow[i].createCell(5).setCellValue(record.get("연락처").toString());
+		    dataRow[i].createCell(6).setCellValue(record.get("제보건수").toString());
+		    dataRow[i].createCell(7).setCellValue(record.get("방송건수").toString());
+		    dataRow[i].createCell(8).setCellValue(record.get("주요제보").toString());
+		    dataRow[i].createCell(9).setCellValue(record.get("제보건수_원활").toString());
+		    dataRow[i].createCell(10).setCellValue(record.get("제보건수_정체").toString());
+		    dataRow[i].createCell(11).setCellValue(record.get("제보건수_공사").toString());
+		    dataRow[i].createCell(12).setCellValue(record.get("제보건수_행사").toString());
+		    dataRow[i].createCell(13).setCellValue(record.get("제보건수_사고").toString());
+		    dataRow[i].createCell(14).setCellValue(record.get("제보건수_기상").toString());
+		    dataRow[i].createCell(15).setCellValue(record.get("제보건수_기타").toString());
+		    dataRow[i].createCell(16).setCellValue(record.get("제보건수_안내").toString());
+		    dataRow[i].createCell(17).setCellValue(record.get("제보건수_기관통보").toString());
+		    dataRow[i].createCell(18).setCellValue(record.get("방송건수_원활").toString());
+		    dataRow[i].createCell(19).setCellValue(record.get("방송건수_정체").toString());
+		    dataRow[i].createCell(20).setCellValue(record.get("방송건수_공사").toString());
+		    dataRow[i].createCell(21).setCellValue(record.get("방송건수_행사").toString());
+		    dataRow[i].createCell(22).setCellValue(record.get("방송건수_사고").toString());
+		    dataRow[i].createCell(23).setCellValue(record.get("방송건수_기상").toString());
+		    dataRow[i].createCell(24).setCellValue(record.get("방송건수_기타").toString());
+		    dataRow[i].createCell(25).setCellValue(record.get("방송건수_안내").toString());
+		    dataRow[i].createCell(26).setCellValue(record.get("방송건수_기관통보").toString());
+			
+		}
+    }
+    
     protected void orgOrgSub(Map model, HSSFWorkbook wb) {
         List dataList = (List) model.get("orgOrgSub");
         List eraList = (List) model.get("eraList");

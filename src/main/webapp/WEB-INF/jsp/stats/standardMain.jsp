@@ -187,6 +187,16 @@
                                         	<img src="../images/ico_excel.gif" alt="" class="mglsub03" /><a href="javascript:goStats('stats/orgOrgSub.do');">통신원 중/소 분류별 통계</a>
                                         </td>
                                         <td><a href="javascript:goStats('stats/orgOrgSub.do');"><img src="../images/btn_excel_down.gif" alt="엑셀다운로드" /></a></td>
+                                    </tr>                                   
+                                    <tr>
+                                        <td class="txt_left"><img src="../images/ico_excel.gif" alt="" class="mglsub03" /><a href="javascript:goStats('stats/receiptUse.do');">교통정보 수집건수 및 활용실적</a></td>
+                                        <td><a href="javascript:goStats('stats/receiptUse.do');"><img src="../images/btn_excel_down.gif" alt="엑셀다운로드" /></a></td>
+                                    </tr>
+             
+             						 <!--  24-11-18 : 제보자별 제보현황 -->
+                                    <tr>
+                                        <td class="txt_left"><img src="../images/ico_excel.gif" alt="" class="mglsub03" /><a href="javascript:goStats('stats/informerReceipt.do');">제보자별 제보현황</a></td>
+                                        <td><a href="javascript:goStats('stats/informerReceipt.do');"><img src="../images/btn_excel_down.gif" alt="엑셀다운로드" /></a></td>
                                     </tr>
                                 </tbody>
                                 
@@ -242,6 +252,24 @@
                                         <td class="txt_left"><img src="../images/ico_excel.gif" alt="" class="mglsub03" /><a href="javascript:goStats('stats/volunteer.do');">사회봉사자 일자별 통계</a></td>
                                         <td><a href="javascript:goStats('stats/volunteer.do');"><img src="../images/btn_excel_down.gif" alt="엑셀다운로드" /></a></td>
                                     </tr>
+                                    <tr>
+                                        <td class="txt_left"><img src="../images/ico_excel.gif" alt="" class="mglsub03" /><a href="javascript:goStats('stats/volunteer.do');">사회봉사자 일자별 통계</a></td>
+                                        <td><a href="javascript:goStats('stats/volunteer.do');"><img src="../images/btn_excel_down.gif" alt="엑셀다운로드" /></a></td>
+                                    </tr>
+                                    
+                                    
+                                    <!-- 24-11-18 : 연간 제보자별 제보현황  -->
+                                    <tr>
+                                        <td class="txt_left"><img src="../images/ico_excel.gif" alt="" class="mglsub03" /><a href="javascript:goStats('stats/yearReceipt.do');">연간 제보자별 제보현황</a></td>
+                                        <td><a href="javascript:goStats('stats/yearReciept.do');"><img src="../images/btn_excel_down.gif" alt="엑셀다운로드" /></a></td>
+                                    </tr>
+                                    
+                                    <!--  24-11-18 : 연간지역(소속)별 통계 - 한마음대회 포상 관련 -->
+                                    <tr>
+                                        <td class="txt_left"><img src="../images/ico_excel.gif" alt="" class="mglsub03" /><a href="javascript:goStats('stats/yearOrgStat.do');">연간 지역(소속)별 실적통계</a></td>
+                                        <td><a href="javascript:goStats('stats/yearOrgStat.do');"><img src="../images/btn_excel_down.gif" alt="엑셀다운로드" /></a></td>
+                                    </tr>
+
                                 </tbody>
                             </table>
                         </div>

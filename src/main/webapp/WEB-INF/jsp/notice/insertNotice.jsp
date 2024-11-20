@@ -34,7 +34,8 @@
 </style>
 <script>
 	$(document).ready(function(){
-		$("#menu").load("/common/menu.do");
+/* 		$("#menu").load("/common/menu.do"); */
+	
 		
 		$('#endDate').datepicker({
 				dateFormat: 'yy-mm-dd' //달력 날짜 형태
@@ -65,15 +66,34 @@
 			var isCheck = checkForm();
 			
 			if(isCheck) {
-				$('#insertForm').submit();
+				
+				$.ajax({
+					url : "/notice/insert.do",
+					data : $('#insertForm').serialize(),
+					type : "post",
+					async : false,
+		            dataType: 'json',
+					success : function(data) {	
+						console.log("요청 성공"+data);
+						
+						alert('저장되었습니다.');
+						
+						var val = true;
+						opener.search(val);
+						self.close();
+					},
+					error : function(xhr, status, error) {
+						console.log('공지사항 불러오기 ajax 요청에 문제가 있습니다.');
+					}
+				});
+				
 			} else {
 				return false;
 			}
-			
 		});
 		
 		$('.cancleButton').on('click', function() {
-			history.back();
+			self.close();
 		});
 		
 		
@@ -103,27 +123,9 @@
 </script>
 </head>
 <body style="background:none;">
-	<div id="changeBody">
-		<div id="container" class="container">
-			<div id='loginId' class="loginId" style="margin:3px 150px 0 0;">
-				<div>
-					<strong style="font-family: auto;">
-					<c:if test="${login.authCode ne 999}">${login.regionName}</c:if> 
-					${login.userName}</strong>님이 로그인하셨습니다.
-					<a href="${path}/login/logout.do" style="color:mediumblue; font-weight:700;">로그아웃</a>
-	 					<a href="#" onclick="openPersonalMemo();" style="color:green; font-weight:700;">개인메모</a>	
-	 			</div>
-			</div>
-			<div id="header" class="header">
-				<div id='logo' class="logo">
-					<a href="${path}"><img src="../images/util_logo_tbn.png" alt="tbn한국교통방송 제보접수시스템"/></a>
-				</div>
-				<div id="menu" class="menu-bar"></div>
-			</div>
-		
-			
-			<div id="mainDiv" class="mainDiv" style="flex-direction:column; align-items: center;">
-			    <form action="/notice/insert.do" method="post" id="insertForm"> <!-- from 및 테이블 만들어 수정/상세에서도 사용 -->
+<h1 class="content-title" style="margin-top: 100px; margin-left:160px;">공지사항 등록</h1>
+<div id="mainDiv" class="mainDiv" style="flex-direction:column; align-items: center; width: 1200px;">
+			    <form name="insertForm" method="post" id="insertForm"> <!-- action="/notice/insert.do" -->
 			        <div class="insertTable" style="width: 880px; height: 500px; ">
 			            <table style="width: 100%; height: 100%;">
 			                <tr style="height: 50px; border-top : 2px solid black;border-bottom: 1px solid black;">
@@ -165,7 +167,5 @@
 			        <button class="cancleButton">취소</button>
 			    </div>
 			</div>
-		</div>
-	</div>
 </body>
 </html>

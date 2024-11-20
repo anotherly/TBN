@@ -5,13 +5,6 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
-<!-- DateTimePicker -->
-<script src="<%=request.getContextPath()%>/calender/moment.js"></script>
-<script src="<%=request.getContextPath()%>/calender/mo_ko.js"></script>
-<script src="<%=request.getContextPath()%>/calender/bootstrap-datetimepicker.js"></script>
-<link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/calender/no-boot-calendar-custom.css" />
-<link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/calender/datetimepickerstyle.css" />
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -26,7 +19,8 @@
 	}
 </style>
 <script>
-		$(document).ready(function() {
+		$(document).ready(function() {		
+			console.log("notice 진입");
 			
 			//함수 호출
 			comparisonCode();
@@ -58,11 +52,22 @@
 				
 			}
 			
+			$('td').click(function() {
+	            // 클릭된 td의 부모 tr 요소를 찾음
+	            var tr = $(this).closest('tr');
+	            
+	            // tr 요소 내에서 input[type="hidden"] 값을 가져옴
+	            var noticeId = tr.find('input[type="hidden"]').val();
+	            
+	            var detailPop = window.open('/notice/detailNotice.do?noticeId='+noticeId,'공지사항 상세','width=1200px,height=800px,scrollbars=yes');
+	        });
+			
 			
 			// 24-11-25 : 등록 버튼 클릭 시 
 			$('.insertButton').on('click', function(){
 				console.log("등록 버튼");
-				location.href ='/notice/goInsert.do';
+
+				var insertPop = window.open('/notice/goInsert.do','공지사항 등록','width=1200px,height=800px,scrollbars=yes');
 			});
 			
 			
@@ -77,7 +82,35 @@
 					$('#searchNotice').submit();
 				}
 			});
+			
+			
 		})
+		
+		// 자식창에서 실행될 함수( 페이지 새로고침 )
+		function search(val) {
+			console.log("function search");
+	
+			if(val == true) {
+				var options = {
+				        url:"/notice/notice.do",
+				        type: "POST",
+						//dataType: "json",
+						async : false,
+				        target: '#contents',
+				        success: function(json){
+				        	console.log("성공 불러오기");
+				        	
+				        	$('.admin_result_sc').hide();
+				        	$('#contents').html(json);
+				        },
+				        error: function(res,error){
+				            alert("에러가 발생했습니다."+res);
+				        }
+				    };
+				    $.ajax(options);
+			}
+
+		}
 		
 </script>
 </head>
@@ -104,6 +137,9 @@
                     <div class="wrap_bottom"></div>
                 </div>
             </form>
+            <div id="targetDiv">
+            </div>
+            
             <div class="admin_result_sc">
                 <table style="width : 880px;" border="0" cellpadding="0" cellspacing="0" class="list01">
                 	<colgroup>                                
@@ -120,20 +156,21 @@
 					<tbody>
 						<c:forEach var="list" items="${noticeList}">
 							<tr>
-								<td style="font-size : 16px;"><a href="/notice/detailNotice.do?noticeId=${list.NOTICE_ID}">${list.NOTICE_TITLE}</a></td>
-								<td style="font-size : 16px;"><a href="/notice/detailNotice.do?noticeId=${list.NOTICE_ID}">${list.WRITER_NAME}</a></td>
-								<td style="font-size : 16px;"><a href="/notice/detailNotice.do?noticeId=${list.NOTICE_ID}">${list.START_DATE}</a></td>
+								<input type="hidden" id="notice_id" value="${list.NOTICE_ID}">
+								<td style="font-size : 16px;">${list.NOTICE_TITLE}</td>
+								<td style="font-size : 16px;">${list.WRITER_NAME}</td>
+								<td style="font-size : 16px;">${list.START_DATE}</td>
 							</tr>
 						</c:forEach>
 					</tbody>
                 </table>
             </div>
-            <div id="insertBtn_div">
-            	<div>
+        </div>
+        <div id="insertBtn_div" style="margin-top: 15px; width: 880px;">
+            	<div style="float: right;">
             		<button class="insertButton">등록</button>
             	</div>
             </div>
-        </div>
     </div>
 </div>
 </body>
