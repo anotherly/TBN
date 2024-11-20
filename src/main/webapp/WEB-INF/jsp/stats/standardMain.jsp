@@ -258,17 +258,17 @@
                                     </tr>
                                     
                                     
-                                    <!-- 24-11-18 : 연간 제보자별 제보현황  -->
+                                     <!-- 24-11-18 : 연간 제보자별 제보현황  
                                     <tr>
                                         <td class="txt_left"><img src="../images/ico_excel.gif" alt="" class="mglsub03" /><a href="javascript:goStats('stats/yearReceipt.do');">연간 제보자별 제보현황</a></td>
                                         <td><a href="javascript:goStats('stats/yearReciept.do');"><img src="../images/btn_excel_down.gif" alt="엑셀다운로드" /></a></td>
                                     </tr>
                                     
-                                    <!--  24-11-18 : 연간지역(소속)별 통계 - 한마음대회 포상 관련 -->
+                                     24-11-18 : 연간지역(소속)별 통계 - 한마음대회 포상 관련 
                                     <tr>
                                         <td class="txt_left"><img src="../images/ico_excel.gif" alt="" class="mglsub03" /><a href="javascript:goStats('stats/yearOrgStat.do');">연간 지역(소속)별 실적통계</a></td>
                                         <td><a href="javascript:goStats('stats/yearOrgStat.do');"><img src="../images/btn_excel_down.gif" alt="엑셀다운로드" /></a></td>
-                                    </tr>
+                                    </tr> -->
 
                                 </tbody>
                             </table>
