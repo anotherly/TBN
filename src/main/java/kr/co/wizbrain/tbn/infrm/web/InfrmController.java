@@ -2,34 +2,25 @@ package kr.co.wizbrain.tbn.infrm.web;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.InetAddress;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
-import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.mindrot.jbcrypt.BCrypt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.http.HttpRequest;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -40,10 +31,8 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import egovframework.rte.psl.dataaccess.util.EgovMap;
 import kr.co.wizbrain.tbn.award.service.AwardService;
 import kr.co.wizbrain.tbn.award.vo.AwardVO;
-import kr.co.wizbrain.tbn.comm.SessionListener;
 import kr.co.wizbrain.tbn.event.service.EventService;
 import kr.co.wizbrain.tbn.event.vo.EventVO;
 import kr.co.wizbrain.tbn.infrm.service.InfrmService;
@@ -116,6 +105,17 @@ public class InfrmController implements ApplicationContextAware {
 		return url;
 	}
 	
+	// 24-11-21 : 통신원 월별 제보건수 표출
+	@RequestMapping(value="/infrm/monthReport.do")
+	public ModelAndView monthReport(@RequestParam("selectYear")String selectYear, @RequestParam("informerId") String informerId) throws Exception {
+		List<InfrmVO> monthReport = infrmService.monthReport(selectYear,informerId);
+		
+		ModelAndView mav = new ModelAndView("jsonView");
+		mav.addObject("monthReport",monthReport);
+		return mav;
+	}
+	
+	
 	//22.03.16 긴급생성
 	//1.  소메뉴 존재 항목에 관하여 권한 별 분기처리
 	@RequestMapping(value="/informer/first.do")
@@ -124,7 +124,6 @@ public class InfrmController implements ApplicationContextAware {
 		ModelAndView mav = new ModelAndView("jsonView");
 		
 		// ####### 권한별 정보관리 화면 분기처리 ##########
-		
 		// 현재 세션에 대해 로그인한 사용자 정보를 가져옴
 		UserVO reqLoginVo = (UserVO) request.getSession().getAttribute("login");
 

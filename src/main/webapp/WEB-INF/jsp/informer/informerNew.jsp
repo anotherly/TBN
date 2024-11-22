@@ -24,6 +24,167 @@
 
 <!-- 주소 관련 api -->
 <script src="<%=request.getContextPath()%>/js/address/address.js"></script>
+<style>
+	.tr_style, .tr_style > th, .tr_style > td {
+		border : 1px solid #C7C7C7;
+		width: 87.5px;
+	}
+
+	.tr_style > th {
+		background-color : #f5f5f5;
+	}
+</style>
+<script>
+	$(document).ready(function(){
+		
+		createSelect();
+		
+		
+		function createSelect() {
+			
+			// 오늘 년도 구하기
+			var startYear = new Date().getFullYear() -8;
+			var informer = '${informerInfo.informerId}';
+			
+			for(var i = 8; i > 0; i--) {
+				var inputYear = startYear + i;
+				$('#selectYear').append('<option value="' + inputYear + '">'+ inputYear + '</option>');
+			} 
+			
+			 
+			$.ajax({
+				url : '/infrm/monthReport.do',
+				data : { "selectYear" : startYear+8, "informerId" : informer},
+				type : 'post',
+				success : function(data) {
+
+					// 원래 데이터 비워두기
+					$('#avgReport td').each(function() {
+		                $(this).text('0');
+		            });
+					
+					$('#celarTd').text('');
+					
+					if(data.monthReport.length == 0) {
+						$('#avgReport td').each(function() {
+			                $(this).text('0');
+			            });
+						
+						$('#celarTd').text('');
+					} else {
+						var ListLeng = data.monthReport.length;
+						
+						// 월별 값 넣기
+						for(var i = 0; i < ListLeng ; i++) {
+							nowMonth = data.monthReport[i].month;
+							nowCount = data.monthReport[i].row_COUNT;
+							
+							$('#mon'+nowMonth).text(nowCount);
+						}
+						
+						var minSum1 = 0;
+						var minSum2 = 0;
+						
+						// 1~6 소계
+						for (var i = 1; i <= 6; i++) {
+						    var value = parseFloat($('#mon' + (i < 10 ? '0' + i : i)).text()) || 0;
+						    minSum1 += value; 
+						}
+
+						$('#minSum').text(minSum1);
+						
+						// 7~12 소계
+						for (var i = 7; i <= 12; i++) {
+						    var value = parseFloat($('#mon' + (i < 10 ? '0' + i : i)).text()) || 0; 
+						    minSum2 += value; 
+						}
+						
+						$('#minSum2').text(minSum2);
+						$('#sum').text(minSum1+minSum2);
+						
+					}
+					
+				}, error : function() {
+					console.log("데이터 전송에 오류 발생");
+				}
+			});
+		}
+		
+		
+		 $('#selectYear').on('change', function(){
+			var selectVal = $(this).val();
+			
+			if(selectVal == "clear") {
+				$('#avgReport td').each(function() {
+	                $(this).text('0');
+	            });
+				
+				$('#celarTd').text('');
+			} else {
+				var informer = '${informerInfo.informerId}';
+
+				$.ajax({
+					url : '/infrm/monthReport.do',
+					data : { "selectYear" : selectVal, "informerId" : informer},
+					type : 'post',
+					success : function(data) {
+
+						// 원래 데이터 비워두기
+						$('#avgReport td').each(function() {
+			                $(this).text('0');
+			            });
+						
+						$('#celarTd').text('');
+						
+						if(data.monthReport.length == 0) {
+							$('#avgReport td').each(function() {
+				                $(this).text('0');
+				            });
+							
+							$('#celarTd').text('');
+						} else {
+							var ListLeng = data.monthReport.length;
+							
+							// 월별 값 넣기
+							for(var i = 0; i < ListLeng ; i++) {
+								nowMonth = data.monthReport[i].month;
+								nowCount = data.monthReport[i].row_COUNT;
+								
+								$('#mon'+nowMonth).text(nowCount);
+							}
+							
+							var minSum1 = 0;
+							var minSum2 = 0;
+							
+							// 1~6 소계
+							for (var i = 1; i <= 6; i++) {
+							    var value = parseFloat($('#mon' + (i < 10 ? '0' + i : i)).text()) || 0;
+							    minSum1 += value; 
+							}
+
+							$('#minSum').text(minSum1);
+							
+							// 7~12 소계
+							for (var i = 7; i <= 12; i++) {
+							    var value = parseFloat($('#mon' + (i < 10 ? '0' + i : i)).text()) || 0; 
+							    minSum2 += value; 
+							}
+							
+							$('#minSum2').text(minSum2);
+							$('#sum').text(minSum1+minSum2);
+							
+						}
+						
+					}, error : function() {
+						console.log("데이터 전송에 오류 발생");
+					}
+				});
+				
+			}
+		}); 
+		
+	});
+</script>
 </head>
 <body >
 <div id="container">
@@ -370,6 +531,61 @@
                             </tr>
                         </table>
                         </form>
+                        
+                        <!-- 24-11-21 : 년도별 통신원 개별 누적 제보건수 -->
+                        <div style="height: 200px;margin-top: 15px;display: flex;flex-direction: column;justify-content: center;align-items: center;">
+                        	<div style="width: 700px; margin-bottom: 10px; display: flex; align-items: center;">
+                        	년도 선택 :
+                        		<select id="selectYear" style="margin-left: 10px;">
+                        			
+                        		</select>
+                        	</div>
+                        	<div style="width:700px;">
+                        		<table id="avgReport" style="width:700px; text-align: center; border:1px solid black;">
+                        			<tr class="tr_style" style="height:35px;">
+                        				<th>1월</th>
+                        				<th>2월</th>
+                        				<th>3월</th>
+                        				<th>4월</th>
+                        				<th>5월</th>
+                        				<th>6월</th>
+                        				<th>소계</th>
+                        				<th>합계</th>
+                        			</tr>
+                        			<tr class="tr_style" style="height:35px;">
+                        				<td id="mon01">0</td>
+                        				<td id="mon02">0</td>
+                        				<td id="mon03">0</td>
+                        				<td id="mon04">0</td>
+                        				<td id="mon05">0</td>
+                        				<td id="mon06">0</td>
+                        				<td id="minSum">0</td>
+                        				<td id="sum">0</td>
+                        			</tr>
+                        			<tr class="tr_style" style="height:35px;">
+                        				<th>7월</th>
+                        				<th>8월</th>
+                        				<th>9월</th>
+                        				<th>10월</th>
+                        				<th>11월</th>
+                        				<th>12월</th>
+                        				<th>소계</th>
+                        				<th></th>
+                        			</tr>
+                        			<tr class="tr_style" style="height:35px;">
+                        				<td id="mon07">0</td>
+                        				<td id="mon08">0</td>
+                        				<td id="mon09">0</td>
+                        				<td id="mon10">0</td>
+                        				<td id="mon11">0</td>
+                        				<td id="mon12">0</td>
+                        				<td id="minSum2">0</td>
+                        				<td id="celarTd"></td>
+                        			</tr>
+                        		</table>
+                        	</div>
+                        </div>
+                        
                         <!-- 등록버튼 시작-->
                         <div class="btnArg mgt10" style="float: left;">
                             <input class="btnMgt10" onclick="saveInformer();" type="image" src="<c:url value="/images/btn_reget1.png"/>" alt="등록" title="등록"  />

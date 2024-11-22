@@ -1,13 +1,12 @@
 package kr.co.wizbrain.tbn.infrm.service.impl;
 
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 
 import org.springframework.stereotype.Service;
 
-import egovframework.rte.psl.dataaccess.util.EgovMap;
 import kr.co.wizbrain.tbn.infrm.mapper.InfrmMapper;
 import kr.co.wizbrain.tbn.infrm.service.InfrmService;
 import kr.co.wizbrain.tbn.infrm.vo.InfrmVO;
@@ -111,6 +110,16 @@ public class InfrmServiceImpl implements InfrmService{
 	@Override
 	public String chkPhone(InfrmVO ifmVO) throws Exception{
 		return infrmMapper.chkPhone(ifmVO);
+	}
+	
+	
+	// 24-11-21 : 통신원 월별 제보건수
+	@Override
+	public List<InfrmVO> monthReport(String selectYear, String informerId) throws Exception {
+		String selectYear1 = selectYear + "-01-01";
+		String selectYear2 = selectYear + "-12-31";
+		
+		return infrmMapper.monthReport(selectYear1,selectYear2, informerId);
 	}
 
 }

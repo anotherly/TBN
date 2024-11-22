@@ -116,6 +116,12 @@ public class InfrmVO {
 	//pagediv
 	public String pageDiv;
 	
+	
+	// 통신원 상세용
+	private String MONTH;
+	private String ROW_COUNT;
+	
+	
 	public String getInformerId() {
 		return informerId;
 	}
@@ -446,6 +452,18 @@ public class InfrmVO {
 	public void setPageDiv(String pageDiv) {
 		this.pageDiv = pageDiv;
 	}
+	public String getMONTH() {
+		return MONTH;
+	}
+	public void setMONTH(String mONTH) {
+		MONTH = mONTH;
+	}
+	public String getROW_COUNT() {
+		return ROW_COUNT;
+	}
+	public void setROW_COUNT(String rOW_COUNT) {
+		ROW_COUNT = rOW_COUNT;
+	}
 	@Override
 	public String toString() {
 		return "InfrmVO [informerId=" + informerId + ", actId=" + actId + ", informerName=" + informerName + ", orgId="
@@ -464,7 +482,10 @@ public class InfrmVO {
 				+ ", flagBroad=" + flagBroad + ", flagAct=" + flagAct + ", searchType=" + searchType + ", searchValue="
 				+ searchValue + ", sDate=" + sDate + ", eDate=" + eDate + ", updateCode=" + updateCode + ", updateText="
 				+ updateText + ", updateDate=" + updateDate + ", histCode=" + histCode + ", localFilePath="
-				+ localFilePath + ", pageDiv=" + pageDiv + "]";
+				+ localFilePath + ", pageDiv=" + pageDiv + ", MONTH=" + MONTH + ", ROW_COUNT=" + ROW_COUNT + "]";
 	}
+	
+	
+	
 	
 }

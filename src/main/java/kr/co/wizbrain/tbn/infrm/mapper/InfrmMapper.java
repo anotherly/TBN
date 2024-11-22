@@ -1,8 +1,10 @@
 package kr.co.wizbrain.tbn.infrm.mapper;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import org.apache.ibatis.annotations.Param;
+
 import egovframework.rte.psl.dataaccess.mapper.Mapper;
-import egovframework.rte.psl.dataaccess.util.EgovMap;
 import kr.co.wizbrain.tbn.infrm.vo.InfrmVO;
 
 /**
@@ -49,4 +51,7 @@ public interface InfrmMapper{
 
 	public InfrmVO detailInformer(InfrmVO thvo);
 
+	// 24-11-21 : 통신원 월별 제보건수
+	public List<InfrmVO> monthReport(@Param("selectYear1") String selectYear1,@Param("selectYear2") String selectYear2,@Param("informerId") String informerId);
+	
 }

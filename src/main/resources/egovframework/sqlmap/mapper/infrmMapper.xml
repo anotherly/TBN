@@ -24,6 +24,27 @@
 		<result property="regDate" 			column="REG_DATE"/>
 		<result property="flagAct" 			column="FLAG_ACT"/>
 	</resultMap>
+	
+	
+	<!--  24-11-21 : 통신원 월별 제보건수 -->
+	<select id="monthReport" resultType="InfrmVO">
+	 <![CDATA[
+	    SELECT /*+ INDEX(report_receipt MONTHREPORT)*/
+	        TO_CHAR(RECEIPT_DAY, 'MM') AS month, 
+	        COUNT(*) AS row_count  
+	    FROM 
+	        report_receipt
+	    WHERE 
+	        INDIVIDUAL_ID = #{informerId}
+	        AND RECEIPT_DAY >= TO_DATE(#{selectYear1}, 'YYYY-MM-DD') 
+	        AND RECEIPT_DAY <= TO_DATE(#{selectYear2}, 'YYYY-MM-DD') 
+	    GROUP BY 
+	        TO_CHAR(RECEIPT_DAY, 'MM')
+	    ORDER BY 
+	        month
+    ]]>
+	</select>
+
 	<select id="selectInfrmList" parameterType="infrmVO" resultMap="selectInfrmList">
     SELECT T.* FROM
     (

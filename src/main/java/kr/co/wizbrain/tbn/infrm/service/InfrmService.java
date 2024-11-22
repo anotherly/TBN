@@ -1,8 +1,8 @@
 package kr.co.wizbrain.tbn.infrm.service;
 
 import java.util.List;
+import java.util.Map;
 
-import egovframework.rte.psl.dataaccess.util.EgovMap;
 import kr.co.wizbrain.tbn.infrm.vo.InfrmVO;
 
 /**
@@ -42,5 +42,9 @@ public interface InfrmService {
 	
 	public InfrmVO detailInformer(InfrmVO thvo);
 	public String chkPhone(InfrmVO ifmVO) throws Exception;
+	
+	
+	// 통신원 상세에서 월별 제보 건수
+	public List<InfrmVO> monthReport(String selectYear, String informerId) throws Exception;
 
 }
