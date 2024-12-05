@@ -34,7 +34,8 @@
 		,sum(main_cnt) as main_cnt
 		,sum(add_cnt) as add_cnt from stat_tbn_monrpt 
 		where stat_mon between #{SDATE} and #{EDATE}
-		and ind_type='0' and area_code=#{AREA_CODE}
+		and ind_type IN ('0', '2', '6')
+		and area_code=#{AREA_CODE}
 		and ind_id not in
 		    (select informer_id from award_info 
 		    where

@@ -10,6 +10,15 @@
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 <title>tbn교통방송 제보접수시스템</title>
 <style>
+
+	th {
+		background-color : #f2f2f2;
+	}
+	
+	td {
+		padding-left : 20px;
+	}
+	
 	th,td {
 		vertical-align:middle;
 		font-size:14px;

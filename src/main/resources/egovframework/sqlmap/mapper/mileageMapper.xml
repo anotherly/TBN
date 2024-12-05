@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.co.wizbrain.tbn.mileage.mapper.MileageMapper">
+
+	<select id="mileList" parameterType="kr.co.wizbrain.tbn.mileage.vo.MileageVO" resultType="java.util.Map">
+		<![CDATA[
+		    SELECT 
+			    /*+ INDEX(rpt RPT ) INDEX(ifm IFM) */
+			    rpt.individual_id AS 아이디, 
+			    rpt.individual_name AS 이름, 
+			    NVL(rpt.org_name, '없음') AS 소속,
+			    NVL(ifm.ACT_ID, '없음') AS 통신원코드,
+			    ifm.phone_cell as 연락처,
+			    COUNT(*) AS 월별제보건수, 
+			    COUNT(*) * 2 AS 지급마일리지
+			FROM report_receipt rpt
+			JOIN informer ifm
+			    ON ifm.informer_id = rpt.individual_id
+			WHERE TO_CHAR(rpt.receipt_day, 'YYYY-MM') = #{START_DATE} 
+			AND rpt.region_id = #{AREA_CODE}
+			AND NOT EXISTS (
+			    SELECT 1
+			    FROM mileage_history mh
+			    WHERE mh.start_date = #{START_DATE}
+			    AND mh.informer_id = rpt.individual_id
+			)
+			GROUP BY rpt.individual_id, rpt.individual_name, rpt.org_name, ifm.phone_cell, ifm.ACT_ID
+			ORDER BY 지급마일리지 DESC
+    	]]>
+	</select>
+
+	<select id="allMileList" parameterType="kr.co.wizbrain.tbn.mileage.vo.MserchVO" resultType="kr.co.wizbrain.tbn.mileage.vo.MileageVO">
+		SELECT MILE.INFORMER_ID, MILE.ACT_ID, IFM.INFORMER_NAME, NVL(IFM.ORG_NAME,'무소속') AS ORG_NAME,
+		IFM.PHONE_CELL, MILE.ALL_MILEAGE
+		FROM MILEAGE_INFO MILE
+		JOIN INFORMER IFM
+		ON IFM.INFORMER_ID = MILE.INFORMER_ID
+		WHERE IFM.INFORMER_ID = MILE.INFORMER_ID
+			<if test="areaCode != null  and !areaCode.equals('')">
+				AND IFM.AREA_CODE=#{areaCode}
+			</if>
+			<if test="informerType != null and !informerType.equals('')">
+				AND IFM.informer_type=#{informerType}
+			</if>
+			<if test="orgId != null and !orgId.equals('')">
+				AND IFM.ORG_ID=#{orgId}
+			</if>
+			<if test="flagAct != null and !flagAct.equals('')">
+				AND IFM.FLAG_ACT=#{flagAct}
+			</if>
+			<if test="searchValue != null and !searchValue.equals('')">
+			    <choose>
+					<when test="searchType.equals('actId')">
+						AND IFM.ACT_ID LIKE '%'||#{searchValue}||'%'
+					</when>
+					<when test="searchType.equals('informerName')">
+						AND IFM.INFORMER_NAME LIKE '%'||#{searchValue}||'%'
+					</when>
+					<otherwise>
+						AND IFM.phone_cell LIKE '%'||#{searchValue}||'%'
+					</otherwise>					        
+			    </choose>
+			</if>
+		ORDER BY MILE.ALL_MILEAGE DESC
+	</select>
+
+
+	<!-- 등급 조회 -->
+	<select id="gradeList" parameterType="kr.co.wizbrain.tbn.mileage.vo.MserchVO" resultType="kr.co.wizbrain.tbn.mileage.vo.MileageVO">
+		SELECT MILE.INFORMER_ID, MILE.ACT_ID, IFM.INFORMER_NAME, NVL(IFM.ORG_NAME,'무소속')AS ORG_NAME, IFM.PHONE_CELL,
+		MILE.CUM_MILEAGE, NVL(GRD.GRADE, '없음')AS GRADE
+		FROM MILEAGE_INFO MILE
+		JOIN INFORMER IFM
+		ON MILE.INFORMER_ID = IFM.INFORMER_ID
+		LEFT JOIN GRADE_INFO GRD
+		ON MILE.INFORMER_ID = GRD.INFORMER_ID
+		WHERE 1=1
+		<if test="areaCode != null  and !areaCode.equals('')">
+				AND IFM.AREA_CODE=#{areaCode}
+			</if>
+			<if test="informerType != null and !informerType.equals('')">
+				AND IFM.informer_type=#{informerType}
+			</if>
+			<if test="orgId != null and !orgId.equals('')">
+				AND IFM.ORG_ID=#{orgId}
+			</if>
+			<if test="flagAct != null and !flagAct.equals('')">
+				AND IFM.FLAG_ACT=#{flagAct}
+			</if>
+			<if test="searchValue != null and !searchValue.equals('')">
+			    <choose>
+					<when test="searchType.equals('actId')">
+						AND IFM.ACT_ID LIKE '%'||#{searchValue}||'%'
+					</when>
+					<when test="searchType.equals('informerName')">
+						AND IFM.INFORMER_NAME LIKE '%'||#{searchValue}||'%'
+					</when>
+					<otherwise>
+						AND IFM.phone_cell LIKE '%'||#{searchValue}||'%'
+					</otherwise>					        
+			    </choose>
+			</if>
+		ORDER BY MILE.CUM_MILEAGE DESC	
+	</select>
+
+	<insert id="paymentMile" parameterType="java.util.List">
+	    insert into mileage_history (ACT_ID, INFORMER_ID, PAYMENT_DATE, PAYMENT_MILE, START_DATE ,PAYMENT_YN)
+	    <foreach collection="chkArr" item="item" index="i" separator="UNION ALL">
+	        SELECT #{item.ACT_ID}, #{item.INFORMER_ID}, #{item.PAYMENT_DATE}, #{item.PAYMENT_MILE}, #{item.START_DATE}, 'Y'
+	        FROM INFORMER
+				WHERE INFORMER_ID =#{item.INFORMER_ID}
+	    </foreach>
+	</insert>
+	
+	<insert id="insertMile" parameterType="java.util.List">
+		insert into mileage_info
+		(ACT_ID,ALL_MILEAGE,CUM_MILEAGE,INFORMER_ID)
+		values
+		(#{mileList[0].ACT_ID},#{mileList[0].PAYMENT_MILE},#{mileList[0].PAYMENT_MILE},#{mileList[0].INFORMER_ID})
+	</insert>
+	
+	<update id="updateMile" parameterType="java.util.List">
+	        update mileage_info
+	        set 
+	            ALL_MILEAGE = ALL_MILEAGE + #{mileList[0].PAYMENT_MILE},
+	            CUM_MILEAGE = CUM_MILEAGE + #{mileList[0].PAYMENT_MILE}
+	        where INFORMER_ID = #{mileList[0].INFORMER_ID}
+	</update>
+	
+	<select id="selectMile" parameterType="java.util.List" resultType="kr.co.wizbrain.tbn.mileage.vo.MileageVO">
+		select *
+		from mileage_info
+		where INFORMER_ID = #{mileList[0].INFORMER_ID}
+	</select>
+	
+	<!--  상품 지급을 위한 통신원 정보 가져오기  -->
+	<select id="selectIfm" resultType="kr.co.wizbrain.tbn.mileage.vo.MileageVO">
+		SELECT MILE.INFORMER_ID, MILE.ACT_ID, IFM.INFORMER_NAME, NVL(IFM.ORG_NAME,'무소속') AS ORG_NAME,
+		IFM.PHONE_CELL, MILE.ALL_MILEAGE
+		FROM MILEAGE_INFO MILE
+		JOIN INFORMER IFM
+		ON IFM.INFORMER_ID = MILE.INFORMER_ID
+		WHERE MILE.INFORMER_ID = #{ifmId}
+	</select>
+
+	<!--  상품 정보 가져오기  -->
+	<select id="getGift" resultType="kr.co.wizbrain.tbn.mileage.vo.GiftVO">
+		SELECT *
+		FROM GIFT_INFO
+	</select>
+	
+	<!--  등급 부여를 위한 통신원 정보 가져오기  -->
+	<select id="gSelectIfm" resultType="kr.co.wizbrain.tbn.mileage.vo.MileageVO">
+		SELECT MILE.INFORMER_ID, MILE.ACT_ID, IFM.INFORMER_NAME, NVL(IFM.ORG_NAME,'무소속')AS ORG_NAME, IFM.PHONE_CELL,
+		MILE.CUM_MILEAGE, NVL(GRD.GRADE, '없음')AS GRADE, MILE.ALL_MILEAGE
+		FROM MILEAGE_INFO MILE
+		JOIN INFORMER IFM
+		ON MILE.INFORMER_ID = IFM.INFORMER_ID
+		LEFT JOIN GRADE_INFO GRD
+		ON MILE.INFORMER_ID = GRD.INFORMER_ID
+		WHERE MILE.INFORMER_ID = #{ifmId}
+	</select>
+	
+	<!--  등급 정보 가져오기  -->
+	<select id="getGrade" resultType="kr.co.wizbrain.tbn.mileage.vo.GradeVO">
+		select * from payment_grade
+	</select>
+	
+	
+	<!-- 마일리지 차감 작업  -->
+	<update id="minusMile" parameterType="kr.co.wizbrain.tbn.mileage.vo.MileageVO">
+		UPDATE MILEAGE_INFO
+		SET ALL_MILEAGE = ALL_MILEAGE - #{MINUS_MILE}
+		WHERE INFORMER_ID = #{INFORMER_ID}
+	</update>
+	 
+	<!-- 상품 지급 로그 작업 -->
+	<insert id="giftHistory" parameterType="kr.co.wizbrain.tbn.mileage.vo.MileageVO">
+		insert into gift_history(ACT_ID,INFORMER_ID,MINUS_MILE,PAYMENT_DATE,PAYMENT_GCOD,PAYMENT_GIFT,PAYMENT_TEXT,PAYMENT_YN)
+		values(#{ACT_ID},#{INFORMER_ID},#{MINUS_MILE},#{PAYMENT_DATE},#{GCODE},#{PAYMENT_GIFT},#{PAYMENT_TEXT},'Y')
+	</insert>
+	
+	<!-- 등급 부여 로그 작업 -->
+	<insert id="gradeHistory" parameterType="kr.co.wizbrain.tbn.mileage.vo.MileageVO">
+		INSERT INTO GRADE_HISTORY(ACT_ID,CUM_MILEAGE,GRADE,GRADE_DATE,INFORMER_ID)
+		VALUES(#{ACT_ID},#{CUM_MILEAGE},#{GRADE},#{GRADE_DATE},#{INFORMER_ID})
+	</insert>
+	
+	<!-- 등급 부여 전 이력 확인 -->
+	<select id="gradeChecker" parameterType="kr.co.wizbrain.tbn.mileage.vo.MileageVO" resultType="kr.co.wizbrain.tbn.mileage.vo.MileageVO">
+		SELECT * FROM GRADE_INFO
+		WHERE INFORMER_ID = #{INFORMER_ID}
+	</select>
+	
+	<!-- 부여된 등급 반영(등록) -->
+	<insert id="insertGrade" parameterType="kr.co.wizbrain.tbn.mileage.vo.MileageVO">
+		INSERT INTO GRADE_INFO(ACT_ID,CUM_MILEAGE,GRADE,INFORMER_ID)
+		VALUES(#{ACT_ID},#{CUM_MILEAGE},#{GRADE},#{INFORMER_ID})
+	</insert>
+	
+	<!-- 부여된 등급 반영(수정) -->
+	<update id="updateGrade" parameterType="kr.co.wizbrain.tbn.mileage.vo.MileageVO">
+		UPDATE GRADE_INFO
+		SET CUM_MILEAGE = #{CUM_MILEAGE},
+		GRADE = #{GRADE}
+		WHERE INFORMER_ID = #{INFORMER_ID}
+	</update>
+	
+</mapper>

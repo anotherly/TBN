@@ -135,18 +135,27 @@
 
         // 공지사항 append 함수
         function appendNotice(data) {
+			
+        	// 값이 있는 경우에만 생성
+        	if(data.NoticeList.length !== 0) {
+        		// 공지사항(화면) 생성에 필요한 값들
+                var title = data.NoticeList[0].notice_TITLE;
+                var writer = data.NoticeList[0].writer_NAME;
+                var writeDate = data.NoticeList[0].start_DATE;
+                var endDate = data.NoticeList[0].end_DATE;
+                var content = data.NoticeList[0].notice_CONTENT;
+                
+                $('#input_title').text(title);
+                $('#input_writer').text("작성자 : " + writer);
+                $('#input_writeDate').text("작성일 : " + writeDate);
+                $('.notice_content').text(content);
+        	} else {	
+        		// 팝업 숨기기
+        		$(".notice_container").hide();
+        		return false;
+        	}
+        	
 
-            // 공지사항(화면) 생성에 필요한 값들
-            var title = data.NoticeList[0].notice_TITLE;
-            var writer = data.NoticeList[0].writer_NAME;
-            var writeDate = data.NoticeList[0].start_DATE;
-            var endDate = data.NoticeList[0].end_DATE;
-            var content = data.NoticeList[0].notice_CONTENT;
-            
-            $('#input_title').text(title);
-            $('#input_writer').text("작성자 : " + writer);
-            $('#input_writeDate').text("작성일 : " + writeDate);
-            $('.notice_content').text(content);
         }
         
 	    var toggleMainPopup = function() {
