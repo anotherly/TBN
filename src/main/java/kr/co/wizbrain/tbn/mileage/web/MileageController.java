@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
+import kr.co.wizbrain.tbn.award.vo.AwardVO;
 import kr.co.wizbrain.tbn.award.web.AwardController;
 import kr.co.wizbrain.tbn.infrm.service.InfrmService;
 import kr.co.wizbrain.tbn.mileage.service.MileageService;
@@ -159,6 +160,43 @@ public class MileageController {
 		return mav;
 	}
 	
+	// 총 마일리지 - 마일리지 지급 내역 (로그 확인)
+	@RequestMapping("/mileage/allMilePop.do")
+	public ModelAndView paymentMileLog(@RequestParam("INFORMER_ID") String ifmId, HttpServletRequest req) throws Exception {
+		ModelAndView mav = new ModelAndView();
+		
+		List<MileageVO> informerInfo = mileageService.informerInfo(ifmId);
+		List<MileageVO> mileList = mileageService.mileLogList(ifmId);
+		List<MileageVO> giftList = mileageService.giftLogList(ifmId);
+		
+		
+		mav.addObject("informerInfo",informerInfo);
+		mav.addObject("mileList",mileList);
+		mav.addObject("giftList",giftList);
+		mav.setViewName("/mileage/allMilePop");
+		
+		return mav;
+	}
+	
+	// 등급 조회 - 등급 부여 내역(로그 확인)
+	@RequestMapping("/mileage/gradeLogPop.do")
+	public ModelAndView gradeLog(@RequestParam("INFORMER_ID") String ifmId, HttpServletRequest req) throws Exception {
+		ModelAndView mav = new ModelAndView();
+		
+		List<MileageVO> informerInfo = mileageService.informerInfo(ifmId);
+		List<MileageVO> mileList = mileageService.mileLogList(ifmId);
+		List<MileageVO> gradeList = mileageService.gradeLogList(ifmId);
+		
+		
+		mav.addObject("informerInfo",informerInfo);
+		mav.addObject("mileList",mileList);
+		mav.addObject("gradeList",gradeList);
+		mav.setViewName("/mileage/gradeLogPop");
+		
+		return mav;
+	}
+	
+	
 	// 상품 지급 후 마일리지 변동 및 상품 지급 로그
 	@RequestMapping("/mileage/sendGift.do")
 	public ModelAndView sendGift(@ModelAttribute("MileageVO") MileageVO paramVO, HttpServletRequest req) throws Exception {
@@ -250,5 +288,112 @@ public class MileageController {
 		return mv;
 	}
 	
+	// 마일리지 반영 - 엑셀 다운로드 기능
+	@RequestMapping("/informer/mileage/excelDownloadMileList.do")
+	public String exselDownload(Model model,@ModelAttribute("MileageVO") MileageVO paramVO) throws Exception {
+		logger.debug("★★★"+paramVO);
+		
+		List mileageList = mileageService.getMileList(paramVO);
+		
+		
+		model.addAttribute("fileName", "마일리지 반영 목록.xls");
+		model.addAttribute("columnTitles", new String[]{
+				"ID"
+				,"이름"
+				,"소속"
+				,"연락처"
+				,"월 제보건수" 
+				,"지급 마일리지"
+		});
+		model.addAttribute("columnNames", new String[]{
+				"ACT_ID",
+				"INFORMER_NAME",
+				"ORG_NAME",
+				"PHONE_CELL",
+				"MON_RPT",
+				"PAYMENT_MILEAGE"
+		});
+		model.addAttribute("exportData", mileageList);
+		
+		return "hssfView";
+	}
 	
+	// 총 마일리지 조회 - 엑셀 다운로드 기능
+	/*@RequestMapping("/informer/mileage/excelDownloadMileList.do")
+	public String exselDownload(Model model,@ModelAttribute("AwardVO") AwardVO paramVO) throws Exception {
+		logger.debug("★★★"+paramVO);
+		List awardInformerList = mileageService.getAllMileList2(paramVO);
+		
+		model.addAttribute("fileName", "총 마일리지 조회 목록.xls");
+		model.addAttribute("columnTitles", new String[]{
+				,"ID"
+				,"이름"
+				,"소속"
+				,"연락처"
+				,"제보건수" 
+				,"제보점수"
+				,"주요제보건수"
+				,"주요제보점수"
+				,"전월건수"
+				,"전월점수"
+				,"총점"
+		});
+		model.addAttribute("columnNames", new String[]{
+				"RNUM",
+				"ACT_ID",
+				"INFORMER_NAME",
+				"ORG_NAME",
+				"PHONE_CELL",
+				"MON_CNT",
+				"RPT_GRADE",
+				"MAIN_CNT",
+				"MAIN_GRADE",
+				"ADD_CNT",
+				"ADD_GRADE",
+				"ALL_RANK",
+		});
+		model.addAttribute("exportData", awardInformerList);
+		
+		return "hssfView";
+	}
+	
+	// 등급 조회 - 엑셀 다운로드 기능
+	@RequestMapping("/informer/award/excelDownloadInformerList.do")
+	public String exselDownload(Model model,@ModelAttribute("AwardVO") AwardVO paramVO) throws Exception {
+		logger.debug("★★★"+paramVO);
+		List awardInformerList = awardService.getAwardInformerList2(paramVO);
+		
+		model.addAttribute("fileName", "수상자선정.xls");
+		model.addAttribute("columnTitles", new String[]{
+				"순위"
+				,"ID"
+				,"이름"
+				,"소속"
+				,"연락처"
+				,"제보건수" 
+				,"제보점수"
+				,"주요제보건수"
+				,"주요제보점수"
+				,"전월건수"
+				,"전월점수"
+				,"총점"
+		});
+		model.addAttribute("columnNames", new String[]{
+				"RNUM",
+				"ACT_ID",
+				"INFORMER_NAME",
+				"ORG_NAME",
+				"PHONE_CELL",
+				"MON_CNT",
+				"RPT_GRADE",
+				"MAIN_CNT",
+				"MAIN_GRADE",
+				"ADD_CNT",
+				"ADD_GRADE",
+				"ALL_RANK",
+		});
+		model.addAttribute("exportData", awardInformerList);
+		
+		return "hssfView";
+	}*/
 }

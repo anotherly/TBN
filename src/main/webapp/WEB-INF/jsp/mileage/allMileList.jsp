@@ -17,6 +17,16 @@
 		var paymentPop = window.open(goUrl,'상품 지급','width = 740, height = 500, top = 100, left = 200, location = no');
 		
 	});
+	
+	
+	$('#award_table4 td').click(function() {
+        // 클릭된 td가 속한 tr 요소 찾기
+        var trId = $(this).closest('tr').attr('id');
+        var goUrl = '/mileage/allMilePop.do?INFORMER_ID=' + trId
+        
+        
+        var allMilePop = window.open(goUrl,'마일리지 지급 기록','width = 800, height = 600, top = 100, left = 200, location = no');
+    });
 </script>
 
 <!-- 실적증가가 아닐경우  -->

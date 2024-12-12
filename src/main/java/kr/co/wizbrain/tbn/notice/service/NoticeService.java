@@ -22,4 +22,7 @@ public interface NoticeService {
 	public void deleteNotice(String noticeId) throws Exception;
 	
 	public List<NoticeVO> selectNotice(String today) throws Exception;
+	
+	// 24-12-09 : 조회된 공지사항이 여러 개인 경우 공지사항 목록으로 이동하게 하기 위한 행 개수 조회
+	public List<NoticeVO> selectNoticeCnt(String today) throws Exception;
 }

@@ -18,15 +18,22 @@
 				class="list01" id="award_table3">
 				<thead>
 					<tr>
-						<th >선정</th>
-						<th style="width: 139px;">ID</th>
-						<th style="width: 139px;">이름</th>
-						<th style="width: 139px;">소속</th>
-						<th style="width: 139px;">연락처</th>
-						<th style="width: 139px;">월 제보건수</th>
-						<th style="width: 139px;">지급 마일리지</th>
+						<th style="width: 30px;">선정</th>
+						<th style="width: 30px;">순위</th>
+						<th style="width: 60px;">ID</th>
+						<th style="width: 80px;">이름</th>
+						<th style="width: 80px;">소속</th>
+						<th style="width: 100px;">연락처</th>
+						<th style="width: 80px;">전체건수</th>
+						<th style="width: 60px;">/점수</th>
+						<th style="width: 80px;">주요건수</th>
+						<th style="width: 80px;">/점수</th>
+						<th style="width: 60px;">전월건수</th>
+						<th style="width: 80px;">/점수</th>
+						<th style="width: 60px; padding-right: 17px;">마일리지</th>
 					</tr>
 				</thead>
+				 
 			</table>
 			<div class="admin_result_sc" style="height: 420px">
 				<!-- id="award_table" -->
@@ -36,16 +43,22 @@
 						<c:if test="${mileageListCount != 0 }">
 							<c:forEach var="informer" items="${mileageList}"
 								varStatus="idx">
-								<tr id ="${informer['아이디']}">
-									<td ><input type="checkbox"
+								<tr id ="${informer.INFORMER_ID}">
+									<td style="width: 30px;"><input type="checkbox"
 										id="Selection" name="Selection"
-										value="${informer['아이디']}%%${informer['통신원코드']}%%${informer['이름']}%%${informer['소속']}%%${informer['연락처']}%%${informer['지급마일리지']}" /></td>
-									<td style="width: 139px;">${informer['통신원코드']}</td>
-									<td style="width: 139px;">${informer['이름']}</td>
-									<td style="width: 139px;">${informer['소속']}</td>
-									<td style="width: 139px;">${informer['연락처']}</td>
-									<td style="width: 139px;">${informer['월별제보건수']}</td>
-									<td style="width: 139px;">${informer['지급마일리지']}</td>
+										value="${informer.INFORMER_ID}%%${informer.RPT_GRADE }%%${informer.MAIN_GRADE }%%${informer.ADD_GRADE }%%${informer.ALL_RANK }" /></td>
+									<td style="width: 30px;">${informer.RNUM }</td>
+									<td style="width: 60px;">${informer.ACT_ID }</td>
+									<td style="width: 80px;">${informer.INFORMER_NAME }</td>
+									<td style="width: 80px;">${informer.ORG_NAME }</td>
+									<td style="width: 100px;">${informer.PHONE_CELL }</td>
+									<td style="width: 80px;">${informer.MON_CNT }</td>
+									<td id="${informer.RPT_GRADE }" style="width: 60px;">${informer.RPT_GRADE }</td>
+									<td style="width: 80px;">${informer.MAIN_CNT }</td>
+									<td id="${informer.MAIN_GRADE }" style="width: 80px;">${informer.MAIN_GRADE }</td>
+									<td style="width: 60px;">${informer.ADD_CNT }</td>
+									<td id="${informer.ADD_GRADE }" style="width: 80px;">${informer.ADD_GRADE }</td>
+									<td id="${informer.ALL_RANK }" style="width: 60px;">${informer.ALL_RANK }</td>
 								</tr>
 							</c:forEach>
 						</c:if>
@@ -58,9 +71,9 @@
 				</table>
 			</div>
 			<p class="mgt15" >
-<!-- 				<button type="button" onclick="excelDownload()" >
+ 				<button type="button" onclick="excelDownload()">
 					<img src="../images/btn_excel_down.gif" alt="엑셀다운로드">
-				</button> -->
+				</button>
 				<button type="button" class="mgbt" onclick="save();" style="margin-left: 686px;">
 					<img src="../images/btn_reget1.png" alt=""
 						style="cursor: pointer; width: 92px; height: 30px; background-size: cover;">

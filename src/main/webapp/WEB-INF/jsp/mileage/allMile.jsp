@@ -46,7 +46,6 @@
 	});
 
 	function init() {
-		$('#searchType').val('noSearch');
 		search();
 	}
 

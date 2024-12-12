@@ -5,18 +5,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
-<%
-	//한달 전
-	Calendar mon = Calendar.getInstance();
-	mon.add(Calendar.MONTH, -1);
-	System.out.println("%%%%%%%%%%%%%%%% : " + mon);
-	String beforeMonth = new java.text.SimpleDateFormat("YYYYMMdd").format(mon.getTime());
-	System.out.println("%%%%%%%%%%%%%%%% : " + beforeMonth);
 
-	//2
-	Date monthAgo = new Date(new Date().getTime() - 60 * 60 * 24 * 1000 * 30L);
-	System.out.println("%%%%%%%%%%%%%%%% : " + monthAgo);
-%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -252,7 +241,7 @@
 					<div class="rounding_wrap mgt10">
 						<div class="wrap_top"></div>
 						<div class="wrap_center">
-							<fieldset>
+							<%-- <fieldset>
 								<div id="awardSdiv">
 									시상종류 :  
 									<select class="table_sel1" id="searchType"
@@ -444,6 +433,18 @@
 									</div>
 									
 								</div>
+							</fieldset> --%>
+							<fieldset>
+								기준 날짜 :
+								<select id="standardYear">
+								</select>
+								년
+								<select id="standardMon">
+								</select>
+								월
+								<img src="../images/btn_search.gif" onclick="search();" style="cursor: pointer;     margin-left: 10px;" alt="검색" />
+								
+								<input type="hidden" name="START_DATE" id="START_DATE">
 							</fieldset>
 						</div>
 						<div class="wrap_bottom"></div>

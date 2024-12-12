@@ -7,7 +7,8 @@
 	
 	<!--  24-11-14 : 전체 공지사항 조회 -->
 	<select id="noticeList" resultType="kr.co.wizbrain.tbn.notice.vo.NoticeVO">
-		select *
+		select TO_CHAR(START_DATE, 'YYYY-MM-DD HH24:MI:SS')AS START_DATE,END_DATE,NOTICE_CONTENT,
+			    NOTICE_ID,NOTICE_TITLE,NOTICE_TYPE,WRITER_ID,WRITER_NAME
 		from notice_info
 		
 		<include refid="search"></include>
@@ -20,7 +21,7 @@
 	            <!-- 검색어와 날짜가 모두 있을 경우 -->
 	            <when test="searchText != '' and searchDate != ''">
 	            where
-	                START_DATE = #{searchDate}
+	                TO_CHAR(START_DATE, 'YY/MM') = TO_CHAR(TO_DATE(#{searchDate}, 'YYYY-MM-DD'), 'YY/MM')
 	                AND (WRITER_NAME LIKE '%' || #{searchText} || '%' 
 	                     OR NOTICE_TITLE LIKE '%' || #{searchText} || '%' 
 	                     OR START_DATE LIKE '%' || #{searchText} || '%')
@@ -44,7 +45,7 @@
 	            
 	            <!-- 기준일만 있는 경우 -->
 	            <otherwise>
-	                where START_DATE = #{searchDate}
+	                WHERE TO_CHAR(START_DATE, 'YY/MM') = TO_CHAR(TO_DATE(#{searchDate}, 'YYYY-MM-DD'), 'YY/MM')
 	            </otherwise>
 	        </choose>
 	</sql>
@@ -53,13 +54,14 @@
 	<!--  24-11-15 : 공지사항 등록 -->
 	<insert id="insertNotice" parameterType="kr.co.wizbrain.tbn.notice.vo.NoticeVO">
 		insert into notice_info(WRITER_ID,NOTICE_ID,WRITER_NAME,START_DATE,END_DATE,NOTICE_TITLE,NOTICE_CONTENT,NOTICE_TYPE)
-		values(#{WRITER_ID},DBMS_RANDOM.STRING('X', 10),#{WRITER_NAME},#{START_DATE},#{END_DATE},#{NOTICE_TITLE},#{NOTICE_CONTENT},#{NOTICE_TYPE})
+		values(#{WRITER_ID},DBMS_RANDOM.STRING('X', 10),#{WRITER_NAME},SYSDATE,#{END_DATE},#{NOTICE_TITLE},#{NOTICE_CONTENT},#{NOTICE_TYPE})
 	</insert>
 	
 	
 	<!--  24-11-15 : 공지사항 상세 조회  -->
 	<select id="detailNotice" resultType="kr.co.wizbrain.tbn.notice.vo.NoticeVO">
-		select *
+		select TO_CHAR(START_DATE, 'YYYY-MM-DD')AS START_DATE,TO_CHAR(END_DATE, 'YYYY-MM-DD') AS END_DATE,NOTICE_CONTENT,
+			    NOTICE_ID,NOTICE_TITLE,NOTICE_TYPE,WRITER_ID,WRITER_NAME
 		from notice_info
 		where notice_id = #{noticeId}
 	</select>
@@ -83,15 +85,25 @@
 	<select id="selectNotice" resultType="kr.co.wizbrain.tbn.notice.vo.NoticeVO">
 		<![CDATA[
 		    SELECT * 
-		    FROM (
-		        SELECT * 
-		        FROM notice_info 
-		        WHERE start_date <= #{today} 
-		        AND end_date >= #{today}
-		        ORDER BY start_date DESC
-		    ) 
-		    WHERE ROWNUM = 1
+			FROM (
+			    SELECT TO_CHAR(START_DATE, 'YYYY-MM-DD HH24:MI:SS')AS START_DATE,END_DATE,NOTICE_CONTENT,
+			    NOTICE_ID,NOTICE_TITLE,NOTICE_TYPE,WRITER_ID,WRITER_NAME
+			    FROM notice_info 
+			    WHERE TRUNC(start_date) <= TO_DATE(#{today}, 'YY/MM/DD')
+			    AND TRUNC(end_date) >= TO_DATE(#{today}, 'YY/MM/DD')
+			    ORDER BY start_date DESC
+			) 
+			WHERE ROWNUM = 1
     	]]>
 	</select>
 	
+	<select id="selectNoticeCnt" resultType="kr.co.wizbrain.tbn.notice.vo.NoticeVO">
+			  <![CDATA[
+			    SELECT TO_CHAR(START_DATE, 'YYYY-MM-DD HH24:MI:SS')AS START_DATE,END_DATE,NOTICE_CONTENT,
+			    NOTICE_ID,NOTICE_TITLE,NOTICE_TYPE,WRITER_ID,WRITER_NAME
+			    FROM notice_info 
+			    WHERE TRUNC(start_date) <= TO_DATE(#{today}, 'YY/MM/DD')
+			    AND TRUNC(end_date) >= TO_DATE(#{today}, 'YY/MM/DD')
+			    ORDER BY start_date DESC ]]>
+	</select>
 </mapper>

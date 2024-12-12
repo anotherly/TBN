@@ -46,7 +46,6 @@ $(document).ready(function(){
 });
 
 function init() {
-	$('#searchType').val('noSearch');
 	search();
 }
 

@@ -5,7 +5,12 @@
 <html>
 <head>
 <meta charset="UTF-8">
-
+<style>
+	#goNotice:hover {
+	    color: blue;
+	    cursor: pointer;
+	}
+</style>
 </head>
 	<script>
 	var ps;
@@ -111,27 +116,49 @@
 	        }
 	    });
 	    */
-	    var todayDate = new Date(); // 날짜 객체 가져오기
-        var year = todayDate.getFullYear(); // 년도 가져오기
-        var month = todayDate.getMonth() + 1; // 월은 0부터 시작하므로 1 추가
-        var day = todayDate.getDate(); // 일자 가져오기
-        
-        var today = year + "-" + month + "-" + day; // yyyy-mm-dd 형식으로 포맷
+	    
+	    //NoticeSelect();
+	    
+	    
+	   // function NoticeSelect() {
+	    	var date = new Date();
+			var today = ("0" + date.getFullYear()).slice(-2) + "/" + ("0" + (date.getMonth() + 1)).slice(-2) + "/" + ("0" + date.getDate()).slice(-2);
 
-        $.ajax({
-            url: "/notice/selectNotice.ajax",
-            data: { 'today': today },
-            type: "POST",
-            success: function(data) {
-                // ajax 요청 성공 시 실행되는 함수
 
-                // 공지사항 생성 함수로 이동
-                appendNotice(data);
-            },
-            error: function(xhr, status, error) {
-                console.log('공지사항 불러오기 ajax 요청에 문제가 있습니다.');
-            }
-        });
+		  	
+	        $.ajax({
+	            url: "/notice/selectNotice.ajax",
+	            data: { 'today': today },
+	            type: "POST",
+	            success: function(data) {
+	                // ajax 요청 성공 시 실행되는 함수
+					console.log("진입");
+	                // 공지사항 생성 함수로 이동
+	                appendNotice(data);
+	                
+	                var nCount = data.moreCount;
+	                
+	                if(nCount > 0){
+	                	$('#goNotice').text(">> " + nCount +"개의 공지사항이 더 있습니다. (보러가기)");
+	 	                $('#moreNotice').show();
+	                } else {
+	                	return false;
+	                }
+	               
+	            },
+	            error: function(xhr, status, error) {
+	                console.log('공지사항 불러오기 ajax 요청에 문제가 있습니다.');
+	            }
+	        });
+	   // }
+	    
+	   // 더 많은 공지사항 보러가기 기능
+	    $('#goNotice').on('click', function() {
+	    	$(".notice_container").hide();
+	    	
+	    	var goUrl = '/notice/notice.do';
+	    	goMenuSite(goUrl);
+	    });
 
         // 공지사항 append 함수
         function appendNotice(data) {
@@ -149,6 +176,8 @@
                 $('#input_writer').text("작성자 : " + writer);
                 $('#input_writeDate').text("작성일 : " + writeDate);
                 $('.notice_content').text(content);
+                
+                
         	} else {	
         		// 팝업 숨기기
         		$(".notice_container").hide();
@@ -260,6 +289,9 @@
 			            
 			        </div>
 			        <div class="line"></div>
+			        <div id="moreNotice" style="display : none; margin-bottom: 15px;">
+			        	<p id="goNotice"></p>
+			        </div>
 			        <div class="notice_cancle">
 			            <div class="show24">
 			                <input type="checkbox" id="show1"> <!-- i 값 동적으로 바꿔야 함 -->

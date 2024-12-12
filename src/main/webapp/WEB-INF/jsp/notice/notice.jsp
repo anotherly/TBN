@@ -9,7 +9,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<jsp:include page="../common/all.jsp" flush="false" />
+<jsp:include page="../common/all.jsp" flush="false" /> 
 <!-- <title>공지사항</title> -->
 <style>
 	.insertButton, .searchButton{
@@ -25,6 +25,7 @@
 			//함수 호출
 			comparisonCode();
 
+			$('#searchDate').prop('disabled', true);
  			/* $('#searchDate').datepicker({
 				dateFormat: 'yy-mm-dd' //달력 날짜 형태
 				,showOtherMonths: true //빈 공간에 현재월의 앞뒤월의 날짜를 표시
@@ -36,8 +37,26 @@
 			    ,monthNames: ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'] //달력의 월 부분 Tooltip
 			    ,dayNamesMin: ['일','월','화','수','목','금','토'] //달력의 요일 텍스트
 			    ,dayNames: ['일요일','월요일','화요일','수요일','목요일','금요일','토요일'] //달력의 요일 Tooltip
-			}); */
+			});  */
 			
+			/* $('#searchDate').datetimepicker({
+			    format: 'YYYY-MM-DD HH:mm', // 날짜와 시간 포맷 (예: 2024-12-10 14:30)
+			    locale: 'ko', // 한국어로 설정
+			    showClear: true, // 날짜를 지울 수 있는 버튼 표시
+			    showClose: true, // 날짜를 선택한 후, 창을 닫을 수 있는 버튼 표시
+			    allowInputToggle: true, // 입력 필드를 클릭하면 캘린더가 열리도록 설정
+			    widgetPositioning: {
+			        horizontal: 'auto',
+			        vertical: 'auto'
+			    },
+			    stepping: 15, // 시간을 15분 단위로 선택 가능
+			    minDate: new Date(), // 최소 날짜를 오늘로 설정
+			    useCurrent: false, // 기본적으로 현재 날짜와 시간으로 설정되지 않도록 설정
+			    daysOfWeekDisabled: [0, 6], // 주말(일요일, 토요일)을 비활성화
+			}); */
+			$("#ui-datepicker-div").remove();
+			dateFunc('searchDate');
+					
 			// 24-11-15 : 페이지 로드 시 현재 로그인된 사용자의 권한 코드 비교하기		
 			function comparisonCode(){
 				var aCode = '${login.authCode}';
@@ -72,15 +91,32 @@
 			
 			
 			$('.searchButton').on('click', function(){
+				
+				if (!$('#startDate_chk').prop('checked')) {
+			        $('#searchDate').val('');
+			    }
+				
 				var searchDate = $('#searchDate').val();
 				var searchText = $('#searchText').val();
 				
-				if(searchDate == '' && searchText == '') {
-					alert('검색 조건을 선택 또는 입력해주세요');
-					return false;
-				}  else {
-					$('#searchNotice').submit();
-				}
+				var options = {
+				        url:"/notice/notice.do",
+				        type: "POST",
+				        data : {"searchDate" : searchDate, "searchText" : searchText},
+						//dataType: "json",
+						async : false,
+				        target: '#contents',
+				        success: function(json){
+				        	console.log("성공 불러오기");
+				        	
+				        	$('.admin_result_sc').hide();
+				        	$('#contents').html(json);
+				        },
+				        error: function(res,error){
+				            alert("에러가 발생했습니다."+res);
+				        }
+				    };
+				$.ajax(options);
 			});
 			
 			
@@ -112,6 +148,15 @@
 
 		}
 		
+		$('#startDate_chk').on('click', function() {
+		    if ($(this).prop('checked')) {
+		        $('#searchDate').prop('disabled', false);
+		    } else {
+		    	$('#searchDate').prop('disabled', true);
+		    }
+		});
+
+		
 </script>
 </head>
 <body>
@@ -125,6 +170,7 @@
                     <div class="wrap_center">
                         <fieldset class="searchField">
                             <legend> 공지사항 검색조건</legend>
+                            <input type="checkbox" id="startDate_chk">
                              월별 검색 :
                             <input type="text" id="searchDate" name="searchDate">
                           	 검색어 입력 :
@@ -154,6 +200,9 @@
                         </tr>
 					</thead>
 					<tbody>
+					<c:if test="${empty noticeList}">
+						<td style="font-size : 16px;" colspan="3">해당하는 데이터가 없습니다.</td>
+					</c:if>
 						<c:forEach var="list" items="${noticeList}">
 							<tr>
 								<input type="hidden" id="notice_id" value="${list.NOTICE_ID}">

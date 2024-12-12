@@ -57,4 +57,10 @@ public class NoticeServiceImpl implements NoticeService {
 	public List<NoticeVO> selectNotice(String today) throws Exception {
 		return noticeMapper.selectNotice(today);
 	}
+	
+	// 24-12-09 : 조회된 공지사항이 여러 개인 경우 공지사항 목록으로 이동하게 하기 위한 행 개수 조회
+	@Override
+	public List<NoticeVO> selectNoticeCnt(String today) throws Exception {
+		return noticeMapper.selectNoticeCnt(today);
+	}
 }

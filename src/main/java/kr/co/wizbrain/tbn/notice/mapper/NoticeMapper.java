@@ -25,4 +25,6 @@ public interface NoticeMapper {
 	public void deleteNotice(String noticeId) throws Exception;
 	
 	public List<NoticeVO> selectNotice(String today) throws Exception;
+	
+	public List<NoticeVO> selectNoticeCnt(String today) throws Exception;
 }

@@ -41,6 +41,18 @@ public interface MileageMapper {
 	// 등급 정보 가져오기
 	public List<GradeVO> getGrade() throws Exception;
 	
+	// 마일리지 지급 이력 - 통신원 정보 가져오기
+	public List<MileageVO> informerInfo(String ifmId) throws Exception;
+		
+	// 마일리지 지급 이력 - 마일리지 지급 이력 가져오기
+	public List<MileageVO> mileLogList(String ifmId) throws Exception;
+		
+	// 마일리지 지급 이력 - 상품 지급 이력 가져오기
+	public List<MileageVO> giftLogList(String ifmId) throws Exception;
+	
+	// 등급 부여 이력 - 등급 부여 이력 가져오기
+	public List<MileageVO> gradeLogList(String ifmId) throws Exception;
+	
 	// 마일리지 차감
 	public void minusMile(MileageVO paramVO) throws Exception;
 	
@@ -59,5 +71,20 @@ public interface MileageMapper {
 	// 부여된 등급 반영 ( 수정 - 부여된 이력이 있는 경우 )
 	public void updateGrade(MileageVO paramVO) throws Exception;	
 	
+	
+	
+	
+	// 마일리지 반영 - 엑셀 다운로드 기능
+	public List getMileList(MileageVO paramVO) throws Exception;
+	
+	
+	
+	// 총 마일리지 조회 - 엑셀 다운로드 기능
+	
+	
+	
+	
+	
+	// 등급 조회 - 엑셀 다운로드 기능
 	
 }

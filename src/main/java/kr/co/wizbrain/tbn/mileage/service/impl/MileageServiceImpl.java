@@ -88,6 +88,30 @@ public class MileageServiceImpl implements MileageService {
 		return mileageMapper.getGrade();
 	}
 	
+	// 마일리지 지급 이력 - 통신원 정보 가져오기
+	@Override
+	public List<MileageVO> informerInfo(String ifmId) throws Exception {
+		return mileageMapper.informerInfo(ifmId);
+	}
+		
+	// 마일리지 지급 이력 - 마일리지 지급 이력 가져오기
+	@Override
+	public List<MileageVO> mileLogList(String ifmId) throws Exception {
+		return mileageMapper.mileLogList(ifmId);
+	}
+	
+	// 마일리지 지급 이력 - 상품 지급 이력 가져오기
+	@Override
+	public List<MileageVO> giftLogList(String ifmId) throws Exception{
+		return mileageMapper.giftLogList(ifmId);
+	}
+	
+	// 등급 부여 이력 - 등급 부여 이력 가져오기
+	@Override
+	public List<MileageVO> gradeLogList(String ifmId) throws Exception{
+		return mileageMapper.gradeLogList(ifmId);
+	}
+	
 	// 마일리지 차감
 	@Override
 	public void minusMile(MileageVO paramVO) throws Exception {
@@ -129,5 +153,21 @@ public class MileageServiceImpl implements MileageService {
 	public void updateGrade(MileageVO paramVO) throws Exception{
 		mileageMapper.updateGrade(paramVO);
 	}
+	
+	
+	
+	// 마일리지 반영 - 엑셀 다운로드 기능
+	@Override
+	public List getMileList(MileageVO paramVO) throws Exception {
+		return mileageMapper.getMileList(paramVO);
+	}
+	
+	
+	// 총 마일리지 조회 - 엑셀 다운로드 기능
+	
+	
+	
+	
+	// 등급 조회 - 엑셀 다운로드 기능
 	
 }

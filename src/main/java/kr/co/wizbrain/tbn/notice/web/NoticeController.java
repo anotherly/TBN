@@ -133,7 +133,11 @@ public class NoticeController {
 			ModelAndView mav = new ModelAndView("jsonView");
 			List<NoticeVO> NoticeList = noticeService.selectNotice(today);
 			
+			int moreCount = (noticeService.selectNoticeCnt(today).size())-1; // 화면에 띄울 공지도 같이 포함이기 떄문에 -1 필요
+			
 			mav.addObject("NoticeList", NoticeList);	
+			mav.addObject("moreCount", moreCount);
+			
 			return mav;
 		}
 		
