@@ -5,15 +5,18 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.text.DecimalFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import kr.co.wizbrain.tbn.comm.RecordDto;
-import kr.co.wizbrain.tbn.infrm.vo.InfrmVO;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.poi.hssf.usermodel.HSSFRow;
@@ -21,6 +24,9 @@ import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.springframework.web.servlet.view.AbstractView;
+
+import kr.co.wizbrain.tbn.comm.RecordDto;
+import kr.co.wizbrain.tbn.infrm.vo.InfrmVO;
 /* loaded from: ExportPoiHssfExcel.class */
 public class ExportPoiHssfExcel extends AbstractView {
     private static final Log log = LogFactory.getLog(ExportPoiHssfExcel.class);
@@ -337,7 +343,7 @@ public class ExportPoiHssfExcel extends AbstractView {
 	}
     
     protected void extrBro(Map model, HSSFWorkbook wb) {
-		int i = 0;
+ 		int i = 0;
 		int j = 0;
 		int rowCnt = 0;
 		List dataList = (List) model.get("Data");
@@ -358,7 +364,14 @@ public class ExportPoiHssfExcel extends AbstractView {
 		List data = (List) model.get("Data");
 		rowCnt++;
 		Calendar ca = Calendar.getInstance();
-		String date = (String) model.get("start_date");
+		
+		// 24-12-16 : 시작일 가져오기
+		String Sdate = (String) model.get("start_date");
+		
+		// 24-12-16 : 시작일 슬라이스
+		String date = Sdate.substring(0, 6);
+		
+		
 		int thYear = Integer.parseInt(date.substring(0, 4));
 		int thMonth = Integer.parseInt(date.substring(4, 6));
 		ca.set(thYear, i, thMonth);
@@ -420,7 +433,13 @@ public class ExportPoiHssfExcel extends AbstractView {
 		List data = (List) model.get("Data");
 		rowCnt++;
 		Calendar ca = Calendar.getInstance();
-		String date = (String) model.get("start_date");
+		
+		// 24-12-16 : 시작일 가져오기
+		String Sdate = (String) model.get("start_date");
+		
+		// 24-12-16 : 시작일 슬라이스
+		String date = Sdate.substring(0, 6);
+				
 		int thYear = Integer.parseInt(date.substring(0, 4));
 		int thMonth = Integer.parseInt(date.substring(4, 6));
 		ca.set(thYear, i, thMonth);
@@ -764,8 +783,361 @@ public class ExportPoiHssfExcel extends AbstractView {
 		int thYear = Integer.parseInt(thDateTime.substring(0, 4));
 		int thMonth = Integer.parseInt(thDateTime.substring(4, 6));
 		ca.set(thYear, i, thMonth);
+		
+		// 24-12-16 : 시작일 가져오기
+		String Sdate = (String) model.get("start_date");
+		String Edate = (String) model.get("end_date");
+		
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+
+		LocalDate startDate = LocalDate.parse(Sdate, formatter);
+		LocalDate endDate = LocalDate.parse(Edate, formatter);
+		
+		 int maxMon = (int) java.time.temporal.ChronoUnit.DAYS.between(startDate, endDate) + 1;
+
+	     List<String> dateList = new ArrayList<>(maxMon);
+
+	     LocalDate currentDate = startDate;
+	     while (!currentDate.isAfter(endDate)) {
+	    	 dateList.add(currentDate.format(formatter)); 
+	         currentDate = currentDate.plusDays(1); 
+	     }
+		
+		HSSFRow[] dataRow = new HSSFRow[maxMon];
+		int[] sumOurArr = new int[maxMon];
+		int[] sumOtherArr = new int[maxMon];
+
+		for(i = 0; i < maxMon; ++i) {
+			dataRow[i] = sheet1.createRow(rowCnt + i);
+			sumOurArr[i] = 0;
+			sumOtherArr[i] = 0;
+			
+			dataRow[i].createCell(0).setCellValue(dateList.get(i));
+		}
+		
+		
+		
+/*		for (i = 0; i < maxMon; ++i) 
+			dataRow[i] = sheet1.createRow(rowCnt + i);
+			sumOurArr[i] = 0;
+			sumOtherArr[i] = 0;
+			if (i < 9) {
+				dataRow[i].createCell(0).setCellValue(date.concat("0").concat(Integer.toString(i + 1)));
+			} else {
+				dataRow[i].createCell(0).setCellValue(date.concat(Integer.toString(i + 1)));
+			}
+		}*/
+
+		List data = (List) model.get("useDaily");
+
+		String regionId;
+		int statDate;
+		int standardDate = Integer.parseInt(Sdate.substring(6, 8));
+		int dataSize = data.size();
+		
+    	for (int k = 0; k < maxMon; k++) {
+    		logger.debug(dateList.get(k));
+    		int a =0;
+    		
+    		for (i = 0; i < data.size(); ++i) {
+				RecordDto record = (RecordDto) data.get(i);
+				statDate = Integer.parseInt(record.getString("STAT_DATE").substring(6, 8));
+				regionId = record.getString("REGION_ID");
+				String informerType = record.getString("INFORMER_TYPE");
+				
+				String getStatDate = record.getString("STAT_DATE");
+				
+				int size = maxMon;
+				int mSize = size;
+				for (j = 0; j < headData.size(); ++j) {
+					if(getStatDate.equals(dateList.get(k))){
+						RecordDto record2 = (RecordDto) headData.get(j);
+						if (informerType.equals(record2.getString("CODE"))) {
+							if (regionId.equals("000")) {
+								dataRow[k].createCell(j * 2 + 4).setCellValue((double) record.getInt("CNT"));
+								sumOtherArr[k] += record.getInt("CNT");
+							} else {
+								dataRow[k].createCell(j * 2 + 3).setCellValue((double) record.getInt("CNT"));
+								sumOurArr[k] += record.getInt("CNT");
+							}
+							//break;
+						}
+					}
+				}
+			}
+    		a++;
+		}
+
+		for (i = 0; i < maxMon; ++i) {
+			dataRow[i].createCell(1).setCellValue((double) sumOurArr[i]);
+			dataRow[i].createCell(2).setCellValue((double) sumOtherArr[i]);
+		}
+
+		rowCnt = 0;
+		HSSFSheet sheet2 = wb.createSheet(model.get("sheetNames2").toString());
+		titlerow = sheet2.createRow(rowCnt);
+		titlerow.createCell(rowCnt).setCellValue(model.get("sheetNames2").toString());
+		rowCnt = rowCnt + 1;
+		headrow = sheet2.createRow(rowCnt);
+		headrow.createCell(0).setCellValue("구분");
+		headrow.createCell(1).setCellValue("계");
+		headData = (List) model.get("regionHead");
+
+		for (j = 0; j < headData.size(); ++j) {
+			RecordDto record = (RecordDto) headData.get(j);
+			headrow.createCell(j * 4 + 5).setCellValue(record.getString("CODE_NAME"));
+		}
+
+		for (i = 0; i < headData.size() + 1; ++i) {
+			sheet2.addMergedRegion(new CellRangeAddress(rowCnt, rowCnt, i * 4 + 1, i * 4 + 4));
+		}
+
+		++rowCnt;
+		headrow1 = sheet2.createRow(rowCnt);
+		headData1 = (List) model.get("sumMonth");
+		sum = 0;
+		int sumMid = 0;
+		List<Integer> sumMidList = new ArrayList();
+
+		for (j = 0; j < headData1.size(); ++j) {
+			RecordDto record = (RecordDto) headData1.get(j);
+			if (j % 4 == 0 && j > 0) {
+				sumMidList.add(sumMid);
+				sumMid = 0;
+				sumMid = sumMid + record.getInt("CNT");
+			} else if (j + 1 == headData1.size()) {
+				sumMid += record.getInt("CNT");
+				sumMidList.add(sumMid);
+			} else {
+				sumMid += record.getInt("CNT");
+			}
+
+			sum += record.getInt("CNT");
+		}
+
+		headrow1.createCell(1).setCellValue((double) sum);
+
+		int sumSendY;
+		for (sumSendY = 0; sumSendY < sumMidList.size(); ++sumSendY) {
+			headrow1.createCell(sumSendY * 4 + 5).setCellValue((double) (Integer) sumMidList.get(sumSendY));
+		}
+
+		for (i = 0; i < headData.size() + 1; ++i) {
+			sheet2.addMergedRegion(new CellRangeAddress(rowCnt, rowCnt, i * 4 + 1, i * 4 + 4));
+		}
+
+		++rowCnt;
+		headrow1 = sheet2.createRow(rowCnt);
+
+		for (j = 0; j < headData.size() + 1; ++j) {
+			headrow1.createCell(j * 4 + 1).setCellValue("방송자료");
+			headrow1.createCell(j * 4 + 2).setCellValue("자체처리");
+			headrow1.createCell(j * 4 + 3).setCellValue("안내");
+			headrow1.createCell(j * 4 + 4).setCellValue("기관통보");
+		}
+
+		++rowCnt;
+		headrow1 = sheet2.createRow(rowCnt);
+		headData1 = (List) model.get("sumMonth");
+		sumSendY = 0;
+		int sumSendN = 0;
+		int sumA07 = 0;
+		int sumA08 = 0;
+
+		/*String titleStr;
+		for (i = 0; i < headData1.size(); ++i) {
+			RecordDto record = (RecordDto) headData1.get(i);
+			regionId = record.getString("CODE");
+			titleStr = record.getString("SEQ");
+
+			for (j = 0; j < headData.size(); ++j) {
+				RecordDto recordType = (RecordDto) headData.get(j);
+				if (recordType.getString("CODE").equals(regionId)) {
+					if (titleStr.equals("B")) {
+						headrow1.createCell(j * 4 + 5).setCellValue((double) record.getInt("CNT"));
+						sumSendY += record.getInt("CNT");
+					} else if (titleStr.equals("NB")) {
+						headrow1.createCell(j * 4 + 6).setCellValue((double) record.getInt("CNT"));
+						sumSendN += record.getInt("CNT");
+					} else if (titleStr.equals("A07")) {
+						headrow1.createCell(j * 4 + 7).setCellValue((double) record.getInt("CNT"));
+						sumA07 += record.getInt("CNT");
+					} else if (titleStr.equals("A08")) {
+						headrow1.createCell(j * 4 + 8).setCellValue((double) record.getInt("CNT"));
+						sumA08 += record.getInt("CNT");
+					}
+				}
+			}
+		}
+
+		headrow1.createCell(1).setCellValue((double) sumSendY);
+		headrow1.createCell(2).setCellValue((double) sumSendN);
+		headrow1.createCell(3).setCellValue((double) sumA07);
+		headrow1.createCell(4).setCellValue((double) sumA08);
+		++rowCnt;
+		HSSFRow[] dataRow1 = new HSSFRow[maxMon];
+		int[] sumSendYArr = new int[maxMon];
+		int[] sumSendNArr = new int[maxMon];
+		int[] sumA07Arr = new int[maxMon];
+		int[] sumA08Arr = new int[maxMon];
+
+		for (i = 0; i < maxMon; ++i) {
+			dataRow1[i] = sheet2.createRow(rowCnt + i);
+			sumSendYArr[i] = 0;
+			sumSendNArr[i] = 0;
+			sumA07Arr[i] = 0;
+			sumA08Arr[i] = 0;
+			if (i < 9) {
+				dataRow1[i].createCell(0).setCellValue(date.concat("0").concat(Integer.toString(i + 1)));
+			} else {
+				dataRow1[i].createCell(0).setCellValue(date.concat(Integer.toString(i + 1)));
+			}
+		}
+
+		data = (List) model.get("Data");
+
+		for (int k = 0; k < dataRow1.length; ++k) {
+			for (j = 0; j < headData.size(); ++j) {
+				RecordDto recordType = (RecordDto) headData.get(j);
+
+				for (i = 0; i < data.size(); ++i) {
+					RecordDto record = (RecordDto) data.get(i);
+					statDate = Integer.parseInt(record.getString("STAT_DATE").substring(6, 8));
+					regionId = record.getString("INFORMER_TYPE");
+					titleStr = record.getString("SEQ");
+					if (statDate - 1 == k) {
+						if (regionId.equals(recordType.getString("CODE"))) {
+							if (titleStr.equals("B")) {
+								dataRow1[statDate - 1].createCell(j * 4 + 5)
+										.setCellValue((double) record.getInt("CNT"));
+								sumSendYArr[statDate - 1] += record.getInt("CNT");
+							} else if (titleStr.equals("NB")) {
+								dataRow1[statDate - 1].createCell(j * 4 + 6)
+										.setCellValue((double) record.getInt("CNT"));
+								sumSendNArr[statDate - 1] += record.getInt("CNT");
+							} else if (titleStr.equals("A07")) {
+								dataRow1[statDate - 1].createCell(j * 4 + 7)
+										.setCellValue((double) record.getInt("CNT"));
+								sumA07Arr[statDate - 1] += record.getInt("CNT");
+							} else if (titleStr.equals("A08")) {
+								dataRow1[statDate - 1].createCell(j * 4 + 8)
+										.setCellValue((double) record.getInt("CNT"));
+								sumA08Arr[statDate - 1] += record.getInt("CNT");
+							}
+						}
+					} else {
+						if (dataRow1[k].getCell(j * 4 + 5) == null) {
+							dataRow1[k].createCell(j * 4 + 5).setCellValue(0.0);
+							sumSendYArr[k] += 0;
+						}
+
+						if (dataRow1[k].getCell(j * 4 + 6) == null) {
+							dataRow1[k].createCell(j * 4 + 6).setCellValue(0.0);
+							sumSendYArr[k] += 0;
+						}
+
+						if (dataRow1[k].getCell(j * 4 + 7) == null) {
+							dataRow1[k].createCell(j * 4 + 7).setCellValue(0.0);
+							sumSendYArr[k] += 0;
+						}
+
+						if (dataRow1[k].getCell(j * 4 + 8) == null) {
+							dataRow1[k].createCell(j * 4 + 8).setCellValue(0.0);
+							sumSendYArr[k] += 0;
+						}
+					}
+				}
+			}
+		}
+
+		for (i = 0; i < maxMon; ++i) {
+			dataRow1[i].createCell(1).setCellValue((double) sumSendYArr[i]);
+			dataRow1[i].createCell(2).setCellValue((double) sumSendNArr[i]);
+			dataRow1[i].createCell(3).setCellValue((double) sumA07Arr[i]);
+			dataRow1[i].createCell(4).setCellValue((double) sumA08Arr[i]);
+		}*/
+
+	}
+	
+	/*protected void standartdReceiptUse(Map model, HSSFWorkbook wb) {
+		int rowCnt = 0;
+		String thDateTime = (String) model.get("start_date");
+		HSSFSheet sheet1 = wb.createSheet(model.get("sheetNames1").toString());
+		HSSFRow titlerow = sheet1.createRow(rowCnt);
+		titlerow.createCell(rowCnt).setCellValue("교통정보 수집건수 및 활용실적");
+		++rowCnt;
+		HSSFRow mainRow = sheet1.createRow(rowCnt);
+		mainRow.createCell(rowCnt).setCellValue(model.get("sheetNames1").toString());
+		++rowCnt;
+		HSSFRow headrow = sheet1.createRow(rowCnt);
+		headrow.createCell(0).setCellValue("구분");
+		headrow.createCell(1).setCellValue("계");
+		List headData = (List) model.get("headList");
+
+		int j;
+		for (j = 0; j < headData.size(); ++j) {
+			RecordDto record = (RecordDto) headData.get(j);
+			headrow.createCell(j * 2 + 3).setCellValue(record.getString("CODE_NAME"));
+		}
+
+		++rowCnt;
+		HSSFRow headrow1 = sheet1.createRow(rowCnt);
+		List headData1 = (List) model.get("useAllList");
+		int sum = 0;
+
+		for (j = 0; j < headData1.size(); ++j) {
+			RecordDto record = (RecordDto) headData1.get(j);
+			headrow1.createCell(j * 2 + 3).setCellValue((double) record.getInt("CNT"));
+			sum += record.getInt("CNT");
+		}
+
+		headrow1.createCell(1).setCellValue((double) sum);
+
+		int i;
+		for (i = 0; i < headData.size() + 1; ++i) {
+			sheet1.addMergedRegion(new CellRangeAddress(rowCnt - 1, rowCnt - 1, i * 2 + 1, i * 2 + 2));
+			sheet1.addMergedRegion(new CellRangeAddress(rowCnt, rowCnt, i * 2 + 1, i * 2 + 2));
+		}
+
+		++rowCnt;
+		headrow1 = sheet1.createRow(rowCnt);
+
+		for (j = 0; j < headData.size() + 1; ++j) {
+			headrow1.createCell(j * 2 + 1).setCellValue("자국");
+			headrow1.createCell(j * 2 + 2).setCellValue("타국");
+		}
+
+		++rowCnt;
+		headrow1 = sheet1.createRow(rowCnt);
+		headData1 = (List) model.get("useOurOther");
+		int sumOur = 0;
+		int sumOther = 0;
+
+		for (j = 0; j < headData1.size(); ++j) {
+			RecordDto record = (RecordDto) headData1.get(j);
+			headrow1.createCell(j + 3).setCellValue((double) record.getInt("CNT"));
+			if (record.getString("REGION_ID").equals("000")) {
+				sumOther += record.getInt("CNT");
+			} else {
+				sumOur += record.getInt("CNT");
+			}
+		}
+
+		headrow1.createCell(1).setCellValue((double) sumOur);
+		headrow1.createCell(2).setCellValue((double) sumOther);
+		++rowCnt;
+		Calendar ca = Calendar.getInstance();
+		int thYear = Integer.parseInt(thDateTime.substring(0, 4));
+		int thMonth = Integer.parseInt(thDateTime.substring(4, 6));
+		ca.set(thYear, i, thMonth);
 		int maxMon = ca.getActualMaximum(5);
-		String date = (String) model.get("start_date");
+		
+		// 24-12-16 : 시작일 가져오기
+		String Sdate = (String) model.get("start_date");
+		
+		// 24-12-16 : 시작일 슬라이스
+		String date = Sdate.substring(0, 6);
+		
 		HSSFRow[] dataRow = new HSSFRow[maxMon];
 		int[] sumOurArr = new int[maxMon];
 		int[] sumOtherArr = new int[maxMon];
@@ -995,7 +1367,7 @@ public class ExportPoiHssfExcel extends AbstractView {
 			dataRow1[i].createCell(4).setCellValue((double) sumA08Arr[i]);
 		}
 
-	}
+	}*/
 
     protected void nationalIncident(Map model, HSSFWorkbook wb) {
         List dataList = (List) model.get("Data");

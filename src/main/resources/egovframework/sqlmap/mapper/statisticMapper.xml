@@ -802,7 +802,7 @@
 	</select>
 	
 	
-	<!-- 5. 무 제보자 현황  -->
+	<!-- 5. 무제보자 현황  -->
 	<select id="muJeboList" parameterType="params" resultType="record">
 		<!--통신원 정보(방송국별,통신원타입 : 통신원)-->
 	    SELECT T.* FROM
@@ -824,7 +824,7 @@
                 select IND_ID,SUM(MON_CNT) AS CNT from stat_tbn_monrpt 
                 where area_code=#{REGION_ID}
 				<![CDATA[ 
-					and stat_mon >= substr(#{start_date},0,4)||'01'
+					and stat_mon >= #{start_date}
 					and stat_mon < to_char(add_months(to_date(#{start_date},'yyyymm'),1),'yyyymm')
 				]]>
                 GROUP BY IND_ID
@@ -930,41 +930,41 @@
 	<!-- 교통정보 제공대장과 비교해보니 자 타국 모두 합치는듯 -->
 	<select id="monthSendYNA07A08" parameterType="params" resultType="record">
 	    <!-- B : 방송자료 -->
-	    SELECT SUBSTR(#{start_date},0,6) STAT_DATE ,a.code, 'B' SEQ, nvl(b.cnt ,0) CNT
+	    SELECT SUBSTR(#{start_date},1,6) STAT_DATE ,a.code, 'B' SEQ, nvl(b.cnt ,0) CNT
 	    FROM 
 	    (SELECT TYPE_ID AS CODE FROM CODE_INFORMER_TYPE) a
 	    left join
 	    (SELECT informer_type, SUM(SEND_Y)+SUM(O_SEND_Y) CNT 
 	    FROM STAT_INFRM_TYPE
-		WHERE SUBSTR(STAT_DATE,0,6) = #{start_date}
+		WHERE  STAT_DATE BETWEEN #{start_date} AND #{end_date}
 	    and REGION_ID = #{REGION_ID}
-		GROUP BY SUBSTR(STAT_DATE,0,6),informer_type)b
+		GROUP BY SUBSTR(STAT_DATE,1,6),informer_type)b
 	    on(a.code=b.informer_type)
 		
 		UNION ALL
 		<!-- NB : 자체처리 -->
-		SELECT SUBSTR(#{start_date},0,6) STAT_DATE ,a.code, 'NB' SEQ, nvl(b.cnt ,0) CNT
+		SELECT SUBSTR(#{start_date},1,6) STAT_DATE ,a.code, 'NB' SEQ, nvl(b.cnt ,0) CNT
 	    FROM 
 	    (SELECT TYPE_ID AS CODE FROM CODE_INFORMER_TYPE) a
 	    left join
 	    (SELECT informer_type,SUM(SEND_N)+SUM(O_SEND_N) CNT 
 	    FROM STAT_INFRM_TYPE
-		WHERE SUBSTR(STAT_DATE,0,6) = #{start_date}
+		WHERE  STAT_DATE BETWEEN #{start_date} AND #{end_date}
 	    and REGION_ID = #{REGION_ID}
-		GROUP BY SUBSTR(STAT_DATE,0,6),informer_type)b
+		GROUP BY SUBSTR(STAT_DATE,1,6),informer_type)b
 	    on(a.code=b.informer_type)
 		
 		UNION ALL
 		<!-- A07 : 안내 -->
-		SELECT SUBSTR(#{start_date},0,6) STAT_DATE ,a.code, 'A07' SEQ, nvl(b.cnt ,0) CNT
+		SELECT SUBSTR(#{start_date},1,6) STAT_DATE ,a.code, 'A07' SEQ, nvl(b.cnt ,0) CNT
 	    FROM 
 	    (SELECT TYPE_ID AS CODE FROM CODE_INFORMER_TYPE) a
 	    left join
 	    (SELECT informer_type,SUM(GID_CNT) CNT 
 	    FROM STAT_INFRM_TYPE
-		WHERE SUBSTR(STAT_DATE,0,6) = #{start_date}
+		WHERE  STAT_DATE BETWEEN #{start_date} AND #{end_date}
 	    and REGION_ID = #{REGION_ID}
-		GROUP BY SUBSTR(STAT_DATE,0,6),informer_type)b
+		GROUP BY SUBSTR(STAT_DATE,1,6),informer_type)b
 	    on(a.code=b.informer_type)
 		
 		UNION ALL
@@ -975,9 +975,9 @@
 	    left join
 	    (SELECT informer_type,SUM(ORG_NT_CNT) CNT 
 	    FROM STAT_INFRM_TYPE
-		WHERE SUBSTR(STAT_DATE,0,6) = #{start_date}
+		WHERE  STAT_DATE BETWEEN #{start_date} AND #{end_date}
 	    and REGION_ID = #{REGION_ID}
-		GROUP BY SUBSTR(STAT_DATE,0,6),informer_type)b
+		GROUP BY SUBSTR(STAT_DATE,1,6),informer_type)b
 	    on(a.code=b.informer_type)
 		ORDER BY code,SEQ
 	</select>
@@ -986,7 +986,7 @@
 	<select id="dailyRegionSendYNA07A08" parameterType="params" resultType="record">
 		SELECT stat_date, informer_type, 'B' SEQ, SUM(SEND_Y) CNT
 		FROM STAT_INFRM_TYPE
-		WHERE SUBSTR(STAT_DATE,0,6) = #{start_date}
+		WHERE  STAT_DATE BETWEEN #{start_date} AND #{end_date}
 	    and REGION_ID = #{REGION_ID}
 		GROUP BY stat_date,informer_type
 		
@@ -994,7 +994,7 @@
 		
 		SELECT stat_date, informer_type, 'NB' SEQ, SUM(SEND_N) CNT
 		FROM STAT_INFRM_TYPE
-		WHERE SUBSTR(STAT_DATE,0,6) = #{start_date}
+		WHERE  STAT_DATE BETWEEN #{start_date} AND #{end_date}
 	    and REGION_ID = #{REGION_ID}
 		GROUP BY stat_date,informer_type 
 		
@@ -1002,7 +1002,7 @@
 		
 		SELECT stat_date, informer_type, 'A07' SEQ, SUM(GID_CNT) CNT
 		FROM STAT_INFRM_TYPE
-		WHERE SUBSTR(STAT_DATE,0,6) = #{start_date}
+		WHERE  STAT_DATE BETWEEN #{start_date} AND #{end_date}
 	    and REGION_ID = #{REGION_ID}
 		GROUP BY stat_date,informer_type 
 		
@@ -1010,7 +1010,7 @@
 		
 		SELECT stat_date, informer_type, 'A08' SEQ, SUM(ORG_NT_CNT) CNT
 		FROM STAT_INFRM_TYPE
-		WHERE SUBSTR(STAT_DATE,0,6) = #{start_date}
+		WHERE  STAT_DATE BETWEEN #{start_date} AND #{end_date}
 	    and REGION_ID = #{REGION_ID}
 		GROUP BY stat_date,informer_type
 		ORDER BY STAT_DATE, INFORMER_TYPE

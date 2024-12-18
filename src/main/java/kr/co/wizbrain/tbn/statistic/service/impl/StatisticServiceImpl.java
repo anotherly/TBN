@@ -101,7 +101,14 @@ public class StatisticServiceImpl implements StatisticService{
 	// 24-11-20 : 제보자별 제보현황 - 총 건수
 	@Override
 	public String allReport(ParamsDto params) throws Exception {
-		return statisticMapper.allReport(params);
+		String allReport = statisticMapper.allReport(params);
+		
+		if(allReport == null) {
+			allReport = "0";
+			return allReport;
+		} else {
+			return allReport;
+		}
 	}
 	
 	
@@ -246,7 +253,8 @@ public class StatisticServiceImpl implements StatisticService{
 	// 1-1) 제보자 리스트
 	@Override
 	public List monInfrmList(ParamsDto params) {
-		return statisticMapper.muJeboList(params);
+		/*return statisticMapper.muJeboList(params);*/
+		return statisticMapper.monInfrmList(params);
 	}
 	
 	// 1-2) 월별 건수

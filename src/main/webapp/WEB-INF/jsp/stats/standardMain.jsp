@@ -4,6 +4,21 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+
+<%
+//한달 전
+Calendar mon = Calendar.getInstance();
+mon.add(Calendar.MONTH , -1);
+System.out.println("%%%%%%%%%%%%%%%% : "+mon);
+String beforeMonth = new java.text.SimpleDateFormat("YYYYMMdd").format(mon.getTime());
+System.out.println("%%%%%%%%%%%%%%%% : "+beforeMonth);
+
+//2
+Date monthAgo=new Date(new Date().getTime() - 60*60*24*1000*30L);
+System.out.println("%%%%%%%%%%%%%%%% : "+monthAgo);
+%>
+
+
 <!-- DateTimePicker -->
 <script src="<%=request.getContextPath()%>/calender/moment.js"></script>
 <script src="<%=request.getContextPath()%>/calender/mo_ko.js"></script>
@@ -60,7 +75,9 @@
 			$('#monthDate').removeClass('stat_now_btn');
 			
 			$('#month_body').hide();
+			$('#another_month').hide();
 			$('#range_body').show();
+			$('#schDtBody').show();
 		});
 		
 		
@@ -72,32 +89,76 @@
 			$('#rangeDate').removeClass('stat_now_btn');
 			
 			$('#range_body').hide();
+			$('#schDtBody').hide();
 			$('#month_body').show();
+			$('#another_month').show();
 		});
 		
 	});
 	
-	function goStats(url){
+	function goStats(type, url){
 		$("#org_id").val($("#orgIdSel").val());
 		console.log("통계 서브밋?");
+
 		var startDate = $('#stdt').val();
 		var endDate = $('#edt').val();
-		if(startDate == "" || endDate == "") {
-			alert("시작일과 종료일을 올바르게 선택해주세요.");
-			return false;
-		} else if($('#end_date').val()<$('#start_date').val()){
-			alert("종료일은 시작일 이전일 수 없습니다.");
-			return false;
-		} else {
-			$('#start_date').val(startDate.replaceAll("-",""));
-			$('#end_date').val(endDate.replaceAll("-",""));
-			$('#city').val("("+$("#areaOptSel option:selected").text().substr(0,2)+")");
-			rkFlag = true;
-			frmExcel.action = '<c:url value="/"/>'+url;
-			frmExcel.submit();
-			rkFlag = true;
-		}
-	}
+		
+			if(type == 'range') {
+				
+				if(startDate == "" || endDate == "") {
+					alert("시작일과 종료일을 올바르게 선택해주세요.");
+					return false;
+				} else if($('#end_date').val() < $('#start_date').val()){
+					console.log('종료일'+$('#end_date').val());
+					console.log('시작일'+$('#start_date').val());
+					
+					
+					alert("종료일은 시작일 이전일 수 없습니다.");
+					return false;
+				} else {
+					$('#start_date').val(startDate.replaceAll("-",""));
+					$('#end_date').val(endDate.replaceAll("-",""));
+					$('#city').val("("+$("#areaOptSel option:selected").text().substr(0,2)+")");
+					
+					if(url == 'stats/muInformer2.do') { // 무제보자의 경우 YYYYMMDD가 아닌 YYYYMM 형식이므로 format
+						var stDate = $('#start_date').val();
+						var fmDate = stDate.slice(0, 6);
+						$('#start_date').val(fmDate); 
+					}
+					
+					rkFlag = true;	
+					frmExcel.action = '<c:url value="/"/>'+url;
+					frmExcel.submit();	
+					rkFlag = true;
+				}
+			} else {
+				var stDt=$("#sDate").val();
+				$("#org_id").val($("#orgIdSel").val());
+
+				if($("#sDate").val().length==1){
+					stDt="0"+stDt;
+				}
+				
+				// 통신원 소속별 일자별 통계의 경우, YYYYMMDD 형식으로 보내야 하므로 뒤에 추가적으로 DD를 붙여야함
+				if(url == 'stats/dayReceipt.do' || url == 'stats/volunteer.do') {
+					$('#start_date').val($('#sYear').val()+stDt+'01');
+					// 쿼리에서  알아서 잘라 마지막 일자를 구하기 때문에 DD는 01로 보낸다
+
+					rkFlag = true;
+					frmExcel.action = '<c:url value="/"/>'+url;
+					frmExcel.submit();
+					rkFlag = true; 
+				} else {
+					$('#start_date').val($('#sYear').val()+stDt);
+
+					rkFlag = true;
+					frmExcel.action = '<c:url value="/"/>'+url;
+					frmExcel.submit();
+					rkFlag = true; 
+				}
+
+			}
+}
 	
 </script>
     <div id="contentWrap">
@@ -118,7 +179,7 @@
                             <div class="wrap_top"></div>
                             <div class="wrap_center">
                                 <fieldset class="searchField">
-	                                <legend>통계관리 검색조건</legend>
+	                                <legend>통계관리 검색조건(기간별)</legend>
 									방송국선택 : 
 							       <select id="areaOptSel" name="REGION_ID">
 			                            <c:forEach var="informerRegion" items="${informerRegionList}" varStatus="idx">
@@ -140,15 +201,48 @@
 										</div>
 										
 									</div> 
+									<div id="another_month" style="display:none;">
+										<c:set var="today" value="<%=monthAgo%>" />
+		                                <c:set var="datetime"><fmt:formatDate value="${today}" pattern="yyyy" /></c:set>
+		                                                                 기준년
+		                                <select id="sYear" name="sYear">
+				                            <c:forEach var="i" begin="0" end="10">
+					                            <c:choose>
+													<c:when test="${i == 0}">
+						                                <option value="${datetime}" selected>${datetime}년</option>
+						                            </c:when>
+						                            <c:otherwise>
+						                                <option value="${datetime-i}" >${datetime-i}년</option>
+						                            </c:otherwise>		                            
+					                            </c:choose>
+				                            </c:forEach>
+										</select>
+										기준월
+		                                <c:set var="today" value="<%=monthAgo%>" />
+		                                <c:set var="datetime"><fmt:formatDate value="${today}" pattern="MM" /></c:set>
+		                                <select id="sDate" name="sDate">
+				                            <c:forEach var="i" begin="01" end="12">
+					                            <c:choose>
+													<c:when test="${i == datetime}">
+						                                <option value="${i}" selected>${i}월</option>
+						                            </c:when>
+						                            <c:otherwise>
+						                                <option value="${i}" >${i}월</option>
+						                            </c:otherwise>		                            
+					                            </c:choose>
+				                            </c:forEach>
+										</select>		
+									</div>
                                 </fieldset>
                             </div>
                             <div class="wrap_bottom"></div>
                         </div>
                         </form>
+                       
                         <!-- 검색조건 영역 끝 -->
                         <!-- 검색결과 시작-->
                         <div class="admin_result_sc">
-                            <table border="0" cellpadding="0" cellspacing="0" class="list01">
+                            <table border="0" cellpadding="0" class="list01">
                                 
                                 <colgroup>                                
                                 <col width="*" />
@@ -162,74 +256,73 @@
                                 </thead>
                                 <tbody id="range_body"> <!--  기간별 테이블  -->
                                 	<tr>
-                                        <td class="txt_left"><img src="../images/ico_excel.gif" alt="" class="mglsub03" /><a href="javascript:goStats('stats/receiptBroad.do');">교통정보 제공대장</a></td>
-                                        <td><a href="javascript:goStats('stats/receiptBroad.do');"><img src="../images/btn_excel_down.gif" alt="엑셀다운로드" /></a></td>
+                                        <td class="txt_left"><img src="../images/ico_excel.gif" alt="" class="mglsub03" /><a href="javascript:goStats('range','stats/receiptBroad.do');">교통정보 제공대장</a></td>
+                                        <td><a href="javascript:goStats('range','stats/receiptBroad.do');"><img src="../images/btn_excel_down.gif" alt="엑셀다운로드" /></a></td>
                                     </tr>
                                      <tr>
-                                        <td class="txt_left"><img src="../images/ico_excel.gif" alt="" class="mglsub03" /><a href="javascript:goStats('stats/extrBro.do');">긴급교통정보_방송현황분석</a></td>
-                                        <td><a href="javascript:goStats('stats/extrBro.do');"><img src="../images/btn_excel_down.gif" alt="엑셀다운로드" /></a></td>
+                                        <td class="txt_left"><img src="../images/ico_excel.gif" alt="" class="mglsub03" /><a href="javascript:goStats('range','stats/extrBro.do');">긴급교통정보_방송현황분석</a></td>
+                                        <td><a href="javascript:goStats('range','stats/extrBro.do');"><img src="../images/btn_excel_down.gif" alt="엑셀다운로드" /></a></td>
                                     </tr>
                                     <tr>
-                                        <td class="txt_left"><img src="../images/ico_excel.gif" alt="" class="mglsub03" /><a href="javascript:goStats('stats/disastorStat.do');">재난 제보건수</a></td>
-                                        <td><a href="javascript:goStats('stats/disastorStat.do');"><img src="../images/btn_excel_down.gif" alt="엑셀다운로드" /></a></td>
+                                        <td class="txt_left"><img src="../images/ico_excel.gif" alt="" class="mglsub03" /><a href="javascript:goStats('range','stats/disastorStat.do');">재난 제보건수</a></td>
+                                        <td><a href="javascript:goStats('range','stats/disastorStat.do');"><img src="../images/btn_excel_down.gif" alt="엑셀다운로드" /></a></td>
                                     </tr>
                                     <tr>
-                                        <td class="txt_left"><img src="../images/ico_excel.gif" alt="" class="mglsub03" /><a href="javascript:goStats('stats/muInformer2.do');">무 제보자 현황</a></td>
-                                        <td><a href="javascript:goStats('stats/muInformer2.do');"><img src="../images/btn_excel_down.gif" alt="엑셀다운로드" /></a></td>
+                                        <td class="txt_left"><img src="../images/ico_excel.gif" alt="" class="mglsub03" /><a href="javascript:goStats('range','stats/muInformer2.do');">무 제보자 현황</a></td>
+                                        <td><a href="javascript:goStats('range','stats/muInformer2.do');"><img src="../images/btn_excel_down.gif" alt="엑셀다운로드" /></a></td>
                                     </tr>
                                     <tr>
-                                        <td class="txt_left"><img src="../images/ico_excel.gif" alt="" class="mglsub03" /><a href="javascript:goStats('stats/receiptUse.do');">교통정보 수집건수 및 활용실적</a></td>
-                                        <td><a href="javascript:goStats('stats/receiptUse.do');"><img src="../images/btn_excel_down.gif" alt="엑셀다운로드" /></a></td>
+                                        <td class="txt_left"><img src="../images/ico_excel.gif" alt="" class="mglsub03" /><a href="javascript:goStats('range','stats/receiptUse.do');">교통정보 수집건수 및 활용실적</a></td>
+                                        <td><a href="javascript:goStats('range','stats/receiptUse.do');"><img src="../images/btn_excel_down.gif" alt="엑셀다운로드" /></a></td>
                                     </tr>
                                     <!-- 2024 08 28 장동현 담당 요청사항 -->
                                     <tr>
                                         <td class="txt_left">
-                                        	<img src="../images/ico_excel.gif" alt="" class="mglsub03" /><a href="javascript:goStats('stats/orgOrgSub.do');">통신원 중/소 분류별 통계</a>
+                                        	<img src="../images/ico_excel.gif" alt="" class="mglsub03" /><a href="javascript:goStats('range','stats/orgOrgSub.do');">통신원 중/소 분류별 통계</a>
                                         </td>
-                                        <td><a href="javascript:goStats('stats/orgOrgSub.do');"><img src="../images/btn_excel_down.gif" alt="엑셀다운로드" /></a></td>
+                                        <td><a href="javascript:goStats('range','stats/orgOrgSub.do');"><img src="../images/btn_excel_down.gif" alt="엑셀다운로드" /></a></td>
                                     </tr>                                   
-                                    <tr>
-                                        <td class="txt_left"><img src="../images/ico_excel.gif" alt="" class="mglsub03" /><a href="javascript:goStats('stats/receiptUse.do');">교통정보 수집건수 및 활용실적</a></td>
-                                        <td><a href="javascript:goStats('stats/receiptUse.do');"><img src="../images/btn_excel_down.gif" alt="엑셀다운로드" /></a></td>
-                                    </tr>
              
              						 <!--  24-11-18 : 제보자별 제보현황 -->
                                     <tr>
-                                        <td class="txt_left"><img src="../images/ico_excel.gif" alt="" class="mglsub03" /><a href="javascript:goStats('stats/informerReceipt.do');">제보자별 제보현황</a></td>
-                                        <td><a href="javascript:goStats('stats/informerReceipt.do');"><img src="../images/btn_excel_down.gif" alt="엑셀다운로드" /></a></td>
+                                        <td class="txt_left"><img src="../images/ico_excel.gif" alt="" class="mglsub03" /><a href="javascript:goStats('range','stats/informerReceipt.do');">제보자별 제보현황</a></td>
+                                        <td><a href="javascript:goStats('range','stats/informerReceipt.do');"><img src="../images/btn_excel_down.gif" alt="엑셀다운로드" /></a></td>
                                     </tr>
                                 </tbody>
                                 
+                                
+                                
+                                
                                 <tbody id="month_body" style="display : none;"> <!--  월별 테이블  -->
                                     <tr>
-                                        <td class="txt_left"><img src="../images/ico_excel.gif" alt="" class="mglsub03" /><a href="javascript:goStats('stats/muInformer.do');">월별 제보자별 제보건수</a></td>
-                                        <td><a href="javascript:goStats('stats/muInformer.do');"><img src="../images/btn_excel_down.gif" alt="엑셀다운로드" /></a></td>
+                                        <td class="txt_left"><img src="../images/ico_excel.gif" alt="" class="mglsub03" /><a href="javascript:goStats('month','stats/muInformer.do');">월별 제보자별 제보건수</a></td>
+                                        <td><a href="javascript:goStats('month','stats/muInformer.do');"><img src="../images/btn_excel_down.gif" alt="엑셀다운로드" /></a></td>
                                     </tr>
 
                                     <tr>
-                                        <td class="txt_left"><img src="../images/ico_excel.gif" alt="" class="mglsub03" /><a href="javascript:goStats('stats/receiptInformer.do');">교통통신원 제보건수 및 접수직원 가공건수</a></td>
-                                        <td><a href="javascript:goStats('stats/receiptInformer.do');"><img src="../images/btn_excel_down.gif" alt="엑셀다운로드" /></a></td>
+                                        <td class="txt_left"><img src="../images/ico_excel.gif" alt="" class="mglsub03" /><a href="javascript:goStats('month','stats/receiptInformer.do');">교통통신원 제보건수 및 접수직원 가공건수</a></td>
+                                        <td><a href="javascript:goStats('month','stats/receiptInformer.do');"><img src="../images/btn_excel_down.gif" alt="엑셀다운로드" /></a></td>
                                     </tr>
                                     
                                     <tr>
-                                        <td class="txt_left"><img src="../images/ico_excel.gif" alt="" class="mglsub03" /><a href="javascript:goStats('stats/incidentStats.do');">돌발 교통정보 표출 실적</a></td>
-                                        <td><a href="javascript:goStats('stats/incidentStats.do');"><img src="../images/btn_excel_down.gif" alt="엑셀다운로드" /></a></td>
+                                        <td class="txt_left"><img src="../images/ico_excel.gif" alt="" class="mglsub03" /><a href="javascript:goStats('month','stats/incidentStats.do');">돌발 교통정보 표출 실적</a></td>
+                                        <td><a href="javascript:goStats('month','stats/incidentStats.do');"><img src="../images/btn_excel_down.gif" alt="엑셀다운로드" /></a></td>
                                     </tr>
                                     <tr>
-                                        <td class="txt_left"><img src="../images/ico_excel.gif" alt="" class="mglsub03" /><a href="javascript:goStats('stats/informerStats.do');">교통정보 수집원 현황</a></td>
-                                        <td><a href="javascript:goStats('stats/informerStats.do');"><img src="../images/btn_excel_down.gif" alt="엑셀다운로드" /></a></td>
+                                        <td class="txt_left"><img src="../images/ico_excel.gif" alt="" class="mglsub03" /><a href="javascript:goStats('month','stats/informerStats.do');">교통정보 수집원 현황</a></td>
+                                        <td><a href="javascript:goStats('month','stats/informerStats.do');"><img src="../images/btn_excel_down.gif" alt="엑셀다운로드" /></a></td>
                                     </tr>
                                     <tr>
-                                        <td class="txt_left"><img src="../images/ico_excel.gif" alt="" class="mglsub03" /><a href="javascript:goStats('stats/krGas.do');">한국가스기술공사 제보실적</a></td>
-                                        <td><a href="javascript:goStats('stats/krGas.do');"><img src="../images/btn_excel_down.gif" alt="엑셀다운로드" /></a></td>
+                                        <td class="txt_left"><img src="../images/ico_excel.gif" alt="" class="mglsub03" /><a href="javascript:goStats('month','stats/krGas.do');">한국가스기술공사 제보실적</a></td>
+                                        <td><a href="javascript:goStats('month','stats/krGas.do');"><img src="../images/btn_excel_down.gif" alt="엑셀다운로드" /></a></td>
                                     </tr>
                                     <tr>
-                                        <td class="txt_left"><img src="../images/ico_excel.gif" alt="" class="mglsub03" /><a href="javascript:goStats('stats/korLx.do');">한국국토정보공사 제보현황</a></td>
-                                        <td><a href="javascript:goStats('stats/korLx.do');"><img src="../images/btn_excel_down.gif" alt="엑셀다운로드" /></a></td>
+                                        <td class="txt_left"><img src="../images/ico_excel.gif" alt="" class="mglsub03" /><a href="javascript:goStats('month','stats/korLx.do');">한국국토정보공사 제보현황</a></td>
+                                        <td><a href="javascript:goStats('month','stats/korLx.do');"><img src="../images/btn_excel_down.gif" alt="엑셀다운로드" /></a></td>
                                     </tr>
                                     <tr>
                                         <td class="txt_left"><img src="../images/ico_excel.gif" alt="" class="mglsub03" />
-                                        	<a href="javascript:goStats('stats/dayReceipt.do');">통신원 소속별 일자별 통계 </a>
+                                        	<a href="javascript:goStats('month','stats/dayReceipt.do');">통신원 소속별 일자별 통계 </a>
 											<select class="table_sel"  style="width:165px;" id="orgIdSel" name="orgId">
 												 <c:choose>
                                                    	<c:when test="${fn:length(informerOrgList)==0}">
@@ -246,18 +339,13 @@
                                                 <option value="">무소속</option>
                                             </select>
                                         </td>
-                                        <td><a href="javascript:goStats('stats/dayReceipt.do');"><img src="../images/btn_excel_down.gif" alt="엑셀다운로드" /></a></td>
+                                        <td><a href="javascript:goStats('month','stats/dayReceipt.do');"><img src="../images/btn_excel_down.gif" alt="엑셀다운로드" /></a></td>
                                     </tr>
                                     <tr>
-                                        <td class="txt_left"><img src="../images/ico_excel.gif" alt="" class="mglsub03" /><a href="javascript:goStats('stats/volunteer.do');">사회봉사자 일자별 통계</a></td>
-                                        <td><a href="javascript:goStats('stats/volunteer.do');"><img src="../images/btn_excel_down.gif" alt="엑셀다운로드" /></a></td>
+                                        <td class="txt_left"><img src="../images/ico_excel.gif" alt="" class="mglsub03" /><a href="javascript:goStats('month','stats/volunteer.do');">사회봉사자 일자별 통계</a></td>
+                                        <td><a href="javascript:goStats('month','stats/volunteer.do');"><img src="../images/btn_excel_down.gif" alt="엑셀다운로드" /></a></td>
                                     </tr>
-                                    <tr>
-                                        <td class="txt_left"><img src="../images/ico_excel.gif" alt="" class="mglsub03" /><a href="javascript:goStats('stats/volunteer.do');">사회봉사자 일자별 통계</a></td>
-                                        <td><a href="javascript:goStats('stats/volunteer.do');"><img src="../images/btn_excel_down.gif" alt="엑셀다운로드" /></a></td>
-                                    </tr>
-                                    
-                                    
+      
                                      <!-- 24-11-18 : 연간 제보자별 제보현황  
                                     <tr>
                                         <td class="txt_left"><img src="../images/ico_excel.gif" alt="" class="mglsub03" /><a href="javascript:goStats('stats/yearReceipt.do');">연간 제보자별 제보현황</a></td>

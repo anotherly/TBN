@@ -193,7 +193,7 @@ public class StatisticController extends BaseController{
 		model.addAttribute("titleName", "긴급교통정보 처리건수 실적"+params.getString("city"));
 		model.addAttribute("sheetNames1", "긴급교통정보 처리건수 실적");
 		model.addAttribute("Data", Data);
-		model.addAttribute("start_date", params.get("start_date2"));
+		model.addAttribute("start_date", params.get("start_date"));
 		
 		return "hssfExcel";
 	}
@@ -264,6 +264,7 @@ public class StatisticController extends BaseController{
 			monList.add(i);
 		}
 		params.add("monList", monList);*/
+		
 		List headList = statisticService.muJeboList(params);	//무 제보자 통신원 목록
 		List Data = statisticService.muJeboList(params);	//무 제보자 통신원 목록
 		
@@ -363,6 +364,7 @@ public class StatisticController extends BaseController{
 	//	model.addAttribute("sumDaily", sumDaily);
 		model.addAttribute("Data", Data);
 		model.addAttribute("start_date", params.get("start_date"));
+		model.addAttribute("end_date", params.get("end_date"));
 		
 		return "hssfExcel";
 	}
@@ -571,7 +573,7 @@ public class StatisticController extends BaseController{
 		
 		//List orgType = statisticService.orgType(params);//지역별 통신원 하부 기관 조회
 		
-		RecordDto record = (RecordDto) vltList.get(0);
+		/*RecordDto record = (RecordDto) vltList.get(0);*/
 		model.addAttribute("mapping", "volunteer");
 		model.addAttribute("fileName", "사회봉사자 일자별 통계"+params.getString("city")+".xls");
 		model.addAttribute("titleName", "사회봉사자 일자별 통계"+params.getString("city")+".xls");
