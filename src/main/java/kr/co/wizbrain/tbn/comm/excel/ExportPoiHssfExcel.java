@@ -736,17 +736,22 @@ public class ExportPoiHssfExcel extends AbstractView {
 		++rowCnt;
 		HSSFRow headrow1 = sheet1.createRow(rowCnt);
 		List headData1 = (List) model.get("useAllList");
-		int sum = 0;
+		
+		List<Integer> cntValues = new ArrayList<>();
 
+		int sum = 0;
+		//통신원 유형별 합계부분
 		for (j = 0; j < headData1.size(); ++j) {
 			RecordDto record = (RecordDto) headData1.get(j);
 			headrow1.createCell(j * 2 + 3).setCellValue((double) record.getInt("CNT"));
+			 cntValues.add(record.getInt("CNT"));
 			sum += record.getInt("CNT");
 		}
 
 		headrow1.createCell(1).setCellValue((double) sum);
 
 		int i;
+		//통신원 유형별 합계 병합부분
 		for (i = 0; i < headData.size() + 1; ++i) {
 			sheet1.addMergedRegion(new CellRangeAddress(rowCnt - 1, rowCnt - 1, i * 2 + 1, i * 2 + 2));
 			sheet1.addMergedRegion(new CellRangeAddress(rowCnt, rowCnt, i * 2 + 1, i * 2 + 2));
@@ -837,8 +842,7 @@ public class ExportPoiHssfExcel extends AbstractView {
 		
     	for (int k = 0; k < maxMon; k++) {
     		logger.debug(dateList.get(k));
-    		int a =0;
-    		
+
     		for (i = 0; i < data.size(); ++i) {
 				RecordDto record = (RecordDto) data.get(i);
 				statDate = Integer.parseInt(record.getString("STAT_DATE").substring(6, 8));
@@ -865,15 +869,15 @@ public class ExportPoiHssfExcel extends AbstractView {
 					}
 				}
 			}
-    		a++;
 		}
 
 		for (i = 0; i < maxMon; ++i) {
 			dataRow[i].createCell(1).setCellValue((double) sumOurArr[i]);
 			dataRow[i].createCell(2).setCellValue((double) sumOtherArr[i]);
 		}
-
 		rowCnt = 0;
+		
+		//활용실적 시작
 		HSSFSheet sheet2 = wb.createSheet(model.get("sheetNames2").toString());
 		titlerow = sheet2.createRow(rowCnt);
 		titlerow.createCell(rowCnt).setCellValue(model.get("sheetNames2").toString());
@@ -918,8 +922,8 @@ public class ExportPoiHssfExcel extends AbstractView {
 		headrow1.createCell(1).setCellValue((double) sum);
 
 		int sumSendY;
-		for (sumSendY = 0; sumSendY < sumMidList.size(); ++sumSendY) {
-			headrow1.createCell(sumSendY * 4 + 5).setCellValue((double) (Integer) sumMidList.get(sumSendY));
+		for (sumSendY = 0; sumSendY < cntValues.size(); ++sumSendY) {
+			headrow1.createCell(sumSendY * 4 + 5).setCellValue(cntValues.get(sumSendY));
 		}
 
 		for (i = 0; i < headData.size() + 1; ++i) {
@@ -944,7 +948,7 @@ public class ExportPoiHssfExcel extends AbstractView {
 		int sumA07 = 0;
 		int sumA08 = 0;
 
-		/*String titleStr;
+		String titleStr;
 		for (i = 0; i < headData1.size(); ++i) {
 			RecordDto record = (RecordDto) headData1.get(i);
 			regionId = record.getString("CODE");
@@ -952,6 +956,7 @@ public class ExportPoiHssfExcel extends AbstractView {
 
 			for (j = 0; j < headData.size(); ++j) {
 				RecordDto recordType = (RecordDto) headData.get(j);
+				
 				if (recordType.getString("CODE").equals(regionId)) {
 					if (titleStr.equals("B")) {
 						headrow1.createCell(j * 4 + 5).setCellValue((double) record.getInt("CNT"));
@@ -987,11 +992,8 @@ public class ExportPoiHssfExcel extends AbstractView {
 			sumSendNArr[i] = 0;
 			sumA07Arr[i] = 0;
 			sumA08Arr[i] = 0;
-			if (i < 9) {
-				dataRow1[i].createCell(0).setCellValue(date.concat("0").concat(Integer.toString(i + 1)));
-			} else {
-				dataRow1[i].createCell(0).setCellValue(date.concat(Integer.toString(i + 1)));
-			}
+			
+			dataRow1[i].createCell(0).setCellValue(dateList.get(i));
 		}
 
 		data = (List) model.get("Data");
@@ -1003,59 +1005,63 @@ public class ExportPoiHssfExcel extends AbstractView {
 				for (i = 0; i < data.size(); ++i) {
 					RecordDto record = (RecordDto) data.get(i);
 					statDate = Integer.parseInt(record.getString("STAT_DATE").substring(6, 8));
+					
+					
 					regionId = record.getString("INFORMER_TYPE");
 					titleStr = record.getString("SEQ");
-					if (statDate - 1 == k) {
-						if (regionId.equals(recordType.getString("CODE"))) {
-							if (titleStr.equals("B")) {
-								dataRow1[statDate - 1].createCell(j * 4 + 5)
-										.setCellValue((double) record.getInt("CNT"));
-								sumSendYArr[statDate - 1] += record.getInt("CNT");
-							} else if (titleStr.equals("NB")) {
-								dataRow1[statDate - 1].createCell(j * 4 + 6)
-										.setCellValue((double) record.getInt("CNT"));
-								sumSendNArr[statDate - 1] += record.getInt("CNT");
-							} else if (titleStr.equals("A07")) {
-								dataRow1[statDate - 1].createCell(j * 4 + 7)
-										.setCellValue((double) record.getInt("CNT"));
-								sumA07Arr[statDate - 1] += record.getInt("CNT");
-							} else if (titleStr.equals("A08")) {
-								dataRow1[statDate - 1].createCell(j * 4 + 8)
-										.setCellValue((double) record.getInt("CNT"));
-								sumA08Arr[statDate - 1] += record.getInt("CNT");
+					String getStatDate = record.getString("STAT_DATE");
+					
+					if(getStatDate.equals(dateList.get(k))) {
+							if (regionId.equals(recordType.getString("CODE"))) {
+								if (titleStr.equals("B")) {
+									dataRow1[k].createCell(j * 4 + 5)
+											.setCellValue((double) record.getInt("CNT"));
+									sumSendYArr[k] += record.getInt("CNT");
+								} else if (titleStr.equals("NB")) {
+									dataRow1[k].createCell(j * 4 + 6)
+											.setCellValue((double) record.getInt("CNT"));
+									sumSendNArr[k] += record.getInt("CNT");
+								} else if (titleStr.equals("A07")) {
+									dataRow1[k].createCell(j * 4 + 7)
+											.setCellValue((double) record.getInt("CNT"));
+									sumA07Arr[k] += record.getInt("CNT");
+								} else if (titleStr.equals("A08")) {
+									dataRow1[k].createCell(j * 4 + 8)
+											.setCellValue((double) record.getInt("CNT"));
+									sumA08Arr[k] += record.getInt("CNT");
+								}
 							}
-						}
-					} else {
-						if (dataRow1[k].getCell(j * 4 + 5) == null) {
-							dataRow1[k].createCell(j * 4 + 5).setCellValue(0.0);
-							sumSendYArr[k] += 0;
-						}
+						} else {
+							if (dataRow1[k].getCell(j * 4 + 5) == null) {
+								dataRow1[k].createCell(j * 4 + 5).setCellValue(0.0);
+								sumSendYArr[k] += 0;
+							}
 
-						if (dataRow1[k].getCell(j * 4 + 6) == null) {
-							dataRow1[k].createCell(j * 4 + 6).setCellValue(0.0);
-							sumSendYArr[k] += 0;
-						}
+							if (dataRow1[k].getCell(j * 4 + 6) == null) {
+								dataRow1[k].createCell(j * 4 + 6).setCellValue(0.0);
+								sumSendYArr[k] += 0;
+							}
 
-						if (dataRow1[k].getCell(j * 4 + 7) == null) {
-							dataRow1[k].createCell(j * 4 + 7).setCellValue(0.0);
-							sumSendYArr[k] += 0;
-						}
+							if (dataRow1[k].getCell(j * 4 + 7) == null) {
+								dataRow1[k].createCell(j * 4 + 7).setCellValue(0.0);
+								sumSendYArr[k] += 0;
+							}
 
-						if (dataRow1[k].getCell(j * 4 + 8) == null) {
-							dataRow1[k].createCell(j * 4 + 8).setCellValue(0.0);
-							sumSendYArr[k] += 0;
+							if (dataRow1[k].getCell(j * 4 + 8) == null) {
+								dataRow1[k].createCell(j * 4 + 8).setCellValue(0.0);
+								sumSendYArr[k] += 0;
+							}
 						}
 					}
 				}
 			}
-		}
 
 		for (i = 0; i < maxMon; ++i) {
 			dataRow1[i].createCell(1).setCellValue((double) sumSendYArr[i]);
 			dataRow1[i].createCell(2).setCellValue((double) sumSendNArr[i]);
 			dataRow1[i].createCell(3).setCellValue((double) sumA07Arr[i]);
 			dataRow1[i].createCell(4).setCellValue((double) sumA08Arr[i]);
-		}*/
+		}
 
 	}
 	
