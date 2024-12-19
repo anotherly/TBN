@@ -342,57 +342,76 @@ public class ExportPoiHssfExcel extends AbstractView {
 
 	}
     
+	
+	// 긴급 교통정보 방송 현황 분석
     protected void extrBro(Map model, HSSFWorkbook wb) {
+    	
+    	// 기본 변수 생성
  		int i = 0;
 		int j = 0;
 		int rowCnt = 0;
-		List dataList = (List) model.get("Data");
+		
+		// 엑셀 시트 생성
 		HSSFSheet sheet1 = wb.createSheet(model.get("sheetNames1").toString());
+		
+		// 타이틀 셀에 삽입 => 긴급교통정보 처리건수 실적 (1행)
 		HSSFRow titlerow = sheet1.createRow(rowCnt);
 		titlerow.createCell(rowCnt).setCellValue(model.get("titleName").toString());
+		
 		rowCnt++;
 		rowCnt++;
 		rowCnt++;
+		
 		HSSFRow headrow1 = sheet1.createRow(rowCnt);
+		
+		// 일자, 총 긴급정보 건수, 5분내 방송처리 건수 (4행)
 		headrow1.createCell(0).setCellValue("일자");
 		headrow1.createCell(1).setCellValue("총 긴급정보 건수");
 		headrow1.createCell(2).setCellValue("5분내 방송처리 건수");
+		
 		rowCnt++;
 		HSSFRow headrow2 = sheet1.createRow(rowCnt);
+		
 		int sum1 = 0;
 		int sum2 = 0;
+		
+		// 시작일 ~ 종료일 까지 데이터 가져오기 (cnt 등)
 		List data = (List) model.get("Data");
+		
 		rowCnt++;
 		Calendar ca = Calendar.getInstance();
-		
-		// 24-12-16 : 시작일 가져오기
-		String Sdate = (String) model.get("start_date");
-		
-		// 24-12-16 : 시작일 슬라이스
-		String date = Sdate.substring(0, 6);
-		
-		
-		int thYear = Integer.parseInt(date.substring(0, 4));
-		int thMonth = Integer.parseInt(date.substring(4, 6));
-		ca.set(thYear, i, thMonth);
-		int maxMon = ca.getActualMaximum(5);
-		HSSFRow[] dataRow = new HSSFRow[maxMon];
-		int[] sumOurArr = new int[maxMon];
-		int[] sumOtherArr = new int[maxMon];
 
+		// 시작일, 종료일 가져오기
+		String Sdate = (String) model.get("start_date");
+		String Edate = (String) model.get("end_date");
+		
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+
+		LocalDate startDate = LocalDate.parse(Sdate, formatter);
+		LocalDate endDate = LocalDate.parse(Edate, formatter);
+		
+		int maxMon = (int) java.time.temporal.ChronoUnit.DAYS.between(startDate, endDate) + 1;
+
+	    List<String> dateList = new ArrayList<>(maxMon);
+
+	    LocalDate currentDate = startDate;
+	    while (!currentDate.isAfter(endDate)) {
+	    	dateList.add(currentDate.format(formatter)); 
+	        currentDate = currentDate.plusDays(1); 
+	    }
+
+	    HSSFRow[] dataRow = new HSSFRow[maxMon];
+			
 		for (i = 0; i < maxMon; ++i) {
 			dataRow[i] = sheet1.createRow(rowCnt + i);
 			String inputDate = "";
-			if (i < 9) {
-				inputDate = date.concat("0").concat(Integer.toString(i + 1));
-			} else {
-				inputDate = date.concat(Integer.toString(i + 1));
-			}
-
-			dataRow[i].createCell(0).setCellValue(inputDate);
-
+			
+			dataRow[i].createCell(0).setCellValue(dateList.get(i));
+			inputDate = dateList.get(i);
+			
 			for (int k = 0; k < data.size(); ++k) {
 				RecordDto record = (RecordDto) data.get(k);
+				
 				if (inputDate.equals(record.getString("KEY_DATE"))) {
 					dataRow[i].createCell(1).setCellValue((double) record.getInt("CNT1"));
 					dataRow[i].createCell(2).setCellValue((double) record.getInt("CNT2"));
@@ -406,6 +425,7 @@ public class ExportPoiHssfExcel extends AbstractView {
 			}
 		}
 
+		// 합계 넣기 (5행)
 		headrow2.createCell(0).setCellValue("계");
 		headrow2.createCell(1).setCellValue((double) sum1);
 		headrow2.createCell(2).setCellValue((double) sum2);
@@ -415,49 +435,60 @@ public class ExportPoiHssfExcel extends AbstractView {
 		int i = 0;
 		int j = 0;
 		int rowCnt = 0;
-		List dataList = (List) model.get("Data");
+		
+		// 시트 생성
 		HSSFSheet sheet1 = wb.createSheet(model.get("sheetNames1").toString());
 		HSSFRow titlerow = sheet1.createRow(rowCnt);
+		
+		// 타이틀 삽입 (1행)
 		titlerow.createCell(rowCnt).setCellValue(model.get("titleName").toString());
+		
 		rowCnt++;
 		rowCnt++;
 		rowCnt++;
+		
+		// 일자, 일별 총 제보건수, 재난제보 건수 (4행)
 		HSSFRow headrow1 = sheet1.createRow(rowCnt);
 		headrow1.createCell(0).setCellValue("일자");
 		headrow1.createCell(1).setCellValue("일별 총 제보건수");
 		headrow1.createCell(2).setCellValue("재난제보 건수");
+		
 		rowCnt++;
 		HSSFRow headrow2 = sheet1.createRow(rowCnt);
+		
 		int sum1 = 0;
 		int sum2 = 0;
+		
 		List data = (List) model.get("Data");
 		rowCnt++;
-		Calendar ca = Calendar.getInstance();
 		
-		// 24-12-16 : 시작일 가져오기
+		// 시작일, 종료일 가져오기
 		String Sdate = (String) model.get("start_date");
+		String Edate = (String) model.get("end_date");
 		
-		// 24-12-16 : 시작일 슬라이스
-		String date = Sdate.substring(0, 6);
-				
-		int thYear = Integer.parseInt(date.substring(0, 4));
-		int thMonth = Integer.parseInt(date.substring(4, 6));
-		ca.set(thYear, i, thMonth);
-		int maxMon = ca.getActualMaximum(5);
-		HSSFRow[] dataRow = new HSSFRow[maxMon];
-		int[] sumOurArr = new int[maxMon];
-		int[] sumOtherArr = new int[maxMon];
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+
+		LocalDate startDate = LocalDate.parse(Sdate, formatter);
+		LocalDate endDate = LocalDate.parse(Edate, formatter);
+		
+		int maxMon = (int) java.time.temporal.ChronoUnit.DAYS.between(startDate, endDate) + 1;
+
+	    List<String> dateList = new ArrayList<>(maxMon);
+
+	    LocalDate currentDate = startDate;
+	    while (!currentDate.isAfter(endDate)) {
+	    	dateList.add(currentDate.format(formatter)); 
+	        currentDate = currentDate.plusDays(1); 
+	    }
+
+	    HSSFRow[] dataRow = new HSSFRow[maxMon];
 
 		for (i = 0; i < maxMon; ++i) {
 			dataRow[i] = sheet1.createRow(rowCnt + i);
 			String inputDate = "";
-			if (i < 9) {
-				inputDate = date.concat("0").concat(Integer.toString(i + 1));
-			} else {
-				inputDate = date.concat(Integer.toString(i + 1));
-			}
-
-			dataRow[i].createCell(0).setCellValue(inputDate);
+			
+			dataRow[i].createCell(0).setCellValue(dateList.get(i));
+			inputDate = dateList.get(i);
 
 			for (int k = 0; k < data.size(); ++k) {
 				RecordDto record = (RecordDto) data.get(k);
@@ -474,6 +505,8 @@ public class ExportPoiHssfExcel extends AbstractView {
 			}
 		}
 
+		
+		// 합계 (5행)
 		headrow2.createCell(0).setCellValue("계");
 		headrow2.createCell(1).setCellValue((double) sum1);
 		headrow2.createCell(2).setCellValue((double) sum2);
@@ -899,12 +932,15 @@ public class ExportPoiHssfExcel extends AbstractView {
 		++rowCnt;
 		headrow1 = sheet2.createRow(rowCnt);
 		headData1 = (List) model.get("sumMonth");
+		data = (List) model.get("Data");
+		
 		sum = 0;
 		int sumMid = 0;
 		List<Integer> sumMidList = new ArrayList();
 
-		for (j = 0; j < headData1.size(); ++j) {
-			RecordDto record = (RecordDto) headData1.get(j);
+		
+		/*for (j = 0; j < data.size(); ++j) {
+			RecordDto record = (RecordDto) data.get(j);
 			if (j % 4 == 0 && j > 0) {
 				sumMidList.add(sumMid);
 				sumMid = 0;
@@ -917,13 +953,26 @@ public class ExportPoiHssfExcel extends AbstractView {
 			}
 
 			sum += record.getInt("CNT");
+		}*/
+		
+		int[] sumList = new int[8];
+		
+		// 구분 > 합계들 나누기 및 구하기
+		for(j = 0; j < data.size(); j++) {
+			RecordDto record = (RecordDto) data.get(j);		
+			int informerType = record.getInt("INFORMER_TYPE"); // 해당 데이터의 통신원 유형 가져오기
+			
+			sumList[informerType] += record.getInt("CNT");
+			sum += record.getInt("CNT");
 		}
-
+		
+		// 구분 > 계 (3행)
 		headrow1.createCell(1).setCellValue((double) sum);
 
+		// 구분 > 통신원, 경찰제보처, 시민, 직원 등 합계 (3행)
 		int sumSendY;
 		for (sumSendY = 0; sumSendY < cntValues.size(); ++sumSendY) {
-			headrow1.createCell(sumSendY * 4 + 5).setCellValue(cntValues.get(sumSendY));
+			headrow1.createCell(sumSendY * 4 + 5).setCellValue(sumList[sumSendY]);
 		}
 
 		for (i = 0; i < headData.size() + 1; ++i) {
@@ -943,42 +992,73 @@ public class ExportPoiHssfExcel extends AbstractView {
 		++rowCnt;
 		headrow1 = sheet2.createRow(rowCnt);
 		headData1 = (List) model.get("sumMonth");
+		
 		sumSendY = 0;
 		int sumSendN = 0;
 		int sumA07 = 0;
 		int sumA08 = 0;
 
 		String titleStr;
-		for (i = 0; i < headData1.size(); ++i) {
+/*		for (i = 0; i < headData1.size(); ++i) {
 			RecordDto record = (RecordDto) headData1.get(i);
+			RecordDto record = (RecordDto) data.get(i);
 			regionId = record.getString("CODE");
 			titleStr = record.getString("SEQ");
 
 			for (j = 0; j < headData.size(); ++j) {
 				RecordDto recordType = (RecordDto) headData.get(j);
-				
+				RecordDto recordType = (RecordDto) data.get(j);
 				if (recordType.getString("CODE").equals(regionId)) {
 					if (titleStr.equals("B")) {
-						headrow1.createCell(j * 4 + 5).setCellValue((double) record.getInt("CNT"));
+						headrow1.createCell(j * 4 + 5).setCellValue("허허허허허허");
 						sumSendY += record.getInt("CNT");
 					} else if (titleStr.equals("NB")) {
-						headrow1.createCell(j * 4 + 6).setCellValue((double) record.getInt("CNT"));
+						headrow1.createCell(j * 4 + 6).setCellValue("허허허허허허");
 						sumSendN += record.getInt("CNT");
 					} else if (titleStr.equals("A07")) {
-						headrow1.createCell(j * 4 + 7).setCellValue((double) record.getInt("CNT"));
+						headrow1.createCell(j * 4 + 7).setCellValue("허허허허허허");
 						sumA07 += record.getInt("CNT");
 					} else if (titleStr.equals("A08")) {
-						headrow1.createCell(j * 4 + 8).setCellValue((double) record.getInt("CNT"));
+						headrow1.createCell(j * 4 + 8).setCellValue("허허허허허허");
 						sumA08 += record.getInt("CNT");
 					}
 				}
 			}
-		}
+		}*/
+		
+		int[] sumList1 = new int[32];
+		
+		for(j = 0; j < data.size(); j++) {
+			RecordDto record = (RecordDto) data.get(j);		
+			int informerType = record.getInt("INFORMER_TYPE"); // 해당 데이터의 통신원 유형 가져오기
+			String type = record.getString("SEQ");
 
+			if(type.equals("B")) {
+				sumList1[informerType * 4 + 0] += record.getInt("CNT");
+				sumSendY += record.getInt("CNT");
+ 			} else if(type.equals("NB")) {
+ 				sumList1[informerType * 4 + 1] += record.getInt("CNT");
+ 				sumSendN += record.getInt("CNT");
+ 			} else if(type.equals("A07")) {
+ 				sumList1[informerType * 4 + 2] += record.getInt("CNT");
+ 				sumA07 += record.getInt("CNT");
+ 			} else {
+ 				sumList1[informerType * 4 + 3] += record.getInt("CNT");
+ 				sumA08 += record.getInt("CNT");
+ 			}
+		}
+		
+		for(int z = 0; z < 32; z++) {
+			headrow1.createCell(z + 5).setCellValue(sumList1[z]);
+		}
+		
+		// 전체 분류별 합계
 		headrow1.createCell(1).setCellValue((double) sumSendY);
 		headrow1.createCell(2).setCellValue((double) sumSendN);
 		headrow1.createCell(3).setCellValue((double) sumA07);
 		headrow1.createCell(4).setCellValue((double) sumA08);
+		
+		
 		++rowCnt;
 		HSSFRow[] dataRow1 = new HSSFRow[maxMon];
 		int[] sumSendYArr = new int[maxMon];
@@ -993,10 +1073,10 @@ public class ExportPoiHssfExcel extends AbstractView {
 			sumA07Arr[i] = 0;
 			sumA08Arr[i] = 0;
 			
+			// 날짜 넣기
 			dataRow1[i].createCell(0).setCellValue(dateList.get(i));
 		}
 
-		data = (List) model.get("Data");
 
 		for (int k = 0; k < dataRow1.length; ++k) {
 			for (j = 0; j < headData.size(); ++j) {
@@ -1011,21 +1091,25 @@ public class ExportPoiHssfExcel extends AbstractView {
 					titleStr = record.getString("SEQ");
 					String getStatDate = record.getString("STAT_DATE");
 					
+					
+					// 아래 부터는 일자, 통신원 종류별 값임(합계 X)
 					if(getStatDate.equals(dateList.get(k))) {
 							if (regionId.equals(recordType.getString("CODE"))) {
+								
+								// 방송자료일 때
 								if (titleStr.equals("B")) {
 									dataRow1[k].createCell(j * 4 + 5)
 											.setCellValue((double) record.getInt("CNT"));
 									sumSendYArr[k] += record.getInt("CNT");
-								} else if (titleStr.equals("NB")) {
+								} else if (titleStr.equals("NB")) { // 자체처리일 때
 									dataRow1[k].createCell(j * 4 + 6)
 											.setCellValue((double) record.getInt("CNT"));
 									sumSendNArr[k] += record.getInt("CNT");
-								} else if (titleStr.equals("A07")) {
+								} else if (titleStr.equals("A07")) { // 기관통보일 때
 									dataRow1[k].createCell(j * 4 + 7)
 											.setCellValue((double) record.getInt("CNT"));
 									sumA07Arr[k] += record.getInt("CNT");
-								} else if (titleStr.equals("A08")) {
+								} else if (titleStr.equals("A08")) { // 안내일 때
 									dataRow1[k].createCell(j * 4 + 8)
 											.setCellValue((double) record.getInt("CNT"));
 									sumA08Arr[k] += record.getInt("CNT");
@@ -1056,6 +1140,7 @@ public class ExportPoiHssfExcel extends AbstractView {
 				}
 			}
 
+		// 구분 > 계 > 합계 넣기
 		for (i = 0; i < maxMon; ++i) {
 			dataRow1[i].createCell(1).setCellValue((double) sumSendYArr[i]);
 			dataRow1[i].createCell(2).setCellValue((double) sumSendNArr[i]);

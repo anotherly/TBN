@@ -737,8 +737,10 @@
 		        ,FLAG_DISASTOR
 				from report_receipt
 				where 1=1 
-				and receipt_day <![CDATA[>=]]> TRUNC(to_date(#{start_date},'YYYYMMDD'), 'MM') 
-		        and receipt_day <![CDATA[<=]]> last_day(to_date(#{start_date},'YYYYMMDD'))
+				and receipt_day <![CDATA[>=]]> to_date(#{start_date},'YYYYMMDD') 
+		        <!-- and receipt_day <![CDATA[<=]]> last_day(to_date(#{start_date},'YYYYMMDD')) -->
+		        and receipt_day <![CDATA[<=]]> to_date(#{end_date},'YYYYMMDD')
+		        
 				and region_id=#{REGION_ID}
 		)
 		select a.key_date,a.cnt1,nvl(b.cnt2,0) cnt2 from	
@@ -1013,7 +1015,7 @@
 		WHERE  STAT_DATE BETWEEN #{start_date} AND #{end_date}
 	    and REGION_ID = #{REGION_ID}
 		GROUP BY stat_date,informer_type
-		ORDER BY STAT_DATE, INFORMER_TYPE
+		ORDER BY STAT_DATE, INFORMER_TYPE,SEQ
 	</select>
 	
 	<!-- @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ -->
