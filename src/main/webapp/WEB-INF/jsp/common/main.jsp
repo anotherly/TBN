@@ -116,9 +116,7 @@
 	        }
 	    });
 	    */
-	    
-	    //NoticeSelect();
-	    
+	        
 	    
 	   // function NoticeSelect() {
 	    	var date = new Date();

@@ -4,9 +4,20 @@
 <script>
 	$(document).ready(function(){
 		
+		// 관리자가 아닌경우 => 마일리지 기능 숨기기 처리
+	    checkAuth();
+	    
+	    function checkAuth() {
+	    	if(authCode != 999) {
+	    		$('.mileageMenu').hide();
+	    	} else {
+	    		$('.mileageMenu').show();
+	    	}
+	    }s
+	    
 		// 메뉴 항목 클릭 시
 		$(".goUrlMenu").on("click", function() {
-			console.log("메뉴항목 클릭 : "+$(this).attr("id"));
+			/* console.log("메뉴항목 클릭 : "+$(this).attr("id")); */
 			goMenuSite($(this).attr("id"));
 			
 			//자동로딩 실행중인 페이지 벗어날 시 자동로딩 중지(21.11.19 민경)
@@ -53,7 +64,7 @@
 		<li><a id="/informer/first.do" class="goUrlMenu">통신원관리</a>
 			<ul class="submenu">
 				<li id="/informer/informerMain.do" class="goUrlMenu"><a>통신원관리</a></li>
-				<li id="/informer/mileage/mileageMain.do" class="goUrlMenu"><a>마일리지</a></li>
+				<li id="/informer/mileage/mileageMain.do" class="goUrlMenu mileageMenu"><a>마일리지</a></li>
 				<li id="/informer/award/awardMain.do" class="goUrlMenu"><a>시상관리</a></li>
 				<li id="/informer/event/eventMain.do" class="goUrlMenu"><a>행사관리</a></li>
 			</ul>
