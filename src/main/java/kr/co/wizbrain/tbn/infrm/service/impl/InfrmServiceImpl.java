@@ -37,7 +37,6 @@ public class InfrmServiceImpl implements InfrmService{
 		List<InfrmVO> tlist = infrmMapper.selectInfrmList(infrmVO);
 		return tlist;
 	}
-
 	
 	//특정 사용자 조회
 	public InfrmVO selectInfrm(InfrmVO infrmVO) throws Exception {

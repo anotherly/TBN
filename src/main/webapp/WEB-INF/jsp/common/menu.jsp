@@ -13,7 +13,7 @@
 	    	} else {
 	    		$('.mileageMenu').show();
 	    	}
-	    }s
+	    }
 	    
 		// 메뉴 항목 클릭 시
 		$(".goUrlMenu").on("click", function() {

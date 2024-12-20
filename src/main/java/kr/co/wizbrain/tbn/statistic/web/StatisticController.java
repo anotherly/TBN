@@ -194,6 +194,7 @@ public class StatisticController extends BaseController{
 		model.addAttribute("sheetNames1", "긴급교통정보 처리건수 실적");
 		model.addAttribute("Data", Data);
 		model.addAttribute("start_date", params.get("start_date"));
+		model.addAttribute("end_date", params.get("end_date"));
 		
 		return "hssfExcel";
 	}
@@ -214,6 +215,7 @@ public class StatisticController extends BaseController{
 		model.addAttribute("sheetNames1", "재난 제보건수");
 		model.addAttribute("Data", Data);
 		model.addAttribute("start_date", params.get("start_date"));
+		model.addAttribute("end_date", params.get("end_date"));
 		
 		return "hssfExcel";
 	}

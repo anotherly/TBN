@@ -251,7 +251,9 @@
 	<select id="chkPhone" parameterType="infrmVo" resultType="java.lang.String">
 	    SELECT distinct PHONE_CELL as phoneCell FROM INFORMER
 	    WHERE PHONE_CELL=#{phoneCell}
-	    AND INFORMER_ID!=#{informerId} 
+	    <if test='informerId !=null and informerId neq ""'>
+	    	AND INFORMER_ID!=#{informerId}	        
+	    </if>
 	</select>
 	
 	<!-- 사용자 등록 -->

@@ -814,15 +814,17 @@ function saveInformer(){
         $('#phoneCell').focus();
         return false;
 	}
-	 
+	
+	
 	//핸드폰
 	if ($('#phoneCell').val() != "" ){
 		if(!regPhone.test($('#phoneCell').val())){
 	        alert("올바른 핸드폰번호 형식을 입력해주세요");
 	        $('#phoneCell').focus();
 	        return false;
-		}
+		} 
     } 
+	
 	 //집전화
 	if ($('#phoneHome').val() != "" ){
 		if(!regCall.test($('#phoneHome').val())){

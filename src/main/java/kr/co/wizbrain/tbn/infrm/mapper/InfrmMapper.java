@@ -25,7 +25,6 @@ import kr.co.wizbrain.tbn.infrm.vo.InfrmVO;
 public interface InfrmMapper{
 	//전체 회원정보 조회
 	public List<InfrmVO> selectInfrmList(InfrmVO InfrmVO) throws Exception;
-	
 	//신규 informer id
 	public String getNewId(InfrmVO paramVO);
 	//신규 act id

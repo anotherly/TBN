@@ -5,9 +5,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -203,7 +201,6 @@ public class InfrmController implements ApplicationContextAware {
 		}
 		return mav;
 	}
-	
 	
 	/**
 	 * 통신원 이력 정보
