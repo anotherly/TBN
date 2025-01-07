@@ -1,20 +1,19 @@
 package kr.co.wizbrain.tbn.statistic.web;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import javax.annotation.Resource;
-import org.springframework.ui.Model;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+
 //import javax.xml.registry.infomodel.*;import org.apache.http.impl.conn.LoggingSessionInputBuffer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import kr.co.wizbrain.tbn.comm.BaseController;
@@ -29,8 +28,8 @@ import kr.co.wizbrain.tbn.option.service.RttOptService;
 import kr.co.wizbrain.tbn.option.vo.OptAreaVo;
 import kr.co.wizbrain.tbn.option.vo.OptInftVo;
 import kr.co.wizbrain.tbn.receipt.vo.popup.ReceiptSearchVO;
-import kr.co.wizbrain.tbn.user.vo.UserVO;
 import kr.co.wizbrain.tbn.statistic.service.StatisticService;
+import kr.co.wizbrain.tbn.user.vo.UserVO;
 
 /**
  * 사용자 컨트롤러 클래스
@@ -105,7 +104,16 @@ public class StatisticController extends BaseController{
 			avo.setAreaCode(nlVo.getRegionId());
 		}
 		iTypeVo.setIfmId1("0");
-		iTypeVo.setAreaCode(nlVo.getRegionId());
+		/*iTypeVo.setAreaCode(nlVo.getRegionId());*/
+		
+		// 관리자인 경우 부산 교통 방송이 먼저 선택되어 있기 때문에 부산 교통방송으로 설정
+		if(nlVo.getAuthCode().equals("999")) {
+			iTypeVo.setAreaCode("051");
+		} else { // 관리자가 아닌 경우 해당 지역으로 설정하기
+			iTypeVo.setAreaCode(nlVo.getRegionId());
+		}
+		
+		
 		t2List=infrmOptService.selectInft2(iTypeVo);//기관
 		
 		mv.addObject("informerRegionList", areaOptService.selectAreaOpt1(avo));
@@ -113,6 +121,24 @@ public class StatisticController extends BaseController{
 		return mv;
 	}
 
+	
+	
+	// 25-01-06 : 방송국 선택 변경 시 > 통신원 소속별 일자별 통계의 소속 변경 ajax
+	@RequestMapping("/stats/orgChange.ajax")
+	public ModelAndView orgChange(@RequestParam("areaCode") String areaCode ,Model model, HttpServletRequest request) throws Exception {
+		ModelAndView mav = new ModelAndView("jsonView");
+		
+		OptInftVo iTypeVo = new OptInftVo();
+		List<OptInftVo> t2List = new ArrayList<OptInftVo>();
+		
+		iTypeVo.setIfmId1("0");
+		iTypeVo.setAreaCode(areaCode); // 받아온 지역 코드 값으로 쿼리 조회하기
+		t2List=infrmOptService.selectInft2(iTypeVo);
+		
+		mav.addObject("informerOrgList",t2List);
+		return mav;
+	}
+	
 	/**1. 교통정보 제공대장
 	 * @param model
 	 * @return

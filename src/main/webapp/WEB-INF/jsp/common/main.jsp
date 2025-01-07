@@ -129,9 +129,6 @@
 	            data: { 'today': today },
 	            type: "POST",
 	            success: function(data) {
-	                // ajax 요청 성공 시 실행되는 함수
-					console.log("진입");
-	                // 공지사항 생성 함수로 이동
 	                appendNotice(data);
 	                
 	                var nCount = data.moreCount;
@@ -169,6 +166,17 @@
                 var writeDate = data.NoticeList[0].start_DATE;
                 var endDate = data.NoticeList[0].end_DATE;
                 var content = data.NoticeList[0].notice_CONTENT;
+                
+                // 특수문자 변환 작업 (개행 이외 특수문자 4종 " ' < >  변환 필요)
+                title = title.replaceAll("&gt;", ">");
+                title = title.replaceAll("&lt;", "<");
+                title = title.replaceAll("&quot;", '"');
+                title = title.replaceAll("&apos;", "'");
+   
+                content = content.replaceAll("&gt;", ">");
+                content = content.replaceAll("&lt;", "<");
+                content = content.replaceAll("&quot;", '"');
+                content = content.replaceAll("&apos;", "'");
                 
                 $('#input_title').text(title);
                 $('#input_writer').text("작성자 : " + writer);

@@ -219,6 +219,14 @@
 		}
 	}
 	
+	// "마일리지 산정기준" 버튼 클릭 시 => 마일리지 산정기준 팝업 띄우기 (24.12.26) / 기능 미완성
+	/* $('#paymentMile').on('click', function() {
+		console.log(" 마일리지 산정기준 진입 ");
+		
+		// 팝업 열기
+		var milePopup = window.open('/mileage/mileStandard.do','마일리지 산정기준','');
+		
+	}); */
 </script>
 </head>
 <body>
@@ -238,6 +246,8 @@
 							<li><a href="javascript:changePage('allMile')">총 마일리지 조회</a></li>
 							<li class="ns"></li>
 							<li><a href="javascript:changePage('grade')">등급 조회</a></li>
+							<li class="ns"></li>
+							<li id="paymentMile">마일리지 산정기준</li>
 						</ul>
 					</div>
 					<div style="position: absolute;right: 0px;top: 52px;">

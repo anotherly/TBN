@@ -100,31 +100,33 @@ System.out.println("%%%%%%%%%%%%%%%% : "+monthAgo);
 		$("#org_id").val($("#orgIdSel").val());
 		console.log("통계 서브밋?");
 
+		// 날짜 데이터 보내기용
 		var startDate = $('#stdt').val();
 		var endDate = $('#edt').val();
 		
+		// 날짜 비교용
+		var startDateType = new Date(startDate); 
+		var endDateType = new Date(endDate);
+		
 			if(type == 'range') {
-				
+
 				if(startDate == "" || endDate == "") {
 					alert("시작일과 종료일을 올바르게 선택해주세요.");
 					return false;
-				} else if($('#end_date').val() < $('#start_date').val()){
-					console.log('종료일'+$('#end_date').val());
-					console.log('시작일'+$('#start_date').val());
-					
-					
+				} else if(endDateType < startDateType){					
 					alert("종료일은 시작일 이전일 수 없습니다.");
 					return false;
 				} else {
+					
 					$('#start_date').val(startDate.replaceAll("-",""));
 					$('#end_date').val(endDate.replaceAll("-",""));
 					$('#city').val("("+$("#areaOptSel option:selected").text().substr(0,2)+")");
 					
-					if(url == 'stats/muInformer2.do') { // 무제보자의 경우 YYYYMMDD가 아닌 YYYYMM 형식이므로 format
+					/* if(url == 'stats/muInformer2.do') { // 무제보자의 경우 YYYYMMDD가 아닌 YYYYMM 형식이므로 format
 						var stDate = $('#start_date').val();
 						var fmDate = stDate.slice(0, 6);
 						$('#start_date').val(fmDate); 
-					}
+					} */
 					
 					rkFlag = true;	
 					frmExcel.action = '<c:url value="/"/>'+url;
@@ -132,6 +134,9 @@ System.out.println("%%%%%%%%%%%%%%%% : "+monthAgo);
 					rkFlag = true;
 				}
 			} else {
+				
+				$('#city').val("("+$("#areaOptSel option:selected").text().substr(0,2)+")");
+				
 				var stDt=$("#sDate").val();
 				$("#org_id").val($("#orgIdSel").val());
 
@@ -148,6 +153,15 @@ System.out.println("%%%%%%%%%%%%%%%% : "+monthAgo);
 					frmExcel.action = '<c:url value="/"/>'+url;
 					frmExcel.submit();
 					rkFlag = true; 
+				} else if(url == 'stats/muInformer2.do') { // 무제보자의 경우 yyyy01 ~ yyyy12 값이 필요
+					$('#start_date').val($('#sYear').val()+"01");
+					$('#end_date').val($('#sYear').val()+"12");
+					
+					rkFlag = true;
+					frmExcel.action = '<c:url value="/"/>'+url;
+					frmExcel.submit();
+					rkFlag = true; 
+					
 				} else {
 					$('#start_date').val($('#sYear').val()+stDt);
 
@@ -160,6 +174,41 @@ System.out.println("%%%%%%%%%%%%%%%% : "+monthAgo);
 			}
 }
 	
+$('#areaOptSel').on("click", function() {
+	
+	var nowStatR = $('#rangeDate').attr('class');
+	var nowStatM = $('#monthDate').attr('class');
+
+	// 현재 선택된 분류가월별인 경우 => 방송국 선택 시 이벤트가 필요함
+	if(nowStatM == "stat_btn stat_now_btn"){
+		
+		var areaCode = $('#areaOptSel').val();
+
+		$.ajax({
+		    type: 'POST',
+		    url: '/stats/orgChange.ajax',
+		    data: { "areaCode": areaCode },
+		    dataType: 'json',  
+		    success: function(data) {
+		        var $select = $('#orgIdSel');
+		        $select.empty();
+		        
+		        var informerOrgList = data.informerOrgList;
+
+		        informerOrgList.forEach(function(informerOrg) {
+		            var optionHTML = '<option value="' + informerOrg.ifmId2 + '">' + informerOrg.ifmName + '</option>';
+		            $select.append(optionHTML);
+		        });
+		    },
+		    error: function() {
+		        console.log("오류 발생");
+		    }
+		});
+
+
+		
+	}
+});
 </script>
     <div id="contentWrap">
         <!-- <div id="posi"><img src="../images/ico_home.gif" alt="home" />통계관리 > 표준화통계</div> -->
@@ -268,10 +317,6 @@ System.out.println("%%%%%%%%%%%%%%%% : "+monthAgo);
                                         <td><a href="javascript:goStats('range','stats/disastorStat.do');"><img src="../images/btn_excel_down.gif" alt="엑셀다운로드" /></a></td>
                                     </tr>
                                     <tr>
-                                        <td class="txt_left"><img src="../images/ico_excel.gif" alt="" class="mglsub03" /><a href="javascript:goStats('range','stats/muInformer2.do');">무 제보자 현황</a></td>
-                                        <td><a href="javascript:goStats('range','stats/muInformer2.do');"><img src="../images/btn_excel_down.gif" alt="엑셀다운로드" /></a></td>
-                                    </tr>
-                                    <tr>
                                         <td class="txt_left"><img src="../images/ico_excel.gif" alt="" class="mglsub03" /><a href="javascript:goStats('range','stats/receiptUse.do');">교통정보 수집건수 및 활용실적</a></td>
                                         <td><a href="javascript:goStats('range','stats/receiptUse.do');"><img src="../images/btn_excel_down.gif" alt="엑셀다운로드" /></a></td>
                                     </tr>
@@ -307,6 +352,10 @@ System.out.println("%%%%%%%%%%%%%%%% : "+monthAgo);
                                     <tr>
                                         <td class="txt_left"><img src="../images/ico_excel.gif" alt="" class="mglsub03" /><a href="javascript:goStats('month','stats/incidentStats.do');">돌발 교통정보 표출 실적</a></td>
                                         <td><a href="javascript:goStats('month','stats/incidentStats.do');"><img src="../images/btn_excel_down.gif" alt="엑셀다운로드" /></a></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="txt_left"><img src="../images/ico_excel.gif" alt="" class="mglsub03" /><a href="javascript:goStats('month','stats/muInformer2.do');">무 제보자 현황</a></td>
+                                        <td><a href="javascript:goStats('month','stats/muInformer2.do');"><img src="../images/btn_excel_down.gif" alt="엑셀다운로드" /></a></td>
                                     </tr>
                                     <tr>
                                         <td class="txt_left"><img src="../images/ico_excel.gif" alt="" class="mglsub03" /><a href="javascript:goStats('month','stats/informerStats.do');">교통정보 수집원 현황</a></td>

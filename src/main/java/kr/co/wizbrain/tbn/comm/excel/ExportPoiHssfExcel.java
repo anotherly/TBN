@@ -2121,12 +2121,12 @@ public class ExportPoiHssfExcel extends AbstractView {
 			
 			// dataList에서 각 row를 가져오고, 이를 Map으로 캐스팅
 		    Map<String, Object> record = (Map<String, Object>) dataList.get(i);
-		    
+
 		    // record의 각 필드를 Map을 통해 접근
 		    dataRow[i].createCell(0).setCellValue(record.get("통신원ID").toString());
 		    dataRow[i].createCell(1).setCellValue(record.get("통신원이름").toString());
 		    dataRow[i].createCell(2).setCellValue(record.get("유형").toString());
-		    dataRow[i].createCell(3).setCellValue("0".equals(record.get("통신원소속")) ? "비등록" : record.get("통신원소속").toString());
+		    dataRow[i].createCell(3).setCellValue(record.get("통신원소속").toString());
 		    dataRow[i].createCell(4).setCellValue(record.get("소속상세").toString());
 		    dataRow[i].createCell(5).setCellValue(record.get("연락처").toString());
 		    dataRow[i].createCell(6).setCellValue(record.get("제보건수").toString());

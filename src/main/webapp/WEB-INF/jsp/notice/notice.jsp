@@ -187,7 +187,7 @@
             </div>
             
             <div class="admin_result_sc">
-                <table style="width : 880px;" border="0" cellpadding="0" cellspacing="0" class="list01">
+                <table style="width : 880px; table-layout: fixed;" border="0" cellpadding="0" cellspacing="0" class="list01">
                 	<colgroup>                                
 	                    <col width="*" />
 	                    <col width="200" />
@@ -206,7 +206,7 @@
 						<c:forEach var="list" items="${noticeList}">
 							<tr>
 								<input type="hidden" id="notice_id" value="${list.NOTICE_ID}">
-								<td style="font-size : 16px;">${list.NOTICE_TITLE}</td>
+								<td style="font-size : 16px; overflow: hidden; text-overflow: ellipsis;white-space: nowrap;" >${list.NOTICE_TITLE}</td>
 								<td style="font-size : 16px;">${list.WRITER_NAME}</td>
 								<td style="font-size : 16px;">${list.START_DATE}</td>
 							</tr>

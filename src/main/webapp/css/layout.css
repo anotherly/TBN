@@ -3360,11 +3360,15 @@ ul #tempSaveTb li span:nth-child(3){
 
 .title_t{
     width: 500px;
-    height : 40px;
+    height : auto;
 }
 
 .title_t > h2 {
 	font-size : 26px;
+	width : 500px;
+	padding-top : 5px;
+	padding-bottom : 5px;
+	line-height : normal;
 }
 
 .writer_info{

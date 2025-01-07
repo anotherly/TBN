@@ -4,11 +4,11 @@
 <script>
 	$(document).ready(function(){
 		
-		// 관리자가 아닌경우 => 마일리지 기능 숨기기 처리
+		// 관리자, 지역관리자가 아닌경우 => 마일리지 기능 숨기기 처리
 	    checkAuth();
 	    
 	    function checkAuth() {
-	    	if(authCode != 999) {
+	    	if(authCode != 999 && authCode != 1) {
 	    		$('.mileageMenu').hide();
 	    	} else {
 	    		$('.mileageMenu').show();

@@ -59,6 +59,12 @@
 			}		
 		}
 		
+		if ($("#changeTd").height() > 310) {
+		    $('.insertTable').css("height","auto");
+		} else {
+			console.log("실행");
+			$('.insertTable').css("height","500px");
+		}
 		
 		$('.saveButton').on('click', function(){
 			// 기존 팝업 닫기
@@ -167,8 +173,8 @@
 			                </tr>
 			                <tr style="border-bottom: 1px solid black;">
 			                    <th>공지사항 내용 </th>
-			                    <td colspan='3'>                 
-			                    	<div style="white-space: pre-line; width: 100%; height: 90%; box-sizing: border-box;">
+			                    <td colspan='3' id="changeTd">                 
+			                    	<div style="white-space: pre-line; width: 100%; height: 90%; box-sizing: border-box; margin-bottom: 20px;">
 			                    		${dList[0].NOTICE_CONTENT}
 			                    	</div>
 			                    </td>
