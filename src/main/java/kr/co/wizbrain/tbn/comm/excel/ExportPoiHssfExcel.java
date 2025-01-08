@@ -874,7 +874,7 @@ public class ExportPoiHssfExcel extends AbstractView {
 		int dataSize = data.size();
 		
     	for (int k = 0; k < maxMon; k++) {
-    		logger.debug(dateList.get(k));
+    		/*logger.debug(dateList.get(k));*/
 
     		for (i = 0; i < data.size(); ++i) {
 				RecordDto record = (RecordDto) data.get(i);
@@ -971,7 +971,14 @@ public class ExportPoiHssfExcel extends AbstractView {
 
 		// 구분 > 통신원, 경찰제보처, 시민, 직원 등 합계 (3행)
 		int sumSendY;
-		for (sumSendY = 0; sumSendY < cntValues.size(); ++sumSendY) {
+		
+		// 수정 전 ( ArrayIndexOutOfBoundsException: 8 오류 발생하여 for 값을 8로 고정 )
+		/*for (sumSendY = 0; sumSendY < cntValues.size(); ++sumSendY) {
+			headrow1.createCell(sumSendY * 4 + 5).setCellValue(sumList[sumSendY]);
+		}*/
+		
+		// 수정 후 값을 8로 고정시켜 sumSendY가 7을 넘지 않도록 설정
+		for (sumSendY = 0; sumSendY < 8; ++sumSendY) {
 			headrow1.createCell(sumSendY * 4 + 5).setCellValue(sumList[sumSendY]);
 		}
 

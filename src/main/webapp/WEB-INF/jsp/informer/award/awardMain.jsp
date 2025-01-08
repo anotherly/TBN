@@ -90,7 +90,7 @@ function search(){
 	$('#EDATE').val($('#eYear').val()+eDt);
 	//제외버튼이 체크가 되어있다면
 	if($("#xdateDiv *").attr("disabled")==undefined){
-/* 		//제외시작
+		//제외시작
 		var xstDt=$("#xsMon").val();
 		if($("#xsMon").val().length==1){
 			xstDt="0"+xstDt;
@@ -101,38 +101,11 @@ function search(){
 		if($("#xeMon").val().length==1){
 			xeDt="0"+xeDt;
 		}
-		$('#XEDATE').val($('#xeYear').val()+xeDt); */
-		
-		var xSdateStr = $('#SDATE').val();
-		
-		var yearXS = parseInt(xSdateStr.substr(0, 4), 10);
-		var monthXS = parseInt(xSdateStr.substr(4, 2), 10);
-		
-		var xSdateFor = new Date(yearXS, monthXS - 3, 1);
-		var xSdate = xSdateFor.getFullYear().toString() + (xSdateFor.getMonth() + 1).toString().padStart(2, '0');
-		
-		var xEdateFor = new Date(yearXS, monthXS - 1, 1);
-		xEdateFor.setMonth(xEdateFor.getMonth() - 1);		
-		var xEdate = xEdateFor.getFullYear().toString() + (xEdateFor.getMonth() + 1).toString().padStart(2, '0');
-				
-		$('#XSDATE').val(xSdate);
-		$('#XEDATE').val(xEdate);
-		
-		// 화면에 텍스트 표출
-		$('#xsYear').val(yearXS + "년 " + (monthXS - 3) + "월");
-	    $('#xeYear').val(yearXS + "년 " + (monthXS - 1) + "월");
-		
+		$('#XEDATE').val($('#xeYear').val()+xeDt);
 	}
 	if(fcnt!=0){
-		
-		if(parseInt($('#ALL_PER').val()) > 25 || parseInt($('#ALL_PER').val()) < 15) {
-			alert("시상 배점기준(제보) % 범위는 15% ~ 25% 사이어야합니다.");
-		} else if(parseInt($('#MAIN_PER').val()) < 50 || parseInt($('#MAIN_PER').val()) > 70) {
-			alert("시상 배점기준(주요) % 범위는 50% ~ 70% 사이어야합니다.");
-		} else if(parseInt($('#ADD_PER').val()) > 25 || parseInt($('#ADD_PER').val()) < 15) {
-			alert("시상 배점기준(전월) % 범위는 15% ~ 25% 사이어야합니다.");
-		} else if( parseInt($('#ALL_PER').val())+parseInt($('#MAIN_PER').val())+parseInt($('#ADD_PER').val())!=100 ){
-			alert("시상 배점기준(제보,주요,전월)% 의 합은 100이어야 합니다.");
+		if( parseInt($('#ALL_PER').val())+parseInt($('#MAIN_PER').val())+parseInt($('#ADD_PER').val())!=100 ){
+			alert("시상배점기준(주요,제보,전월)% 의 합은 100이어야 합니다.");
 		}		
 	}
 	
@@ -230,28 +203,6 @@ function search(){
 		rkFlag = true;
 	}
 	
-	
-	// 셀렉트 박스 선택 시 처리
-	$('#sMon , #sYear').on('click', function(){
-	    var stDt = $("#sMon").val();
-	    if (stDt.length == 1) stDt = "0" + stDt;
-	    var startDate = $('#sYear').val() + stDt;
-
-	    var year = parseInt(startDate.substr(0, 4), 10);
-	    var month = parseInt(startDate.substr(4, 2), 10);
-
-	    var currentDate = new Date(year, month - 1, 1);
-	    currentDate.setMonth(currentDate.getMonth() - 3);
-	    var xsResult = currentDate.getFullYear() + "년 " + (currentDate.getMonth() + 1).toString().padStart(2, '0') + "월";
-
-	    currentDate.setMonth(currentDate.getMonth() + 2);
-	    var xeResult = currentDate.getFullYear() + "년 " + (currentDate.getMonth() + 1).toString().padStart(2, '0') + "월";
-
-	    $('#xsYear').val(xsResult);
-	    $('#xeYear').val(xeResult);
-	    
-	});
-	
 </script>
 <div id="contentWrap">
 	<form id="searchFrm" name="searchFrm">
@@ -287,8 +238,8 @@ function search(){
 									<select class="table_sel1" id="searchType"
 										onchange="search();" name="searchType">
 										<option value="0">교통제보우수자</option>
-									<!--<option value="1">주요정보제공우수자</option>
-										<option value=ㄴ"2">실적증가자</option> -->
+										<option value="1">주요정보제공우수자</option>
+										<option value="2">실적증가자</option>
 									</select> 
 									<select class="table_sel1" id="searchNum" name="searchNum">
 										<option value="10000">전체 출력</option>
@@ -401,7 +352,7 @@ function search(){
 										<c:set var="datetime">
 											<fmt:formatDate value="${today}" pattern="yyyy" />
 										</c:set>
-										<%-- <select id="xsYear" name="xsYear">
+										<select id="xsYear" name="xsYear">
 											<c:forEach var="i" begin="0" end="10">
 												<c:choose>
 													<c:when test="${i == 0}">
@@ -412,13 +363,13 @@ function search(){
 													</c:otherwise>
 												</c:choose>
 											</c:forEach>
-										</select> --%>
-										<input type="text" id="xsYear" name="xsYear" readonly style="width:110px; padding-left: 10px;">
+										</select>
+										
 										<c:set var="today" value="<%=monthAgo%>" />
 										<c:set var="datetime">
 											<fmt:formatDate value="${today}" pattern="MM" />
 										</c:set>
-<%-- 										<select id="xsMon" name="xsMon">
+										<select id="xsMon" name="xsMon">
 											<c:forEach var="i" begin="01" end="12">
 												<c:choose>
 													<c:when test="${i == datetime}">
@@ -429,14 +380,14 @@ function search(){
 													</c:otherwise>
 												</c:choose>
 											</c:forEach>
-										</select> --%>
+										</select>
 										
 										 제외월 종료 :  
 										<input type="hidden" id="XEDATE" name="XEDATE"
 											maxlength="15" class="input_base" readonly="readonly"
 											alt="시작일" title="" value=""
 											style="width: 70px; align: center;" />
-										<%-- <c:set var="today" value="<%=monthAgo%>" />
+										<c:set var="today" value="<%=monthAgo%>" />
 										<c:set var="datetime">
 											<fmt:formatDate value="${today}" pattern="yyyy" />
 										</c:set>
@@ -451,13 +402,13 @@ function search(){
 													</c:otherwise>
 												</c:choose>
 											</c:forEach>
-										</select> --%>
-										<input type="text" id="xeYear" name="xeYear" readonly style="width:110px; padding-left: 10px;">
+										</select>
+										
 										<c:set var="today" value="<%=monthAgo%>" />
 										<c:set var="datetime">
 											<fmt:formatDate value="${today}" pattern="MM" />
 										</c:set>
-										<%-- <select id="xeMon" name="xeMon">
+										<select id="xeMon" name="xeMon">
 											<c:forEach var="i" begin="01" end="12">
 												<c:choose>
 													<c:when test="${i == datetime}">
@@ -468,7 +419,7 @@ function search(){
 													</c:otherwise>
 												</c:choose>
 											</c:forEach>
-										</select> --%>
+										</select>
 										
 									</div>
 									

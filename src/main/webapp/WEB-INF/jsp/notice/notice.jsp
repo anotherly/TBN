@@ -9,6 +9,9 @@
 <html>
 <head>
 <meta charset="UTF-8">
+<!-- https => http 요청 허용 -->
+<meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+
 <jsp:include page="../common/all.jsp" flush="false" /> 
 <!-- <title>공지사항</title> -->
 <style>

@@ -325,6 +325,9 @@ public class StatisticController extends BaseController{
 		
 		List informerType = statisticService.selectInfrm();	//제보자 유형 title
 		
+		// 수정 후 버전으로 돌려서 엑셀 비교 해보고 record 디버깅 해보기
+		// 그 후 DB에서 직접 아무거나 값넣어서 인포머 타입 9개로 생성되게 해보기
+		
 		for(int i=0; i<informerType.size(); i++){
 			RecordDto record = (RecordDto) informerType.get(i);
 			params.remove("informer_type");
