@@ -656,6 +656,9 @@ public class StatisticController extends BaseController{
 		//model.addAttribute("start_date", params.get("start_date"));
 		return "hssfExcel";
 	}
+	
+	
+	
 	  @RequestMapping({"/stats/informerDown.ajax"})
 	  public String informerDown(Model model, HttpServletRequest request, InfrmVO searchVO) throws Exception {
 	    logger.info("------------------searchFullStatus");

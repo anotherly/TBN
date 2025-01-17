@@ -175,13 +175,7 @@ System.out.println("%%%%%%%%%%%%%%%% : "+monthAgo);
 }
 	
 $('#areaOptSel').on("click", function() {
-	
-	var nowStatR = $('#rangeDate').attr('class');
-	var nowStatM = $('#monthDate').attr('class');
 
-	// 현재 선택된 분류가월별인 경우 => 방송국 선택 시 이벤트가 필요함
-	if(nowStatM == "stat_btn stat_now_btn"){
-		
 		var areaCode = $('#areaOptSel').val();
 
 		$.ajax({
@@ -205,9 +199,6 @@ $('#areaOptSel').on("click", function() {
 		    }
 		});
 
-
-		
-	}
 });
 </script>
     <div id="contentWrap">

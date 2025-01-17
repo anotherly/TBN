@@ -8,16 +8,36 @@ function sendToReceiptForm(idx){
 		var text = document.getElementById("reservationContents"+idx).value;
 		var textArea = document.getElementById("CONTENT");
 		textArea.value = text;
+
+		// 25-01-16 : 예약 접수란에서 제보접수로 버튼 클릭 시 입력 값 초기화 작업
+		$('#SEARCH_TEXT0').val(''); // 통신원 검색란 초기화
+		$('#labelUserId0').text(''); // 통신원 ID 라벨 초기화
+		$('#labelUserName0').text(''); // 통신원 이름 라벨 초기화
+		$('#reservationContents0').val(''); // textArea 초기화
+		
 	}else if(idx == 1){
 		selectInformerByPhone(secondInformerVO);
 		var text = document.getElementById("reservationContents"+idx).value;
 		var textArea = document.getElementById("CONTENT");
 		textArea.value = text;
+		
+		// 25-01-16 : 예약 접수란에서 제보접수로 버튼 클릭 시 입력 값 초기화 작업
+		$('#SEARCH_TEXT1').val(''); // 통신원 검색란 초기화
+		$('#labelUserId1').text(''); // 통신원 ID 라벨 초기화
+		$('#labelUserName1').text(''); // 통신원 이름 라벨 초기화
+		$('#reservationContents1').val(''); // textArea 초기화
+		
 	}else if(idx ==2){
 		selectInformerByPhone(thirdInformerVO);
 		var text = document.getElementById("reservationContents"+idx).value;
 		var textArea = document.getElementById("CONTENT");
 		textArea.value = text;
+		
+		// 25-01-16 : 예약 접수란에서 제보접수로 버튼 클릭 시 입력 값 초기화 작업
+		$('#SEARCH_TEXT2').val(''); // 통신원 검색란 초기화
+		$('#labelUserId2').text(''); // 통신원 ID 라벨 초기화
+		$('#labelUserName2').text(''); // 통신원 이름 라벨 초기화
+		$('#reservationContents2').val(''); // textArea 초기화
 	}else{
 		console.log("해당 informerVO 없음");
 	}

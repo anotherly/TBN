@@ -1901,8 +1901,8 @@
 							AND REGION_ID = #{AREA_CODE}
 						</if>
 						<if test="!START_DAY.equals('') and START_DAY != null and !END_DAY.equals('') and END_DAY != null">
-							AND RECEIPT_DAY BETWEEN TO_CHAR(TO_DATE(#{START_DAY}, 'YYYYMMDD'), 'YYYYMMDD')
-											    AND TO_CHAR(TO_DATE(#{END_DAY}, 'YYYYMMDD'), 'YYYYMMDD')
+							AND RECEIPT_DAY BETWEEN TO_CHAR(TO_DATE(#{START_DAY}, 'YYYY-MM-DD'), 'YYYYMMDD')
+											    AND TO_CHAR(TO_DATE(#{END_DAY}, 'YYYY-MM-DD'), 'YYYYMMDD')
 						</if>
 						<if test="!FLAG_IMPORTANT.equals('') and FLAG_IMPORTANT != null">
 							<if test='FLAG_IMPORTANT.equals("N")'>
@@ -2029,8 +2029,8 @@
 							AND REGION_ID = #{AREA_CODE}
 						</if>
 						<if test="!START_DAY.equals('') and START_DAY != null and !END_DAY.equals('') and END_DAY != null">
-							AND RECEIPT_DAY BETWEEN TO_CHAR(TO_DATE(#{START_DAY}, 'YYYYMMDD'), 'YYYYMMDD')
-											    AND TO_CHAR(TO_DATE(#{END_DAY}, 'YYYYMMDD'), 'YYYYMMDD')
+							AND RECEIPT_DAY BETWEEN TO_CHAR(TO_DATE(#{START_DAY}, 'YYYY-MM-DD'), 'YYYYMMDD')
+											    AND TO_CHAR(TO_DATE(#{END_DAY}, 'YYYY-MM-DD'), 'YYYYMMDD')
 						</if>
 						<if test="!FLAG_IMPORTANT.equals('') and FLAG_IMPORTANT != null">
 							<if test='FLAG_IMPORTANT.equals("N")'>

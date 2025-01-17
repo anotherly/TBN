@@ -694,6 +694,7 @@ function selectInformerByPhone(informerVO, phone_cell){
 		}
 		//제보접수부분의 연락처 값 생성
 		document.getElementById('LOSS_TEL').value = informerVO.phone_CELL;
+		
 	}
 }
 
