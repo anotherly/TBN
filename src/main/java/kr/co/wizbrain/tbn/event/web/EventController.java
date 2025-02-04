@@ -9,17 +9,23 @@ import javax.servlet.http.HttpSession;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeansException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import kr.co.wizbrain.tbn.award.service.AwardService;
-import kr.co.wizbrain.tbn.event.vo.EventVO;
 import kr.co.wizbrain.tbn.award.web.AwardController;
 import kr.co.wizbrain.tbn.event.service.EventService;
+import kr.co.wizbrain.tbn.event.vo.EventVO;
+import kr.co.wizbrain.tbn.event.vo.eFileVO;
 import kr.co.wizbrain.tbn.infrm.service.InfrmService;
 import kr.co.wizbrain.tbn.infrm.vo.InfrmVO;
 import kr.co.wizbrain.tbn.option.service.AreaOptService;
@@ -28,9 +34,10 @@ import kr.co.wizbrain.tbn.user.service.UserService;
 import kr.co.wizbrain.tbn.user.vo.UserVO;
 
 @Controller
-public class EventController{
+public class EventController implements ApplicationContextAware{
 	private static final Logger logger = LoggerFactory.getLogger(AwardController.class);
 	public String url="";
+	private WebApplicationContext context = null;
 	
 	@Resource(name="userService")
 	private UserService userService;
@@ -135,6 +142,11 @@ public class EventController{
 				mv.addObject("editDiv", "update");
 			}
 			
+			List<EventVO> fileInfo = eventService.getFileList(paramVO);
+			if(fileInfo.size() != 0) {
+				mv.addObject("fileInfo", fileInfo);			
+			}
+			
 			List<EventVO> attendanceList = eventService.getAttendanceList(paramVO);	// 행사 참석자 목록
 			
 			mv.addObject("attendanceList", attendanceList);
@@ -159,6 +171,11 @@ public class EventController{
 			List<EventVO> eventInfo = eventService.getEventList(paramVO);				// 행사 상세 정보
 			if(eventInfo.size() == 1){
 				mv.addObject("eventInfo", eventInfo.get(0));
+			}
+			
+			List<EventVO> fileInfo = eventService.getFileList(paramVO);
+			if(fileInfo.size() != 0) {
+				mv.addObject("fileInfo", fileInfo);			
 			}
 		}
 		
@@ -196,6 +213,12 @@ public class EventController{
 		if(paramVO.getEVENT_ID() != null && !paramVO.getEVENT_ID().equals("")){
 			List<EventVO> eventInfo = eventService.getEventList(paramVO);		// 행사 상세 정보
 			if(eventInfo.size() == 1){
+				// 추가적으로 필요한 첨부 파일 정보 가져오기
+				List<EventVO> fileInfo = eventService.getFileList(paramVO);
+				if(fileInfo.size() != 0) {
+					mv.addObject("fileInfo", fileInfo);			
+				}
+				
 				mv.addObject("eventInfo", eventInfo.get(0));
 				mv.addObject("editDiv", "update");
 			}
@@ -255,17 +278,36 @@ public class EventController{
 	 * @throws Exception
 	 */
 	@RequestMapping("/informer/event/saveEvent.do")
-	public ModelAndView saveEvent(Model model,@ModelAttribute("EventVO") EventVO paramVO) throws Exception {
+	public ModelAndView saveEvent(@RequestParam("multiFile") List<MultipartFile> multiFileList
+			,HttpSession httpSession, 
+			HttpServletRequest request, Model model,@ModelAttribute("EventVO") EventVO paramVO) throws Exception {
 		ModelAndView mv = new ModelAndView("jsonView");
 		
 //		paramVO.put("REGION_ID", paramVO.get("session_user_region"));
 		
 		int cnt = eventService.saveEvent(paramVO);
+		String nowEvenetId = eventService.selectEventId();
+
+		try {
+			String fileDir = context.getServletContext().getRealPath("/")+"eventFile/"+ nowEvenetId +"/";
+			FileUploadSave fus = new FileUploadSave();
+			List<eFileVO> fileList = fus.fileUploadMultiple(multiFileList,fileDir,paramVO);
+			if(fileList.size()!=0) {
+				eventService.insertFile(fileList);
+			}
+		} catch(Exception e) {
+			logger.debug("에러메시지 : "+e.toString());
+			mv.addObject("msg","저장에 실패하였습니다");
+		}
+		
 		
 		mv.addObject("cnt", cnt);
 
 		return mv;
 	}
+	
+	
+	
 	
 	/**
 	 * 참석자 저장
@@ -307,6 +349,9 @@ public class EventController{
 		
 		int cnt = eventService.updateEvent(paramVO);
 		
+		
+		
+		
 		mv.addObject("cnt", cnt);
 
 		return mv;
@@ -322,7 +367,22 @@ public class EventController{
 	public ModelAndView deleteEvent(Model model,@ModelAttribute("EventVO") EventVO paramVO) throws Exception {
 		ModelAndView mv = new ModelAndView("jsonView");
 		
-		if(paramVO.getEVENT_ID() != null && !paramVO.getEVENT_ID().equals("")){
+		if(paramVO.getEVENT_ID() != null && !paramVO.getEVENT_ID().equals("")){			
+			// 만약 파일이 있다면
+			List<EventVO> fileList = eventService.selectFileList2(paramVO);
+			
+			if(fileList.size() > 0) {
+				// DB에서 파일 삭제
+				eventService.deleteFile(paramVO);
+				
+				String nowEvenetId = paramVO.getEVENT_ID();
+				String fileDir = context.getServletContext().getRealPath("/")+"eventFile/"+ nowEvenetId +"/";
+				// 실제 디렉토리에서 파일 삭제
+				FileUploadSave fus = new FileUploadSave();
+				fus.deleteFile(fileList,fileDir);
+			}
+			
+			
 			int cnt = eventService.deleteEvent(paramVO);
 			
 			mv.addObject("cnt", cnt);
@@ -333,6 +393,32 @@ public class EventController{
 
 		return mv;
 	}
+	
+	
+	// 파일 일괄 삭제
+	@RequestMapping("/informer/event/eventOneDelete.do")
+	public ModelAndView deleteOneEvent(Model model,@RequestParam("fileId") String fileId,
+			@RequestParam("eventId")String eventId, @ModelAttribute("EventVO") EventVO paramVO) throws Exception {
+		ModelAndView mv = new ModelAndView("jsonView");
+				
+				String fileDir = context.getServletContext().getRealPath("/")+"eventFile/"+ eventId +"/";
+				// 실제 디렉토리에서 파일 삭제
+				
+				String fileName = eventService.selectFileName(fileId);
+				FileUploadSave fus = new FileUploadSave();
+				fus.deleteFileOne(fileDir,fileName);
+				
+				
+				// DB에서 파일 삭제
+				eventService.deleteFileOne(fileId);
+				
+				mv.addObject("fileName", fileName);
+				mv.addObject("cnt", 1);
+		
+				return mv;
+	}
+	
+	
 	
 	/**
 	 * 참석자 삭제
@@ -365,4 +451,29 @@ public class EventController{
 		return mv;
 	}
 	
+	
+	// 파일 다운로드
+	@RequestMapping(value="/EventfileDownload.do")
+	public ModelAndView EventfileDownload(@RequestParam("fileId")String fileId ,ModelAndView mView) {
+		/*eFileVO fvo = new eFileVO();*/
+		
+		EventVO fvo = new EventVO();
+		fvo.setFILE_ID(fileId);
+		fvo = eventService.selectFileList(fvo).get(0);
+		
+		String filePath = fvo.getFILE_DIR()+fvo.getFILE_NAME();
+		fvo.setFilePath(filePath);
+		mView.addObject("fvo", fvo);
+		
+		// 응답을 할 bean의 이름 설정
+		mView.setViewName("fileDownView");
+		return mView;
+	}
+	
+	
+	
+	@Override
+	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+		this.context = (WebApplicationContext) applicationContext;
+	}
 }

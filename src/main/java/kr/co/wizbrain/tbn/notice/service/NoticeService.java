@@ -12,6 +12,12 @@ public interface NoticeService {
 	// 24-11-15 : 공지사항 등록
 	public void insertNotice(NoticeVO vo) throws Exception;
 	
+	// 등록한 공지사항의 ID 가져오기
+	public String selectIdOne() throws Exception;
+	
+	// 파일 등록하기
+	public void insertFile(List<NoticeVO> inputVo) throws Exception;
+	
 	// 24-11-15 : 공지사항 상세
 	public List<NoticeVO> detailNotice(String noticeId) throws Exception;
 	

@@ -71,6 +71,9 @@ $(document).ready(function(){
 <script>
 $(document).ready(function(){
 	console.log("행사관리 메인 : eventMainContent.jsp");
+	
+	
+	
     init();
     $("#areaOptSel").on("change",function(){
 		selArea=$("#areaOptSel option:selected").val();

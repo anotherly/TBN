@@ -35,6 +35,19 @@ public class NoticeServiceImpl implements NoticeService {
 		noticeMapper.insertNotice(vo);
 	}
 	
+	
+	// 등록된 공지사항의 ID 가져오기
+	@Override
+	public String selectIdOne() throws Exception {
+		return noticeMapper.selectIdOne();
+	}
+	
+	// 파일 등록하기
+	@Override
+	public void insertFile(List<NoticeVO> inputVo) throws Exception {
+		noticeMapper.insertFile(inputVo);
+	}
+	
 	// 24-11-15 : 공지사항 상세
 	@Override
 	public List<NoticeVO> detailNotice(String noticeId) throws Exception {

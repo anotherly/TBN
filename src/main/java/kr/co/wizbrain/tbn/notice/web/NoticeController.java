@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import kr.co.wizbrain.tbn.notice.service.NoticeService;
@@ -22,7 +23,7 @@ import kr.co.wizbrain.tbn.notice.vo.NoticeVO;
 import kr.co.wizbrain.tbn.receipt.web.ReceiptController;
 
 @Controller
-public class NoticeController {
+public class NoticeController{
 
 	public static final Logger logger = LoggerFactory.getLogger(ReceiptController.class);
 	
@@ -66,7 +67,22 @@ public class NoticeController {
 	}
 	
 	// 24-11-15 : 공지사항 등록 처리
+	
+	
+	
 	@RequestMapping(value="/notice/insert.do")
+	public ModelAndView insertNotice(@ModelAttribute NoticeVO vo) throws Exception {
+		
+		ModelAndView mav = new ModelAndView("jsonView");
+		
+		// 공지사항 등록하기 (파일 첨부 제외)
+		noticeService.insertNotice(vo);
+		
+		return mav;
+
+	}
+	
+	/*@RequestMapping(value="/notice/insert.do")
 	public ModelAndView insertNotice(@ModelAttribute NoticeVO vo) throws Exception{
 		noticeService.insertNotice(vo);
 		
@@ -76,7 +92,7 @@ public class NoticeController {
 		
 		return mav;
 
-	}
+	}*/
 	
 	// 24-11-15 : 공지사항 상세
 	@RequestMapping(value="/notice/detailNotice.do")
@@ -140,5 +156,4 @@ public class NoticeController {
 			
 			return mav;
 		}
-		
 }

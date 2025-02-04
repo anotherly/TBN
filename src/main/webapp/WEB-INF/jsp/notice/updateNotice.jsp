@@ -151,6 +151,11 @@
 			                        <input type="text" id="endDate" name="END_DATE" value="${uList[0].END_DATE}" readonly>
 			                    </td>
 			                </tr>
+			                <!-- <tr style="height: 50px; border-bottom: 1px solid black;">
+			                	<th>파일 첨부</th>
+			                	<td>
+			                	</td>
+			                </tr> -->
 			                <tr style="border-bottom: 1px solid black;">
 			                    <th>공지사항 내용 </th>
 			                    <td colspan='3'>

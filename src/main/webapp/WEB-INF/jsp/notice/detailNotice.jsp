@@ -171,6 +171,10 @@
 			                        ${dList[0].END_DATE}
 			                    </td>
 			                </tr>
+			                <!-- <tr style="height: 50px; border-bottom: 1px solid black;">
+			                	<th>첨부 파일</th>
+			                	<td></td>
+			                </tr> -->
 			                <tr style="border-bottom: 1px solid black;">
 			                    <th>공지사항 내용 </th>
 			                    <td colspan='3' id="changeTd">                 

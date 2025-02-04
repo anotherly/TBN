@@ -10,6 +10,7 @@ import kr.co.wizbrain.tbn.comm.ParamsDto;
 import kr.co.wizbrain.tbn.event.mapper.EventMapper;
 import kr.co.wizbrain.tbn.event.service.EventService;
 import kr.co.wizbrain.tbn.event.vo.EventVO;
+import kr.co.wizbrain.tbn.event.vo.eFileVO;
 import kr.co.wizbrain.tbn.infrm.vo.InfrmVO;
 
 
@@ -24,6 +25,11 @@ public class EventServiceImpl implements EventService{
 	}
 	
 
+	@Override
+	public List<EventVO> getFileList(EventVO paramVO) {
+		return eventMapper.getFileList(paramVO);
+	}
+	
 	@Override
 	public List getEventList(ParamsDto params) {
 		return eventMapper.getEventList2(params);
@@ -55,6 +61,17 @@ public class EventServiceImpl implements EventService{
 	}
 
 	@Override
+	public String selectEventId() {
+		return eventMapper.selectEventId();
+	}
+	
+	@Override
+	public void insertFile(List<eFileVO> inputVo) {
+		eventMapper.insertFile(inputVo);
+	}
+	
+	
+	@Override
 	public int saveAttendance(EventVO thvo, List<String> alist) {
 		int cnt = 0;
 		cnt = eventMapper.saveAttendance(thvo,alist);
@@ -72,7 +89,17 @@ public class EventServiceImpl implements EventService{
 		
 		return cnt;
 	}
+	
+	@Override
+	public void deleteFileOne(String fileId) {
+		eventMapper.deleteFileOne(fileId);
+	}
 
+	@Override
+	public String selectFileName(String fileId) {
+		return eventMapper.selectFileName(fileId);
+	}
+	
 	@Override
 	public int deleteAttendance(EventVO paramVO) {
 		int cnt = eventMapper.deleteAttendance(paramVO); // 이벤트 참석자 삭제
@@ -91,4 +118,19 @@ public class EventServiceImpl implements EventService{
 		return eventMapper.getEvtList(paramVO);
 	}
 
+	
+	@Override
+	public List<EventVO> selectFileList(EventVO paramVO){
+		return eventMapper.selectFileList(paramVO);
+	}
+	
+	@Override
+	public List<EventVO> selectFileList2(EventVO paramVO){
+		return eventMapper.selectFileList2(paramVO);
+	}
+	
+	@Override
+	public void deleteFile(EventVO paramVO) {
+		eventMapper.deleteFile(paramVO);
+	}
 }

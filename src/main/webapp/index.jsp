@@ -33,9 +33,9 @@
 	<!-- DateTimePicker -->
 	<script src="<%=request.getContextPath()%>/calender/moment.js"></script>
 	<script src="<%=request.getContextPath()%>/calender/mo_ko.js"></script>
-	<script src="<%=request.getContextPath()%>/calender/bootstrap-datetimepicker.js"></script>
+	<%-- <script src="<%=request.getContextPath()%>/calender/bootstrap-datetimepicker.js"></script>
 	<link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/calender/no-boot-calendar-custom.css" />
-	<link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/calender/datetimepickerstyle.css" />
+	<link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/calender/datetimepickerstyle.css" /> --%>
 	
 	<!--
 	<script type="text/javascript" charset="utf-8" src="%=request.getContextPath()%>/js/jquery.datetimepicker.full.min.js"></script> 

@@ -7,8 +7,15 @@
 	<script  type="text/javascript" charset="utf-8"  src="<%=request.getContextPath()%>/js/common.js"></script>
 	<script type="text/javascript" charset="utf-8" src="<%=request.getContextPath()%>/js/jquery.pagination.js"></script>
 	<script type="text/javascript" charset="utf-8" src="<%=request.getContextPath()%>/js/jquery.form.js"></script>
-	<link rel="stylesheet" href="<%=request.getContextPath()%>/calender/jquery-ui.css"/>
-    <script src="<%=request.getContextPath()%>/calender/jquery-ui.js"></script>
+	<script src="<%=request.getContextPath()%>/calender/moment.js"></script>
+	<script src="<%=request.getContextPath()%>/calender/mo_ko.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+	<link rel="stylesheet" type="text/css" media="screen" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.min.css">
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.full.min.js"></script>
+	
+	
+<%-- 	<link rel="stylesheet" href="<%=request.getContextPath()%>/calender/jquery-ui.css"/>
+    <script src="<%=request.getContextPath()%>/calender/jquery-ui.js"></script> --%>
 <%-- 팝업 스타일이 이상해서 임시 추가, 디자인 변경시 css 추가 해야함. --%>
 <style type="text/css"> 
     .list_result_sc_pop td {font-size: 11px;}
@@ -21,16 +28,16 @@
 	<div id="searchBox" style="float: right; width: 100%;">
 	    <form id="searchFrm" name="searchFrm">
 	    <input type="hidden" id="EVENT_ID" name="EVENT_ID" value="${EVENT_ID}"/>
-	        <table>
+	        <table style="display: flex;justify-content: flex-end;padding-right: 20px;">
 	            <tr>
-		            <td style="width:70px;">
+		            <!-- <td style="width:70px;">
 	 					등록일 : 
 	 					</td>
 					<td style="width:205px;">
 						<input type="text" id="dateText1" class="dateText" name="sDate" style="text-align: center;font-size: 13px;width: 78px;height: 25px;" size="10" readonly="readonly" onclick="dateFunc">
 						 ~ 
 						<input type="text" id="dateText2" class="dateText" name="eDate" style="text-align: center;font-size: 13px;width: 78px;height: 25px;" size="10" readonly="readonly" onclick="dateFunc">
-					</td>
+					</td> -->
 	                <td>
 	                    <select class="table_sel" id="searchRegion" name="searchRegion">
 	                        <option value="" ><c:out value="소속"/></option>

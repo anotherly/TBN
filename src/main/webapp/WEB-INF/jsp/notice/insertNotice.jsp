@@ -81,7 +81,7 @@
 					type : "post",
 					async : false,
 		            dataType: 'json',
-					success : function(data) {	
+		            success : function(data) {	
 						console.log("요청 성공"+data);
 						
 						alert('저장되었습니다.');
@@ -133,7 +133,7 @@
 <body style="background:none;">
 <h1 class="content-title" style="margin-top: 100px; margin-left:160px;">공지사항 등록</h1>
 <div id="mainDiv" class="mainDiv" style="flex-direction:column; align-items: center; width: 1200px;">
-			    <form name="insertForm" method="post" id="insertForm"> <!-- action="/notice/insert.do" -->
+			    <form name="insertForm" method="post" id="insertForm" enctype="multipart/form-data"> <!-- action="/notice/insert.do" -->
 			        <div class="insertTable" style="width: 880px; height: 500px; ">
 			            <table style="width: 100%; height: 100%;">
 			                <tr style="height: 50px; border-top : 2px solid black;border-bottom: 1px solid black;">
@@ -158,6 +158,12 @@
 			                        <input type="text" id="endDate" name="END_DATE" readonly>
 			                    </td>
 			                </tr>
+			                <!-- <tr style="height: 50px; border-bottom: 1px solid black;">
+			                	<th>파일 첨부</th>
+			                	<td colspan='3'>
+			                		<input type="file" name="multiFile" multiple/>
+			                	</td>
+			                </tr> -->
 			                <tr style="border-bottom: 1px solid black;">
 			                    <th>공지사항 내용 </th>
 			                    <td colspan='3'>

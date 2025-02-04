@@ -6,16 +6,27 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ko" lang="ko">
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/css/layout.css"/>
-<link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/css/pagination.css" />
-<link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/css/jquery-ui-1.9.0.custom.css" rel="stylesheet"  />
-<script  type="text/javascript" charset="utf-8" src="<%=request.getContextPath()%>/js/jquery.js"></script>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/css/layout.css"/>
+	<link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/css/pagination.css" />
+	<link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/css/jquery-ui-1.9.0.custom.css" rel="stylesheet"  />
+	<script  type="text/javascript" charset="utf-8" src="<%=request.getContextPath()%>/js/jquery.js"></script>
 	<script  type="text/javascript" charset="utf-8"  src="<%=request.getContextPath()%>/js/common.js"></script>
 	<script type="text/javascript" charset="utf-8" src="<%=request.getContextPath()%>/js/jquery.pagination.js"></script>
 	<script type="text/javascript" charset="utf-8" src="<%=request.getContextPath()%>/js/jquery.form.js"></script>
-	<link rel="stylesheet" href="<%=request.getContextPath()%>/calender/jquery-ui.css"/>
-    <script src="<%=request.getContextPath()%>/calender/jquery-ui.js"></script>
+	
+	<script src="<%=request.getContextPath()%>/calender/moment.js"></script>
+<script src="<%=request.getContextPath()%>/calender/mo_ko.js"></script>
+<script src="<%=request.getContextPath()%>/calender/bootstrap-datetimepicker.js"></script>
+<link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/calender/no-boot-calendar-custom.css" />
+<link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/calender/datetimepickerstyle.css" />
+	
+	
+	<!-- datepicker를 사용하기 위해서는 jquery 파일과 아래 파일 2개가 필요함 -->
+<!-- 	<script type="text/javascript" charset="utf-8" src="<%=request.getContextPath()%>/js/jquery-1.12.4.js"></script>
+	<script type="text/javascript" charset="utf-8" src="<%=request.getContextPath()%>/js/jquery-ui.js"></script>
+ -->
+	
 <%-- 팝업 스타일이 이상해서 임시 추가, 디자인 변경시 css 추가 해야함. --%>
 <style type="text/css">
     .strong {width: 120px;}
@@ -38,7 +49,7 @@
         <table width="100%" border="0" cellspacing="0" cellpadding="0" >
             <tr>
                 <td>
-                    <form id="editEventFrm" name="editEventFrm">
+                    <form id="editEventFrm" name="editEventFrm" enctype="multipart/form-data">
                     <input type="hidden" id="EVENT_ID" name="EVENT_ID" value="${eventInfo.EVENT_ID}"/>
                     <input type="hidden" id="editDiv" name="editDiv" value="${editDiv}"/>
                     <table width="100%" border="0" cellspacing="0" cellpadding="0" class="admin_list">
@@ -57,6 +68,20 @@
                                 <textarea id="CONTENTS" name="CONTENTS" rows="15" cols="50"><c:out value="${eventInfo.CONTENTS }" /></textarea>
                              </td>
                          </tr>
+                          <tr>
+                         	<td class="strong">파일 첨부</td>
+                         	<td>
+                         		<input type="file" class="input_base" name="multiFile" multiple/>
+                         		<c:if test="${fn:length(fileInfo) > 0}"> <!-- 첨부된 파일이 1개라도 있다면 -->
+                         			<c:forEach var="file" items="${fileInfo}" varStatus="status">
+                         			<div style="display:flex;">
+									    <p style="margin-left: 15px;" id="${file.FILE_ID}">${file.FILE_NAME}</p> <p style="color:blue; margin-left:15px; cursor:pointer;" id="${file.FILE_ID}" class="deleteBtn">삭제</p>
+									</div>
+									<br>
+									</c:forEach>
+                         		</c:if>
+                         	</td>
+                         </tr> 
                      </table>
                     </form>
                 </td>
@@ -83,8 +108,8 @@ $(document).ready(function(){
 		$("#REGION_ID").val(opVal2);
 	}
 	
-	var dates = $('#EVENT_DATE').datepicker({
-        showOn: "button",
+	/* var dates = $('#EVENT_DATE').datepicker({
+		showOn: "both", // button : 버튼 클릭 시 달력 열림 , both : text나 button 둘 다 눌러도 달력 열림
         buttonImage: "<c:url value="/images/ico_calendar.gif"/>",
         buttonText: "달력",
         buttonImageOnly: true,
@@ -102,7 +127,13 @@ $(document).ready(function(){
             //dates.not(this).datepicker("option", option, date);
             $("img.ui-datepicker-trigger").attr("style", "margin-left:5px;");
         }
-    });
+    }); */
+
+	var stdate=moment().subtract(1, 'months').startOf('month').format('YYYY-MM-DD');
+	/* var endate=moment().subtract(1, 'months').endOf('month').format('YYYY-MM-DD'); */
+	//common.js에 생성한 함수 참조(달력생성)
+	dateFunc('EVENT_DATE',stdate);
+	
 })
 
 /**
@@ -120,11 +151,12 @@ function saveEvent(){
     
     var date = $('#EVENT_DATE').val().replace(/-/g,'');
     $('#EVENT_DATE').val(date);
-    
+    let frm = $('#editEventFrm').serialize();
+    console.log("frm : "+frm);
     var options = {
-            url:'<c:url value="/informer/event/saveEvent.do"/>',
+            url:"/informer/event/saveEvent.do",
             type:'post',
-            data: $('#editEventFrm').serialize(),
+            data: frm,
             dataType: "json",
             success: function(res){
                 if(res.cnt > 0){
@@ -140,11 +172,52 @@ function saveEvent(){
                 }
             } ,
             error: function(res,error){
+                alert("에러가 발생했습니다."+res);
+            }
+    };
+    $('#editEventFrm').ajaxSubmit(options);
+}
+
+
+$(".deleteBtn").click(function() {
+    var fileId = $(this).attr("id");
+	var eventId = $('#EVENT_ID').val();
+	
+	$(this).hide(); // 클릭된 삭제 버튼 숨기기
+    $(this).siblings().hide(); // 클릭된 요소의 형제 요소 숨기기
+    
+    var options = {
+            url:"/informer/event/eventOneDelete.do",
+            type:'post',
+            data: {
+            	fileId: fileId , eventId : eventId
+            },
+            dataType: "json",
+            success: function(res, html){
+                if(res.cnt > 0){
+                    alert("삭제되었습니다.");
+                    /* $('#loadMain').click(); */
+                    
+                    var hideFile = res.fileId;
+                    console.log("확인하기" + hideFile);
+                    console.log("이전 :" +fileId );
+                    
+                /*     $('#'+hideFile).hide();
+ */
+
+                } else {
+         			alert("삭제에 실패하였습니다.");
+                }
+            } ,
+            error: function(res,error){
                 alert("에러가 발생했습니다."+error);
             }
     };
-    $.ajax(options);
-}
+    if(confirm('해당 첨부 파일을 삭제 하시겠습니까?')){
+        $.ajax(options);
+    }
+    
+});
 </script>
 </body>
 </html>

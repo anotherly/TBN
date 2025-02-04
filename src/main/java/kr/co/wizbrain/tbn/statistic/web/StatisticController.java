@@ -408,11 +408,13 @@ public class StatisticController extends BaseController{
 		// 통계 데이터
 		List dataList = statisticService.informerReport(params);
 		
+		// 총 인원수
+		int allInformer = dataList.size();
 		// 총 인원수 뽑기
-		String allInformer = statisticService.allInformer(params);
+		/*String allInformer = statisticService.allInformer(params);
 		
 		// 총 건수 뽑기
-		String allReport = statisticService.allReport(params);
+		String allReport = statisticService.allReport(params);*/
 				
 		model.addAttribute("mapping", "informerReport");
 		model.addAttribute("fileName", "제보자별 제보현황"+params.getString("city")+".xls");
@@ -422,7 +424,7 @@ public class StatisticController extends BaseController{
 		model.addAttribute("start_date",params.get("start_date"));
 		model.addAttribute("end_date",params.get("end_date"));
 		model.addAttribute("allInformer",allInformer);
-		model.addAttribute("allReport",allReport);
+		/*model.addAttribute("allReport",allReport);*/
 		
 		return "hssfExcel";
 	}

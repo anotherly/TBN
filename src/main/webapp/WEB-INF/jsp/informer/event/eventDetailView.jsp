@@ -31,6 +31,17 @@
 	                <td class="b">내용</td>
 	                <td><textarea class="table_sel" id="CONTENTS" name="CONTENTS" cols="50" rows="8" style="width:97%; height:150px;" readonly><c:out value="${eventInfo.CONTENTS }" /></textarea></td>
 	            </tr>
+	            <tr>
+	            	<td class="b">첨부파일</td>
+	            	<td id="fileDown">
+	            	<input type="hidden" name="FILE_ID" value="${eventInfo.EVENT_ID}">
+	            		<c:forEach var="file" items="${fileInfo}" varStatus="status">
+						    <a style="margin-left: 15px;" href="/EventfileDownload.do?fileId=${file.FILE_ID}">${file.FILE_NAME}</a>
+							<br>
+						</c:forEach>
+
+	            	</td>
+	            </tr>
 	        </table>
 	    </div>
         <table summary="참석자정보" width="100%" border="0" cellspacing="0" cellpadding="0" class="view">
@@ -133,6 +144,12 @@ $(document).ready(function(){
 			search();
 		}
 	});
+	
+	
+	
+	
+	// 로드 되면 파일 다운로드 a 태그 생성
+	
 })
 
 /**
@@ -153,7 +170,10 @@ function chgAttendance(str){
  * 이벤트 수정 팝업
  */
 function editEvent(str){
-	console.log($("#REGION_ID").val());
+	/* console.log($("#REGION_ID").val()); */
+	
+	
+	console.log("여기");
     var param = "";
     if(str != null && str != "" && str != "undefined"){
         param = "?EVENT_ID=" + str+"&REGION_ID="+$("#REGION_ID").val();
