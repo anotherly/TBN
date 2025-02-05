@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.slf4j.Logger;
@@ -12,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -23,6 +25,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import kr.co.wizbrain.tbn.award.service.AwardService;
 import kr.co.wizbrain.tbn.award.web.AwardController;
+import kr.co.wizbrain.tbn.comm.excel.FileDownloadView;
 import kr.co.wizbrain.tbn.event.service.EventService;
 import kr.co.wizbrain.tbn.event.vo.EventVO;
 import kr.co.wizbrain.tbn.event.vo.eFileVO;
@@ -349,9 +352,6 @@ public class EventController implements ApplicationContextAware{
 		
 		int cnt = eventService.updateEvent(paramVO);
 		
-		
-		
-		
 		mv.addObject("cnt", cnt);
 
 		return mv;
@@ -454,8 +454,51 @@ public class EventController implements ApplicationContextAware{
 	
 	// 파일 다운로드
 	@RequestMapping(value="/EventfileDownload.do")
-	public ModelAndView EventfileDownload(@RequestParam("fileId")String fileId ,ModelAndView mView) {
-		/*eFileVO fvo = new eFileVO();*/
+	public ModelAndView EventfileDownload(@RequestParam("fileId")String fileId ,ModelAndView mView
+			,HttpServletRequest request, HttpServletResponse response) {
+		EventVO fvo = new EventVO();
+		fvo.setFILE_ID(fileId);
+		fvo = eventService.selectFileList(fvo).get(0);
+		
+		String filePath = fvo.getFILE_DIR()+fvo.getFILE_NAME();
+		fvo.setFilePath(filePath);
+		mView.addObject("fvo", fvo);
+
+/*		FileDownView fileDownView = new FileDownView();
+		
+		fileDownView.renderMergedOutputModel(mView.getModel(), request, response);*/
+		
+		// 응답을 할 bean의 이름 설정
+		mView.setViewName("fileDownView");
+
+		
+		return mView;
+	}
+	
+	/*@RequestMapping(value="/EventfileDownload.do")
+	public String EventfileDownload(@RequestParam("fileId")String fileId, HttpServletRequest request,
+			HttpServletResponse response, Model model) throws Exception{
+		
+		EventVO fvo = new EventVO();
+		fvo.setFILE_ID(fileId);
+		fvo = eventService.selectFileList(fvo).get(0);
+		
+		String filePath = fvo.getFILE_DIR()+fvo.getFILE_NAME();
+		fvo.setFilePath(filePath);
+		model.addAttribute("fvo", fvo);
+		
+		FileDownView fileDownView = new FileDownView();
+		fileDownView.renderMergedOutputModel(mv.getModel(), request, response);
+	
+		// 응답을 할 bean의 이름 설정
+		mView.setViewName("fileDownView");
+		return "fileDownView";
+	}*/
+	
+	/*@RequestMapping(value="/EventfileDownload.do")
+	public ModelAndView EventfileDownload(@RequestParam("fileId")String fileId ,ModelAndView mView
+			,HttpServletRequest request, HttpServletResponse response) {
+		eFileVO fvo = new eFileVO();
 		
 		EventVO fvo = new EventVO();
 		fvo.setFILE_ID(fileId);
@@ -464,12 +507,17 @@ public class EventController implements ApplicationContextAware{
 		String filePath = fvo.getFILE_DIR()+fvo.getFILE_NAME();
 		fvo.setFilePath(filePath);
 		mView.addObject("fvo", fvo);
+
+		FileDownView fileDownView = new FileDownView();
+		
+		fileDownView.renderMergedOutputModel(mView.getModel(), request, response);
 		
 		// 응답을 할 bean의 이름 설정
 		mView.setViewName("fileDownView");
+
+		
 		return mView;
-	}
-	
+	}*/
 	
 	
 	@Override

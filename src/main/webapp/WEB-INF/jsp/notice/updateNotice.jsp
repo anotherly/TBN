@@ -31,9 +31,7 @@
 </style>
 <script>
 	$(document).ready(function(){
-		
-		console.log("찍기 2");
-		
+
 		$("#menu").load("/common/menu.do");
 		
 		$('#endDate').datepicker({
@@ -101,6 +99,8 @@
 		var title = $('#notice_title').val();
 		var endDate = $('#endDate').val();
 		var content = $('#notice_content').val();
+		var startDate = $('#startDate').val();
+		
 		
 		if(title == '') {
 			alert('공지사항 제목을 입력해주세요.');
@@ -108,7 +108,7 @@
 		} else if(endDate == '') {
 			alert('종료일을 입력해주세요.');
 			return false;
-		} else if(endDate < today) {
+		} else if(endDate < startDate) {
 			alert('종료일은 시작일보다 이전일 수 없습니다.');
 			return false;
 		} else if(content == ''){
@@ -145,7 +145,9 @@
 			                </tr >
 			                <tr style="height: 50px; border-bottom: 1px solid black;">
 			                    <th>시작일 </th>
-			                    <td>${uList[0].START_DATE}</td>
+			                    <td>${uList[0].START_DATE}
+			                    	<input type="hidden" id="startDate" value="${uList[0].START_DATE}" readonly>
+			                    </td>
 			                    <th>종료일 </th>
 			                    <td>
 			                        <input type="text" id="endDate" name="END_DATE" value="${uList[0].END_DATE}" readonly>

@@ -46,7 +46,7 @@
 	    </div>
         <table summary="참석자정보" width="100%" border="0" cellspacing="0" cellpadding="0" class="view">
             <caption>
-            행사관리 상세정보
+           		행사관리 상세정보
             </caption>
             <colgroup>
             <col width="50" />
@@ -151,6 +151,29 @@ $(document).ready(function(){
 	// 로드 되면 파일 다운로드 a 태그 생성
 	
 })
+
+/* $('.downFile').on('click', function() {
+    var fileId = $(this).attr('id'); // 아이디 값을 가져옴
+    console.log(fileId); // 아이디 값 출력
+    
+    var options = {
+            url:'/EventfileDownload.do',
+            type:'post',
+            data: {
+            	fileId: fileId
+            },
+            /* dataType: "json", */
+            /* success: function(res){
+                console.log("완료");
+                alert("완료");
+            } ,
+            error: function(res,error){
+                alert("에러가 발생했습니다."+error);
+            }
+    };
+    $.ajax(options);
+}); 
+ */ 
 
 /**
  * 이벤트 수정시 변경내역 반영

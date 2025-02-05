@@ -351,7 +351,7 @@
         
 	  
 	  <!--  파일 등록  -->
-	  <insert id="insertFile" parameterType="kr.co.wizbrain.tbn.event.vo.eFileVO">
+	<!--   <insert id="insertFile" parameterType="kr.co.wizbrain.tbn.event.vo.eFileVO">
 	    INSERT INTO EVENT_FILE_INFO 
 	    (FILE_ID, FILE_NAME, FILE_DIR, REG_DT,EVENT_ID)
 	    VALUES 
@@ -359,7 +359,18 @@
 	        (DBMS_RANDOM.STRING('X', 20), #{item.fileName}, #{item.fileDir}, SYSDATE, #{item.eventId})
 	    </foreach>
 	    
+		</insert> -->
+		
+		<insert id="insertFile" parameterType="kr.co.wizbrain.tbn.event.vo.eFileVO">
+			INSERT ALL
+				<foreach collection="list" item="item" index="index" open="" close="" separator="">
+					INTO EVENT_FILE_INFO (FILE_ID, FILE_NAME, FILE_DIR, REG_DT, EVENT_ID) VALUES(DBMS_RANDOM.STRING('X', 20), #{item.fileName}, #{item.fileDir}, SYSDATE, #{item.eventId})
+				</foreach>
+			SELECT *
+			FROM DUAL
 		</insert>
+		
+		
 		
 		<delete id="deleteFile" parameterType="eventVo">
     	delete from event_file_info

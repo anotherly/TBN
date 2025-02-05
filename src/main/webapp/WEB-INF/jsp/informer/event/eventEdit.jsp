@@ -11,23 +11,21 @@
 	<link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/css/pagination.css" />
 	<link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/css/jquery-ui-1.9.0.custom.css" rel="stylesheet"  />
 	<script  type="text/javascript" charset="utf-8" src="<%=request.getContextPath()%>/js/jquery.js"></script>
+	
 	<script  type="text/javascript" charset="utf-8"  src="<%=request.getContextPath()%>/js/common.js"></script>
 	<script type="text/javascript" charset="utf-8" src="<%=request.getContextPath()%>/js/jquery.pagination.js"></script>
 	<script type="text/javascript" charset="utf-8" src="<%=request.getContextPath()%>/js/jquery.form.js"></script>
 	
+	<script type="text/javascript" charset="utf-8" src="<%=request.getContextPath()%>/js/jquery.form.js"></script>
+	<script type="text/javascript" charset="utf-8" src="<%=request.getContextPath()%>/js/timeDate.js"></script>
+		
+	<!-- DateTimePicker -->
 	<script src="<%=request.getContextPath()%>/calender/moment.js"></script>
-<script src="<%=request.getContextPath()%>/calender/mo_ko.js"></script>
-<script src="<%=request.getContextPath()%>/calender/bootstrap-datetimepicker.js"></script>
-<link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/calender/no-boot-calendar-custom.css" />
-<link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/calender/datetimepickerstyle.css" />
+	<script src="<%=request.getContextPath()%>/calender/mo_ko.js"></script>
+	<script src="<%=request.getContextPath()%>/calender/bootstrap-datetimepicker.js"></script>
+	<link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/calender/no-boot-calendar-custom.css" />
+	<link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/calender/datetimepickerstyle.css" />
 	
-	
-	<!-- datepicker를 사용하기 위해서는 jquery 파일과 아래 파일 2개가 필요함 -->
-<!-- 	<script type="text/javascript" charset="utf-8" src="<%=request.getContextPath()%>/js/jquery-1.12.4.js"></script>
-	<script type="text/javascript" charset="utf-8" src="<%=request.getContextPath()%>/js/jquery-ui.js"></script>
- -->
-	
-<%-- 팝업 스타일이 이상해서 임시 추가, 디자인 변경시 css 추가 해야함. --%>
 <style type="text/css">
     .strong {width: 120px;}
     .input_base {width: 175px;}
@@ -53,11 +51,12 @@
                     <input type="hidden" id="EVENT_ID" name="EVENT_ID" value="${eventInfo.EVENT_ID}"/>
                     <input type="hidden" id="editDiv" name="editDiv" value="${editDiv}"/>
                     <table width="100%" border="0" cellspacing="0" cellpadding="0" class="admin_list">
-                         <tr>
-                             <td class="strong">행사일</td>
-                             <td><input class="input_base" type="text" id="EVENT_DATE" name="EVENT_DATE" style="width: 250px;" value="${eventInfo.EVENT_DATE }" readonly/></td>
-                             <td><input class="input_base" type="hidden" id="REGION_ID" name="REGION_ID"/></td>
-                         </tr>
+                         <tr style="position: relative;"> <!-- tr에  relative를 추가하지 않으면 달력 선택을 할 수 없음-->
+						    <td class="strong">행사일</td>
+						    <td><input class="input_base" type="text" id="EVENT_DATE" name="EVENT_DATE" style="width: 250px;" value="${eventInfo.EVENT_DATE }"/></td>
+						    <td><input class="input_base" type="hidden" id="REGION_ID" name="REGION_ID"/></td>
+						</tr>
+
                          <tr>
                              <td class="strong">행사명</td>
                              <td><input class="input_base" type="text" id="EVENT_NAME" name="EVENT_NAME" style="width: 273px;" value="${eventInfo.EVENT_NAME }"/></td>
@@ -74,7 +73,7 @@
                          		<input type="file" class="input_base" name="multiFile" multiple/>
                          		<c:if test="${fn:length(fileInfo) > 0}"> <!-- 첨부된 파일이 1개라도 있다면 -->
                          			<c:forEach var="file" items="${fileInfo}" varStatus="status">
-                         			<div style="display:flex;">
+                         			<div style="display:flex; height: 0px;">
 									    <p style="margin-left: 15px;" id="${file.FILE_ID}">${file.FILE_NAME}</p> <p style="color:blue; margin-left:15px; cursor:pointer;" id="${file.FILE_ID}" class="deleteBtn">삭제</p>
 									</div>
 									<br>
@@ -129,10 +128,12 @@ $(document).ready(function(){
         }
     }); */
 
-	var stdate=moment().subtract(1, 'months').startOf('month').format('YYYY-MM-DD');
+	/* var stdate=moment().subtract(1, 'months').startOf('month').format('YYYY-MM-DD'); */
 	/* var endate=moment().subtract(1, 'months').endOf('month').format('YYYY-MM-DD'); */
 	//common.js에 생성한 함수 참조(달력생성)
-	dateFunc('EVENT_DATE',stdate);
+	
+	var nowDate = $('#EVENT_DATE').val();
+	dateFunc('EVENT_DATE');
 	
 })
 
@@ -182,9 +183,6 @@ function saveEvent(){
 $(".deleteBtn").click(function() {
     var fileId = $(this).attr("id");
 	var eventId = $('#EVENT_ID').val();
-	
-	$(this).hide(); // 클릭된 삭제 버튼 숨기기
-    $(this).siblings().hide(); // 클릭된 요소의 형제 요소 숨기기
     
     var options = {
             url:"/informer/event/eventOneDelete.do",
@@ -213,8 +211,15 @@ $(".deleteBtn").click(function() {
                 alert("에러가 발생했습니다."+error);
             }
     };
-    if(confirm('해당 첨부 파일을 삭제 하시겠습니까?')){
+    
+    
+    var delChk = confirm('삭제 시 되돌릴 수 없습니다. 정말 삭제하시겠습니까?');
+    if(delChk){
         $.ajax(options);
+        $(this).hide(); // 클릭된 삭제 버튼 숨기기
+    	$(this).siblings().hide(); // 클릭된 요소의 형제 요소 숨기기
+    } else {
+    	return false;
     }
     
 });

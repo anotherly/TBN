@@ -771,35 +771,50 @@ function dateFunc(id1,id2,sdt,edt,format,callback){
 		fmt=format;
 	}
 	
-	$('#'+id1).datetimepicker({
-		 format:fmt,
-		 maxDate : moment()
-	}).on('dp.change',function(e){// 변경 상황 있을 때 사용   
-		/*console.log("날짜변경");
-		alert("날짜변경");*/
-	});
-	
-	if(typeof id2 !== "undefined" && typeof id2 != ""){
-		$('#'+id2).datetimepicker({
-			format:fmt,
+	// 행사관리 -> 날짜 최대 값 제한이 없어야함
+	if(id1 == 'EVENT_DATE'){
+		
+		$('#'+id1).datetimepicker({
+			 format:fmt
+		}).on('dp.change',function(e){// 변경 상황 있을 때 사용   
+			/*console.log("날짜변경");
+			alert("날짜변경");*/
+		});
+		
+	} else {
+		$('#'+id1).datetimepicker({
+			 format:fmt,
 			 maxDate : moment()
 		}).on('dp.change',function(e){// 변경 상황 있을 때 사용   
-			
+			/*console.log("날짜변경");
+			alert("날짜변경");*/
 		});
-	}
-	
-	//별도의 지정한 날짜가 있을 경우 사용
-	if(typeof sdt !== "undefined" && typeof sdt != ""){
-		$("#"+id1).val(sdt);
-	}else{
-		$("#"+id1).val(moment().format('YYYY-MM-DD'));
-	}
-	if(typeof edt !== "undefined" && typeof edt != ""){
-		$("#"+id2).val(edt);
-	}else{
-		$("#"+id2).val(moment().format('YYYY-MM-DD'));
+		
+		if(typeof id2 !== "undefined" && typeof id2 != ""){
+			$('#'+id2).datetimepicker({
+				format:fmt,
+				 maxDate : moment()
+			}).on('dp.change',function(e){// 변경 상황 있을 때 사용   
+				
+			});
+		}
+		
+		//별도의 지정한 날짜가 있을 경우 사용
+		if(typeof sdt !== "undefined" && typeof sdt != ""){
+			$("#"+id1).val(sdt);
+		}else{
+			$("#"+id1).val(moment().format('YYYY-MM-DD'));
+		}
+		if(typeof edt !== "undefined" && typeof edt != ""){
+			$("#"+id2).val(edt);
+		}else{
+			$("#"+id2).val(moment().format('YYYY-MM-DD'));
+		}
 	}
 }
+
+
+
 
 /************************************************************************
 함수명 : parseStrToDate

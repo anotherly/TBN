@@ -10,23 +10,23 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.stereotype.Component;
+import org.springframework.util.FileCopyUtils;
 import org.springframework.web.servlet.view.AbstractView;
 
 import kr.co.wizbrain.tbn.event.vo.EventVO;
-import kr.co.wizbrain.tbn.event.vo.eFileVO;
 
 @Component("fileDownView")
 public class FileDownView extends AbstractView{
 
 
 	@Override
-	protected void renderMergedOutputModel(Map<String, Object> model, HttpServletRequest request,
+	protected void renderMergedOutputModel(/*Map<String, Object> model*/ Map model, HttpServletRequest request,
 			HttpServletResponse response) throws Exception {
 	       /*
 	        *   ModelAndView 객체에  addObject( ) 해서 담은 내용은
 	        *   Map 객체에서 얻어낼수 있다. 
 	        */
-		EventVO fvo=(EventVO)model.get("fvo");
+			EventVO fvo=(EventVO)model.get("fvo");
 
 	      //파일을 다운로드 하는 작업을 해준다.
 	      String orgFileName=fvo.getFILE_NAME();
