@@ -6,44 +6,47 @@ public class NoticeVO {
 	
 	// notice_info table
 	// 공지사항 작성자 아이디
-	private String WRITER_ID;
+	public String WRITER_ID;
 	
 	// 공지사항 고유번호
-	private String NOTICE_ID;
+	public String NOTICE_ID;
 	
 	// 공지사항 작성자 이름
-	private String WRITER_NAME;
+	public String WRITER_NAME;
 	
 	// 공지사항 작성일(시작일)
-	private String START_DATE;
+	public String START_DATE;
 	
 	// 공지사항 종료일
-	private String END_DATE;
+	public String END_DATE;
 	
 	// 공지사항 제목
-	private String NOTICE_TITLE;
+	public String NOTICE_TITLE;
 	
 	// 공지사항 내용
-	private String NOTICE_CONTENT;
+	public String NOTICE_CONTENT;
 
-	private String NOTICE_TYPE;
+	public String NOTICE_TYPE;
 	
 	// show_notice table
 	// 하루동안 보지않음 누른 유저 아이디
-	private String USER_ID;
+	public String USER_ID;
 	
 	// 숨김 여부
-	private String SHOW_24;
+	public String SHOW_24;
 	
 	// 숨길 날짜
-	private String SHOW_TIME;
+	public String SHOW_TIME;
 
 	
 	// 파일 첨부 테이블 필드
-	private String FILE_DIR;
-	private String FILE_ID;
-	private String FILE_NAME;
-	private String REG_DT;
+	public String FILE_DIR;
+	public String FILE_ID;
+	public String FILE_NAME;
+	public String REG_DT;
+	
+	
+	public String filePath;
 	
 	
 	public String getWRITER_ID() {
@@ -137,6 +140,17 @@ public class NoticeVO {
 		REG_DT = rEG_DT;
 	}
 	
+	
+	
+	
+	
+	
+	public String getFilePath() {
+		return filePath;
+	}
+	public void setFilePath(String filePath) {
+		this.filePath = filePath;
+	}
 	@Override
 	public String toString() {
 		return "NoticeVO [WRITER_ID=" + WRITER_ID + ", NOTICE_ID=" + NOTICE_ID + ", WRITER_NAME=" + WRITER_NAME

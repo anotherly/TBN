@@ -142,6 +142,14 @@
 
 		}
 	
+	function fileDownload(url) {
+		rkFlag = true;
+		frmFile.action = '/'+url;
+		frmFile.submit();
+		rkFlag = true;
+		
+	}
+	
 </script>
 </head>
 <body style="background:none;">
@@ -171,10 +179,17 @@
 			                        ${dList[0].END_DATE}
 			                    </td>
 			                </tr>
-			                <!-- <tr style="height: 50px; border-bottom: 1px solid black;">
+			                <tr style="height: 50px; border-bottom: 1px solid black;">
 			                	<th>첨부 파일</th>
-			                	<td></td>
-			                </tr> -->
+			                	<td>
+			                		<form id="frmFile" name="frmFile" method="post">
+					            		<c:forEach var="file" items="${fileInfo}" varStatus="status">
+										    <a style="margin-left: 15px;" href="javascript:fileDownload('noticefileDownload.do?fileId=${file.FILE_ID}');">${file.FILE_NAME}</a>
+											<br>
+										</c:forEach>
+									</form>
+			                	</td>
+			                </tr>
 			                <tr style="border-bottom: 1px solid black;">
 			                    <th>공지사항 내용 </th>
 			                    <td colspan='3' id="changeTd">                 

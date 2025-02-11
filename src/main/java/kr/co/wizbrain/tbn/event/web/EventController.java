@@ -455,7 +455,7 @@ public class EventController implements ApplicationContextAware{
 	// 파일 다운로드
 	@RequestMapping(value="/EventfileDownload.do")
 	public ModelAndView EventfileDownload(@RequestParam("fileId")String fileId ,ModelAndView mView
-			,HttpServletRequest request, HttpServletResponse response) {
+			,HttpServletRequest request, HttpServletResponse response) throws Exception{
 		EventVO fvo = new EventVO();
 		fvo.setFILE_ID(fileId);
 		fvo = eventService.selectFileList(fvo).get(0);
@@ -463,10 +463,6 @@ public class EventController implements ApplicationContextAware{
 		String filePath = fvo.getFILE_DIR()+fvo.getFILE_NAME();
 		fvo.setFilePath(filePath);
 		mView.addObject("fvo", fvo);
-
-/*		FileDownView fileDownView = new FileDownView();
-		
-		fileDownView.renderMergedOutputModel(mView.getModel(), request, response);*/
 		
 		// 응답을 할 bean의 이름 설정
 		mView.setViewName("fileDownView");

@@ -135,10 +135,6 @@
 	<bean id="hssfView" class="kr.co.wizbrain.tbn.comm.excel.ExportPoiHssfView" />
     <bean id="hssfExcel" class="kr.co.wizbrain.tbn.comm.excel.ExportPoiHssfExcel" />
     <bean id="fileView" class="kr.co.wizbrain.tbn.comm.excel.FileDownloadView" />
-	
-	
-	<!-- 행사 관리 파일 다운로드  -->
-	<bean id="fileDownView" class="kr.co.wizbrain.tbn.event.web.FileDownView" />
 
 
     <mvc:view-controller path="/cmmn/validator.do" view-name="cmmn/validator"/>

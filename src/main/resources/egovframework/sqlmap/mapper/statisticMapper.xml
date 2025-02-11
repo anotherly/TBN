@@ -26,6 +26,7 @@
 				,TYPE_ID AS CODE
 				,TYPE_NAME AS CODE_NAME
 			FROM CODE_INFORMER_TYPE
+			order by code
 	</select>
     <!-- 1.1.1 통신원 별 전체건수 -->
 	<select id="informerTypeAll" parameterType="params" resultType="record">
@@ -1050,7 +1051,6 @@
 		WHERE  STAT_DATE BETWEEN #{start_date} AND #{end_date}
 	    and REGION_ID = #{REGION_ID}
 		GROUP BY stat_date,informer_type
-		
 		UNION ALL
 		
 		SELECT stat_date, informer_type, 'NB' SEQ, SUM(SEND_N) CNT

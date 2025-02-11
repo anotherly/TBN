@@ -1,6 +1,8 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -64,7 +66,29 @@
 		var isCheck = checkForm();
 		
 		if(isCheck) {
-			$.ajax({
+			
+			let frm = $('#updateForm').serialize();
+			
+			var options = {
+					url:"/notice/update.do",
+			        type:'post',
+			        data: frm,
+			        dataType: "json",
+			        success: function(res){	
+			        	if(res.msg > 0) {
+			        		console.log("성공");
+			        		opener.search(true);
+			        		self.close();
+			        	} else {
+			        		alert("저장에 실패하였습니다.");
+			        	}
+			        },
+		            error: function(res,error){
+		                alert("에러가 발생했습니다."+res);
+		            }
+				}
+			
+		/* 	$.ajax({
 				url : "/notice/update.do",
 				data : $('#updateForm').serialize(),
 				type : "post",
@@ -81,16 +105,55 @@
 				},
 				error : function(xhr, status, error) {
 					console.log('공지사항 불러오기 ajax 요청에 문제가 있습니다.');
+				
 				}
 			});
 		} else {
 			return false;
+		} */
+			$('#updateForm').ajaxSubmit(options);
 		}
 		
 	});
 	
 	$('.cancleButton').on('click', function() {
 		self.close();
+	});
+	
+	
+	$(".deleteBtn").click(function() {
+	    var fileId = $(this).attr("id");
+		var noticeId = $('#NOTICE_ID').val();
+	    
+	    var options = {
+	            url:"/notice/eventOneDelete.do",
+	            type:'post',
+	            data: {
+	            	fileId: fileId , noticeId : noticeId
+	            },
+	            dataType: "json",
+	            success: function(res, html){
+	                if(res.cnt > 0){
+	                    alert("삭제되었습니다.");
+	                } else {
+	         			alert("삭제에 실패하였습니다.");
+	                }
+	            } ,
+	            error: function(res,error){
+	                alert("에러가 발생했습니다."+error);
+	            }
+	    };
+	    
+	    
+	    var delChk = confirm('삭제 시 되돌릴 수 없습니다. 정말 삭제하시겠습니까?');
+	    if(delChk){
+	        $.ajax(options);
+	        $(this).hide(); // 클릭된 삭제 버튼 숨기기
+	    	$(this).siblings().hide(); // 클릭된 요소의 형제 요소 숨기기
+	    } else {
+	    	return false;
+	    }
+	    
 	});
 	
 	
@@ -115,7 +178,12 @@
 			alert('내용을 입력해주세요.');
 			return false;
 		} else {
-			return true;
+			
+			if(confirm('이대로 저장합니까?')) {
+				return true;
+			}else{
+				return false;
+			}
 		}
 	}
 	
@@ -126,7 +194,7 @@
 <body style="background:none;">
 <h1 class="content-title" style="margin-top: 100px; margin-left:160px;">공지사항 수정</h1>
 <div id="mainDiv" class="mainDiv" style="flex-direction:column; align-items: center;  width: 1200px;">
-			    <form action="/notice/update.do" method="post" id="updateForm"> <!-- from 및 테이블 만들어 수정/상세에서도 사용 -->
+			    <form action="/notice/update.do" method="post" id="updateForm" enctype="multipart/form-data"> <!-- from 및 테이블 만들어 수정/상세에서도 사용 -->
 			        <div class="insertTable" style="width: 880px; height: 500px; ">
 			            <table style="width: 100%; height: 100%;">
 			                <tr style="height: 50px; border-top : 2px solid black;border-bottom: 1px solid black;">
@@ -153,11 +221,20 @@
 			                        <input type="text" id="endDate" name="END_DATE" value="${uList[0].END_DATE}" readonly>
 			                    </td>
 			                </tr>
-			                <!-- <tr style="height: 50px; border-bottom: 1px solid black;">
+			                <tr style="height: 50px; border-bottom: 1px solid black;">
 			                	<th>파일 첨부</th>
 			                	<td>
+			                		<input type="file" class="input_base" name="multiFile" multiple/>
+	                         		<c:if test="${fn:length(fileInfo) > 0}"> <!-- 첨부된 파일이 1개라도 있다면 -->
+	                         			<c:forEach var="file" items="${fileInfo}" varStatus="status">
+	                         			<div style="display:flex; height: 0px;">
+										    <p style="margin-left: 15px;" id="${file.FILE_ID}">${file.FILE_NAME}</p> <p style="color:blue; margin-left:15px; cursor:pointer;" id="${file.FILE_ID}" class="deleteBtn">삭제</p>
+										</div>
+										<br>
+										</c:forEach>
+	                         		</c:if>
 			                	</td>
-			                </tr> -->
+			                </tr>
 			                <tr style="border-bottom: 1px solid black;">
 			                    <th>공지사항 내용 </th>
 			                    <td colspan='3'>
@@ -168,7 +245,7 @@
 			            <input type="hidden" id="writer_id" name="WRITER_ID" value="${uList[0].WRITER_ID}">
 			            <input type="hidden" id="writer_name" name="WRITER_NAME" value="${uList[0].WRITER_NAME}">
 			            <input type="hidden" id="start_date" name="START_DATE" value="${uList[0].START_DATE}">
-			            <input type="hidden" name="NOTICE_ID" value="${uList[0].NOTICE_ID}">
+			            <input type="hidden" name="NOTICE_ID" id="NOTICE_ID" value="${uList[0].NOTICE_ID}">
 			        </div>
 			    </form>
 			    <div style="width: 880px; height: 100px; display: flex; flex-direction: row;align-items: center;justify-content: flex-end;">

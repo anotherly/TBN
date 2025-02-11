@@ -4,10 +4,37 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8">
-<jsp:include page="../common/all.jsp" flush="false" />
-<link rel="stylesheet" href="http://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+<!-- <meta charset="UTF-8"> -->
+<%-- <jsp:include page="../common/all.jsp" flush="false" /> --%>
+<%-- <link rel="stylesheet" href="http://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
+<script src="<%=request.getContextPath()%>/calender/moment.js"></script>
+	<script src="<%=request.getContextPath()%>/calender/mo_ko.js"></script>
+	<script src="<%=request.getContextPath()%>/calender/bootstrap-datetimepicker.js"></script>
+	<link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/calender/no-boot-calendar-custom.css" />
+	<link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/calender/datetimepickerstyle.css" /> --%>
+	
+	
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/css/layout.css"/>
+	<link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/css/pagination.css" />
+	<link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/css/jquery-ui-1.9.0.custom.css" rel="stylesheet"  />
+	<script  type="text/javascript" charset="utf-8" src="<%=request.getContextPath()%>/js/jquery.js"></script>
+	
+	<script  type="text/javascript" charset="utf-8"  src="<%=request.getContextPath()%>/js/common.js"></script>
+	<script type="text/javascript" charset="utf-8" src="<%=request.getContextPath()%>/js/jquery.pagination.js"></script>
+	<script type="text/javascript" charset="utf-8" src="<%=request.getContextPath()%>/js/jquery.form.js"></script>
+	
+	<script type="text/javascript" charset="utf-8" src="<%=request.getContextPath()%>/js/jquery.form.js"></script>
+	<script type="text/javascript" charset="utf-8" src="<%=request.getContextPath()%>/js/timeDate.js"></script>
+		
+	<!-- DateTimePicker -->
+	<script src="<%=request.getContextPath()%>/calender/moment.js"></script>
+	<script src="<%=request.getContextPath()%>/calender/mo_ko.js"></script>
+	<script src="<%=request.getContextPath()%>/calender/bootstrap-datetimepicker.js"></script>
+	<link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/calender/no-boot-calendar-custom.css" />
+	<link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/calender/datetimepickerstyle.css" />
 <title>tbn교통방송 제보접수시스템</title>
 <style>
 	th {
@@ -44,8 +71,10 @@
 	$(document).ready(function(){
 /* 		$("#menu").load("/common/menu.do"); */
 	
+		/* dateFunc('EVENT_DATE'); */
+		dateFunc('endDate');
 		
-		$('#endDate').datepicker({
+		/* $('#endDate').datepicker({
 				dateFormat: 'yy-mm-dd' //달력 날짜 형태
 				,showOtherMonths: true //빈 공간에 현재월의 앞뒤월의 날짜를 표시
 			    ,showMonthAfterYear:true // 월- 년 순서가아닌 년도 - 월 순서
@@ -56,7 +85,7 @@
 			    ,monthNames: ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'] //달력의 월 부분 Tooltip
 			    ,dayNamesMin: ['일','월','화','수','목','금','토'] //달력의 요일 텍스트
 			    ,dayNames: ['일요일','월요일','화요일','수요일','목요일','금요일','토요일'] //달력의 요일 Tooltip
-		});
+		}); */
 		
 		var userId = '${login.userId}';
 		var userName = '${login.userName}';
@@ -74,8 +103,32 @@
 			var isCheck = checkForm();
 			
 			if(isCheck) {
+				let frm = $('#insertForm').serialize();
 				
-				$.ajax({
+				var options = {
+					url:"/notice/insert.do",
+			        type:'post',
+			        data: frm,
+			        dataType: "json",
+			        success: function(res){	
+			        	if(res.msg > 0) {
+			        		console.log("성공");
+			        		opener.search(true);
+			        		self.close();
+			        	} else {
+			        		alert("저장에 실패하였습니다.");
+			        	}
+			        },
+		            error: function(res,error){
+		                alert("에러가 발생했습니다."+res);
+		            }
+				}
+				
+				$('#insertForm').ajaxSubmit(options);
+			}
+				
+				
+				/* $.ajax({
 					url : "/notice/insert.do",
 					data : $('#insertForm').serialize(),
 					type : "post",
@@ -97,7 +150,7 @@
 				
 			} else {
 				return false;
-			}
+			} */
 		});
 		
 		$('.cancleButton').on('click', function() {
@@ -127,6 +180,7 @@
 				return true;
 			}
 		}
+		
 	})
 </script>
 </head>
@@ -150,20 +204,20 @@
 			                    	<input type="radio" name="notice_type" vlaue="">
 			                    </td> -->
 			                </tr >
-			                <tr style="height: 50px; border-bottom: 1px solid black;">
+			                <tr style="height: 50px; border-bottom: 1px solid black; position: relative;">
 			                    <th>시작일 </th>
 			                    <td id="start"></td>
 			                    <th>종료일 </th>
 			                    <td >
-			                        <input type="text" id="endDate" name="END_DATE" readonly>
+			                        <input type="text" id="endDate" name="END_DATE">
 			                    </td>
 			                </tr>
-			                <!-- <tr style="height: 50px; border-bottom: 1px solid black;">
+			                <tr style="height: 50px; border-bottom: 1px solid black;">
 			                	<th>파일 첨부</th>
 			                	<td colspan='3'>
 			                		<input type="file" name="multiFile" multiple/>
 			                	</td>
-			                </tr> -->
+			                </tr>
 			                <tr style="border-bottom: 1px solid black;">
 			                    <th>공지사항 내용 </th>
 			                    <td colspan='3'>

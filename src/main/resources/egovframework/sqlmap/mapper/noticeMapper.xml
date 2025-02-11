@@ -106,4 +106,71 @@
 			    AND TRUNC(end_date) >= TO_DATE(#{today}, 'YY/MM/DD')
 			    ORDER BY start_date DESC ]]>
 	</select>
+	
+	
+	<!-- 25-02-11 : 공지사항을 등록하면, 등록된 공지사항의 ID를 가져온다. (첨부 파일 용)  -->
+	<select id="selectEventId" resultType="java.lang.String">
+		SELECT * FROM
+		( SELECT NOTICE_ID FROM NOTICE_INFO
+			ORDER BY START_DATE DESC
+		)
+		WHERE ROWNUM = 1
+	</select>
+	
+	<!-- 25-02-11 : 첨부파일 등록 -->
+	<insert id="insertFile">
+		INSERT ALL
+			<foreach collection="list" item="item" index="index" open="" close="" separator="">
+				INTO NOTICE_FILE_INFO (FILE_ID, FILE_NAME, FILE_DIR, REG_DT, NOTICE_ID) VALUES(DBMS_RANDOM.STRING('X', 20), #{item.fileName}, #{item.fileDir}, SYSDATE, #{item.noticeId})
+			</foreach>
+		SELECT *
+		FROM DUAL
+	</insert>
+	
+	
+	<!-- 파일 가져오기 -->
+	<select id="getFileList" resultType="kr.co.wizbrain.tbn.notice.vo.NoticeVO">
+		select *
+		from notice_file_info
+		where notice_id = #{noticeId}
+	</select>
+	
+	
+	<!-- 다운로드용 파일 정보 -->
+	<select id="selectFileList" parameterType="kr.co.wizbrain.tbn.notice.vo.NoticeVO" resultType="kr.co.wizbrain.tbn.notice.vo.NoticeVO">
+		select *
+    	from notice_file_info
+    	where file_id = #{FILE_ID}
+	</select>
+	
+	
+	
+	<!-- 삭제 할 파일 조회 -->
+	<select id="selectFileList2" parameterType="kr.co.wizbrain.tbn.notice.vo.NoticeVO" resultType="kr.co.wizbrain.tbn.notice.vo.NoticeVO">
+    	select *
+    	from notice_file_info
+    	where notice_id = #{NOTICE_ID}
+    </select>
+    
+    
+    <!-- 파일 삭제 -->
+    <delete id="deleteNFile">
+    	delete from notice_file_info
+    	where notice_id= #{noticeId}
+    </delete>
+    
+    
+    	<!-- 파일 일괄 삭제 - 파일 이름 찾기 -->
+    <select id="selectFileName" resultType="java.lang.String">
+    	select file_name
+    	from notice_file_info
+    	where file_id = #{fileId}
+    </select>
+    
+    <!-- 파일 일괄 삭제 -->
+    <delete id="deleteFileOne">
+    	delete from notice_file_info
+    	where file_id= #{fileId}
+    </delete>
+    
 </mapper>

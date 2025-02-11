@@ -59,7 +59,6 @@ function ajaxMethod(url, data, callback, message,thDiv){
 		},
 		//finally 기능 수행
 		complete : function() {
-
 		}
 	});
 	return output;
@@ -781,6 +780,13 @@ function dateFunc(id1,id2,sdt,edt,format,callback){
 			alert("날짜변경");*/
 		});
 		
+	} else if(id1 =='endDate') { // 공지사항 -> 날짜 최대 값 제한이 없어야 함
+		$('#'+id1).datetimepicker({
+			 format:fmt
+		}).on('dp.change',function(e){// 변경 상황 있을 때 사용   
+			/*console.log("날짜변경");
+			alert("날짜변경");*/
+		});
 	} else {
 		$('#'+id1).datetimepicker({
 			 format:fmt,

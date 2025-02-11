@@ -8,7 +8,7 @@
 	    checkAuth();
 	    
 	    function checkAuth() {
-	    	console.log(authCode);
+	    	
 	    	if(authCode != 999) {
 	    		console.log(authCode);
 	    		$('.mileageMenu').hide();

@@ -747,6 +747,9 @@ public class ExportPoiHssfExcel extends AbstractView {
 
 	protected void standartdReceiptUse(Map model, HSSFWorkbook wb) {
 		int rowCnt = 0;
+		
+		int eSize = (int)model.get("eSize");
+		
 		String thDateTime = (String) model.get("start_date");
 		HSSFSheet sheet1 = wb.createSheet(model.get("sheetNames1").toString());
 		HSSFRow titlerow = sheet1.createRow(rowCnt);
@@ -955,7 +958,7 @@ public class ExportPoiHssfExcel extends AbstractView {
 			sum += record.getInt("CNT");
 		}*/
 		
-		int[] sumList = new int[8];
+		int[] sumList = new int[eSize];
 		
 		// 구분 > 합계들 나누기 및 구하기
 		for(j = 0; j < data.size(); j++) {
@@ -973,14 +976,14 @@ public class ExportPoiHssfExcel extends AbstractView {
 		int sumSendY;
 		
 		// 수정 전 ( ArrayIndexOutOfBoundsException: 8 오류 발생하여 for 값을 8로 고정 )
-		/*for (sumSendY = 0; sumSendY < cntValues.size(); ++sumSendY) {
-			headrow1.createCell(sumSendY * 4 + 5).setCellValue(sumList[sumSendY]);
-		}*/
-		
-		// 수정 후 값을 8로 고정시켜 sumSendY가 7을 넘지 않도록 설정
-		for (sumSendY = 0; sumSendY < 8; ++sumSendY) {
+		for (sumSendY = 0; sumSendY < cntValues.size(); ++sumSendY) {
 			headrow1.createCell(sumSendY * 4 + 5).setCellValue(sumList[sumSendY]);
 		}
+		
+		// 수정 후 값을 8로 고정시켜 sumSendY가 7을 넘지 않도록 설정
+		/*for (sumSendY = 0; sumSendY < 8; ++sumSendY) {
+			headrow1.createCell(sumSendY * 4 + 5).setCellValue(sumList[sumSendY]);
+		}*/
 
 		for (i = 0; i < headData.size() + 1; ++i) {
 			sheet2.addMergedRegion(new CellRangeAddress(rowCnt, rowCnt, i * 4 + 1, i * 4 + 4));
@@ -1033,7 +1036,8 @@ public class ExportPoiHssfExcel extends AbstractView {
 			}
 		}*/
 		
-		int[] sumList1 = new int[32];
+		int sSize = 4 * eSize;
+		int[] sumList1 = new int[sSize];
 		
 		for(j = 0; j < data.size(); j++) {
 			RecordDto record = (RecordDto) data.get(j);		
@@ -1055,7 +1059,7 @@ public class ExportPoiHssfExcel extends AbstractView {
  			}
 		}
 		
-		for(int z = 0; z < 32; z++) {
+		for(int z = 0; z < sSize ; z++) {
 			headrow1.createCell(z + 5).setCellValue(sumList1[z]);
 		}
 		

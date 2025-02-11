@@ -74,7 +74,7 @@
 		var rkFlag = false;//로드/언로드 플래그
 
 		$(document).ready(function() {
-			//console.log("최초 화면");
+			
 			var sessionVo = '${login.userId}'
 			stMainIdx(sessionVo);
 		});

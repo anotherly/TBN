@@ -153,7 +153,7 @@ function saveEvent(){
     var date = $('#EVENT_DATE').val().replace(/-/g,'');
     $('#EVENT_DATE').val(date);
     let frm = $('#editEventFrm').serialize();
-    console.log("frm : "+frm);
+    /* console.log("frm : "+frm); */
     var options = {
             url:"/informer/event/saveEvent.do",
             type:'post',

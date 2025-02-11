@@ -379,6 +379,8 @@ public class StatisticController extends BaseController{
 		List sumMonth = statisticService.monthSendYNA07A08(params);	// 월별 합계
 		List Data = statisticService.dailyRegionSendYNA07A08(params);	// 일별 방송국별 데이터
 		
+		int eSize = headList.size();
+		
 		model.addAttribute("mapping", "standartdReceiptUse");
 		model.addAttribute("fileName", "교통정보 수집건수 및 활용실적"+params.getString("city")+".xls");
 		
@@ -396,6 +398,8 @@ public class StatisticController extends BaseController{
 		model.addAttribute("Data", Data);
 		model.addAttribute("start_date", params.get("start_date"));
 		model.addAttribute("end_date", params.get("end_date"));
+		model.addAttribute("eSize",eSize);
+		
 		
 		return "hssfExcel";
 	}

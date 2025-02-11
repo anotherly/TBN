@@ -35,11 +35,12 @@
 	            	<td class="b">첨부파일</td>
 	            	<td id="fileDown">
 	            	<input type="hidden" name="FILE_ID" value="${eventInfo.EVENT_ID}">
+	            	<form id="frmFile" name="frmFile" method="post">
 	            		<c:forEach var="file" items="${fileInfo}" varStatus="status">
-						    <a style="margin-left: 15px;" href="/EventfileDownload.do?fileId=${file.FILE_ID}">${file.FILE_NAME}</a>
+						    <a style="margin-left: 15px;" href="javascript:fileDownload('EventfileDownload.do?fileId=${file.FILE_ID}');">${file.FILE_NAME}</a>
 							<br>
 						</c:forEach>
-
+					</form>
 	            	</td>
 	            </tr>
 	        </table>
@@ -135,6 +136,15 @@
 </div>
 <!-- //contents -->
 <script>
+
+function fileDownload(url) {
+	rkFlag = true;
+	frmFile.action = '/'+url;
+	frmFile.submit();
+	rkFlag = true;
+	
+}
+
 $(document).ready(function(){
 	console.log("행사관리 상세 화면 : eventDetailView.jsp");
 	$('.input_base').keydown(function(e) {
@@ -144,36 +154,10 @@ $(document).ready(function(){
 			search();
 		}
 	});
-	
-	
-	
-	
 	// 로드 되면 파일 다운로드 a 태그 생성
 	
 })
 
-/* $('.downFile').on('click', function() {
-    var fileId = $(this).attr('id'); // 아이디 값을 가져옴
-    console.log(fileId); // 아이디 값 출력
-    
-    var options = {
-            url:'/EventfileDownload.do',
-            type:'post',
-            data: {
-            	fileId: fileId
-            },
-            /* dataType: "json", */
-            /* success: function(res){
-                console.log("완료");
-                alert("완료");
-            } ,
-            error: function(res,error){
-                alert("에러가 발생했습니다."+error);
-            }
-    };
-    $.ajax(options);
-}); 
- */ 
 
 /**
  * 이벤트 수정시 변경내역 반영

@@ -3436,6 +3436,17 @@ ul #tempSaveTb li span:nth-child(3){
     background-size: cover;
 }
 
+.file_img {
+	width: 21px;
+    height: 21px;
+
+    margin-right: 5px;
+    
+    background-image: url('../images/file.svg');
+    background-size: cover;
+}
+
+
 .notice_content{
     width: 500px;
 }
