@@ -19,7 +19,7 @@
         <h1 class='content-title'>통신원관리</h1>
     </div>
     <div class="board_list" style="margin-top: 10px; margin-bottom:100px;">
-        <div class="rounding_wrap" style="width: 1030px;background: #f1f1f1;border-radius: 30px;border: 1px solid #a8b4c4;height: 50px;display: flex;]align-items: center;justify-content: center;">
+        <div class="rounding_wrap" style="width: 1030px;background: #f1f1f1;border-radius: 30px;border: 1px solid #a8b4c4;height: 50px;display: flex; align-items: center;justify-content: center;">
                 <div class="wrap_center" style="    width: 1030px;background: none;border: none;display: flex;justify-content: center;align-items: center;">
 				    <div id="searchBox" style="float: right;margin-right:15px ">
 				        <form id="searchFrm" name="searchFrm">
@@ -95,21 +95,31 @@
     
     <!-- 검색조건 영역 끝 -->
     <div style="display:flex;align-items: center;justify-content: space-between;">
-	<div>
-		<p id="resultListTotal" style="width: 300px;">
-			<img src="../images/ico_result.gif" />
-			검색결과 <span style="font-weight:700;"></span>건
-		</p>
-	</div>
-	<div>
-		<a href="javascript:goStats('stats/informerDown.ajax');">
-			<img src="../images/btn_excel_down2.gif" alt="엑셀다운로드" style="width: 90px;"/>
-		</a>			
+		<div>
+			<p id="resultListTotal" style="width: 300px;">
+				<img src="../images/ico_result.gif" />
+				검색결과 <span style="font-weight:700;"></span>건
+			</p>
+		</div>
+		<div>
+			<input type="hidden" value="0" id="showCtn">
+			<select id="addOptionSelect" style="display:none;">
+				<option value="none">-- 선택 --</option>
+				<option value="16">16라벨 출력</option>
+				<option value="24">24라벨 출력</option>
+			</select>
+			<button id="addDown" style="width: 100px; height: 30px; border-radius: 3px; color: white; background-color: #7b7c7d;margin-right: 4px;"><strong>주소 라벨 출력</strong></button>
+			<a href="javascript:goStats('stats/informerDown.ajax');">
+				<img src="../images/btn_excel_down2.gif" alt="엑셀다운로드" style="width: 90px;"/>
+			</a>			
+		</div>
 	</div>
 </div>
-</div>
+<form id="listFrm" name="listFrm">
+<input type="hidden" name="labelType" id="labelT">
 <div id="listDiv">
 </div>
+</form>
 <div id="pageDiv" style="margin-top:10px">
     <div id="pagingBox">
         <!-- paging Box content -->
@@ -119,6 +129,7 @@
     </div>
 </div>
 </div>
+
 <script>
 $(document).ready(function(){
 	console.log("informerMain.jsp 진입");
@@ -285,4 +296,56 @@ function goStats(url){
 	searchFrm.submit();
 	rkFlag = true;
 }
+
+// 주소 라벨 출력 버튼 클릭 시 실행 함수
+$('#addDown').on('click', function(){
+	var showCtn = $('#showCtn').val();
+	
+	if(showCtn == 0) { //select box 보이게 하기
+		$('#addOptionSelect').show();
+		$('#showCtn').val(1);
+	} else {
+		$('#addOptionSelect').hide();
+		$('#showCtn').val(0); // 초기화 하기
+	}
+	
+});
+
+// 라벨 타입 선택 시 실행 함수
+$('#addOptionSelect').on('change', function() {
+	var nowVal = $('#addOptionSelect').val();
+	var url = 'stat/addDownload.do';
+	
+	
+	if(nowVal == 'none') { 
+		return false;
+	} else {
+		$('#labelT').val(nowVal);
+		
+		var valCheck = labelYes();
+		
+		if(valCheck) {
+			rkFlag = true;
+			listFrm.action = '<c:url value="/"/>'+url;
+			listFrm.submit();
+			rkFlag = true; 
+		} else {
+			return false;
+		}
+		
+	}
+})
+
+// 라벨 출력 유효성 검사
+function labelYes() {
+	
+	if ($("input[name='Selection']:checked").length === 0) {
+        alert("통신원을 1명 이상 선택해주세요");
+        return false; 
+ } else {
+	 return true;
+ } 
+	
+}
+
 </script>

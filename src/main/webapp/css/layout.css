@@ -3299,15 +3299,15 @@ ul #tempSaveTb li span:nth-child(3){
 
 #informer_table{display: block;}
 #informer_table tbody{display: block;height: 500px;overflow:auto;width:880px;}
-#informer_table th:nth-of-type(1), #informer_table td:nth-of-type(1) { width: 70px; } /* id */
-#informer_table th:nth-of-type(2), #informer_table td:nth-of-type(2) { width: 90px; }/* 방송국 */
-#informer_table th:nth-of-type(3), #informer_table td:nth-of-type(3) { width: 120px; } /* 유형 */
-#informer_table th:nth-of-type(4), #informer_table td:nth-of-type(4) { width: 150px; } /* 소속기관 */
-#informer_table th:nth-of-type(5), #informer_table td:nth-of-type(5) { width: 200px; }/* 이름 */
-#informer_table th:nth-of-type(6), #informer_table td:nth-of-type(6) { width: 150px; }/* 전화 */ 
-#informer_table th:nth-of-type(7), #informer_table td:nth-of-type(7) { width: 90px; }/* 활동여부 */
-#informer_table th:nth-of-type(8), #informer_table td:nth-of-type(8) { width: 150px; } /* 등록일 */
-#informer_table th:last-child, #informer_table td:last-child { width: 100px; }/* 이력정보 */
+/* #informer_table th:nth-of-type(1), #informer_table td:nth-of-type(1) { width: 70px; } id
+#informer_table th:nth-of-type(2), #informer_table td:nth-of-type(2) { width: 90px; }방송국
+#informer_table th:nth-of-type(3), #informer_table td:nth-of-type(3) { width: 120px; } 유형
+#informer_table th:nth-of-type(4), #informer_table td:nth-of-type(4) { width: 150px; } 소속기관
+#informer_table th:nth-of-type(5), #informer_table td:nth-of-type(5) { width: 200px; }이름
+#informer_table th:nth-of-type(6), #informer_table td:nth-of-type(6) { width: 150px; }전화 
+#informer_table th:nth-of-type(7), #informer_table td:nth-of-type(7) { width: 90px; }활동여부
+#informer_table th:nth-of-type(8), #informer_table td:nth-of-type(8) { width: 150px; } 등록일
+#informer_table th:last-child, #informer_table td:last-child { width: 100px; }이력정보 */
 
 .sortDiv{
     display: flex;

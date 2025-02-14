@@ -55,7 +55,11 @@ public class StatisticServiceImpl implements StatisticService{
 	}
 		
 	
-	
+	// 주소 라벨 출력
+	@Override
+	public List<InfrmVO> addRabel(List<InfrmVO> datalist) throws Exception {
+		return statisticMapper.addRabel(datalist);
+	}
 	
 		
 	// 가. 교통 정보 제공 대장

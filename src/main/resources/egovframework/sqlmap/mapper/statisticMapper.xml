@@ -2284,4 +2284,17 @@
 		 ORDER BY B.MONTH_VAR ASC
     </select>
 
+
+
+	<!-- 주소 라벨 출력 -->
+	<select id="addRabel" parameterType="java.util.List" resultType="kr.co.wizbrain.tbn.infrm.vo.InfrmVO">
+		<foreach collection="collection" item="item" index="i" separator="union">
+			SELECT NVL(ADDRESS_HOME,'none')as addressHome, NVL(INFORMER_NAME,'none')as informerName,
+			NVL(ZIPCODE,'none')as zipcode,NVL(PHONE_CELL , 'none')as phoneCell
+			FROM INFORMER
+			WHERE INFORMER_ID = #{item.informerId}
+		</foreach>
+
+	</select>
+
 </mapper>

@@ -525,4 +525,9 @@ button[type=submit]{
     font-size: 16px;
 }
 
-
+/* 주소라벨 출력 버튼 스타일 */
+#addDown{
+	width : 80px;
+	height : 30px;
+		
+}

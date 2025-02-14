@@ -4,7 +4,7 @@
 
 <div class="board_list">
 	<div class="list_result_sc" style="width:1030px;">
-	    <table summary="통신원목록" border="0" cellpadding="0" cellspacing="0" class="list01"  id="informer_table">
+	    <table summary="통신원목록" border="0" cellpadding="0" cellspacing="0" class="list01"  id="informer_table" style="table-layout: fixed;">
 	    <caption>
 	       통신원목록
 	    </caption>
@@ -21,15 +21,16 @@
 	    </colgroup>  --%>
 	    <thead>
 	        <tr>
-	            <th >ID<div class='sortDiv' ><button onclick="sortTD ( 0 ,this)">▲</button><button onclick="reverseTD ( 0 ,this)">▼</button></div></th>
-	            <th >방송국<div class='sortDiv' ><button onclick="sortTD ( 1 ,this)">▲</button><button onclick="reverseTD ( 1 ,this)">▼</button></div></th>
-	            <th >유형<div class='sortDiv' ><button onclick="sortTD ( 2 ,this)">▲</button><button onclick="reverseTD ( 2 ,this)">▼</button></div></th>
-	            <th >소속기관<div class='sortDiv' ><button onclick="sortTD ( 2 ,this)">▲</button><button onclick="reverseTD ( 2 ,this)">▼</button></div></th>
-	            <th >이름<div class='sortDiv' ><button onclick="sortTD ( 3 ,this)">▲</button><button onclick="reverseTD ( 3 ,this)">▼</button></div></th>
-	            <th >전화<div class='sortDiv' ><button onclick="sortTD ( 4 ,this)">▲</button><button onclick="reverseTD ( 4 ,this)">▼</button></div></th>
-	            <th >활동여부<div class='sortDiv' ><button onclick="sortTD ( 5 ,this)">▲</button><button onclick="reverseTD ( 5 ,this)">▼</button></div></th>
-	            <th style="width:150px;">등록일<div class='sortDiv' ><button onclick="sortTD ( 6 ,this)">▲</button><button onclick="reverseTD ( 6 ,this)">▼</button></div></th>
-	            <th >이력정보</th>
+	        	<th style="width:50px;">선택</th>
+	            <th style="width:90px;">ID<div class='sortDiv' ><button onclick="sortTD ( 0 ,this)">▲</button><button onclick="reverseTD ( 0 ,this)">▼</button></div></th>
+	            <th style="width:100px;">방송국<div class='sortDiv' ><button onclick="sortTD ( 1 ,this)">▲</button><button onclick="reverseTD ( 1 ,this)">▼</button></div></th>
+	            <th style="width:80px;">유형<div class='sortDiv' ><button onclick="sortTD ( 2 ,this)">▲</button><button onclick="reverseTD ( 2 ,this)">▼</button></div></th>
+	            <th style="width:130px;">소속기관<div class='sortDiv' ><button onclick="sortTD ( 2 ,this)">▲</button><button onclick="reverseTD ( 2 ,this)">▼</button></div></th>
+	            <th style="width:150px;">이름<div class='sortDiv' ><button onclick="sortTD ( 3 ,this)">▲</button><button onclick="reverseTD ( 3 ,this)">▼</button></div></th>
+	            <th style="width:150px;">전화<div class='sortDiv' ><button onclick="sortTD ( 4 ,this)">▲</button><button onclick="reverseTD ( 4 ,this)">▼</button></div></th>
+	            <th style="width:100px;">활동여부<div class='sortDiv' ><button onclick="sortTD ( 5 ,this)">▲</button><button onclick="reverseTD ( 5 ,this)">▼</button></div></th>
+	            <th style="width:102px;">등록일<div class='sortDiv' ><button onclick="sortTD ( 6 ,this)">▲</button><button onclick="reverseTD ( 6 ,this)">▼</button></div></th>
+	            <th style="width:62px;">이력정보</th>
 	        </tr>
 	    </thead>
 	    <tbody style="width:1030px;">
@@ -40,18 +41,19 @@
    	   		<c:otherwise>
    	   			<c:forEach var="informer" items="${informerList}" varStatus="idx">
                 <tr>
+                <td style="width:50px;"><input type="checkbox" id="Selection" name="Selection" value="${informer.informerId}"/></td>
 		            <%-- <td onclick="editInformer('${informer.informerId}');" style="cursor: pointer;">${ALL_CNT - MIN + 1 - idx.count}</td> --%>
-                    <td onclick="editInformer('${informer.informerId}');" style="cursor: pointer;"><c:out value="${informer.actId}"/></td>
-                    <td onclick="editInformer('${informer.informerId}');" style="cursor: pointer;"><c:out value="${informer.areaName}"/></td>
-                    <td onclick="editInformer('${informer.informerId}');" style="cursor: pointer;"><c:out value="${informer.informerTypeName}"/></td>
-                    <td onclick="editInformer('${informer.informerId}');" style="cursor: pointer;"><c:out value="${informer.orgName}"/></td>
-                    <td onclick="editInformer('${informer.informerId}');" style="cursor: pointer;"><c:out value="${informer.informerName}"/></td>
-                    <td onclick="editInformer('${informer.informerId}');" style="cursor: pointer;"><c:out value="${informer.phoneCell}"/></td>
-                    <td onclick="editInformer('${informer.informerId}');" style="cursor: pointer;"><c:out value="${informer.flagAct == 'Y' ? '위촉' : '해촉'}"/></td>
-                    <td onclick="editInformer('${informer.informerId}');" style="cursor: pointer;"><c:out value="${informer.regDate}"/></td>
+                    <td onclick="editInformer('${informer.informerId}');" style="cursor: pointer;width:90px;"><c:out value="${informer.actId}"/></td>
+                    <td onclick="editInformer('${informer.informerId}');" style="cursor: pointer;width:100px;"><c:out value="${informer.areaName}"/></td>
+                    <td onclick="editInformer('${informer.informerId}');" style="cursor: pointer;width:80px;"><c:out value="${informer.informerTypeName}"/></td>
+                    <td onclick="editInformer('${informer.informerId}');" style="cursor: pointer;width:130px;"><c:out value="${informer.orgName}"/></td>
+                    <td onclick="editInformer('${informer.informerId}');" style="cursor: pointer;width:150px;"><c:out value="${informer.informerName}"/></td>
+                    <td onclick="editInformer('${informer.informerId}');" style="cursor: pointer;width:150px;"><c:out value="${informer.phoneCell}"/></td>
+                    <td onclick="editInformer('${informer.informerId}');" style="cursor: pointer;width:100px;"><c:out value="${informer.flagAct == 'Y' ? '위촉' : '해촉'}"/></td>
+                    <td onclick="editInformer('${informer.informerId}');" style="cursor: pointer;width:102px;"><c:out value="${informer.regDate}"/></td>
                     <%-- <td onclick="editInformer('${informer.informerId}');" style="cursor: pointer;"><c:out value="${informer.TRS_NO}"/></td>
                     <td onclick="editInformer('${informer.informerId}');" style="cursor: pointer;"><c:out value="${informer.HAM_NO}"/></td> --%>
-                    <td><img src="<c:url value="/images/btn_view2.gif"/>" onclick="showInformerHistory('${informer.informerId}');" style="cursor: pointer;"/></td>
+                    <td style="width:62px;"><img src="<c:url value="/images/btn_view2.gif"/>" onclick="showInformerHistory('${informer.informerId}');" style="cursor: pointer;"/></td>
 	            </tr>
             </c:forEach>
    	   		</c:otherwise>

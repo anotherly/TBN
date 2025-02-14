@@ -36,8 +36,9 @@ public interface StatisticMapper{
 	public List selectArea();
 	
 	
-	
-	
+	// 주소라벨 출력
+	public List<InfrmVO> addRabel(List<InfrmVO> datalist) throws Exception;
+		
 	
 	/**********************************************************************************************************************************************************/
 	// 기간별 통계                                                                                                                                                                                                                                                                                              //

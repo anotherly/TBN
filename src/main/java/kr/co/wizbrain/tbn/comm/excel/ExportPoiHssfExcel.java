@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
@@ -19,9 +18,13 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.poi.hssf.usermodel.HSSFCell;
+import org.apache.poi.hssf.usermodel.HSSFCellStyle;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.springframework.web.servlet.view.AbstractView;
 
@@ -110,7 +113,10 @@ public class ExportPoiHssfExcel extends AbstractView {
                 informerDown(model, wb);
             } else if (model.get("mapping").equals("informerReport")) {
             	informerReport(model, wb);
+            } else if(model.get("mapping").equals("addDownload")) {
+            	addDownload(model, wb);
             }
+            
             ServletOutputStream outputStream = response.getOutputStream();
             response.setContentType(super.getContentType());
             response.setHeader("Content-Transfer-Encoding", "binary");
@@ -2233,5 +2239,548 @@ public class ExportPoiHssfExcel extends AbstractView {
         }
     }
     
+    
+    // 주소라벨 출력
+    public void addDownload(Map model, HSSFWorkbook wb) {
+    	String pickLabelT = (String) model.get("labelType"); 
+    	int labelType = Integer.parseInt(pickLabelT); // 라벨 타입 가져오기 16 or 24
+    	
+    	// 엑셀에서 사용할 데이터 리스트 가져오기
+    	List dataList = (List) model.get("dataList");
+    	
+    	int dataCnt = dataList.size(); // 받아온 데이터 전체 수
+    	/*int writeCnt = 0; // 데이터 넣은 카운터
+*/    	int dataCnt16; //sheet를 위한 변수 (16라벨)
+    	int dataCnt24; //sheet를 위한 변수 (24라벨)
+    	
+    	int rowCnt = 0;
+    	
+    	// 16라벨일 때 ( 2 * 8 )
+    	if(labelType == 16) {
+    		
+    		// 전체 sheet 수 구하기
+    		if(dataCnt < 16) { // 받아온 데이터가 16개가 안될 때 
+    			dataCnt16 = 1; 
+    		} else { // 받아온 데이터가 16개 이상일 때
+    			dataCnt16 = dataCnt/16 ;
+    			int dataCnt16Chk = dataCnt%16; // 나머지 구하기 
+    			
+    			if(dataCnt16Chk > 0) { //나머지가 있다면
+    				dataCnt16 = dataCnt16 + 1; // sheet 수 1개 더 추가
+    			}
+    		}
+            
+    		
+            // 엑셀 생성하기
+    		for(int i = 0; i < dataCnt16 ; i++) { // sheet 생성 for문
+    			HSSFSheet sheet = wb.createSheet("label(" + (i+1) + ")"); // label(n) 형식으로 시트 생성  
+    			
+    			int cellRowCnt = (i * 8) * 2;
+                for(int j = 0 ; j < 8; j++) {
+                	for(int x = 0; x < 1; x++) {
+                		HSSFRow headrow = sheet.createRow(rowCnt); // row 생성, 주소 입력
+                		HSSFRow headrow1 = sheet.createRow(rowCnt + 1); // row 생성, 이름 입력
+                		HSSFRow headrow2 = sheet.createRow(rowCnt + 2); // row 생성, 전화번호 및 우편번호 입력
+                		
+                		/*InfrmVO record = (InfrmVO) dataList.get(cellRowCnt);*/ // 라벨 row의 1번 라벨
+                		if(cellRowCnt < dataCnt) {
+                			Object pickRecord = dataList.get(cellRowCnt);
+                    		InfrmVO record = (InfrmVO) pickRecord;
+                    		
+                    		// 폰트 및 스타일 설정
+                    	    CellStyle cellStyle = wb.createCellStyle();
+                    	    CellStyle cellStyle1 = wb.createCellStyle();
+                    	    CellStyle cellStyle2 = wb.createCellStyle();
+                    	    CellStyle cellStyle3 = wb.createCellStyle();
+                    	    CellStyle cellStyle4 = wb.createCellStyle();
+                    	    
+                    	    cellStyle.setAlignment(HSSFCellStyle.ALIGN_CENTER); // 가운데 정렬 (가로 기준)
+                    	    cellStyle.setVerticalAlignment(CellStyle.VERTICAL_CENTER); // 중앙 정렬 (세로 기준)
+                    	    
+                    	    cellStyle1.setAlignment(HSSFCellStyle.ALIGN_RIGHT); // 가운데 정렬 (가로 기준)
+                    	    cellStyle1.setVerticalAlignment(CellStyle.VERTICAL_CENTER); // 중앙 정렬 (세로 기준)
+                    	    
+                    	    cellStyle2.setAlignment(HSSFCellStyle.ALIGN_LEFT); // 가운데 정렬 (가로 기준)
+                    	    cellStyle2.setVerticalAlignment(CellStyle.VERTICAL_CENTER); // 중앙 정렬 (세로 기준)
+                    	    
+                    	    cellStyle3.setAlignment(HSSFCellStyle.ALIGN_RIGHT); // 가운데 정렬 (가로 기준)
+                    	    cellStyle3.setVerticalAlignment(CellStyle.VERTICAL_CENTER); // 중앙 정렬 (세로 기준)
+                    	  
+                    	    cellStyle4.setAlignment(HSSFCellStyle.ALIGN_CENTER); // 가운데 정렬 (가로 기준)
+                    	    cellStyle4.setVerticalAlignment(CellStyle.VERTICAL_CENTER); // 중앙 정렬 (세로 기준)
+                    	    
+                    	    Font font = wb.createFont();
+                    	    font.setFontHeightInPoints((short) 12); // 폰트 크기 12px로 설정
+                    	    cellStyle.setFont(font); // 폰트 스타일을 셀 스타일에 적용
+
+                    	    
+                    	    Font font1 = wb.createFont();
+                    	    font1.setFontHeightInPoints((short) 14);
+                    	    font1.setBoldweight(Font.BOLDWEIGHT_BOLD); // 볼드체로 설정
+                    	    cellStyle1.setFont(font1); // 폰트 스타일을 셀 스타일에 적용
+                    	    
+                    	    Font font2 = wb.createFont();
+                    	    font2.setFontHeightInPoints((short) 10);
+                    	    cellStyle2.setFont(font2); // 폰트 스타일을 셀 스타일에 적용
+                    	    
+                    	    
+                    	    Font font3 = wb.createFont();
+                    	    font3.setFontHeightInPoints((short) 11);
+                    	    font3.setBoldweight(Font.BOLDWEIGHT_BOLD); // 볼드체로 설정
+                    	    cellStyle3.setFont(font3); 
+
+                    	    Font font4 = wb.createFont();
+                    	    font4.setFontHeightInPoints((short) 12);
+                    	    font4.setBoldweight(Font.BOLDWEIGHT_BOLD); // 볼드체로 설정
+                    	    cellStyle4.setFont(font4); // 폰트 스타일을 셀 스타일에 적용
+                    	 
+                    		
+                    	 // 주소 셀 0 (headrow) 생성 및 스타일 적용
+                    	    HSSFCell cell0 = headrow.createCell(0);
+                    	    cell0.setCellValue("none".equals(record.getAddressHome()) ? "" : record.getAddressHome()); // 주소 입력
+                    	    cell0.setCellStyle(cellStyle); // 스타일 적용
+                    	    sheet.addMergedRegion(new CellRangeAddress(rowCnt, rowCnt, 0, 1)); // 주소 입력 란 셀 병합
+
+                    	    // 이름 셀 0 (headrow1) 생성 및 스타일 적용
+                    	    HSSFCell cell1 = headrow1.createCell(0);
+                    	    cell1.setCellValue("none".equals(record.getInformerName()) ? "" : record.getInformerName()); // 이름 입력
+                    	    cell1.setCellStyle(cellStyle1); // 스타일 적용
+
+                    	    // 통신원 셀 1 (headrow1) 생성
+                    	    HSSFCell cell2 = headrow1.createCell(1);
+                    	    cell2.setCellValue("통신원님 귀하");
+                    	    cell2.setCellStyle(cellStyle2); // 스타일 적용
+
+                    	    // 전화 번호 셀 0 (headrow2) 생성 및 스타일 적용
+                    	    HSSFCell cell3 = headrow2.createCell(0);
+                    	    cell3.setCellValue("none".equals(record.getPhoneCell()) ? "" : record.getPhoneCell()); // 전화 번호 입력
+                    	    cell3.setCellStyle(cellStyle3); // 스타일 적용
+
+                    	    // 우편번호 셀 1 (headrow2) 생성
+                    	    HSSFCell cell4 = headrow2.createCell(1);
+                    	    cell4.setCellValue("none".equals(record.getZipcode()) ? "" : record.getZipcode()); // 우편번호 입력
+                    	    cell4.setCellStyle(cellStyle4); // 스타일 적용
+
+                    	    // 시트 설정
+                    	    sheet.setColumnWidth(0, 5700);
+                    	    sheet.setColumnWidth(1, 5700);
+                    	    headrow.setHeightInPoints(47.33f); // row height
+                    	    
+                    	    
+
+                		} else {
+                			break;
+                		}
+                		
+                		sheet.setColumnWidth(2, 700);
+                		
+                		
+                		if((cellRowCnt+1) < dataCnt){
+                			Object pickRecord2 = dataList.get(cellRowCnt+1);
+                    		InfrmVO record2 = (InfrmVO) pickRecord2;
+                    		
+                    		// 폰트 및 스타일 설정
+                    	    CellStyle cellStyle = wb.createCellStyle();
+                    	    CellStyle cellStyle1 = wb.createCellStyle();
+                    	    CellStyle cellStyle2 = wb.createCellStyle();
+                    	    CellStyle cellStyle3 = wb.createCellStyle();
+                    	    CellStyle cellStyle4 = wb.createCellStyle();
+                    	    
+                    	    cellStyle.setAlignment(HSSFCellStyle.ALIGN_CENTER); // 가운데 정렬 (가로 기준)
+                    	    cellStyle.setVerticalAlignment(CellStyle.VERTICAL_CENTER); // 중앙 정렬 (세로 기준)
+                    	    
+                    	    cellStyle1.setAlignment(HSSFCellStyle.ALIGN_RIGHT); // 가운데 정렬 (가로 기준)
+                    	    cellStyle1.setVerticalAlignment(CellStyle.VERTICAL_CENTER); // 중앙 정렬 (세로 기준)
+                    	    
+                    	    cellStyle2.setAlignment(HSSFCellStyle.ALIGN_LEFT); // 가운데 정렬 (가로 기준)
+                    	    cellStyle2.setVerticalAlignment(CellStyle.VERTICAL_CENTER); // 중앙 정렬 (세로 기준)
+                    	    
+                    	    cellStyle3.setAlignment(HSSFCellStyle.ALIGN_RIGHT); // 가운데 정렬 (가로 기준)
+                    	    cellStyle3.setVerticalAlignment(CellStyle.VERTICAL_CENTER); // 중앙 정렬 (세로 기준)
+                    	  
+                    	    cellStyle4.setAlignment(HSSFCellStyle.ALIGN_CENTER); // 가운데 정렬 (가로 기준)
+                    	    cellStyle4.setVerticalAlignment(CellStyle.VERTICAL_CENTER); // 중앙 정렬 (세로 기준)
+                    	    
+                    	    Font font = wb.createFont();
+                    	    font.setFontHeightInPoints((short) 12); // 폰트 크기 12px로 설정
+                    	    cellStyle.setFont(font); // 폰트 스타일을 셀 스타일에 적용
+
+                    	    
+                    	    Font font1 = wb.createFont();
+                    	    font1.setFontHeightInPoints((short) 14);
+                    	    font1.setBoldweight(Font.BOLDWEIGHT_BOLD); // 볼드체로 설정
+                    	    cellStyle1.setFont(font1); // 폰트 스타일을 셀 스타일에 적용
+                    	    
+                    	    Font font2 = wb.createFont();
+                    	    font2.setFontHeightInPoints((short) 10);
+                    	    cellStyle2.setFont(font2); // 폰트 스타일을 셀 스타일에 적용
+                    	    
+                    	    
+                    	    Font font3 = wb.createFont();
+                    	    font3.setFontHeightInPoints((short) 11);
+                    	    font3.setBoldweight(Font.BOLDWEIGHT_BOLD); // 볼드체로 설정
+                    	    cellStyle3.setFont(font3); 
+
+                    	    Font font4 = wb.createFont();
+                    	    font4.setFontHeightInPoints((short) 12);
+                    	    font4.setBoldweight(Font.BOLDWEIGHT_BOLD); // 볼드체로 설정
+                    	    cellStyle4.setFont(font4); // 폰트 스타일을 셀 스타일에 적용
+                    	 
+                    		
+                    	 // 주소 셀 0 (headrow) 생성 및 스타일 적용
+                    	    HSSFCell cell0 = headrow.createCell(3);
+                    	    cell0.setCellValue("none".equals(record2.getAddressHome()) ? "" : record2.getAddressHome()); // 주소 입력
+                    	    cell0.setCellStyle(cellStyle); // 스타일 적용
+                    	    sheet.addMergedRegion(new CellRangeAddress(rowCnt, rowCnt, 3, 4)); // 주소 입력 란 셀 병합
+
+                    	    // 이름 셀 0 (headrow1) 생성 및 스타일 적용
+                    	    HSSFCell cell1 = headrow1.createCell(3);
+                    	    cell1.setCellValue("none".equals(record2.getInformerName()) ? "" : record2.getInformerName()); // 이름 입력
+                    	    cell1.setCellStyle(cellStyle1); // 스타일 적용
+
+                    	    // 통신원 셀 1 (headrow1) 생성
+                    	    HSSFCell cell2 = headrow1.createCell(4);
+                    	    cell2.setCellValue("통신원님 귀하");
+                    	    cell2.setCellStyle(cellStyle2); // 스타일 적용
+
+                    	    // 전화 번호 셀 0 (headrow2) 생성 및 스타일 적용
+                    	    HSSFCell cell3 = headrow2.createCell(3);
+                    	    cell3.setCellValue("none".equals(record2.getPhoneCell()) ? "" : record2.getPhoneCell()); // 전화 번호 입력
+                    	    cell3.setCellStyle(cellStyle3); // 스타일 적용
+
+                    	    // 우편번호 셀 1 (headrow2) 생성
+                    	    HSSFCell cell4 = headrow2.createCell(4);
+                    	    cell4.setCellValue("none".equals(record2.getZipcode()) ? "" : record2.getZipcode()); // 우편번호 입력
+                    	    cell4.setCellStyle(cellStyle4); // 스타일 적용
+                    		
+                    		// 시트 설정
+                    		sheet.setColumnWidth(3, 5700);
+                    		sheet.setColumnWidth(4, 5700);
+                    		headrow.setHeightInPoints(47.33f); // row height
+                		} else {
+                			break;
+                		}
+              		
+                	}
+            		
+                	rowCnt = rowCnt + 3;
+                	
+                	cellRowCnt = cellRowCnt + 2;
+                	
+                }
+                
+                // 값 초기화
+                rowCnt = 0;
+/*                dataCnt = dataCnt-16;*/
+    		}
+            
+
+    	} else { // 24라벨일 때 ( 3 * 8 )
+    		
+    		// 전체 sheet 수 구하기
+    		if(dataCnt < 24) { // 받아온 데이터가 16개가 안될 때 
+    			dataCnt24 = 1; 
+    		} else { // 받아온 데이터가 16개 이상일 때
+    			dataCnt24 = dataCnt/24 ;
+    			int dataCnt24Chk = dataCnt % 24; // 나머지 구하기 
+    			
+    			if(dataCnt24Chk > 0) { //나머지가 있다면
+    				dataCnt24 = dataCnt24 + 1; // sheet 수 1개 더 추가
+    			}
+    		}
+    		
+    		
+    		// 엑셀 생성하기
+    		for(int i = 0; i < dataCnt24 ; i++) { // sheet 생성 for문
+    			HSSFSheet sheet = wb.createSheet("label(" + (i+1) + ")"); // label(n) 형식으로 시트 생성  
+    			
+    			int cellRowCnt = (i * 12) * 2;
+                for(int j = 0 ; j < 8; j++) {
+                	for(int x = 0; x < 1; x++) {
+                		HSSFRow headrow = sheet.createRow(rowCnt); // row 생성, 주소 입력
+                		HSSFRow headrow1 = sheet.createRow(rowCnt + 1); // row 생성, 이름 입력
+                		HSSFRow headrow2 = sheet.createRow(rowCnt + 2); // row 생성, 전화번호 및 우편번호 입력
+                		
+                		/*InfrmVO record = (InfrmVO) dataList.get(cellRowCnt);*/ // 라벨 row의 1번 라벨
+                		if(cellRowCnt < dataCnt) {
+                			Object pickRecord = dataList.get(cellRowCnt);
+                    		InfrmVO record = (InfrmVO) pickRecord;
+
+                    		// 폰트 및 스타일 설정
+                    	    CellStyle cellStyle = wb.createCellStyle();
+                    	    CellStyle cellStyle1 = wb.createCellStyle();
+                    	    CellStyle cellStyle2 = wb.createCellStyle();
+                    	    CellStyle cellStyle3 = wb.createCellStyle();
+                    	    CellStyle cellStyle4 = wb.createCellStyle();
+                    	    
+                    	    cellStyle.setAlignment(HSSFCellStyle.ALIGN_CENTER); // 가운데 정렬 (가로 기준)
+                    	    cellStyle.setVerticalAlignment(CellStyle.VERTICAL_CENTER); // 중앙 정렬 (세로 기준)
+                    	    
+                    	    cellStyle1.setAlignment(HSSFCellStyle.ALIGN_RIGHT); // 가운데 정렬 (가로 기준)
+                    	    cellStyle1.setVerticalAlignment(CellStyle.VERTICAL_CENTER); // 중앙 정렬 (세로 기준)
+                    	    
+                    	    cellStyle2.setAlignment(HSSFCellStyle.ALIGN_LEFT); // 가운데 정렬 (가로 기준)
+                    	    cellStyle2.setVerticalAlignment(CellStyle.VERTICAL_CENTER); // 중앙 정렬 (세로 기준)
+                    	    
+                    	    cellStyle3.setAlignment(HSSFCellStyle.ALIGN_RIGHT); // 가운데 정렬 (가로 기준)
+                    	    cellStyle3.setVerticalAlignment(CellStyle.VERTICAL_CENTER); // 중앙 정렬 (세로 기준)
+                    	  
+                    	    cellStyle4.setAlignment(HSSFCellStyle.ALIGN_CENTER); // 가운데 정렬 (가로 기준)
+                    	    cellStyle4.setVerticalAlignment(CellStyle.VERTICAL_CENTER); // 중앙 정렬 (세로 기준)
+                    	    
+                    	    Font font = wb.createFont();
+                    	    font.setFontHeightInPoints((short) 12); // 폰트 크기 12px로 설정
+                    	    cellStyle.setFont(font); // 폰트 스타일을 셀 스타일에 적용
+
+                    	    
+                    	    Font font1 = wb.createFont();
+                    	    font1.setFontHeightInPoints((short) 14);
+                    	    font1.setBoldweight(Font.BOLDWEIGHT_BOLD); // 볼드체로 설정
+                    	    cellStyle1.setFont(font1); // 폰트 스타일을 셀 스타일에 적용
+                    	    
+                    	    Font font2 = wb.createFont();
+                    	    font2.setFontHeightInPoints((short) 10);
+                    	    cellStyle2.setFont(font2); // 폰트 스타일을 셀 스타일에 적용
+                    	    
+                    	    
+                    	    Font font3 = wb.createFont();
+                    	    font3.setFontHeightInPoints((short) 11);
+                    	    font3.setBoldweight(Font.BOLDWEIGHT_BOLD); // 볼드체로 설정
+                    	    cellStyle3.setFont(font3); 
+
+                    	    Font font4 = wb.createFont();
+                    	    font4.setFontHeightInPoints((short) 12);
+                    	    font4.setBoldweight(Font.BOLDWEIGHT_BOLD); // 볼드체로 설정
+                    	    cellStyle4.setFont(font4); // 폰트 스타일을 셀 스타일에 적용
+                    	 
+                    		
+                    	 // 주소 셀 0 (headrow) 생성 및 스타일 적용
+                    	    HSSFCell cell0 = headrow.createCell(0);
+                    	    cell0.setCellValue("none".equals(record.getAddressHome()) ? "" : record.getAddressHome()); // 주소 입력
+                    	    cell0.setCellStyle(cellStyle); // 스타일 적용
+                    	    sheet.addMergedRegion(new CellRangeAddress(rowCnt, rowCnt, 0, 1)); // 주소 입력 란 셀 병합
+
+                    	    // 이름 셀 0 (headrow1) 생성 및 스타일 적용
+                    	    HSSFCell cell1 = headrow1.createCell(0);
+                    	    cell1.setCellValue("none".equals(record.getInformerName()) ? "" : record.getInformerName()); // 이름 입력
+                    	    cell1.setCellStyle(cellStyle1); // 스타일 적용
+
+                    	    // 통신원 셀 1 (headrow1) 생성
+                    	    HSSFCell cell2 = headrow1.createCell(1);
+                    	    cell2.setCellValue("통신원님 귀하");
+                    	    cell2.setCellStyle(cellStyle2); // 스타일 적용
+
+                    	    // 전화 번호 셀 0 (headrow2) 생성 및 스타일 적용
+                    	    HSSFCell cell3 = headrow2.createCell(0);
+                    	    cell3.setCellValue("none".equals(record.getPhoneCell()) ? "" : record.getPhoneCell()); // 전화 번호 입력
+                    	    cell3.setCellStyle(cellStyle3); // 스타일 적용
+
+                    	    // 우편번호 셀 1 (headrow2) 생성
+                    	    HSSFCell cell4 = headrow2.createCell(1);
+                    	    cell4.setCellValue("none".equals(record.getZipcode()) ? "" : record.getZipcode()); // 우편번호 입력
+                    	    cell4.setCellStyle(cellStyle4); // 스타일 적용
+
+                    	    // 시트 설정
+                    	    sheet.setColumnWidth(0, 4000);
+                    	    sheet.setColumnWidth(1, 4000);
+
+                    	    headrow.setHeightInPoints(47.33f); // 행 높이 설정
+                		} else {
+                			break;
+                		}
+                		
+                		sheet.setColumnWidth(2, 500);
+                		
+                		if((cellRowCnt+1) < dataCnt){
+                			Object pickRecord2 = dataList.get(cellRowCnt+1);
+                    		InfrmVO record2 = (InfrmVO) pickRecord2;
+                    		
+                    		// 폰트 및 스타일 설정
+                    	    CellStyle cellStyle = wb.createCellStyle();
+                    	    CellStyle cellStyle1 = wb.createCellStyle();
+                    	    CellStyle cellStyle2 = wb.createCellStyle();
+                    	    CellStyle cellStyle3 = wb.createCellStyle();
+                    	    CellStyle cellStyle4 = wb.createCellStyle();
+                    	    
+                    	    cellStyle.setAlignment(HSSFCellStyle.ALIGN_CENTER); // 가운데 정렬 (가로 기준)
+                    	    cellStyle.setVerticalAlignment(CellStyle.VERTICAL_CENTER); // 중앙 정렬 (세로 기준)
+                    	    
+                    	    cellStyle1.setAlignment(HSSFCellStyle.ALIGN_RIGHT); // 가운데 정렬 (가로 기준)
+                    	    cellStyle1.setVerticalAlignment(CellStyle.VERTICAL_CENTER); // 중앙 정렬 (세로 기준)
+                    	    
+                    	    cellStyle2.setAlignment(HSSFCellStyle.ALIGN_LEFT); // 가운데 정렬 (가로 기준)
+                    	    cellStyle2.setVerticalAlignment(CellStyle.VERTICAL_CENTER); // 중앙 정렬 (세로 기준)
+                    	    
+                    	    cellStyle3.setAlignment(HSSFCellStyle.ALIGN_RIGHT); // 가운데 정렬 (가로 기준)
+                    	    cellStyle3.setVerticalAlignment(CellStyle.VERTICAL_CENTER); // 중앙 정렬 (세로 기준)
+                    	  
+                    	    cellStyle4.setAlignment(HSSFCellStyle.ALIGN_CENTER); // 가운데 정렬 (가로 기준)
+                    	    cellStyle4.setVerticalAlignment(CellStyle.VERTICAL_CENTER); // 중앙 정렬 (세로 기준)
+                    	    
+                    	    Font font = wb.createFont();
+                    	    font.setFontHeightInPoints((short) 12); // 폰트 크기 12px로 설정
+                    	    cellStyle.setFont(font); // 폰트 스타일을 셀 스타일에 적용
+
+                    	    
+                    	    Font font1 = wb.createFont();
+                    	    font1.setFontHeightInPoints((short) 14);
+                    	    font1.setBoldweight(Font.BOLDWEIGHT_BOLD); // 볼드체로 설정
+                    	    cellStyle1.setFont(font1); // 폰트 스타일을 셀 스타일에 적용
+                    	    
+                    	    Font font2 = wb.createFont();
+                    	    font2.setFontHeightInPoints((short) 10);
+                    	    cellStyle2.setFont(font2); // 폰트 스타일을 셀 스타일에 적용
+                    	    
+                    	    
+                    	    Font font3 = wb.createFont();
+                    	    font3.setFontHeightInPoints((short) 11);
+                    	    font3.setBoldweight(Font.BOLDWEIGHT_BOLD); // 볼드체로 설정
+                    	    cellStyle3.setFont(font3); 
+
+                    	    Font font4 = wb.createFont();
+                    	    font4.setFontHeightInPoints((short) 12);
+                    	    font4.setBoldweight(Font.BOLDWEIGHT_BOLD); // 볼드체로 설정
+                    	    cellStyle4.setFont(font4); // 폰트 스타일을 셀 스타일에 적용
+                    	 
+                    		
+                    	 // 주소 셀 0 (headrow) 생성 및 스타일 적용
+                    	    HSSFCell cell0 = headrow.createCell(3);
+                    	    cell0.setCellValue("none".equals(record2.getAddressHome()) ? "" : record2.getAddressHome()); // 주소 입력
+                    	    cell0.setCellStyle(cellStyle); // 스타일 적용
+                    	    sheet.addMergedRegion(new CellRangeAddress(rowCnt, rowCnt, 3, 4)); // 주소 입력 란 셀 병합
+
+                    	    // 이름 셀 0 (headrow1) 생성 및 스타일 적용
+                    	    HSSFCell cell1 = headrow1.createCell(3);
+                    	    cell1.setCellValue("none".equals(record2.getInformerName()) ? "" : record2.getInformerName()); // 이름 입력
+                    	    cell1.setCellStyle(cellStyle1); // 스타일 적용
+
+                    	    // 통신원 셀 1 (headrow1) 생성
+                    	    HSSFCell cell2 = headrow1.createCell(4);
+                    	    cell2.setCellValue("통신원님 귀하");
+                    	    cell2.setCellStyle(cellStyle2); // 스타일 적용
+
+                    	    // 전화 번호 셀 0 (headrow2) 생성 및 스타일 적용
+                    	    HSSFCell cell3 = headrow2.createCell(3);
+                    	    cell3.setCellValue("none".equals(record2.getPhoneCell()) ? "" : record2.getPhoneCell()); // 전화 번호 입력
+                    	    cell3.setCellStyle(cellStyle3); // 스타일 적용
+
+                    	    // 우편번호 셀 1 (headrow2) 생성
+                    	    HSSFCell cell4 = headrow2.createCell(4);
+                    	    cell4.setCellValue("none".equals(record2.getZipcode()) ? "" : record2.getZipcode()); // 우편번호 입력
+                    	    cell4.setCellStyle(cellStyle4); // 스타일 적용
+
+                    	    // 시트 설정
+                    	    sheet.setColumnWidth(3, 4000);
+                    	    sheet.setColumnWidth(4, 4000);
+
+                    	    headrow.setHeightInPoints(47.33f); // 행 높이 설정
+                		} else {
+                			break;
+                		}
+                		
+                		sheet.setColumnWidth(5, 500);
+                		
+                		if((cellRowCnt+2) < dataCnt){
+                			Object pickRecord3 = dataList.get(cellRowCnt+2);
+                    		InfrmVO record3 = (InfrmVO) pickRecord3;
+                    		
+                    		// 폰트 및 스타일 설정
+                    	    CellStyle cellStyle = wb.createCellStyle();
+                    	    CellStyle cellStyle1 = wb.createCellStyle();
+                    	    CellStyle cellStyle2 = wb.createCellStyle();
+                    	    CellStyle cellStyle3 = wb.createCellStyle();
+                    	    CellStyle cellStyle4 = wb.createCellStyle();
+                    	    
+                    	    cellStyle.setAlignment(HSSFCellStyle.ALIGN_CENTER); // 가운데 정렬 (가로 기준)
+                    	    cellStyle.setVerticalAlignment(CellStyle.VERTICAL_CENTER); // 중앙 정렬 (세로 기준)
+                    	    
+                    	    cellStyle1.setAlignment(HSSFCellStyle.ALIGN_RIGHT); // 가운데 정렬 (가로 기준)
+                    	    cellStyle1.setVerticalAlignment(CellStyle.VERTICAL_CENTER); // 중앙 정렬 (세로 기준)
+                    	    
+                    	    cellStyle2.setAlignment(HSSFCellStyle.ALIGN_LEFT); // 가운데 정렬 (가로 기준)
+                    	    cellStyle2.setVerticalAlignment(CellStyle.VERTICAL_CENTER); // 중앙 정렬 (세로 기준)
+                    	    
+                    	    cellStyle3.setAlignment(HSSFCellStyle.ALIGN_RIGHT); // 가운데 정렬 (가로 기준)
+                    	    cellStyle3.setVerticalAlignment(CellStyle.VERTICAL_CENTER); // 중앙 정렬 (세로 기준)
+                    	  
+                    	    cellStyle4.setAlignment(HSSFCellStyle.ALIGN_CENTER); // 가운데 정렬 (가로 기준)
+                    	    cellStyle4.setVerticalAlignment(CellStyle.VERTICAL_CENTER); // 중앙 정렬 (세로 기준)
+                    	    
+                    	    Font font = wb.createFont();
+                    	    font.setFontHeightInPoints((short) 12); // 폰트 크기 12px로 설정
+                    	    cellStyle.setFont(font); // 폰트 스타일을 셀 스타일에 적용
+
+                    	    
+                    	    Font font1 = wb.createFont();
+                    	    font1.setFontHeightInPoints((short) 14);
+                    	    font1.setBoldweight(Font.BOLDWEIGHT_BOLD); // 볼드체로 설정
+                    	    cellStyle1.setFont(font1); // 폰트 스타일을 셀 스타일에 적용
+                    	    
+                    	    Font font2 = wb.createFont();
+                    	    font2.setFontHeightInPoints((short) 10);
+                    	    cellStyle2.setFont(font2); // 폰트 스타일을 셀 스타일에 적용
+                    	    
+                    	    
+                    	    Font font3 = wb.createFont();
+                    	    font3.setFontHeightInPoints((short) 11);
+                    	    font3.setBoldweight(Font.BOLDWEIGHT_BOLD); // 볼드체로 설정
+                    	    cellStyle3.setFont(font3); 
+
+                    	    Font font4 = wb.createFont();
+                    	    font4.setFontHeightInPoints((short) 12);
+                    	    font4.setBoldweight(Font.BOLDWEIGHT_BOLD); // 볼드체로 설정
+                    	    cellStyle4.setFont(font4); // 폰트 스타일을 셀 스타일에 적용
+                    	 
+                    		
+                    	 // 주소 셀 0 (headrow) 생성 및 스타일 적용
+                    	    HSSFCell cell0 = headrow.createCell(6);
+                    	    cell0.setCellValue("none".equals(record3.getAddressHome()) ? "" : record3.getAddressHome()); // 주소 입력
+                    	    cell0.setCellStyle(cellStyle); // 스타일 적용
+                    	    sheet.addMergedRegion(new CellRangeAddress(rowCnt, rowCnt, 6, 7)); // 주소 입력 란 셀 병합
+
+                    	    // 이름 셀 0 (headrow1) 생성 및 스타일 적용
+                    	    HSSFCell cell1 = headrow1.createCell(6);
+                    	    cell1.setCellValue("none".equals(record3.getInformerName()) ? "" : record3.getInformerName()); // 이름 입력
+                    	    cell1.setCellStyle(cellStyle1); // 스타일 적용
+
+                    	    // 통신원 셀 1 (headrow1) 생성
+                    	    HSSFCell cell2 = headrow1.createCell(7);
+                    	    cell2.setCellValue("통신원님 귀하");
+                    	    cell2.setCellStyle(cellStyle2); // 스타일 적용
+
+                    	    // 전화 번호 셀 0 (headrow2) 생성 및 스타일 적용
+                    	    HSSFCell cell3 = headrow2.createCell(6);
+                    	    cell3.setCellValue("none".equals(record3.getPhoneCell()) ? "" : record3.getPhoneCell()); // 전화 번호 입력
+                    	    cell3.setCellStyle(cellStyle3); // 스타일 적용
+
+                    	    // 우편번호 셀 1 (headrow2) 생성
+                    	    HSSFCell cell4 = headrow2.createCell(7);
+                    	    cell4.setCellValue("none".equals(record3.getZipcode()) ? "" : record3.getZipcode()); // 우편번호 입력
+                    	    cell4.setCellStyle(cellStyle4); // 스타일 적용
+
+                    	    // 시트 설정
+                    	    sheet.setColumnWidth(6, 4000);
+                    	    sheet.setColumnWidth(7, 4000);
+
+                    	    headrow.setHeightInPoints(47.33f); // 행 높이 설정
+                		} else {
+                			break;
+                		}
+                		
+              		
+                	}
+            		
+                	rowCnt = rowCnt + 3;
+                	
+                	cellRowCnt = cellRowCnt + 3;
+                	
+                }
+                
+                // 값 초기화
+                rowCnt = 0;
+    		}
+    		
+    	}
+    }
     
 }

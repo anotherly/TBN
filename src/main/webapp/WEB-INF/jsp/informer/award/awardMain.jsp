@@ -195,7 +195,7 @@ function search(){
 		);
 	}
 	
-	//엑셀 다운로드 기능 제공
+	//엑셀 다운로드 기능 제공c
 	function excelDownload(){
 		rkFlag = true;
 		searchFrm.action =  "/informer/award/excelDownloadInformerList.do";

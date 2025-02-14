@@ -12,10 +12,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
+import kr.co.wizbrain.tbn.award.vo.AwardVO;
 import kr.co.wizbrain.tbn.comm.BaseController;
 import kr.co.wizbrain.tbn.comm.ParamsDto;
 import kr.co.wizbrain.tbn.comm.RecordDto;
@@ -664,7 +666,7 @@ public class StatisticController extends BaseController{
 	}
 	
 	
-	
+		// 통신원 관리에서 엑셀 다운로드
 	  @RequestMapping({"/stats/informerDown.ajax"})
 	  public String informerDown(Model model, HttpServletRequest request, InfrmVO searchVO) throws Exception {
 	    logger.info("------------------searchFullStatus");
@@ -681,5 +683,37 @@ public class StatisticController extends BaseController{
 	    model.addAttribute("sheetNames1", "통신원 목록");
 	    model.addAttribute("Data", Data);
 	    return "hssfExcel";
+	  }
+	  
+	  
+	  // 통신원 관리에서 주소 라벨 출력
+	  @RequestMapping({"/stat/addDownload.do"})
+	  public String addDownload(Model model, HttpServletRequest request,@ModelAttribute("InfrmVO") InfrmVO searchVO) throws Exception {
+		  ModelAndView mv = new ModelAndView("jsonView");  
+		  String[] Selection = request.getParameterValues("Selection");
+		  String[] labelT = request.getParameterValues("labelType");
+		  
+		  List<InfrmVO> alist = new ArrayList<>();
+		  
+		  for (int i = 0; i < Selection.length; i++) { //ID 값 나누기
+			  	InfrmVO awvo = new InfrmVO();
+				awvo.setInformerId(Selection[i]);
+				alist.add(awvo);
+		  }
+		  
+		  // ID 값 나눈 배열로 데이터 가져오기
+		  List<InfrmVO> dataList = statisticService.addRabel(alist);
+		  
+		  // 라벨 타입 나누기
+		  String labelType = labelT[0];
+		  
+		  model.addAttribute("mapping", "addDownload");
+		  model.addAttribute("fileName", "통신원 주소 라벨 출력("+labelType + ").xls");
+		  model.addAttribute("titleName", "통신원 주소 라벨 출력");
+		  model.addAttribute("sheetNames1", "주소 라벨 시트");
+		  model.addAttribute("labelType", labelType); // 라벨 구분 (16/24)
+		  model.addAttribute("dataList", dataList); // 엑셀 다운로드에 사용할 데이터 
+		  
+		  return "hssfExcel";
 	  }
 }
