@@ -45,6 +45,7 @@
 		, REPORT_TYPE3
 		, AREA_ID
 		, RECEPTION_EVA
+		, FLAG_WEB
 		)
 		VALUES(
 		#{RECEIPT_ID}
@@ -96,6 +97,7 @@
 
 		, #{AREA_ID}
 		, #{LANE}
+		, #{FLAG_WEB}
 		)
 	</insert>
 

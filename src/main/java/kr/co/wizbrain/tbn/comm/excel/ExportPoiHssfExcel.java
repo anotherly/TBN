@@ -3458,84 +3458,84 @@ public class ExportPoiHssfExcel extends AbstractView {
 		 				
 		 				
 		 				HSSFCell dayallrowCell = dayallrow.createCell(j+5);
-		 				dayallrowCell.setCellValue(record.getInt("ALL_CNT")); // 총 접수 건수
+		 				dayallrowCell.setCellValue(record.getInt("ALL_CNT") + record.getInt("O_ALL_CNT")); // 총 접수 건수
 		 				dayallrowCell.setCellStyle(dataStyle);
-		 				dayAllsum = dayAllsum + record.getInt("ALL_CNT");
+		 				dayAllsum = dayAllsum + record.getInt("ALL_CNT") + record.getInt("O_ALL_CNT");
 		 				
 		 				HSSFCell daysendcntCell = daysendcnt.createCell(j+5);
-		 				daysendcntCell.setCellValue(record.getInt("SEND_N")); // 자체처리 건수
+		 				daysendcntCell.setCellValue(record.getInt("SEND_N") + record.getInt("O_SEND_N")); // 자체처리 건수
 		 				daysendcntCell.setCellStyle(dataStyle);
-		 				daySendSum = daySendSum + record.getInt("SEND_N");
+		 				daySendSum = daySendSum + record.getInt("SEND_N") + record.getInt("O_SEND_N");
 		 				
 		 				HSSFCell daysendperCell = daysendper.createCell(j + 5);
-		 				double hap = (record.getInt("SEND_N") / (double) record.getInt("ALL_CNT")) * 100;
+		 				double hap = ((record.getInt("SEND_N") + record.getInt("O_SEND_N")) / ((double) record.getInt("ALL_CNT") + (double) record.getInt("O_ALL_CNT")) ) * 100;
 		 				hap = Math.round(hap * 10.0) / 10.0;
 		 				daysendperCell.setCellValue(hap + "%");
 		 				daysendperCell.setCellStyle(dataStyle);
 		 				daySendper = daySendper + hap;
 		 					 		
 		 				HSSFCell daybrodcntCell = daybrodcnt.createCell(j+5);
-		 				daybrodcntCell.setCellValue(record.getInt("SEND_Y")); // 방송요청 건수
+		 				daybrodcntCell.setCellValue(record.getInt("SEND_Y") + record.getInt("O_SEND_Y")); // 방송요청 건수
 		 				daybrodcntCell.setCellStyle(dataStyle);
-		 				dayBroadsum =  dayBroadsum + record.getInt("SEND_Y");
+		 				dayBroadsum =  dayBroadsum + record.getInt("SEND_Y") + record.getInt("O_SEND_Y");
 		 						
 		 				HSSFCell daybrodperCell =daybrodper.createCell(j + 5);
-		 				double hap2 = (record.getInt("SEND_Y") / (double) record.getInt("ALL_CNT")) * 100;
+		 				double hap2 = ((record.getInt("SEND_Y") + record.getInt("O_SEND_Y")) / ((double) record.getInt("ALL_CNT") + (double) record.getInt("O_ALL_CNT"))) * 100;
 		 				hap2 = Math.round(hap2 * 10.0) / 10.0;
 		 				daybrodperCell.setCellValue(hap2 + "%");
 		 				daybrodperCell.setCellStyle(dataStyle);
 		 				dayBrodper = dayBrodper + hap2;
 		 				
 		 				HSSFCell dayybroadcntCell = dayybroadcnt.createCell(j+5);
-		 				dayybroadcntCell.setCellValue(record.getInt("BROAD_Y")); // 방송 건수
+		 				dayybroadcntCell.setCellValue(record.getInt("BROAD_Y") + record.getInt("O_BROAD_Y")); // 방송 건수
 		 				dayybroadcntCell.setCellStyle(dataStyle);
-		 				dayBroadysum = dayBroadysum + record.getInt("BROAD_Y");
+		 				dayBroadysum = dayBroadysum + record.getInt("BROAD_Y") + record.getInt("O_BROAD_Y");
 		 				
 		 				HSSFCell dayybroadperCell = dayybroadper.createCell(j + 5);
-		 				double hap3 = (record.getInt("BROAD_Y") / (double) record.getInt("SEND_Y")) * 100;
+		 				double hap3 = ((record.getInt("BROAD_Y") + record.getInt("O_BROAD_Y")) / ((double) record.getInt("SEND_Y") + (double) record.getInt("O_SEND_Y")) )* 100;
 		 				hap3 = Math.round(hap3 * 10.0) / 10.0;
 		 				dayybroadperCell.setCellValue(hap3 + "%");
 		 				dayybroadperCell.setCellStyle(dataStyle);
 		 				dayBrodyper = dayBrodyper + hap3;
 		 				
 		 				HSSFCell dayybroadstudioCell = dayybroadstudio.createCell(j+5);
-		 				dayybroadstudioCell.setCellValue(record.getInt("BROAD_C")); // 스튜디오 방송 건수
+		 				dayybroadstudioCell.setCellValue(record.getInt("BROAD_C") + record.getInt("O_BROAD_C")); // 스튜디오 방송 건수
 		 				dayybroadstudioCell.setCellStyle(dataStyle);
-		 			   dayBroadys = dayBroadys + record.getInt("BROAD_C");
+		 			   dayBroadys = dayBroadys + record.getInt("BROAD_C") + record.getInt("O_BROAD_C");
 		 			   
 		 			   
 		 			  HSSFCell dayybroadcasterCell = dayybroadcaster.createCell(j+5);
-		 			  dayybroadcasterCell.setCellValue(record.getInt("BROAD_P")); // 방송 건수 캐스터
+		 			  dayybroadcasterCell.setCellValue(record.getInt("BROAD_P") + record.getInt("O_BROAD_P")); // 방송 건수 캐스터
 		 			  dayybroadcasterCell.setCellStyle(dataStyle);
-		 			  dayBroadyc = dayBroadyc + record.getInt("BROAD_P");
+		 			  dayBroadyc = dayBroadyc + record.getInt("BROAD_P") + record.getInt("O_BROAD_P");
 		 			  
 		 			 HSSFCell daynbroadcntCell = daynbroadcnt.createCell(j+5);
-		 			 daynbroadcntCell.setCellValue(record.getInt("BROAD_N")); // 비방송 건수
+		 			 daynbroadcntCell.setCellValue(record.getInt("BROAD_N") + record.getInt("O_BROAD_N")) ; // 비방송 건수
 		 			 daynbroadcntCell.setCellStyle(dataStyle);
-		 			   dayBrodnsum = dayBrodnsum + record.getInt("BROAD_N");
+		 			   dayBrodnsum = dayBrodnsum + record.getInt("BROAD_N") + record.getInt("O_BROAD_N");
 		 			   
 		 			   
 		 			  HSSFCell daynbroadperCell = daynbroadper.createCell(j + 5);
-		 			  double hap4 = (record.getInt("BROAD_N") / (double) record.getInt("SEND_Y")) * 100;
+		 			 double hap4 = ((record.getInt("BROAD_N") + record.getInt("O_BROAD_N")) / ((double) record.getInt("SEND_Y") + (double) record.getInt("O_SEND_Y")) )* 100;
 		 				hap4 = Math.round(hap4 * 10.0) / 10.0;
 		 				daynbroadperCell.setCellValue(hap4 + "%");
 		 				daynbroadperCell.setCellStyle(dataStyle);
 		 				dayBrodnper = dayBrodnper + hap4;
 		 			   
 		 				HSSFCell dayicntCell = dayicnt.createCell(j+5);
-		 				dayicntCell.setCellValue(record.getInt("IMP_Y")); // 전송 건수
+		 				dayicntCell.setCellValue(record.getInt("IMP_Y") + record.getInt("O_IMP_Y")); // 전송 건수
 		 				dayicntCell.setCellStyle(dataStyle);
-		 		 	  dayisum = dayisum + record.getInt("IMP_Y");
+		 		 	  dayisum = dayisum + record.getInt("IMP_Y") + record.getInt("O_IMP_Y");
 
 		 		 	  
 		 		 	HSSFCell dayiybcntCell = dayiybcnt.createCell(j+5);
-		 		 	dayiybcntCell.setCellValue(record.getInt("IMPBRO_Y")); // 주요제보 방송건수
+		 		 	dayiybcntCell.setCellValue(record.getInt("IMPBRO_Y") + record.getInt("O_IMPBRO_Y")); // 주요제보 방송건수
 		 		 	dayiybcntCell.setCellStyle(dataStyle);
-			 		 	dayiybsum = dayiybsum +record.getInt("IMPBRO_Y");
+			 		 	dayiybsum = dayiybsum +record.getInt("IMPBRO_Y") + record.getInt("O_IMPBRO_Y");
 			 		 	
 			 		 	
 			 		 	HSSFCell dayiybroadperCell = dayiybroadper.createCell(j+5);
-			 		 	double hap5 = (record.getInt("IMPBRO_Y") / (double) record.getInt("IMP_Y")) * 100;
+			 		 	double hap5 = ((record.getInt("IMPBRO_Y") + record.getInt("O_IMPBRO_Y")) / ((double) record.getInt("IMP_Y") + (double) record.getInt("O_IMP_Y")) )* 100;
 		 				hap5 = Math.round(hap5 * 10.0) / 10.0;
 		 				dayiybroadperCell.setCellValue(hap5 + "%");
 		 				dayiybroadperCell.setCellStyle(dataStyle);
@@ -3543,14 +3543,14 @@ public class ExportPoiHssfExcel extends AbstractView {
 		 				
 		 				
 		 				HSSFCell dayistudiorCell =dayistudio.createCell(j+5);
-		 				dayistudiorCell.setCellValue(record.getInt("IMPBRO_P")); // 주요제보 스튜디오
+		 				dayistudiorCell.setCellValue(record.getInt("IMPBRO_P") + record.getInt("O_IMPBRO_P")); // 주요제보 스튜디오
 		 				dayistudiorCell.setCellStyle(dataStyle);
-			 		 	dayissum = dayissum +record.getInt("IMPBRO_P");
+			 		 	dayissum = dayissum +record.getInt("IMPBRO_P") + record.getInt("O_IMPBRO_P");
 			 		 			
 			 		 	HSSFCell dayicasterCell = dayicaster.createCell(j+5);
-			 		 	dayicasterCell.setCellValue(record.getInt("IMPBRO_C")); // 주요제보 캐스터
+			 		 	dayicasterCell.setCellValue(record.getInt("IMPBRO_C") + record.getInt("O_IMPBRO_C")); // 주요제보 캐스터
 			 		 	dayicasterCell.setCellStyle(dataStyle);
-			 		 	dayicsum = dayicsum +record.getInt("IMPBRO_C");
+			 		 	dayicsum = dayicsum +record.getInt("IMPBRO_C") + record.getInt("O_IMPBRO_C");
 			 		 	
 			 		 	
 			 		 	
@@ -3558,84 +3558,84 @@ public class ExportPoiHssfExcel extends AbstractView {
 		 			} else { //오후
 		 				
 		 				HSSFCell nightallrowCell = nightallrow.createCell(j-6);
-		 				nightallrowCell.setCellValue(record.getInt("ALL_CNT")); // 총 접수 건수
+		 				nightallrowCell.setCellValue(record.getInt("ALL_CNT") + record.getInt("O_ALL_CNT")); // 총 접수 건수
 		 				nightallrowCell.setCellStyle(dataStyle);
-		 				nightAllsum = nightAllsum + record.getInt("ALL_CNT");
+		 				nightAllsum = nightAllsum + record.getInt("ALL_CNT") + record.getInt("O_ALL_CNT");
 		 				
 		 				HSSFCell nightsendcntCell = nightsendcnt.createCell(j-6);
-		 				nightsendcntCell.setCellValue(record.getInt("SEND_N")); // 자체처리 건수
+		 				nightsendcntCell.setCellValue(record.getInt("SEND_N") + record.getInt("O_SEND_N")); // 자체처리 건수
 		 				nightsendcntCell.setCellStyle(dataStyle);
-		 				nightSendSum = nightSendSum + record.getInt("SEND_N");
+		 				nightSendSum = nightSendSum + record.getInt("SEND_N") + record.getInt("O_SEND_N");
 		 				
 		 				HSSFCell nightsendperCell = nightsendper.createCell(j-6);
-		 				double hap = (record.getInt("SEND_N") / (double) record.getInt("ALL_CNT")) * 100;
+		 				double hap = ((record.getInt("SEND_N") + record.getInt("O_SEND_N")) / ((double) record.getInt("ALL_CNT") + (double) record.getInt("O_ALL_CNT"))) * 100;
 		 				hap = Math.round(hap * 10.0) / 10.0;
 		 				nightsendperCell.setCellValue(hap + "%");
 		 				nightsendperCell.setCellStyle(dataStyle);
 		 				nightSendper = nightSendper + hap;
 		 					 		
 		 				HSSFCell nightbrodcntCell = nightbrodcnt.createCell(j-6);
-		 				nightbrodcntCell.setCellValue(record.getInt("SEND_Y")); // 방송요청 건수
+		 				nightbrodcntCell.setCellValue(record.getInt("SEND_Y") + record.getInt("O_SEND_Y")); // 방송요청 건수
 		 				nightbrodcntCell.setCellStyle(dataStyle);
-		 				nightBroadSum =  nightBroadSum + record.getInt("SEND_Y");
+		 				nightBroadSum =  nightBroadSum + record.getInt("SEND_Y")+ record.getInt("O_SEND_Y");
 		 						
 		 				HSSFCell nightbrodperCell =nightbrodper.createCell(j-6);
-		 				double hap2 = (record.getInt("SEND_Y") / (double) record.getInt("ALL_CNT")) * 100;
+		 				double hap2 = ((record.getInt("SEND_Y") + record.getInt("O_SEND_Y")) / ((double) record.getInt("ALL_CNT") + (double) record.getInt("O_ALL_CNT"))) * 100;
 		 				hap2 = Math.round(hap2 * 10.0) / 10.0;
 		 				nightbrodperCell.setCellValue(hap2 + "%");
 		 				nightbrodperCell.setCellStyle(dataStyle);
 		 				nightBrodper = nightBrodper + hap2;
 		 				
 		 				HSSFCell nightybroadcntCell = nightybroadcnt.createCell(j-6);
-		 				nightybroadcntCell.setCellValue(record.getInt("BROAD_Y")); // 방송 건수
+		 				nightybroadcntCell.setCellValue(record.getInt("BROAD_Y") + record.getInt("O_BROAD_Y")); // 방송 건수
 		 				nightybroadcntCell.setCellStyle(dataStyle);
-		 				nightBroadysum = nightBroadysum + record.getInt("BROAD_Y");
+		 				nightBroadysum = nightBroadysum + record.getInt("BROAD_Y") + record.getInt("O_BROAD_Y");
 		 				
 		 				HSSFCell nightybroadperCell = nightybroadper.createCell(j-6);
-		 				double hap3 = (record.getInt("BROAD_Y") / (double) record.getInt("SEND_Y")) * 100;
+		 				double hap3 = ((record.getInt("BROAD_Y") + record.getInt("O_BROAD_Y")) / ((double) record.getInt("SEND_Y") + (double) record.getInt("O_SEND_Y")) )* 100;
 		 				hap3 = Math.round(hap3 * 10.0) / 10.0;
 		 				nightybroadperCell.setCellValue(hap3 + "%");
 		 				nightybroadperCell.setCellStyle(dataStyle);
 		 				nightBrodyper = nightBrodyper + hap3;
 		 				
 		 				HSSFCell nightybroadstudioCell = nightybroadstudio.createCell(j-6);
-		 				nightybroadstudioCell.setCellValue(record.getInt("BROAD_C")); // 스튜디오 방송 건수
+		 				nightybroadstudioCell.setCellValue(record.getInt("BROAD_C") + record.getInt("O_BROAD_C")); // 스튜디오 방송 건수
 		 				nightybroadstudioCell.setCellStyle(dataStyle);
-		 				nightBroadys = nightBroadys + record.getInt("BROAD_C");
+		 				nightBroadys = nightBroadys + record.getInt("BROAD_C") + record.getInt("O_BROAD_C");
 		 			   
 		 			   
 		 			  HSSFCell nightybroadcasterCell = nightybroadcaster.createCell(j-6);
-		 			 nightybroadcasterCell.setCellValue(record.getInt("BROAD_P")); // 방송 건수 캐스터
+		 			 nightybroadcasterCell.setCellValue(record.getInt("BROAD_P") + record.getInt("O_BROAD_P")); // 방송 건수 캐스터
 		 			nightybroadcasterCell.setCellStyle(dataStyle);
-		 			nightBroadyc = nightBroadyc + record.getInt("BROAD_P");
+		 			nightBroadyc = nightBroadyc + record.getInt("BROAD_P") + record.getInt("O_BROAD_P");
 		 			  
 		 			 HSSFCell nightnbroadcntCell = nightnbroadcnt.createCell(j-6);
-		 			nightnbroadcntCell.setCellValue(record.getInt("BROAD_N")); // 비방송 건수
+		 			nightnbroadcntCell.setCellValue(record.getInt("BROAD_N") + record.getInt("O_BROAD_N")); // 비방송 건수
 		 			nightnbroadcntCell.setCellStyle(dataStyle);
-		 			nightBrodnsum = nightBrodnsum + record.getInt("BROAD_N");
+		 			nightBrodnsum = nightBrodnsum + record.getInt("BROAD_N") + record.getInt("O_BROAD_N");
 		 			   
 		 			   
 		 			  HSSFCell nightnbroadperCell = nightnbroadper.createCell(j-6);
-		 			  double hap4 = (record.getInt("BROAD_N") / (double) record.getInt("SEND_Y")) * 100;
+		 			 double hap4 = ((record.getInt("BROAD_N") + record.getInt("O_BROAD_N")) / ((double) record.getInt("SEND_Y") + (double) record.getInt("O_SEND_Y")) )* 100;
 		 				hap4 = Math.round(hap4 * 10.0) / 10.0;
 		 				nightnbroadperCell.setCellValue(hap4 + "%");
 		 				nightnbroadperCell.setCellStyle(dataStyle);
 		 				nightBrodnper = nightBrodnper + hap4;
 		 			   
 		 				HSSFCell nighticntCell = nighticnt.createCell(j-6);
-		 				nighticntCell.setCellValue(record.getInt("IMP_Y")); // 전송 건수
+		 				nighticntCell.setCellValue(record.getInt("IMP_Y") + record.getInt("O_IMP_Y")); // 전송 건수
 		 				nighticntCell.setCellStyle(dataStyle);
-		 				nightisum = nightisum + record.getInt("IMP_Y");
+		 				nightisum = nightisum + record.getInt("IMP_Y") + record.getInt("O_IMP_Y");
 
 		 		 	  
 		 		 	HSSFCell nightiybcntCell = nightiybcnt.createCell(j-6);
-		 		 	nightiybcntCell.setCellValue(record.getInt("IMPBRO_Y")); // 주요제보 방송건수
+		 		 	nightiybcntCell.setCellValue(record.getInt("IMPBRO_Y") + record.getInt("O_IMPBRO_Y")); // 주요제보 방송건수
 		 		 	nightiybcntCell.setCellStyle(dataStyle);
-		 		 	nightiybsum = nightiybsum +record.getInt("IMPBRO_Y");
+		 		 	nightiybsum = nightiybsum +record.getInt("IMPBRO_Y") + record.getInt("O_IMPBRO_Y");
 			 		 	
 			 		 	
 			 		 	HSSFCell nightiybroadperCell = nightiybroadper.createCell(j-6);
-			 		 	double hap5 = (record.getInt("IMPBRO_Y") / (double) record.getInt("IMP_Y")) * 100;
+			 		 	double hap5 = ((record.getInt("IMPBRO_Y") + record.getInt("O_IMPBRO_Y")) / ((double) record.getInt("IMP_Y") + (double) record.getInt("O_IMP_Y")) )* 100;
 		 				hap5 = Math.round(hap5 * 10.0) / 10.0;
 		 				nightiybroadperCell.setCellValue(hap5 + "%");
 		 				nightiybroadperCell.setCellStyle(dataStyle);
@@ -3643,14 +3643,14 @@ public class ExportPoiHssfExcel extends AbstractView {
 		 				
 		 				
 		 				HSSFCell nightistudiorCell =nightistudio.createCell(j-6);
-		 				nightistudiorCell.setCellValue(record.getInt("IMPBRO_P")); // 주요제보 스튜디오
+		 				nightistudiorCell.setCellValue(record.getInt("IMPBRO_P") + record.getInt("O_IMPBRO_P")); // 주요제보 스튜디오
 		 				nightistudiorCell.setCellStyle(dataStyle);
-		 				nightissum = nightissum +record.getInt("IMPBRO_P");
+		 				nightissum = nightissum +record.getInt("IMPBRO_P") + record.getInt("O_IMPBRO_P");
 			 		 			
 			 		 	HSSFCell nighticasterCell = nighticaster.createCell(j-6);
-			 		 	nighticasterCell.setCellValue(record.getInt("IMPBRO_C")); // 주요제보 캐스터
+			 		 	nighticasterCell.setCellValue(record.getInt("IMPBRO_C") + record.getInt("O_IMPBRO_C"));// 주요제보 캐스터
 			 		 	nighticasterCell.setCellStyle(dataStyle);
-			 		 	nighticsum = nighticsum +record.getInt("IMPBRO_C");
+			 		 	nighticsum = nighticsum +record.getInt("IMPBRO_C") + record.getInt("O_IMPBRO_C");
 		 				
 		 			}
 		 		}

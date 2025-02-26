@@ -63,6 +63,9 @@ public class ReceiptVO {
 	private int STAT2;
 	private int STAT3;
 	
+	private String FLAG_WEB;
+	
+	
 	public ReceiptVO() {}
 	
 	public ReceiptVO(String rECEIPT_ID, String iNDIVIDUAL_ID, String iNDIVIDUAL_NAME, String iNDIVIDUAL_TYPE,
@@ -73,7 +76,7 @@ public class ReceiptVO {
 			String fLAG_DISASTOR, String r_TEL, String x_COORDINATE, String y_COORDINATE, String rEPORT_TYPE2,
 			String rEPORT_TYPE3, String aREA_ID, String lANE, String iNFORMER_ID, String aCT_ID, String iNFORMER_NAME,
 			String rEGIONSUB_ID, String rEGIONSUB_NAME, String pHONE_CELL, String pHONE_HOME, String iNFORMER_TYPE,
-			String aDDRESS_HOME, String zIPCODE, String fLAG_BLACKLIST, int sTAT1, int sTAT2, int sTAT3) {
+			String aDDRESS_HOME, String zIPCODE, String fLAG_BLACKLIST, int sTAT1, int sTAT2, int sTAT3 , String fLAG_WEB) {
 		super();
 		RECEIPT_ID = rECEIPT_ID;
 		INDIVIDUAL_ID = iNDIVIDUAL_ID;
@@ -122,6 +125,7 @@ public class ReceiptVO {
 		STAT1 = sTAT1;
 		STAT2 = sTAT2;
 		STAT3 = sTAT3;
+		FLAG_WEB = fLAG_WEB;
 	}
 
 
@@ -450,6 +454,17 @@ public class ReceiptVO {
 
 	public void setLANE(String lANE) {
 		LANE = lANE;
+	}
+	
+	
+	
+
+	public String getFLAG_WEB() {
+		return FLAG_WEB;
+	}
+
+	public void setFLAG_WEB(String fLAG_WEB) {
+		FLAG_WEB = fLAG_WEB;
 	}
 
 	@Override

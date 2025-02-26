@@ -137,7 +137,7 @@
 				                	<input type="checkbox" name="FLAG_DISASTOR" id="FLAG_DISASTOR" value="Y" /> 재난제보
 				                	<input type="checkbox" name="FLAG_IMPORTANT" id="FLAG_EMERGENCY" value="Y" /> 긴급접수
 									<input type="checkbox" name="FLAG_SEND" id="FLAG_REQUEST" value="Y" checked/> 방송요청
-									<input type="checkbox" name="HOMEP_SEND" id="HOMEP_SEND" value="Y"/> 홈페이지 게시
+									<input type="checkbox" name="FLAG_WEB" id="FLAG_WEB" value="Y"/> 홈페이지 게시
 								</td>
 							</tr>
 							<tr>
