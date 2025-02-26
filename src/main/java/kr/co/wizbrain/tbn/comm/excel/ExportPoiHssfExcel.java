@@ -7,6 +7,7 @@ import java.net.URLEncoder;
 import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -25,6 +26,7 @@ import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Font;
+import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.springframework.web.servlet.view.AbstractView;
 
@@ -115,6 +117,8 @@ public class ExportPoiHssfExcel extends AbstractView {
             	informerReport(model, wb);
             } else if(model.get("mapping").equals("addDownload")) {
             	addDownload(model, wb);
+            } else if (model.get("mapping").equals("standardInformerTypeTime")) {
+            	standardInformerTypeTime(model, wb);
             }
             
             ServletOutputStream outputStream = response.getOutputStream();
@@ -2782,5 +2786,1195 @@ public class ExportPoiHssfExcel extends AbstractView {
     		
     	}
     }
+    
+    
+    
+    // 시간대별 교통정보 제공대장
+    public void standardInformerTypeTime(Map model, HSSFWorkbook wb) {
+    	List timeDataList = (List) model.get("timeData"); // 시간별 데이터
+    	List ifrmDataList = (List) model.get("ifrmData"); // 제보자별 데이터
+    	List rptTataList = (List) model.get("rptTData"); // 제보유형별 데이터
+    	List rptMDataList = (List) model.get("rptMData"); // 제보수단별 데이터
+    	
+    	// 전체 건수 구하기
+    	int allSum = 0;
+    	
+    	// sheet 생성 및 이름 저장
+    	HSSFSheet sheet = wb.createSheet("시간대별 교통정보 제공대장");
+         
+        // title style 변경 
+        // style 객체 생성
+        CellStyle titleStyle = wb.createCellStyle();
+        titleStyle.setAlignment(HSSFCellStyle.ALIGN_CENTER); // 가운데 정렬 (가로 기준)
+        titleStyle.setVerticalAlignment(CellStyle.VERTICAL_CENTER); // 중앙 정렬 (세로 기준)
+ 	    
+ 	    Font font = wb.createFont(); // 폰트 객체 생성
+ 	    font.setFontHeightInPoints((short) 30); // 폰트 크기 설정
+ 	    font.setColor(IndexedColors.BLUE.getIndex()); // 폰트 색상 설정 => 예제 파일 기준으로 파란색 설정
+ 	    font.setBoldweight(Font.BOLDWEIGHT_BOLD); // 볼드체로 설정
+ 	    font.setFontName("굴림체");
+ 	    titleStyle.setFont(font); // 폰트 스타일을 셀 스타일에 적용
+ 	    
+ 	    
+ 	    // 엑셀 title 넣을 행 생성 (A1)
+    	HSSFRow titlerow = sheet.createRow(0);
+        
+        HSSFCell titleCell = titlerow.createCell(0); // 셀 생성
+        
+        // CellRangeAddress(a,b,c,d) 사용법
+        // => CellRangeAddress(첫 행,마지막 행,첫 열,마지막 열)
+        sheet.addMergedRegion(new CellRangeAddress(0, 0, 0, 16)); // title cell 병합 / 예제 파일 기준으로 17칸 병합
+        
+        titleCell.setCellValue(model.get("titleName").toString()); // title row에 title 삽입
+        titleCell.setCellStyle(titleStyle); // 스타일 적용
+        
+ 	    // cell width ,  height 변경
+ 	    sheet.setColumnWidth(0, 5700); // setColumnWidth(변경 할 cell , 크기)
+ 	    titlerow.setHeightInPoints(47.33f); //setHeightInPoints 크기)
+ 	    
+ 	    // 엑셀 대제목 끝 ========================================================= //
+ 	    
+        // title style 변경 
+        // style 객체 생성
+        CellStyle dateStyle = wb.createCellStyle();
+        dateStyle.setAlignment(HSSFCellStyle.ALIGN_RIGHT); // 오른쪽 정렬 (가로 기준)
+        dateStyle.setVerticalAlignment(CellStyle.VERTICAL_CENTER); // 중앙 정렬 (세로 기준)
+ 	    
+ 	    Font dateFont = wb.createFont(); // 폰트 객체 생성
+ 	    dateFont.setFontHeightInPoints((short) 16); // 폰트 크기 설정
+ 	    dateFont.setColor(IndexedColors.BLUE.getIndex()); // 폰트 색상 설정 => 예제 파일 기준으로 파란색 설정
+ 	    dateFont.setFontName("굴림체");
+ 	    dateStyle.setFont(dateFont); // 폰트 스타일을 셀 스타일에 적용
+ 	   
+    	// 시작일, 종료일 YYYY년 DD월 MM일 ~  YYYY년 DD월 MM일 형식으로 쪼개기      
+    	// 쪼개기 위해 시작일과 종료일 받아오기
+    	String startDate = model.get("start_date").toString();
+    	String endDate = model.get("end_date").toString();
+    	
+    	String sDate = ( startDate.substring(0, 4) + "년 " + startDate.substring(4, 6) +"월 " + startDate.substring(6, 8) + "일 ~ ");
+    	String eDate = ( endDate.substring(0, 4) + "년 " + endDate.substring(4, 6) +"월 " + endDate.substring(6, 8) + "일" );
+    	
+    	String dateStr = sDate + eDate; // 최종 반환 String
+    	
+    	
+ 	    // 기간 넣을 행 생성 (A2)
+    	HSSFRow daterow = sheet.createRow(1);	
+    	HSSFCell dateCell = daterow.createCell(0);
+    	
+    	sheet.addMergedRegion(new CellRangeAddress(1, 1, 0, 16)); // title cell 병합 / 예제 파일 기준으로 17칸 병합
+    	dateCell.setCellValue(dateStr); // title row에 title 삽입
+    	dateCell.setCellStyle(dateStyle); // 스타일 적용
+    	
+    	// cell width ,  height 변경
+ 	    sheet.setColumnWidth(0, 5700); // setColumnWidth(변경 할 cell , 크기)
+ 	    daterow.setHeightInPoints(27.88f); //setHeightInPoints 크기)
+    	
+    	
+ 	    // 기간 끝 ========================================================= //
+ 	    // 시간 배열
+ 	    
+	 	CellStyle dayTypehead = wb.createCellStyle();
+	 	dayTypehead.setAlignment(HSSFCellStyle.ALIGN_CENTER); // 오른쪽 정렬 (가로 기준)
+	 	dayTypehead.setVerticalAlignment(CellStyle.VERTICAL_CENTER); // 중앙 정렬 (세로 기준)
+	 	dayTypehead.setFillForegroundColor(IndexedColors.LIGHT_YELLOW.getIndex()); // 배경색 설정
+	 	dayTypehead.setFillPattern(CellStyle.SOLID_FOREGROUND);  // 배경색이 채워지도록 패턴 설정
+	 	dayTypehead.setBorderRight(HSSFCellStyle.BORDER_THIN); // 테두리 설정
+	 	dayTypehead.setBorderLeft(HSSFCellStyle.BORDER_THIN);
+	 	dayTypehead.setBorderTop(HSSFCellStyle.BORDER_THIN);
+	 	dayTypehead.setBorderBottom(HSSFCellStyle.BORDER_THIN);
+	 	
+	 	Font dayTypeF = wb.createFont(); // 폰트 객체 생성
+	 	dayTypeF.setFontHeightInPoints((short) 12); // 폰트 크기 설정
+	 	dayTypeF.setFontName("굴림체");
+	 	dayTypehead.setFont(dayTypeF); // 폰트 스타일을 셀 스타일에 적용
+	 	
+	 	
+	 	// 구분 , 건수,비율,캐스터,스튜디오 등등의 > 스타일
+	 		CellStyle gubun = wb.createCellStyle();
+	 	   gubun.setAlignment(HSSFCellStyle.ALIGN_CENTER); // 오른쪽 정렬 (가로 기준)
+	 	   gubun.setVerticalAlignment(CellStyle.VERTICAL_CENTER); // 중앙 정렬 (세로 기준)
+	 	   /*gubun.setFillForegroundColor(IndexedColors.LIGHT_YELLOW.getIndex()); // 배경색 설정
+	*/ 	   /*gubun.setFillPattern(CellStyle.SOLID_FOREGROUND);*/  // 배경색이 채워지도록 패턴 설정
+	 	   gubun.setBorderRight(HSSFCellStyle.BORDER_THIN); // 테두리 설정
+	 	   gubun.setBorderLeft(HSSFCellStyle.BORDER_THIN);
+	 	   gubun.setBorderTop(HSSFCellStyle.BORDER_THIN);
+	 	   gubun.setBorderBottom(HSSFCellStyle.BORDER_THIN);
+		 	
+		 	Font gubunF = wb.createFont(); // 폰트 객체 생성
+		 	gubunF.setFontHeightInPoints((short) 11); // 폰트 크기 설정
+		 	gubunF.setFontName("굴림체");
+		 	gubun.setFont(gubunF); // 폰트 스타일을 셀 스타일에 적용
+		 	
+		// 오전, 오후 표 안 데이터 스타일
+		 	CellStyle dataStyle = wb.createCellStyle();  
+		 	dataStyle.setAlignment(HSSFCellStyle.ALIGN_RIGHT); 
+		 	dataStyle.setVerticalAlignment(CellStyle.VERTICAL_CENTER); 
+		 	dataStyle.setBorderRight(HSSFCellStyle.BORDER_THIN); 
+		 	dataStyle.setBorderLeft(HSSFCellStyle.BORDER_THIN);
+		 	dataStyle.setBorderTop(HSSFCellStyle.BORDER_THIN);
+		 	dataStyle.setBorderBottom(HSSFCellStyle.BORDER_THIN);
+		 	
+		Font dataStyleF = wb.createFont(); // 폰트 객체 생성
+		dataStyleF.setFontHeightInPoints((short) 11); // 폰트 크기 설정
+		dataStyleF.setFontName("굴림체");
+		dataStyle.setFont(dataStyleF); // 폰트 스타일을 셀 스타일에 적용 	
+		 	
+		 	
+		 	
+		// 총 접수 건수, 자체 처리, 방송요청
+		CellStyle allStyle = wb.createCellStyle();
+		allStyle.setAlignment(HSSFCellStyle.ALIGN_CENTER); // 오른쪽 정렬 (가로 기준)
+		allStyle.setVerticalAlignment(CellStyle.VERTICAL_CENTER); // 중앙 정렬 (세로 기준)
+		allStyle.setFillForegroundColor(IndexedColors.PALE_BLUE.getIndex()); // 배경색 설정*/ 	   
+		allStyle.setFillPattern(CellStyle.SOLID_FOREGROUND);  // 배경색이 채워지도록 패턴 설정
+		allStyle.setBorderRight(HSSFCellStyle.BORDER_THIN); // 테두리 설정
+		allStyle.setBorderLeft(HSSFCellStyle.BORDER_THIN);
+		allStyle.setBorderTop(HSSFCellStyle.BORDER_THIN);
+		allStyle.setBorderBottom(HSSFCellStyle.BORDER_THIN);
+		 	
+		Font allStyleF = wb.createFont(); // 폰트 객체 생성
+		allStyleF.setFontHeightInPoints((short) 11); // 폰트 크기 설정
+		allStyleF.setFontName("굴림체");
+	 	allStyle.setFont(allStyleF); // 폰트 스타일을 셀 스타일에 적용 	
+		
+		// 방송, 비방송, 주요제보 등
+		CellStyle otherStyle = wb.createCellStyle();
+		otherStyle.setAlignment(HSSFCellStyle.ALIGN_CENTER); // 오른쪽 정렬 (가로 기준)
+		otherStyle.setVerticalAlignment(CellStyle.VERTICAL_CENTER); // 중앙 정렬 (세로 기준)
+		otherStyle.setFillForegroundColor(IndexedColors.LIGHT_TURQUOISE.getIndex()); // 배경색 설정*/ 	   
+		otherStyle.setFillPattern(CellStyle.SOLID_FOREGROUND);  // 배경색이 채워지도록 패턴 설정
+		otherStyle.setBorderRight(HSSFCellStyle.BORDER_THIN); // 테두리 설정
+		otherStyle.setBorderLeft(HSSFCellStyle.BORDER_THIN);
+		otherStyle.setBorderTop(HSSFCellStyle.BORDER_THIN);
+		otherStyle.setBorderBottom(HSSFCellStyle.BORDER_THIN);
+		
+		Font otherStyleF = wb.createFont(); // 폰트 객체 생성
+		otherStyleF.setFontHeightInPoints((short) 11); // 폰트 크기 설정
+		otherStyleF.setFontName("굴림체");
+		otherStyle.setFont(otherStyleF); // 폰트 스타일을 셀 스타일에 적용 	
+		
+	 	
+ 	    String[] daytimeArr = new String[28];
+ 	    daytimeArr[0] = "계";
+ 	    daytimeArr[1] = "오전";
+ 	    daytimeArr[2] = "00-01";
+	 	daytimeArr[3] = "01-02";	
+	 	daytimeArr[4] = "02-03";
+	 	daytimeArr[5] = "03-04";
+	 	daytimeArr[6] = "04-05";
+	 	daytimeArr[7] = "05-06";
+	 	daytimeArr[8] = "06-07";
+	 	daytimeArr[9] = "07-08";
+	 	daytimeArr[10] = "08-09";
+	 	daytimeArr[11] = "09-10";
+	 	daytimeArr[12] = "10-11";
+	 	daytimeArr[13] = "11-12";
+	 	daytimeArr[14] = "계";
+	 	daytimeArr[15] = "오후";
+	 	daytimeArr[16] = "12-13";
+	 	daytimeArr[17] = "13-14";
+	 	daytimeArr[18] = "14-15";
+	 	daytimeArr[19] = "15-16";
+	 	daytimeArr[20] = "16-17";
+	 	daytimeArr[21] = "17-18";
+	 	daytimeArr[22] = "18-19";
+	 	daytimeArr[23] = "19-20";
+	 	daytimeArr[24] = "20-21";
+	 	daytimeArr[25] = "21-22";
+	 	daytimeArr[26] = "22-23";
+	 	daytimeArr[27] = "23-24";
+ 	    
+	 	HSSFRow dayTyperow = sheet.createRow(5);  // 오전 구분 (A6)
+	 	HSSFRow dayallrow = sheet.createRow(6); // 오전 총 접수 건수
+	 	
+	 	HSSFRow nightTyperow = sheet.createRow(28);  // 오후 구분 (A29)
+	 	HSSFRow nightallrow = sheet.createRow(29); // 오후 총 접수 건수
+
+	 	HSSFCell dayTypeCell = dayTyperow.createCell(0); // 구분(오전)
+	 	HSSFCell dayallCell = dayallrow.createCell(0); // 오전 총 접수 건수
+ 	    sheet.addMergedRegion(new CellRangeAddress(5, 5, 0, 2)); // cell 병합 / 예제 파일 기준으로3칸 병합
+ 	    sheet.addMergedRegion(new CellRangeAddress(6, 6, 0, 2)); // cell 병합 / 예제 파일 기준으로3칸 병합
+ 	    dayTypeCell.setCellValue("구분"); // title row에 title 삽입
+ 	    dayallCell.setCellValue("총 접수 건수"); // title row에 title 삽입
+ 	    dayTypeCell.setCellStyle(gubun);
+ 	    dayTyperow.createCell(1).setCellStyle(gubun);
+ 	    dayTyperow.createCell(2).setCellStyle(gubun);
+ 	    dayallCell.setCellStyle(allStyle);
+ 	    dayallrow.createCell(1).setCellStyle(allStyle);
+ 	 	dayallrow.createCell(2).setCellStyle(allStyle);
+
+ 	    HSSFCell nightTypeCell = nightTyperow.createCell(0); // 구분(오후)
+ 	    HSSFCell nightallCell = nightallrow.createCell(0); // 오전 총 접수 건수
+ 	    sheet.addMergedRegion(new CellRangeAddress(28, 28, 0, 2)); // cell 병합 / 예제 파일 기준으로3칸 병합
+ 	    sheet.addMergedRegion(new CellRangeAddress(29, 29, 0, 2)); // cell 병합 / 예제 파일 기준으로3칸 병합
+ 	    nightallCell.setCellValue("총 접수 건수"); // title row에 title 삽입
+ 	    nightallCell.setCellStyle(allStyle);
+ 	    nightallrow.createCell(1).setCellStyle(allStyle);
+ 	    nightallrow.createCell(2).setCellStyle(allStyle);
+ 	    
+ 	    // 자체 처리 / 방송 건수
+ 	    HSSFRow daysendcnt = sheet.createRow(7); 
+ 	    HSSFRow daysendper = sheet.createRow(8);  
+ 	    HSSFRow daybrodcnt = sheet.createRow(9);  
+ 	    HSSFRow daybrodper = sheet.createRow(10);
+
+ 	   HSSFCell daysendcntcell = daysendcnt.createCell(0); 
+ 	   sheet.addMergedRegion(new CellRangeAddress(7, 8, 0, 1)); // cell 병합 
+ 	   daysendcntcell.setCellValue("자체 처리");
+ 	   daysendcntcell.setCellStyle(allStyle);
+ 	   daysendcnt.createCell(1).setCellStyle(allStyle);
+ 	   daysendper.createCell(0).setCellStyle(allStyle);
+ 	   daysendper.createCell(1).setCellStyle(allStyle);
+ 	   
+ 	   HSSFCell daysendcnttitle = daysendcnt.createCell(2);
+ 	   daysendcnttitle.setCellValue("건수");
+ 	   daysendcnttitle.setCellStyle(gubun);
+ 	  
+	   HSSFCell daysendpertitle = daysendper.createCell(2);
+	   daysendpertitle.setCellValue("비율"); 
+	   daysendpertitle.setCellStyle(gubun);
+	   
+	   HSSFCell daybrodcntcell = daybrodcnt.createCell(0); 
+ 	   sheet.addMergedRegion(new CellRangeAddress(9, 10, 0, 1)); // cell 병합 
+ 	   daybrodcntcell.setCellValue("방송 요청");
+ 	   daybrodcntcell.setCellStyle(allStyle);
+ 	   daybrodcnt.createCell(1).setCellStyle(allStyle);
+ 	   daybrodper.createCell(0).setCellStyle(allStyle);
+ 	   daybrodper.createCell(1).setCellStyle(allStyle);
+ 	   
+ 	   HSSFCell daybrodcnttitle = daybrodcnt.createCell(2);
+ 	   daybrodcnttitle.setCellValue("건수");
+ 	   daybrodcnttitle.setCellStyle(gubun);
+ 	  
+	   HSSFCell daybrodpertitle = daybrodper.createCell(2);
+	   daybrodpertitle.setCellValue("비율");  
+	   daybrodpertitle.setCellStyle(gubun);
+	   
+ 	
+ 	    HSSFRow nightsendcnt = sheet.createRow(30); 
+	    HSSFRow nightsendper = sheet.createRow(31);  
+	    HSSFRow nightbrodcnt = sheet.createRow(32);  
+	    HSSFRow nightbrodper = sheet.createRow(33);
+	    
+	    HSSFCell nightsendcntcell = nightsendcnt.createCell(0); 
+	 	sheet.addMergedRegion(new CellRangeAddress(30, 31, 0, 1)); // cell 병합 
+	 	nightsendcntcell.setCellValue("자체 처리");  
+	 	nightsendcntcell.setCellStyle(allStyle);
+	 	nightsendcnt.createCell(1).setCellStyle(allStyle);
+	 	
+	 	HSSFCell nightsendcnttitle = nightsendcnt.createCell(2);
+	 	nightsendcnttitle.setCellValue("건수");
+	 	nightsendcnttitle.setCellStyle(gubun);
+	 	
+		HSSFCell nightsendpertitle = nightsendper.createCell(2);
+		nightsendpertitle.setCellValue("비율"); 
+		nightsendpertitle.setCellStyle(gubun);
+		
+		HSSFCell nightbrodcntcell = nightbrodcnt.createCell(0); 
+	 	sheet.addMergedRegion(new CellRangeAddress(32, 33, 0, 1)); // cell 병합 
+	 	nightbrodcntcell.setCellValue("방송 요청");
+	 	nightbrodcntcell.setCellStyle(allStyle);
+	 	nightbrodcnt.createCell(1).setCellStyle(allStyle);
+	 	nightbrodper.createCell(0).setCellStyle(allStyle);
+	 	nightbrodper.createCell(1).setCellStyle(allStyle);
+	 	
+	 	HSSFCell nightbrodcnttitle = nightbrodcnt.createCell(2);
+	 	nightbrodcnttitle.setCellValue("건수");
+	 	nightbrodcnttitle.setCellStyle(gubun);
+	 	
+		HSSFCell nightbrodpertitle = nightbrodper.createCell(2);
+		nightbrodpertitle.setCellValue("비율"); 
+		nightbrodpertitle.setCellStyle(gubun);
+		
+		
+		HSSFRow dayybroadcnt = sheet.createRow(12); 
+ 	    HSSFRow dayybroadper = sheet.createRow(13);  
+ 	    HSSFRow dayybroadstudio = sheet.createRow(14);  
+ 	    HSSFRow dayybroadcaster = sheet.createRow(15);
+ 	    HSSFRow daynbroadcnt = sheet.createRow(16);  
+	    HSSFRow daynbroadper = sheet.createRow(17);
+	    
+	    sheet.addMergedRegion(new CellRangeAddress(12, 15, 1, 1));
+	    sheet.addMergedRegion(new CellRangeAddress(16, 17, 1, 1));
+	    
+	    HSSFCell dayybroadcntcell = dayybroadcnt.createCell(1); 
+	    HSSFCell daynbroadcntcell = daynbroadcnt.createCell(1); 
+	    dayybroadcntcell.setCellValue("방송");
+	    daynbroadcntcell.setCellValue("비방송");
+	    dayybroadcntcell.setCellStyle(otherStyle);
+	    daynbroadcntcell.setCellStyle(otherStyle);
+	    
+	    dayybroadper.createCell(1).setCellStyle(otherStyle);
+	    dayybroadstudio.createCell(1).setCellStyle(otherStyle);
+	    dayybroadcaster.createCell(1).setCellStyle(otherStyle);
+	    daynbroadper.createCell(1).setCellStyle(otherStyle);
+	    
+	    HSSFCell dayybroadcnttitle = dayybroadcnt.createCell(2);
+	    dayybroadcnttitle.setCellValue("건수");
+	    dayybroadcnttitle.setCellStyle(gubun);
+	    
+		HSSFCell dayybroadpertitle = dayybroadper.createCell(2);
+		dayybroadpertitle.setCellValue("비율"); 
+		dayybroadpertitle.setCellStyle(gubun);
+		
+		HSSFCell dayybroadstudiotitle = dayybroadstudio.createCell(2);
+		dayybroadstudiotitle.setCellValue("STUDIO");
+		dayybroadstudiotitle.setCellStyle(gubun);
+		
+		HSSFCell dayybroadcastertitle = dayybroadcaster.createCell(2);
+		dayybroadcastertitle.setCellValue("CASTER"); 
+		dayybroadcastertitle.setCellStyle(gubun);
+		
+		HSSFCell daynbroadcnttitle = daynbroadcnt.createCell(2);
+		daynbroadcnttitle.setCellValue("건수");
+		daynbroadcnttitle.setCellStyle(gubun);
+		
+		HSSFCell daynbroadpertitle = daynbroadper.createCell(2);
+		daynbroadpertitle.setCellValue("비율"); 
+		daynbroadpertitle.setCellStyle(gubun);
+	    
+	    HSSFRow nightybroadcnt = sheet.createRow(35); 
+ 	    HSSFRow nightybroadper = sheet.createRow(36);  
+ 	    HSSFRow nightybroadstudio = sheet.createRow(37);  
+ 	    HSSFRow nightybroadcaster = sheet.createRow(38);
+ 	    HSSFRow nightnbroadcnt = sheet.createRow(39);  
+	    HSSFRow nightnbroadper = sheet.createRow(40);
+	    
+	    sheet.addMergedRegion(new CellRangeAddress(35, 38, 1, 1));
+	    sheet.addMergedRegion(new CellRangeAddress(39, 40, 1, 1));
+
+	    HSSFCell nightybroadcntcell = nightybroadcnt.createCell(1); 
+	    HSSFCell nightnbroadcntcell = nightnbroadcnt.createCell(1); 
+	    nightybroadcntcell.setCellValue("방송");
+	    nightnbroadcntcell.setCellValue("비방송");
+	    nightybroadcntcell.setCellStyle(otherStyle);
+	    nightnbroadcntcell.setCellStyle(otherStyle);
+	    nightybroadcntcell.setCellStyle(otherStyle);
+	    nightnbroadcntcell.setCellStyle(otherStyle);
+	    
+	    nightybroadper.createCell(1).setCellStyle(otherStyle);
+	    nightybroadstudio.createCell(1).setCellStyle(otherStyle);
+	    nightybroadcaster.createCell(1).setCellStyle(otherStyle);
+	    nightnbroadper.createCell(1).setCellStyle(otherStyle);
+	    
+	    HSSFCell nightybroadcnttitle = nightybroadcnt.createCell(2);
+	    nightybroadcnttitle.setCellValue("건수");
+	    nightybroadcnttitle.setCellStyle(gubun);
+	    
+		HSSFCell nightybroadpertitle = nightybroadper.createCell(2);
+		nightybroadpertitle.setCellValue("비율"); 
+		nightybroadpertitle.setCellStyle(gubun);
+		
+		HSSFCell nightybroadstudiotitle = nightybroadstudio.createCell(2);
+		nightybroadstudiotitle.setCellValue("STUDIO");
+		nightybroadstudiotitle.setCellStyle(gubun);
+		
+		HSSFCell nightybroadcastertitle = nightybroadcaster.createCell(2);
+		nightybroadcastertitle.setCellValue("CASTER"); 
+		nightybroadcastertitle.setCellStyle(gubun);
+		
+		HSSFCell nightnbroadcnttitle = nightnbroadcnt.createCell(2);
+		nightnbroadcnttitle.setCellValue("건수");
+		nightnbroadcnttitle.setCellStyle(gubun);
+		
+		HSSFCell nightnbroadpertitle = nightnbroadper.createCell(2);
+		nightnbroadpertitle.setCellValue("비율"); 
+		nightnbroadpertitle.setCellStyle(gubun);
+		
+	    
+	    HSSFRow dayicnt = sheet.createRow(19); 
+ 	    HSSFRow dayiybcnt = sheet.createRow(20);  
+ 	    HSSFRow dayiybroadper = sheet.createRow(21);  
+ 	    HSSFRow dayistudio = sheet.createRow(22);
+ 	    HSSFRow dayicaster = sheet.createRow(23);  
+
+ 	    HSSFRow nighticnt = sheet.createRow(42); 
+	    HSSFRow nightiybcnt = sheet.createRow(43);  
+	    HSSFRow nightiybroadper = sheet.createRow(44);  
+	    HSSFRow nightistudio = sheet.createRow(45);
+	    HSSFRow nighticaster = sheet.createRow(46); 
+	    
+	    sheet.addMergedRegion(new CellRangeAddress(19, 23, 1, 1));
+	    sheet.addMergedRegion(new CellRangeAddress(42, 46, 1, 1));
+	    
+	    HSSFCell dayicntcell = dayicnt.createCell(1); 
+	    HSSFCell nighticntcell = nighticnt.createCell(1); 
+	    dayicntcell.setCellValue("주요 제보");
+	    nighticntcell.setCellValue("주요 제보");
+	    dayicntcell.setCellStyle(otherStyle);
+	    nighticntcell.setCellStyle(otherStyle);
+	    dayiybcnt.createCell(1).setCellStyle(otherStyle);
+	    dayiybroadper.createCell(1).setCellStyle(otherStyle);
+	    dayistudio.createCell(1).setCellStyle(otherStyle);
+	    dayicaster.createCell(1).setCellStyle(otherStyle);
+	    nightiybcnt.createCell(1).setCellStyle(otherStyle);
+	    nightiybroadper.createCell(1).setCellStyle(otherStyle);
+	    nightistudio.createCell(1).setCellStyle(otherStyle);
+	    nighticaster.createCell(1).setCellStyle(otherStyle);
+	    
+	    HSSFCell dayicnttitle = dayicnt.createCell(2);
+	    dayicnttitle.setCellValue("전송 건수");
+	    dayicnttitle.setCellStyle(gubun);
+	    
+		HSSFCell dayiybcnttitle = dayiybcnt.createCell(2);
+		dayiybcnttitle.setCellValue("방송 건수"); 
+		dayiybcnttitle.setCellStyle(gubun);
+		
+		HSSFCell dayiybroadpertitle = dayiybroadper.createCell(2);
+		dayiybroadpertitle.setCellValue("방송 비율");
+		dayiybroadpertitle.setCellStyle(gubun);
+		
+		HSSFCell dayistudiotitle = dayistudio.createCell(2);
+		dayistudiotitle.setCellValue("STUDIO"); 
+		dayistudiotitle.setCellStyle(gubun);
+		
+		HSSFCell dayicastertitle = dayicaster.createCell(2);
+		dayicastertitle.setCellValue("CASTER");
+		dayicastertitle.setCellStyle(gubun);
+
+		
+		HSSFCell nighticnttitle = nighticnt.createCell(2);
+		nighticnttitle.setCellValue("전송 건수");
+		nighticnttitle.setCellStyle(gubun);
+		
+		HSSFCell nightiybcnttitle = nightiybcnt.createCell(2);
+		nightiybcnttitle.setCellValue("방송 건수");
+		nightiybcnttitle.setCellStyle(gubun);
+		
+		HSSFCell nightiybroadpertitle = nightiybroadper.createCell(2);
+		nightiybroadpertitle.setCellValue("방송 비율");
+		nightiybroadpertitle.setCellStyle(gubun);
+		
+		HSSFCell nightistudiotitle = nightistudio.createCell(2);
+		nightistudiotitle.setCellValue("STUDIO"); 
+		nightistudiotitle.setCellStyle(gubun);
+		
+		HSSFCell nighticastertitle = nighticaster.createCell(2);
+		nighticastertitle.setCellValue("CASTER");
+		nighticastertitle.setCellStyle(gubun);
+	    
+		
+		for(int i = 0 ; i < 28 ; i++) {
+			
+			if(i < 14) {
+				HSSFCell dayTimeCell = dayTyperow.createCell(i + 3); // 계
+	 	    	dayTimeCell.setCellValue(daytimeArr[i]); // title row에 title 삽입
+	 	    	dayTimeCell.setCellStyle(dayTypehead); // 스타일 적용
+			} else {
+				if( i == 14 ) {
+					continue;
+				} else {
+					HSSFCell nightTimeCell = nightTyperow.createCell(i - 11); // 계
+					nightTimeCell.setCellValue(daytimeArr[i]); // title row에 title 삽입
+					nightTimeCell.setCellStyle(dayTypehead); // 스타일 적용
+				}
+			}
+ 	    	
+ 	    }
+		
+		
+		// 없는 값들을 위해 기본 값 깔기
+		for(int i = 0 ; i < 14; i ++) {
+			HSSFCell dayAllCell = dayallrow.createCell(i+3);
+			dayAllCell.setCellValue(0);
+			dayAllCell.setCellStyle(dataStyle);
+
+			HSSFCell nightAllCell = nightallrow.createCell(i+3);
+			nightAllCell.setCellValue(0);
+			nightAllCell.setCellStyle(dataStyle);
+
+			HSSFCell daysendcntCell = daysendcnt.createCell(i+3);
+			HSSFCell daysendperCell = daysendper.createCell(i+3);
+			HSSFCell daybrodcntCell = daybrodcnt.createCell(i+3);
+			HSSFCell daybrodperCell = daybrodper.createCell(i+3);
+			
+			daysendcntCell.setCellValue(0);
+			daysendperCell.setCellValue(0 + "%");
+			daybrodcntCell.setCellValue(0);
+			daybrodperCell.setCellValue(0 + "%");
+			
+			daysendcntCell.setCellStyle(dataStyle);
+			daysendperCell.setCellStyle(dataStyle);
+			daybrodcntCell.setCellStyle(dataStyle);
+			daybrodperCell.setCellStyle(dataStyle);
+			
+			HSSFCell nightsendcntCell = nightsendcnt.createCell(i+3);
+			HSSFCell nightsendperCell = nightsendper.createCell(i+3);
+			HSSFCell nightbrodcntCell = nightbrodcnt.createCell(i+3);
+			HSSFCell nightbrodperCell = nightbrodper.createCell(i+3);
+			
+			nightsendcntCell.setCellValue(0);
+			nightsendperCell.setCellValue(0 + "%");
+			nightbrodcntCell.setCellValue(0);
+			nightbrodperCell.setCellValue(0 + "%");
+			
+			nightsendcntCell.setCellStyle(dataStyle);
+			nightsendperCell.setCellStyle(dataStyle);
+			nightbrodcntCell.setCellStyle(dataStyle);
+			nightbrodperCell.setCellStyle(dataStyle);
+		    
+		    HSSFCell dayybroadcntCell = dayybroadcnt.createCell(i+3);
+			HSSFCell dayybroadperCell = dayybroadper.createCell(i+3);
+			HSSFCell dayybroadstudioCell = dayybroadstudio.createCell(i+3);
+			HSSFCell dayybroadcasterCell = dayybroadcaster.createCell(i+3);
+			HSSFCell daynbroadcntCell = daynbroadcnt.createCell(i+3);
+			HSSFCell daynbroadperCell = daynbroadper.createCell(i+3);
+			
+			dayybroadcntCell.setCellValue(0);
+			dayybroadperCell.setCellValue(0 + "%");
+			dayybroadstudioCell.setCellValue(0);
+			dayybroadcasterCell.setCellValue(0);
+			daynbroadcntCell.setCellValue(0);
+			daynbroadperCell.setCellValue(0 + "%");
+			
+			dayybroadcntCell.setCellStyle(dataStyle);
+			dayybroadperCell.setCellStyle(dataStyle);
+			dayybroadstudioCell.setCellStyle(dataStyle);
+			dayybroadcasterCell.setCellStyle(dataStyle);
+			daynbroadcntCell.setCellStyle(dataStyle);
+			daynbroadperCell.setCellStyle(dataStyle);
+		
+		    
+		    HSSFCell nightybroadcntCell = nightybroadcnt.createCell(i+3);
+			HSSFCell nightybroadperCell = nightybroadper.createCell(i+3);
+			HSSFCell nightybroadstudioCell = nightybroadstudio.createCell(i+3);
+			HSSFCell nightybroadcasterCell = nightybroadcaster.createCell(i+3);
+			HSSFCell nightnbroadcntCell = nightnbroadcnt.createCell(i+3);
+			HSSFCell nightnbroadperCell = nightnbroadper.createCell(i+3);
+			
+			nightybroadcntCell.setCellValue(0);
+			nightybroadperCell.setCellValue(0 + "%");
+			nightybroadstudioCell.setCellValue(0);
+			nightybroadcasterCell.setCellValue(0);
+			nightnbroadcntCell.setCellValue(0);
+			nightnbroadperCell.setCellValue(0 + "%");
+			
+			nightybroadcntCell.setCellStyle(dataStyle);
+			nightybroadperCell.setCellStyle(dataStyle);
+			nightybroadstudioCell.setCellStyle(dataStyle);
+			nightybroadcasterCell.setCellStyle(dataStyle);
+			nightnbroadcntCell.setCellStyle(dataStyle);
+			nightnbroadperCell.setCellStyle(dataStyle);
+
+	 	   	
+	 	   HSSFCell dayicntCell = dayicnt.createCell(i+3);
+			HSSFCell dayiybcntCell = dayiybcnt.createCell(i+3);
+			HSSFCell dayiybroadperCell = dayiybroadper.createCell(i+3);
+			HSSFCell dayistudioCell = dayistudio.createCell(i+3);
+			HSSFCell dayicasterCell = dayicaster.createCell(i+3);
+			
+			dayicntCell.setCellValue(0);
+			dayiybcntCell.setCellValue(0);
+			dayiybroadperCell.setCellValue(0 + "%");
+			dayistudioCell.setCellValue(0);
+			dayicasterCell.setCellValue(0);
+			
+			dayicntCell.setCellStyle(dataStyle);
+			dayiybcntCell.setCellStyle(dataStyle);
+			dayiybroadperCell.setCellStyle(dataStyle);
+			dayistudioCell.setCellStyle(dataStyle);
+			dayicasterCell.setCellStyle(dataStyle);
+	 	   
+	 	   
+	 	  HSSFCell nighticntCell = nighticnt.createCell(i+3);
+			HSSFCell nightiybcntCell = nightiybcnt.createCell(i+3);
+			HSSFCell nightiybroadperCell = nightiybroadper.createCell(i+3);
+			HSSFCell nightistudioCell = nightistudio.createCell(i+3);
+			HSSFCell nighticasterCell = nighticaster.createCell(i+3);
+			
+			nighticntCell.setCellValue(0);
+			nightiybcntCell.setCellValue(0);
+			nightiybroadperCell.setCellValue(0 + "%");
+			nightistudioCell.setCellValue(0);
+			nighticasterCell.setCellValue(0);
+			
+			nighticntCell.setCellStyle(dataStyle);
+			nightiybcntCell.setCellStyle(dataStyle);
+			nightiybroadperCell.setCellStyle(dataStyle);
+			nightistudioCell.setCellStyle(dataStyle);
+			nighticasterCell.setCellStyle(dataStyle);
+		}
+		
+		nightallrow.createCell(3).setCellValue("");
+		nightsendcnt.createCell(3).setCellValue("");
+		nightsendper.createCell(3).setCellValue("");
+		nightbrodcnt.createCell(3).setCellValue("");
+		nightbrodper.createCell(3).setCellValue("");
+		nightybroadcnt.createCell(3).setCellValue("");
+	    nightybroadper.createCell(3).setCellValue("");
+	    nightybroadstudio.createCell(3).setCellValue("");
+	    nightybroadcaster.createCell(3).setCellValue("");
+	    nightnbroadcnt.createCell(3).setCellValue("");
+	    nightnbroadper.createCell(3).setCellValue("");
+	    nighticnt.createCell(3).setCellValue("");
+	 	nightiybcnt.createCell(3).setCellValue("");
+	 	nightiybroadper.createCell(3).setCellValue("");
+	 	nightistudio.createCell(3).setCellValue("");
+	 	nighticaster.createCell(3).setCellValue("");
+	    
+	 	int dayAllsum = 0; // 오전 총 건수
+	 	int nightAllsum = 0; // 오후 총 건수
+	 	int daySendSum = 0;
+	 	int nightSendSum = 0;
+	 	double daySendper = 0;
+	 	double nightSendper = 0;
+	 	int dayBroadsum = 0;
+	 	int nightBroadSum = 0;
+	 	double dayBrodper = 0;
+	 	double nightBrodper = 0;
+	 	int dayBroadysum = 0;
+	 	int nightBroadysum = 0;
+	 	double dayBrodyper = 0; // 방송 비율 (방송요청 아님)
+	 	double nightBrodyper = 0;
+	 	int dayBroadys = 0;
+	 	int dayBroadyc = 0;
+	 	int nightBroadys = 0;
+	 	int nightBroadyc = 0;
+	 	int dayBrodnsum = 0;
+	 	int nightBrodnsum = 0;
+	 	double dayBrodnper = 0; // 방송 비율 (방송요청 아님)
+	 	double nightBrodnper = 0;
+	 	    int dayisum = 0;
+	 	    int nightisum = 0;
+	 	    int dayiybsum = 0; 
+	 	    int nightiybsum = 0;
+	 	    
+	 	    double dayiybper = 0; // 주요 제보 방송 비율
+	 	   double nightiybper = 0;
+	 	   
+	 	    int dayissum = 0;
+	 	    int nightissum = 0;
+	 	    int dayicsum = 0;
+	 	    int nighticsum = 0;
+	 	for(int i=0; i < timeDataList.size(); i ++) {
+	 		RecordDto record = (RecordDto) timeDataList.get(i);
+	 		String receiptTime = record.getString("RECEIPT_TIME");
+	 		receiptTime = receiptTime.trim();
+	 		int rcpTime = Integer.parseInt(receiptTime);
+	 		
+	 		for(int j=0; j < 24; j++) {
+	 			if(rcpTime == j) {
+		 			if(j < 12) { //오전
+		 				
+		 				
+		 				HSSFCell dayallrowCell = dayallrow.createCell(j+5);
+		 				dayallrowCell.setCellValue(record.getInt("ALL_CNT")); // 총 접수 건수
+		 				dayallrowCell.setCellStyle(dataStyle);
+		 				dayAllsum = dayAllsum + record.getInt("ALL_CNT");
+		 				
+		 				HSSFCell daysendcntCell = daysendcnt.createCell(j+5);
+		 				daysendcntCell.setCellValue(record.getInt("SEND_N")); // 자체처리 건수
+		 				daysendcntCell.setCellStyle(dataStyle);
+		 				daySendSum = daySendSum + record.getInt("SEND_N");
+		 				
+		 				HSSFCell daysendperCell = daysendper.createCell(j + 5);
+		 				double hap = (record.getInt("SEND_N") / (double) record.getInt("ALL_CNT")) * 100;
+		 				hap = Math.round(hap * 10.0) / 10.0;
+		 				daysendperCell.setCellValue(hap + "%");
+		 				daysendperCell.setCellStyle(dataStyle);
+		 				daySendper = daySendper + hap;
+		 					 		
+		 				HSSFCell daybrodcntCell = daybrodcnt.createCell(j+5);
+		 				daybrodcntCell.setCellValue(record.getInt("SEND_Y")); // 방송요청 건수
+		 				daybrodcntCell.setCellStyle(dataStyle);
+		 				dayBroadsum =  dayBroadsum + record.getInt("SEND_Y");
+		 						
+		 				HSSFCell daybrodperCell =daybrodper.createCell(j + 5);
+		 				double hap2 = (record.getInt("SEND_Y") / (double) record.getInt("ALL_CNT")) * 100;
+		 				hap2 = Math.round(hap2 * 10.0) / 10.0;
+		 				daybrodperCell.setCellValue(hap2 + "%");
+		 				daybrodperCell.setCellStyle(dataStyle);
+		 				dayBrodper = dayBrodper + hap2;
+		 				
+		 				HSSFCell dayybroadcntCell = dayybroadcnt.createCell(j+5);
+		 				dayybroadcntCell.setCellValue(record.getInt("BROAD_Y")); // 방송 건수
+		 				dayybroadcntCell.setCellStyle(dataStyle);
+		 				dayBroadysum = dayBroadysum + record.getInt("BROAD_Y");
+		 				
+		 				HSSFCell dayybroadperCell = dayybroadper.createCell(j + 5);
+		 				double hap3 = (record.getInt("BROAD_Y") / (double) record.getInt("SEND_Y")) * 100;
+		 				hap3 = Math.round(hap3 * 10.0) / 10.0;
+		 				dayybroadperCell.setCellValue(hap3 + "%");
+		 				dayybroadperCell.setCellStyle(dataStyle);
+		 				dayBrodyper = dayBrodyper + hap3;
+		 				
+		 				HSSFCell dayybroadstudioCell = dayybroadstudio.createCell(j+5);
+		 				dayybroadstudioCell.setCellValue(record.getInt("BROAD_C")); // 스튜디오 방송 건수
+		 				dayybroadstudioCell.setCellStyle(dataStyle);
+		 			   dayBroadys = dayBroadys + record.getInt("BROAD_C");
+		 			   
+		 			   
+		 			  HSSFCell dayybroadcasterCell = dayybroadcaster.createCell(j+5);
+		 			  dayybroadcasterCell.setCellValue(record.getInt("BROAD_P")); // 방송 건수 캐스터
+		 			  dayybroadcasterCell.setCellStyle(dataStyle);
+		 			  dayBroadyc = dayBroadyc + record.getInt("BROAD_P");
+		 			  
+		 			 HSSFCell daynbroadcntCell = daynbroadcnt.createCell(j+5);
+		 			 daynbroadcntCell.setCellValue(record.getInt("BROAD_N")); // 비방송 건수
+		 			 daynbroadcntCell.setCellStyle(dataStyle);
+		 			   dayBrodnsum = dayBrodnsum + record.getInt("BROAD_N");
+		 			   
+		 			   
+		 			  HSSFCell daynbroadperCell = daynbroadper.createCell(j + 5);
+		 			  double hap4 = (record.getInt("BROAD_N") / (double) record.getInt("SEND_Y")) * 100;
+		 				hap4 = Math.round(hap4 * 10.0) / 10.0;
+		 				daynbroadperCell.setCellValue(hap4 + "%");
+		 				daynbroadperCell.setCellStyle(dataStyle);
+		 				dayBrodnper = dayBrodnper + hap4;
+		 			   
+		 				HSSFCell dayicntCell = dayicnt.createCell(j+5);
+		 				dayicntCell.setCellValue(record.getInt("IMP_Y")); // 전송 건수
+		 				dayicntCell.setCellStyle(dataStyle);
+		 		 	  dayisum = dayisum + record.getInt("IMP_Y");
+
+		 		 	  
+		 		 	HSSFCell dayiybcntCell = dayiybcnt.createCell(j+5);
+		 		 	dayiybcntCell.setCellValue(record.getInt("IMPBRO_Y")); // 주요제보 방송건수
+		 		 	dayiybcntCell.setCellStyle(dataStyle);
+			 		 	dayiybsum = dayiybsum +record.getInt("IMPBRO_Y");
+			 		 	
+			 		 	
+			 		 	HSSFCell dayiybroadperCell = dayiybroadper.createCell(j+5);
+			 		 	double hap5 = (record.getInt("IMPBRO_Y") / (double) record.getInt("IMP_Y")) * 100;
+		 				hap5 = Math.round(hap5 * 10.0) / 10.0;
+		 				dayiybroadperCell.setCellValue(hap5 + "%");
+		 				dayiybroadperCell.setCellStyle(dataStyle);
+		 				dayiybper = dayiybper + hap5;
+		 				
+		 				
+		 				HSSFCell dayistudiorCell =dayistudio.createCell(j+5);
+		 				dayistudiorCell.setCellValue(record.getInt("IMPBRO_P")); // 주요제보 스튜디오
+		 				dayistudiorCell.setCellStyle(dataStyle);
+			 		 	dayissum = dayissum +record.getInt("IMPBRO_P");
+			 		 			
+			 		 	HSSFCell dayicasterCell = dayicaster.createCell(j+5);
+			 		 	dayicasterCell.setCellValue(record.getInt("IMPBRO_C")); // 주요제보 캐스터
+			 		 	dayicasterCell.setCellStyle(dataStyle);
+			 		 	dayicsum = dayicsum +record.getInt("IMPBRO_C");
+			 		 	
+			 		 	
+			 		 	
+			 		 	
+		 			} else { //오후
+		 				
+		 				HSSFCell nightallrowCell = nightallrow.createCell(j-6);
+		 				nightallrowCell.setCellValue(record.getInt("ALL_CNT")); // 총 접수 건수
+		 				nightallrowCell.setCellStyle(dataStyle);
+		 				nightAllsum = nightAllsum + record.getInt("ALL_CNT");
+		 				
+		 				HSSFCell nightsendcntCell = nightsendcnt.createCell(j-6);
+		 				nightsendcntCell.setCellValue(record.getInt("SEND_N")); // 자체처리 건수
+		 				nightsendcntCell.setCellStyle(dataStyle);
+		 				nightSendSum = nightSendSum + record.getInt("SEND_N");
+		 				
+		 				HSSFCell nightsendperCell = nightsendper.createCell(j-6);
+		 				double hap = (record.getInt("SEND_N") / (double) record.getInt("ALL_CNT")) * 100;
+		 				hap = Math.round(hap * 10.0) / 10.0;
+		 				nightsendperCell.setCellValue(hap + "%");
+		 				nightsendperCell.setCellStyle(dataStyle);
+		 				nightSendper = nightSendper + hap;
+		 					 		
+		 				HSSFCell nightbrodcntCell = nightbrodcnt.createCell(j-6);
+		 				nightbrodcntCell.setCellValue(record.getInt("SEND_Y")); // 방송요청 건수
+		 				nightbrodcntCell.setCellStyle(dataStyle);
+		 				nightBroadSum =  nightBroadSum + record.getInt("SEND_Y");
+		 						
+		 				HSSFCell nightbrodperCell =nightbrodper.createCell(j-6);
+		 				double hap2 = (record.getInt("SEND_Y") / (double) record.getInt("ALL_CNT")) * 100;
+		 				hap2 = Math.round(hap2 * 10.0) / 10.0;
+		 				nightbrodperCell.setCellValue(hap2 + "%");
+		 				nightbrodperCell.setCellStyle(dataStyle);
+		 				nightBrodper = nightBrodper + hap2;
+		 				
+		 				HSSFCell nightybroadcntCell = nightybroadcnt.createCell(j-6);
+		 				nightybroadcntCell.setCellValue(record.getInt("BROAD_Y")); // 방송 건수
+		 				nightybroadcntCell.setCellStyle(dataStyle);
+		 				nightBroadysum = nightBroadysum + record.getInt("BROAD_Y");
+		 				
+		 				HSSFCell nightybroadperCell = nightybroadper.createCell(j-6);
+		 				double hap3 = (record.getInt("BROAD_Y") / (double) record.getInt("SEND_Y")) * 100;
+		 				hap3 = Math.round(hap3 * 10.0) / 10.0;
+		 				nightybroadperCell.setCellValue(hap3 + "%");
+		 				nightybroadperCell.setCellStyle(dataStyle);
+		 				nightBrodyper = nightBrodyper + hap3;
+		 				
+		 				HSSFCell nightybroadstudioCell = nightybroadstudio.createCell(j-6);
+		 				nightybroadstudioCell.setCellValue(record.getInt("BROAD_C")); // 스튜디오 방송 건수
+		 				nightybroadstudioCell.setCellStyle(dataStyle);
+		 				nightBroadys = nightBroadys + record.getInt("BROAD_C");
+		 			   
+		 			   
+		 			  HSSFCell nightybroadcasterCell = nightybroadcaster.createCell(j-6);
+		 			 nightybroadcasterCell.setCellValue(record.getInt("BROAD_P")); // 방송 건수 캐스터
+		 			nightybroadcasterCell.setCellStyle(dataStyle);
+		 			nightBroadyc = nightBroadyc + record.getInt("BROAD_P");
+		 			  
+		 			 HSSFCell nightnbroadcntCell = nightnbroadcnt.createCell(j-6);
+		 			nightnbroadcntCell.setCellValue(record.getInt("BROAD_N")); // 비방송 건수
+		 			nightnbroadcntCell.setCellStyle(dataStyle);
+		 			nightBrodnsum = nightBrodnsum + record.getInt("BROAD_N");
+		 			   
+		 			   
+		 			  HSSFCell nightnbroadperCell = nightnbroadper.createCell(j-6);
+		 			  double hap4 = (record.getInt("BROAD_N") / (double) record.getInt("SEND_Y")) * 100;
+		 				hap4 = Math.round(hap4 * 10.0) / 10.0;
+		 				nightnbroadperCell.setCellValue(hap4 + "%");
+		 				nightnbroadperCell.setCellStyle(dataStyle);
+		 				nightBrodnper = nightBrodnper + hap4;
+		 			   
+		 				HSSFCell nighticntCell = nighticnt.createCell(j-6);
+		 				nighticntCell.setCellValue(record.getInt("IMP_Y")); // 전송 건수
+		 				nighticntCell.setCellStyle(dataStyle);
+		 				nightisum = nightisum + record.getInt("IMP_Y");
+
+		 		 	  
+		 		 	HSSFCell nightiybcntCell = nightiybcnt.createCell(j-6);
+		 		 	nightiybcntCell.setCellValue(record.getInt("IMPBRO_Y")); // 주요제보 방송건수
+		 		 	nightiybcntCell.setCellStyle(dataStyle);
+		 		 	nightiybsum = nightiybsum +record.getInt("IMPBRO_Y");
+			 		 	
+			 		 	
+			 		 	HSSFCell nightiybroadperCell = nightiybroadper.createCell(j-6);
+			 		 	double hap5 = (record.getInt("IMPBRO_Y") / (double) record.getInt("IMP_Y")) * 100;
+		 				hap5 = Math.round(hap5 * 10.0) / 10.0;
+		 				nightiybroadperCell.setCellValue(hap5 + "%");
+		 				nightiybroadperCell.setCellStyle(dataStyle);
+		 				nightiybper = nightiybper + hap5;
+		 				
+		 				
+		 				HSSFCell nightistudiorCell =nightistudio.createCell(j-6);
+		 				nightistudiorCell.setCellValue(record.getInt("IMPBRO_P")); // 주요제보 스튜디오
+		 				nightistudiorCell.setCellStyle(dataStyle);
+		 				nightissum = nightissum +record.getInt("IMPBRO_P");
+			 		 			
+			 		 	HSSFCell nighticasterCell = nighticaster.createCell(j-6);
+			 		 	nighticasterCell.setCellValue(record.getInt("IMPBRO_C")); // 주요제보 캐스터
+			 		 	nighticasterCell.setCellStyle(dataStyle);
+			 		 	nighticsum = nighticsum +record.getInt("IMPBRO_C");
+		 				
+		 			}
+		 		}
+	 		}
+
+	 	}
+	 	
+	 	
+	 	// 합계들 정산 및 엑셀에 넣기
+	 	allSum = dayAllsum + nightAllsum; // 오전 오후 총 건수
+	 	
+	 	HSSFCell dayallrowCell = dayallrow.createCell(3);
+	 	dayallrowCell.setCellValue(allSum); // 전체 건수 넣기
+	 	dayallrowCell.setCellStyle(dataStyle);
+
+	 	HSSFCell dayallrowCell2 = dayallrow.createCell(4);
+	 	dayallrowCell2.setCellValue(dayAllsum); // 전체 건수 넣기
+	 	dayallrowCell2.setCellStyle(dataStyle);
+	 	
+	 	HSSFCell nightallrowCell = nightallrow.createCell(4);
+	 	nightallrowCell.setCellValue(nightAllsum); // 전체 건수 넣기
+	 	nightallrowCell.setCellStyle(dataStyle);
+	 	
+	 	
+	 	int allSendsum = daySendSum + nightSendSum;// 오전 오후 자체처리 총 건수
+	 	HSSFCell daysendcntCell = daysendcnt.createCell(3);
+	 	daysendcntCell.setCellValue(allSendsum); // 전체 건수 넣기
+	 	daysendcntCell.setCellStyle(dataStyle);
+
+	 	HSSFCell daysendcntCell2 = daysendcnt.createCell(4);
+	 	daysendcntCell2.setCellValue(daySendSum); // 전체 건수 넣기
+	 	daysendcntCell2.setCellStyle(dataStyle);
+	 	
+	 	HSSFCell nightsendcntCell = nightsendcnt.createCell(4);
+	 	nightsendcntCell.setCellValue(nightSendSum); // 전체 건수 넣기
+	 	nightsendcntCell.setCellStyle(dataStyle);
+	 	
+	 	
+		double allsendper = ((double) allSendsum/allSum)*100;
+		double daysendperval = ((double) daySendSum/dayAllsum)*100;
+		double nightsendperval = ((double) nightSendSum/nightAllsum)*100;
+		
+		allsendper = Math.round(allsendper * 10.0) / 10.0;
+		daysendperval = Math.round(daysendperval * 10.0) / 10.0;
+		nightsendperval = Math.round(nightsendperval * 10.0) / 10.0;
+	 	
+	 	HSSFCell daysendperCell = daysendper.createCell(3);
+	 	daysendperCell.setCellValue(allsendper+ "%"); // 전체 건수 넣기
+	 	daysendperCell.setCellStyle(dataStyle);
+
+	 	HSSFCell daysendperCell2 = daysendper.createCell(4);
+	 	daysendperCell2.setCellValue(daysendperval+ "%"); // 전체 건수 넣기
+	 	daysendperCell2.setCellStyle(dataStyle);
+	 	
+	 	HSSFCell nightsendperCell = nightsendper.createCell(4);
+	 	nightsendperCell.setCellValue(nightsendperval+ "%");// 전체 건수 넣기
+	 	nightsendperCell.setCellStyle(dataStyle);
+	 	
+	 	
+	 	
+	 	
+	 	
+	 	int allBrodsum = dayBroadsum + nightBroadSum;
+	 	daybrodcnt.createCell(3).setCellValue(allBrodsum);
+	 	daybrodcnt.createCell(4).setCellValue(dayBroadsum);
+	 	nightbrodcnt.createCell(4).setCellValue(nightBroadSum);
+	 	
+	 	HSSFCell daybrodcntCell = daybrodcnt.createCell(3);
+	 	daybrodcntCell.setCellValue(allBrodsum); // 전체 건수 넣기
+	 	daybrodcntCell.setCellStyle(dataStyle);
+
+	 	HSSFCell daybrodcntCell2 = daybrodcnt.createCell(4);
+	 	daybrodcntCell2.setCellValue(dayBroadsum); // 전체 건수 넣기
+	 	daybrodcntCell2.setCellStyle(dataStyle);
+	 	
+	 	HSSFCell nightbrodcntCell = nightbrodcnt.createCell(4);
+	 	nightbrodcntCell.setCellValue(nightBroadSum);// 전체 건수 넣기
+	 	nightbrodcntCell.setCellStyle(dataStyle);
+	 	
+	 	double allbrodperval = ((double) allBrodsum/allSum)*100;
+	 	double daybrodperval = ((double) dayBroadsum/dayAllsum)*100;
+	 	double nightbrodperval = ((double) nightBroadSum/nightAllsum)*100;
+	 	allbrodperval = Math.round(allbrodperval * 10.0) / 10.0;
+	 	daybrodperval = Math.round(daybrodperval * 10.0) / 10.0;
+	 	nightbrodperval = Math.round(nightbrodperval * 10.0) / 10.0;
+
+	 	HSSFCell daybrodperCell = daybrodper.createCell(3);
+	 	daybrodperCell.setCellValue(allbrodperval+ "%"); // 전체 건수 넣기
+	 	daybrodperCell.setCellStyle(dataStyle);
+
+	 	HSSFCell daybrodperCell2 = daybrodper.createCell(4);
+	 	daybrodperCell2.setCellValue(daybrodperval+ "%"); // 전체 건수 넣기
+	 	daybrodperCell2.setCellStyle(dataStyle);
+	 	
+	 	HSSFCell nightbrodperCell = nightbrodper.createCell(4);
+	 	nightbrodperCell.setCellValue(nightbrodperval+ "%");// 전체 건수 넣기
+	 	nightbrodperCell.setCellStyle(dataStyle);
+	 	
+	 	
+	 	
+	 	int allBrodYsum = dayBroadysum + nightBroadysum;
+	 	
+	 	HSSFCell dayybroadcntCell = dayybroadcnt.createCell(3);
+	 	dayybroadcntCell.setCellValue(allBrodYsum); // 전체 건수 넣기
+	 	dayybroadcntCell.setCellStyle(dataStyle);
+
+	 	HSSFCell dayybroadcntCell2 = dayybroadcnt.createCell(4);
+	 	dayybroadcntCell2.setCellValue(dayBroadysum); // 전체 건수 넣기
+	 	dayybroadcntCell2.setCellStyle(dataStyle);
+	 	
+	 	HSSFCell nightybroadcntCell = nightybroadcnt.createCell(4);
+	 	nightybroadcntCell.setCellValue(nightBroadysum);// 전체 건수 넣기
+	 	nightybroadcntCell.setCellStyle(dataStyle);
+	 		 	
+	 	
+	 	double allbrodyperval = ((double) allBrodYsum/allBrodsum)*100;
+	 	double daybrodyperval = ((double) dayBroadysum/dayBroadsum)*100;
+	 	double nightbrodyperval = ((double) nightBroadysum/nightBroadSum)*100;
+	 	allbrodyperval = Math.round(allbrodyperval * 10.0) / 10.0;
+	 	daybrodyperval = Math.round(daybrodyperval * 10.0) / 10.0;
+	 	nightbrodyperval = Math.round(nightbrodyperval * 10.0) / 10.0;
+	 	HSSFCell dayybroadperCell = dayybroadper.createCell(3);
+	 	dayybroadperCell.setCellValue(allbrodyperval+ "%"); // 전체 건수 넣기
+	 	dayybroadperCell.setCellStyle(dataStyle);
+
+	 	HSSFCell dayybroadperCell2 = dayybroadper.createCell(4);
+	 	dayybroadperCell2.setCellValue(daybrodyperval+ "%"); // 전체 건수 넣기
+	 	dayybroadperCell2.setCellStyle(dataStyle);
+	 	
+	 	HSSFCell nightybroadperCell = nightybroadper.createCell(4);
+	 	nightybroadperCell.setCellValue(nightbrodyperval+ "%");// 전체 건수 넣기
+	 	nightybroadperCell.setCellStyle(dataStyle);
+	 	
+	 	
+	 	
+	 	
+	 	int allBroadYstudio = dayBroadys + nightBroadys;
+	 	
+	 	HSSFCell dayybroadstudioCell = dayybroadstudio.createCell(3);
+	 	dayybroadstudioCell.setCellValue(allBroadYstudio); // 전체 건수 넣기
+	 	dayybroadstudioCell.setCellStyle(dataStyle);
+
+	 	HSSFCell dayybroadstudioCell2 = dayybroadstudio.createCell(4);
+	 	dayybroadstudioCell2.setCellValue(dayBroadys); // 전체 건수 넣기
+	 	dayybroadstudioCell2.setCellStyle(dataStyle);
+	 	
+	 	HSSFCell nightybroadstudioCell = nightybroadstudio.createCell(4);
+	 	nightybroadstudioCell.setCellValue(nightBroadys);// 전체 건수 넣기
+	 	nightybroadstudioCell.setCellStyle(dataStyle);
+	 	
+	 	int allBroadCstudio = dayBroadyc + nightBroadyc;
+	 	
+	 	HSSFCell dayybroadcasterCell = dayybroadcaster.createCell(3);
+	 	dayybroadcasterCell.setCellValue(allBroadCstudio); // 전체 건수 넣기
+	 	dayybroadcasterCell.setCellStyle(dataStyle);
+
+	 	HSSFCell dayybroadcasterCell2 = dayybroadcaster.createCell(4);
+	 	dayybroadcasterCell2.setCellValue(dayBroadyc); // 전체 건수 넣기
+	 	dayybroadcasterCell2.setCellStyle(dataStyle);
+	 	
+	 	HSSFCell nightybroadcasterCell = nightybroadcaster.createCell(4);
+	 	nightybroadcasterCell.setCellValue(nightBroadyc);// 전체 건수 넣기
+	 	nightybroadcasterCell.setCellStyle(dataStyle);
+	 		 	
+	 	
+	 	
+	 	int allBroadNo = dayBrodnsum + nightBrodnsum;
+	 	
+	 	HSSFCell daynbroadcntCell = daynbroadcnt.createCell(3);
+	 	daynbroadcntCell.setCellValue(allBroadNo); // 전체 건수 넣기
+	 	daynbroadcntCell.setCellStyle(dataStyle);
+
+	 	HSSFCell daynbroadcntCell2 = daynbroadcnt.createCell(4);
+	 	daynbroadcntCell2.setCellValue(dayBrodnsum); // 전체 건수 넣기
+	 	daynbroadcntCell2.setCellStyle(dataStyle);
+	 	
+	 	HSSFCell nightnbroadcntCell = nightnbroadcnt.createCell(4);
+	 	nightnbroadcntCell.setCellValue(nightBrodnsum);// 전체 건수 넣기
+	 	nightnbroadcntCell.setCellStyle(dataStyle);
+	 	
+	 	
+	 	
+	 	double allbrodnperval = ((double) allBroadNo/allBrodsum)*100;
+	 	double daybrodnperval = ((double) dayBrodnsum/dayBroadsum)*100;
+	 	double nightbrodnperval = ((double) nightBrodnsum/nightBroadSum)*100;
+	 	allbrodnperval = Math.round(allbrodnperval * 10.0) / 10.0;
+	 	daybrodnperval = Math.round(daybrodnperval * 10.0) / 10.0;
+	 	nightbrodnperval = Math.round(nightbrodnperval * 10.0) / 10.0;
+	 	
+	 	HSSFCell daynbroadperCell = daynbroadper.createCell(3);
+	 	daynbroadperCell.setCellValue(allbrodnperval+ "%"); // 전체 건수 넣기
+	 	daynbroadperCell.setCellStyle(dataStyle);
+
+	 	HSSFCell daynbroadperCell2 = daynbroadper.createCell(4);
+	 	daynbroadperCell2.setCellValue(daybrodnperval+ "%"); // 전체 건수 넣기
+	 	daynbroadperCell2.setCellStyle(dataStyle);
+	 	
+	 	HSSFCell nightnbroadperCell = nightnbroadper.createCell(4);
+	 	nightnbroadperCell.setCellValue(nightbrodnperval+ "%");// 전체 건수 넣기
+	 	nightnbroadperCell.setCellStyle(dataStyle);
+	 	
+	 	
+	 	
+	 	int allImpSend = dayisum + nightisum;  // 전송 건수
+	 	
+	 	
+	 	HSSFCell dayicntCell = dayicnt.createCell(3);
+	 	dayicntCell.setCellValue(allImpSend); // 전체 건수 넣기
+	 	dayicntCell.setCellStyle(dataStyle);
+
+	 	HSSFCell dayicntCell2 = dayicnt.createCell(4);
+	 	dayicntCell2.setCellValue(dayisum); // 전체 건수 넣기
+	 	dayicntCell2.setCellStyle(dataStyle);
+	 	
+	 	HSSFCell nighticntCell = nighticnt.createCell(4);
+	 	nighticntCell.setCellValue(nightisum);// 전체 건수 넣기
+	 	nighticntCell.setCellStyle(dataStyle);
+	 	
+	 	
+	 	int allImpBrod = dayiybsum + nightiybsum; // 방송 건수
+
+	 	HSSFCell dayiybcntCell = dayiybcnt.createCell(3);
+	 	dayiybcntCell.setCellValue(allImpBrod); // 전체 건수 넣기
+	 	dayiybcntCell.setCellStyle(dataStyle);
+
+	 	HSSFCell dayiybcntCell2 = dayiybcnt.createCell(4);
+	 	dayiybcntCell2.setCellValue(dayiybsum); // 전체 건수 넣기
+	 	dayiybcntCell2.setCellStyle(dataStyle);
+	 	
+	 	HSSFCell nightiybcntCell = nightiybcnt.createCell(4);
+	 	nightiybcntCell.setCellValue(nightiybsum);// 전체 건수 넣기
+	 	nightiybcntCell.setCellStyle(dataStyle);
+	 	
+	 	
+	 	
+	 	
+	 	double allimbrodperval = ((double) allImpBrod/allImpSend)*100;
+	 	double dayimbrodperval = ((double) dayiybsum/dayisum)*100;
+	 	double nightimbrodperval = ((double) nightiybsum/nightisum)*100;
+	 	allimbrodperval = Math.round(allimbrodperval * 10.0) / 10.0;
+	 	dayimbrodperval = Math.round(dayimbrodperval * 10.0) / 10.0;
+	 	nightimbrodperval = Math.round(nightimbrodperval * 10.0) / 10.0;
+	 	
+	 	HSSFCell dayiybroadperCell = dayiybroadper.createCell(3);
+	 	dayiybroadperCell.setCellValue(allimbrodperval+ "%"); // 전체 건수 넣기
+	 	dayiybroadperCell.setCellStyle(dataStyle);
+
+	 	HSSFCell dayiybroadperCell2 = dayiybroadper.createCell(4);
+	 	dayiybroadperCell2.setCellValue(dayimbrodperval+ "%"); // 전체 건수 넣기
+	 	dayiybroadperCell2.setCellStyle(dataStyle);
+	 	
+	 	HSSFCell nightiybroadperCell = nightiybroadper.createCell(4);
+	 	nightiybroadperCell.setCellValue(nightimbrodperval+ "%");// 전체 건수 넣기
+	 	nightiybroadperCell.setCellStyle(dataStyle);
+	 	
+	 	int allImpStudio = dayissum + nightissum;
+
+	 	HSSFCell dayistudioCell = dayistudio.createCell(3);
+	 	dayistudioCell.setCellValue(allImpStudio); // 전체 건수 넣기
+	 	dayistudioCell.setCellStyle(dataStyle);
+
+	 	HSSFCell dayistudioCell2 = dayistudio.createCell(4);
+	 	dayistudioCell2.setCellValue(dayissum); // 전체 건수 넣기
+	 	dayistudioCell2.setCellStyle(dataStyle);
+	 	
+	 	HSSFCell nightistudioCell = nightistudio.createCell(4);
+	 	nightistudioCell.setCellValue(nightissum);// 전체 건수 넣기
+	 	nightistudioCell.setCellStyle(dataStyle);
+	 	
+	 	int allImpCaster = dayicsum + nighticsum;
+	 	
+	 	HSSFCell dayicasterCell = dayicaster.createCell(3);
+	 	dayicasterCell.setCellValue(allImpCaster); // 전체 건수 넣기
+	 	dayicasterCell.setCellStyle(dataStyle);
+
+	 	HSSFCell dayicasterCell2 = dayicaster.createCell(4);
+	 	dayicasterCell2.setCellValue(dayicsum); // 전체 건수 넣기
+	 	dayicasterCell2.setCellStyle(dataStyle);
+	 	
+	 	HSSFCell nighticasterCell = nighticaster.createCell(4);
+	 	nighticasterCell.setCellValue(nighticsum);// 전체 건수 넣기
+	 	nighticasterCell.setCellStyle(dataStyle);
+	 	
+ 	    
+ 	    
+    	// 기간(일) 구하기
+ 	    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+ 	   
+ 	    LocalDate start = LocalDate.parse(startDate, formatter); //date 형으로 변환
+ 	    LocalDate end = LocalDate.parse(endDate, formatter);
+ 	    
+ 	    long daysBetween = ChronoUnit.DAYS.between(start, end); // 두 날짜 사의 값 구하기
+ 	    int daysCntval = (int) daysBetween + 1; // 명시적 변환 => 연산을 위해 int 형으로 형 변환
+ 	    int dayCnt = 0;
+ 	    
+ 	    if(daysCntval < 1) {
+ 	    	dayCnt = allSum;
+ 	    } else {
+ 	    	dayCnt = allSum / daysCntval;
+ 	    }
+ 	    
+ 	    
+	    CellStyle daycntStyle = wb.createCellStyle();
+	    daycntStyle.setAlignment(HSSFCellStyle.ALIGN_LEFT); // 오른쪽 정렬 (가로 기준)
+	    daycntStyle.setVerticalAlignment(CellStyle.VERTICAL_CENTER); // 중앙 정렬 (세로 기준)
+	    
+	    Font daycntfont = wb.createFont(); // 폰트 객체 생성
+	    daycntfont.setFontHeightInPoints((short) 12); // 폰트 크기 설정   
+	    daycntfont.setFontName("굴림체");
+	    daycntStyle.setFont(daycntfont); // 폰트 스타일을 셀 스타일에 적용
+	    
+        // 일당 교통정보 현황 건수 row (A4) => 총 접수 건수 / 기간
+        HSSFRow daycntrow = sheet.createRow(3);
+        HSSFCell daycntcell = daycntrow.createCell(0);
+        
+        sheet.addMergedRegion(new CellRangeAddress(3, 3, 0, 3)); // title cell 병합 / 예제 파일 기준으로 5칸 병합
+        daycntcell.setCellValue(" ■ 교통정보 현황: " + dayCnt + "건 / 일");
+        daycntcell.setCellStyle(daycntStyle); // 스타일 적용
+		
+        // cell width ,  height 변경
+ 	    sheet.setColumnWidth(0, 3700); // setColumnWidth(변경 할 cell , 크기)
+ 	    daycntrow.setHeightInPoints(25.88f); //setHeightInPoints 크기)
+
+    }
+    
     
 }

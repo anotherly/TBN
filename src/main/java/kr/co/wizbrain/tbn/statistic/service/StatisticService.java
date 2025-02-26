@@ -144,8 +144,16 @@ public interface StatisticService {
 	
 	
 	
+	// 시간대별 교통 정보 제공 대장
 	
+	// 기간 내 전체 데이터 조회
+	public List timeBroadData (ParamsDto params);
 	
+	public List timeInformer (ParamsDto params);
+	
+	public List timeRptType (ParamsDto params);
+	
+	public List timeRptMean (ParamsDto params);
 	
 	
 	/**********************************************************************************************************************************************************/

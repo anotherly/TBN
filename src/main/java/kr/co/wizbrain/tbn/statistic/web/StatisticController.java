@@ -205,6 +205,65 @@ public class StatisticController extends BaseController{
 		return "hssfExcel";
 	}
 
+	
+	// 교통 정보 제공 대장 - 시간별
+	@RequestMapping("stats/receiptBroadTime.do")
+	public String receiptBroadTime (HttpServletRequest request,Model model) throws Exception {
+		ParamsDto params = getParams(true);
+
+		List timeData = new ArrayList();
+		List ifrmData = new ArrayList();
+		List rptTData = new ArrayList();
+		List rptMData = new ArrayList();
+		List ifrmDatatype = new ArrayList();
+		List rptTDatatype = new ArrayList();
+		List rptMDatatype = new ArrayList();	
+		
+		// 시간대별 데이터 가져오기(DLS 여쭤보기)
+		timeData = statisticService.timeBroadData(params);
+		
+		// 제보자별 현황
+		ifrmData = statisticService.informerTypeAll(params);;
+		
+		// 제보유형 현황
+		rptTData = statisticService.reportTypeAll(params);
+		
+		// 제보수단별 현황
+		rptMData = statisticService.reportmeanTypeAll(params);
+		
+		
+		// 제보자별 현황
+		ifrmDatatype = statisticService.selectInfrm();
+				
+		// 제보유형 현황
+		rptTDatatype = statisticService.selectRpt();
+				
+		// 제보수단별 현황
+		rptMDatatype =  statisticService.selectRtt();
+		
+		
+		
+		model.addAttribute("mapping", "standardInformerTypeTime");
+		model.addAttribute("fileName", "교통정보 제공대장(시간대 별)"+params.getString("city")+".xls");
+		
+		model.addAttribute("titleName", "교통정보 제공대장"+params.getString("city"));
+		model.addAttribute("start_date", params.get("start_date"));
+		model.addAttribute("end_date", params.get("end_date"));
+		
+		model.addAttribute("timeData", timeData);
+		model.addAttribute("ifrmData", ifrmData);
+		model.addAttribute("rptTData", rptTData);
+		model.addAttribute("rptMData", rptMData);
+		model.addAttribute("ifrmDatatype", ifrmDatatype);
+		model.addAttribute("rptTDatatype", rptTDatatype);
+		model.addAttribute("rptMDatatype", rptMDatatype);
+		
+		
+		return "hssfExcel";
+	}
+	
+	
+	
 	/*2. 긴급교통정보_방송현황분석 
 	 * @param model
 	 * @return

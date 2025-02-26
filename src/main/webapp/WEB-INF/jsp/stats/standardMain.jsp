@@ -299,6 +299,10 @@ $('#areaOptSel').on("click", function() {
                                         <td class="txt_left"><img src="../images/ico_excel.gif" alt="" class="mglsub03" /><a href="javascript:goStats('range','stats/receiptBroad.do');">교통정보 제공대장</a></td>
                                         <td><a href="javascript:goStats('range','stats/receiptBroad.do');"><img src="../images/btn_excel_down.gif" alt="엑셀다운로드" /></a></td>
                                     </tr>
+                                    <tr>
+                                        <td class="txt_left"><img src="../images/ico_excel.gif" alt="" class="mglsub03" /><a href="javascript:goStats('range','stats/receiptBroadTime.do');">교통정보 제공대장(시간대 별)</a></td>
+                                        <td><a href="javascript:goStats('range','stats/receiptBroadTime.do');"><img src="../images/btn_excel_down.gif" alt="엑셀다운로드" /></a></td>
+                                    </tr>
                                      <tr>
                                         <td class="txt_left"><img src="../images/ico_excel.gif" alt="" class="mglsub03" /><a href="javascript:goStats('range','stats/extrBro.do');">긴급교통정보_방송현황분석</a></td>
                                         <td><a href="javascript:goStats('range','stats/extrBro.do');"><img src="../images/btn_excel_down.gif" alt="엑셀다운로드" /></a></td>

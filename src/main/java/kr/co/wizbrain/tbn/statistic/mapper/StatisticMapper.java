@@ -155,10 +155,14 @@ public interface StatisticMapper{
 	// 1-2)
 	public List orgOrgSub(ParamsDto params);
 	
+	public List timeBroadData (ParamsDto params);
 	
 	
+	public List timeInformer (ParamsDto params);
 	
+	public List timeRptType (ParamsDto params);
 	
+	public List timeRptMean (ParamsDto params);
 	
 	
 	

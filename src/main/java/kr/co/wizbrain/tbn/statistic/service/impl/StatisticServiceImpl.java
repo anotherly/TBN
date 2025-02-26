@@ -241,6 +241,27 @@ public class StatisticServiceImpl implements StatisticService{
 	}
 	
 	
+	@Override
+	public List timeBroadData (ParamsDto params) {
+		return statisticMapper.timeBroadData(params);
+	}
+	
+	
+	@Override
+	public List timeInformer (ParamsDto params) {
+		return statisticMapper.timeInformer(params);
+	}
+	
+	@Override
+	public List timeRptType (ParamsDto params){
+		return statisticMapper.timeRptType(params);
+	}
+	
+	@Override
+	public List timeRptMean (ParamsDto params) {
+		return statisticMapper.timeRptMean(params);
+	}
+	
 	
 	
 	

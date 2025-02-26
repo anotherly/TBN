@@ -2297,4 +2297,49 @@
 
 	</select>
 
+
+
+	<!-- 시간대별 교통정보 제공대장  -->
+	<select id="timeBroadData" parameterType="params" resultType="record">
+	      
+	     SELECT
+		    RECEIPT_TIME,  
+		    SUM(SEND_Y) AS SEND_Y,
+		    SUM(SEND_N) AS SEND_N,
+		    SUM(BROAD_N) AS BROAD_N,
+		    SUM(BROAD_P) AS BROAD_P,
+		    SUM(BROAD_C) AS BROAD_C,
+		    SUM(IMP_Y) AS IMP_Y,
+		    SUM(IMP_N) AS IMP_N,
+		    SUM(O_SEND_Y) AS O_SEND_Y,
+		    SUM(O_SEND_N) AS O_SEND_N,
+		    SUM(O_BROAD_N) AS O_BROAD_N,
+		    SUM(O_BROAD_P) AS O_BROAD_P,
+		    SUM(O_BROAD_C) AS O_BROAD_C,
+		    SUM(O_IMP_Y) AS O_IMP_Y,
+		    SUM(O_IMP_N) AS O_IMP_N,
+		    SUM(ALL_CNT) AS ALL_CNT,
+		    SUM(BROAD_Y) AS BROAD_Y,
+		    SUM(O_BROAD_Y) AS O_BROAD_Y,
+		    SUM(IMPBRO_Y) AS IMPBRO_Y,
+		    SUM(O_IMPBRO_Y) AS O_IMPBRO_Y,
+		    SUM(IMPBRO_P) AS IMPBRO_P,
+		    SUM(O_IMPBRO_P) AS O_IMPBRO_P,
+		    SUM(IMPBRO_C) AS IMPBRO_C,
+		    SUM(O_IMPBRO_C) AS O_IMPBRO_C,
+		    SUM(O_ALL_CNT) AS O_ALL_CNT
+		FROM
+		    stat_rpt_time
+		WHERE
+		    REGION_ID = #{REGION_ID}
+		    AND STAT_DATE  <![CDATA[<=]]> TO_DATE(#{end_date}, 'YYYYMMDD')
+		    AND STAT_DATE  <![CDATA[>=]]> TO_DATE(#{start_date}, 'YYYYMMDD')
+		GROUP BY
+		    RECEIPT_TIME  
+		ORDER BY
+		    RECEIPT_TIME
+	     
+	</select>
+
+
 </mapper>
