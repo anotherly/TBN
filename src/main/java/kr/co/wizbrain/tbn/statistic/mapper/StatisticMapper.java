@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Param;
 
 import egovframework.rte.psl.dataaccess.mapper.Mapper;
 import egovframework.rte.psl.dataaccess.util.EgovMap;
+import kr.co.wizbrain.tbn.award.vo.AwardVO;
 import kr.co.wizbrain.tbn.comm.ParamsDto;
 import kr.co.wizbrain.tbn.infrm.vo.InfrmVO;
 import kr.co.wizbrain.tbn.option.vo.OptInftVo;
@@ -69,7 +70,15 @@ public interface StatisticMapper{
 	// 24-11-20 : 제보자별 제보현황 - 총 건수
 	public String allReport(ParamsDto params) throws Exception;
 	
-	
+	// 연간 제보자별 제보현황
+		public List yearReceipt(ParamsDto params) throws Exception;
+		
+		public List totalList(ParamsDto params) throws Exception;
+		
+		public List<AwardVO> perList(ParamsDto params) throws Exception;
+		
+		// 연간지역소속별통계
+		public List yearOrgStat(ParamsDto params) throws Exception;
 	
 	// 2) 제보 수단별 현황
 	// 2-1) 제보 수단 title

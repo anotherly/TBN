@@ -328,6 +328,12 @@ $('#areaOptSel').on("click", function() {
                                         <td class="txt_left"><img src="../images/ico_excel.gif" alt="" class="mglsub03" /><a href="javascript:goStats('range','stats/informerReceipt.do');">제보자별 제보현황</a></td>
                                         <td><a href="javascript:goStats('range','stats/informerReceipt.do');"><img src="../images/btn_excel_down.gif" alt="엑셀다운로드" /></a></td>
                                     </tr>
+                                    
+                                     <!-- 24-11-18 : 연간 제보자별 제보현황  => 기간별로 옮겨야 함 -->
+                                   <tr>
+                                        <td class="txt_left"><img src="../images/ico_excel.gif" alt="" class="mglsub03" /><a href="javascript:goStats('range','stats/yearReceipt.do');">연간 제보자별 제보현황</a></td>
+                                        <td><a href="javascript:goStats('range','stats/yearReceipt.do');"><img src="../images/btn_excel_down.gif" alt="엑셀다운로드" /></a></td>
+                                    </tr>
                                 </tbody>
                                 
                                 
@@ -390,8 +396,8 @@ $('#areaOptSel').on("click", function() {
                                         <td><a href="javascript:goStats('month','stats/volunteer.do');"><img src="../images/btn_excel_down.gif" alt="엑셀다운로드" /></a></td>
                                     </tr>
       
-                                     <!-- 24-11-18 : 연간 제보자별 제보현황  
-                                    <tr>
+                                     <!-- 24-11-18 : 연간 제보자별 제보현황  => 기간별로 옮겨야 함 -->
+                                   <!--  <tr>
                                         <td class="txt_left"><img src="../images/ico_excel.gif" alt="" class="mglsub03" /><a href="javascript:goStats('stats/yearReceipt.do');">연간 제보자별 제보현황</a></td>
                                         <td><a href="javascript:goStats('stats/yearReciept.do');"><img src="../images/btn_excel_down.gif" alt="엑셀다운로드" /></a></td>
                                     </tr>

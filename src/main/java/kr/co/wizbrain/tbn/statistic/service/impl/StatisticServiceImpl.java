@@ -8,6 +8,7 @@ import javax.annotation.Resource;
 import org.springframework.stereotype.Service;
 
 import egovframework.rte.psl.dataaccess.util.EgovMap;
+import kr.co.wizbrain.tbn.award.vo.AwardVO;
 import kr.co.wizbrain.tbn.comm.ParamsDto;
 import kr.co.wizbrain.tbn.infrm.vo.InfrmVO;
 import kr.co.wizbrain.tbn.option.vo.OptInftVo;
@@ -115,7 +116,24 @@ public class StatisticServiceImpl implements StatisticService{
 		}
 	}
 	
-	
+	// 연간 제보자별 제보현황
+		public List yearReceipt(ParamsDto params) throws Exception {
+			return statisticMapper.yearReceipt(params);
+		}
+		
+		public List totalList(ParamsDto params) throws Exception {
+			return statisticMapper.totalList(params);
+		}
+		
+		public List<AwardVO> perList(ParamsDto params) throws Exception {
+			return statisticMapper.perList(params);
+		}
+		
+		
+		// 연간지역소속별통계
+		public List yearOrgStat(ParamsDto params) throws Exception {
+			return statisticMapper.yearOrgStat(params);
+		}
 	
 	// 2) 제보 수단별 현황
 	// 2-1) 제보 수단 title

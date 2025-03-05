@@ -100,14 +100,14 @@
 		
     </mvc:interceptors>
     
-<!-- jdb : 스케줄러파일이 존재하는 패키지 설정--> 
+<!-- jdb : 스케줄러파일이 존재하는 패키지 설정
 	 <context:component-scan base-package="kr.co.wizbrain"/>
 	<task:scheduler id="myScheduler" pool-size="10"/>
 	<task:scheduled-tasks scheduler="myScheduler">
 	<task:scheduled ref="ClientChkScheduler" method="clientAutoChk" cron="0 0 3 * * *"/>
-<!-- <task:scheduled ref="ClientChkScheduler" method="clientAutoChk" fixed-delay="60000"/> -->
+<task:scheduled ref="ClientChkScheduler" method="clientAutoChk" fixed-delay="60000"/>
 	</task:scheduled-tasks>
-	<bean id="ClientChkScheduler" class="kr.co.wizbrain.tbn.comm.ClientChkScheduler" />
+	<bean id="ClientChkScheduler" class="kr.co.wizbrain.tbn.comm.ClientChkScheduler" /> -->
  	
  
     <!-- For Pagination Tag -->

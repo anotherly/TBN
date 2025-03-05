@@ -475,11 +475,7 @@ public class StatisticController extends BaseController{
 		
 		// 총 인원수
 		int allInformer = dataList.size();
-		// 총 인원수 뽑기
-		/*String allInformer = statisticService.allInformer(params);
-		
-		// 총 건수 뽑기
-		String allReport = statisticService.allReport(params);*/
+
 				
 		model.addAttribute("mapping", "informerReport");
 		model.addAttribute("fileName", "제보자별 제보현황"+params.getString("city")+".xls");
@@ -489,10 +485,65 @@ public class StatisticController extends BaseController{
 		model.addAttribute("start_date",params.get("start_date"));
 		model.addAttribute("end_date",params.get("end_date"));
 		model.addAttribute("allInformer",allInformer);
-		/*model.addAttribute("allReport",allReport);*/
 		
 		return "hssfExcel";
 	}
+	
+	
+	
+	// 25-02-27 : 제보자별 제보현황 (연간) 컨트롤러 
+	@RequestMapping("/stats/yearReceipt.do")
+	public String yearReceipt (Model model, HttpServletRequest request) throws Exception {
+		ParamsDto params = getParams(true);
+		
+		// 시상관리 % 가져오기
+		List<AwardVO> perList = statisticService.perList(params);
+
+		// 최대 값(total) 가져오기
+		List totalList = statisticService.totalList(params);
+				
+		List dataList = statisticService.yearReceipt(params); // 엑셀에 사용할 데이터 리스트 가져오기
+		
+		int allInformer = dataList.size(); // 총 인원수 구해오기 
+		// 총 건수 구해오기
+		
+		model.addAttribute("mapping", "yearReceipt");
+		model.addAttribute("fileName", "연간 제보자별 제보현황(" + params.getString("city") + ".xls");
+		
+		model.addAttribute("sheetName1","연간 제보자별 제보현황");
+		model.addAttribute("dataList", dataList);
+		model.addAttribute("start_date", params.get("start_date"));
+		model.addAttribute("end_date", params.get("end_date"));
+		model.addAttribute("allInformer",allInformer);
+		model.addAttribute("perList",perList);
+		model.addAttribute("totalList",totalList);
+		
+		return "hssfExcel";
+	}
+	
+	
+	// 25-02-27 : 연간 지역소속별 통계(수상 관련)
+	@RequestMapping("stats/yearOrgStat.do")
+	public String yearOrgStat (Model model, HttpServletRequest request) throws Exception {
+		ParamsDto params = getParams(true);
+		
+		List dataList = statisticService.yearOrgStat(params); // 엑셀에 사용할 데이터 리스트 가져오기
+		int allInformer = dataList.size(); // 총 인원수 구해오기 
+		// 총 건수 구해오기
+		
+		model.addAttribute("mapping", "yearOrgStat");
+		model.addAttribute("fileName", "연간 지역소속별 통계(" + params.getString("city") + ".xls");
+		
+		model.addAttribute("sheetName1","연간 지역소속별 통계");
+		model.addAttribute("dataList", dataList);
+		model.addAttribute("start_date", params.get("start_date"));
+		model.addAttribute("end_date", params.get("end_date"));
+		model.addAttribute("allInformer",allInformer);
+		
+		return "hssfExcel";
+	}
+	
+	
 	
 	
 	/**전국통계: 돌발 교통정보 표출실적
