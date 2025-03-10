@@ -125,6 +125,10 @@ public class StatisticServiceImpl implements StatisticService{
 			return statisticMapper.totalList(params);
 		}
 		
+		public List totalListOrg(ParamsDto params) throws Exception {
+			return statisticMapper.totalListOrg(params);
+		}
+		
 		public List<AwardVO> perList(ParamsDto params) throws Exception {
 			return statisticMapper.perList(params);
 		}

@@ -72,6 +72,8 @@ public interface StatisticService {
 	
 	public List totalList(ParamsDto params) throws Exception;
 	
+	public List totalListOrg(ParamsDto params) throws Exception;
+	
 	// 연간지역소속별통계
 	public List yearOrgStat(ParamsDto params) throws Exception;
 	

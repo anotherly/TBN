@@ -334,6 +334,10 @@ $('#areaOptSel').on("click", function() {
                                         <td class="txt_left"><img src="../images/ico_excel.gif" alt="" class="mglsub03" /><a href="javascript:goStats('range','stats/yearReceipt.do');">연간 제보자별 제보현황</a></td>
                                         <td><a href="javascript:goStats('range','stats/yearReceipt.do');"><img src="../images/btn_excel_down.gif" alt="엑셀다운로드" /></a></td>
                                     </tr>
+                                    <!-- 25-03-10 : 연간 지역별(소속별) 통계 -->
+                                    <tr>
+                                        <td class="txt_left"><img src="../images/ico_excel.gif" alt="" class="mglsub03" /><a href="javascript:goStats('range','stats/yearOrgStat.do');">연간 지역(소속)별 실적통계</a></td>
+                                        <td><a href="javascript:goStats('range','stats/yearOrgStat.do');"><img src="../images/btn_excel_down.gif" alt="엑셀다운로드" /></a></td>
                                 </tbody>
                                 
                                 

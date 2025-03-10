@@ -4402,6 +4402,30 @@ public class ExportPoiHssfExcel extends AbstractView {
         	Mval = 0;
         }
      	
+        
+        CellStyle infoStyle = wb.createCellStyle();
+        infoStyle.setVerticalAlignment(CellStyle.VERTICAL_CENTER); // 중앙 정렬 (세로 기준)
+		
+		Font infoStyleF = wb.createFont(); // 폰트 객체 생성
+		infoStyleF.setFontHeightInPoints((short) 14); // 폰트 크기 설정
+		infoStyleF.setFontName("굴림체");
+		infoStyle.setFont(infoStyleF); // 폰트 스타일을 셀 스타일에 적용 
+        
+        
+        // 총 인원수, 총 건수 넣기
+        HSSFRow inforow = sheet.createRow(5);
+        
+        HSSFCell allInfrmCell = inforow.createCell(0); // 셀 생성
+        sheet.addMergedRegion(new CellRangeAddress(5, 5, 0, 2)); 
+        allInfrmCell.setCellValue("총 인원 : " + allInformer + "명");
+        allInfrmCell.setCellStyle(infoStyle);
+        
+        HSSFCell allsendCell = inforow.createCell(5); // 셀 생성
+        sheet.addMergedRegion(new CellRangeAddress(5, 5, 5, 10)); 
+        allsendCell.setCellValue("총 건수 : " + allSend + "건");
+        allsendCell.setCellStyle(infoStyle);
+        
+        
     }
     
     
@@ -4409,13 +4433,19 @@ public class ExportPoiHssfExcel extends AbstractView {
     // 연간 지역소속별 통계
     public void yearOrgStat(Map model, HSSFWorkbook wb) {
     	List dataList = (List) model.get("dataList"); // 엑셀에서 사용할 데이터 가져오기
+    	List<AwardVO> perList = (List<AwardVO>)model.get("perList");
+    	List totalList = (List) model.get("totalList");
+    	
+    	
+    	Map<String, Object> total = (Map<String, Object>) totalList.get(0);
+    	AwardVO per = (AwardVO) perList.get(0);
     	
     	int allSum = 0; // 총 건수 => 엑셀 상단에 사용
     	int allInformer = dataList.size(); // 총 인원 수 => 엑셀 상단에 사용
     	
-    	int sendNsum = 0; // 제보건수
-    	int sendYsum = 0; // 방송 건수
-    	int importentSum = 0; // 주요 제보
+    	int allPer = Integer.parseInt(per.getALL_PER()); // 총점 기준 %
+    	int maxSend = Integer.parseInt(total.get("TOTAL").toString()); // 최대 제보자 건수
+
     	
     	// sheet 생성 및 이름 저장
     	HSSFSheet sheet = wb.createSheet("연간 제보자별 제보현황");
@@ -4529,50 +4559,32 @@ public class ExportPoiHssfExcel extends AbstractView {
      	HSSFRow headrow = sheet.createRow(6);
      	HSSFRow headrow2 = sheet.createRow(7);
      	
-     	HSSFCell idCell = headrow.createCell(0); // ID
-     	HSSFCell nameCell = headrow.createCell(1); // 이름
-     	HSSFCell orgCell = headrow.createCell(2); // 소속
-     	HSSFCell callCell = headrow.createCell(3); // 연락처
-     	HSSFCell sendCell = headrow.createCell(4); // 제보건수
+     	HSSFCell orgCell = headrow.createCell(0); // 소속
+     	HSSFCell sendCell = headrow.createCell(1); // 제보건수
      	
-     	HSSFCell idCell2 = headrow2.createCell(0); // ID
-     	HSSFCell nameCell2 = headrow2.createCell(1); // 이름
-     	HSSFCell orgCell2 = headrow2.createCell(2); // 소속
-     	HSSFCell callCell2 = headrow2.createCell(3); // 연락처
-     	HSSFCell sendCell2 = headrow2.createCell(4); // 제보건수
+     	HSSFCell orgCell2 = headrow2.createCell(0); // 소속
+     	HSSFCell sendCell2 = headrow2.createCell(1); // 제보건수
      	
      	sheet.addMergedRegion(new CellRangeAddress(6, 7, 0, 0)); 
-     	sheet.addMergedRegion(new CellRangeAddress(6, 7, 1, 1)); 
-     	sheet.addMergedRegion(new CellRangeAddress(6, 7, 2, 2)); 
-     	sheet.addMergedRegion(new CellRangeAddress(6, 7, 3, 3)); 
-        sheet.addMergedRegion(new CellRangeAddress(6, 7, 4, 4)); 
+        sheet.addMergedRegion(new CellRangeAddress(6, 7, 1, 1)); 
      	
-        idCell.setCellValue("ID"); 
-        nameCell.setCellValue("이름"); 
         orgCell.setCellValue("소속"); 
-        callCell.setCellValue("연락처"); 
         sendCell.setCellValue("제보건수");
 
-        idCell.setCellStyle(headStyle); // 스타일 적용
-        nameCell.setCellStyle(headStyle); // 스타일 적용
         orgCell.setCellStyle(headStyle); // 스타일 적용
-        callCell.setCellStyle(headStyle); // 스타일 적용
         sendCell.setCellStyle(sendStyle); // 스타일 적용
         
-        idCell2.setCellStyle(headStyle); // 스타일 적용
-        nameCell2.setCellStyle(headStyle); // 스타일 적용
         orgCell2.setCellStyle(headStyle); // 스타일 적용
-        callCell2.setCellStyle(headStyle); // 스타일 적용
         sendCell2.setCellStyle(sendStyle); // 스타일 적용
         
         
         for(int i = 0; i < 12; i++ ) {
-        	HSSFCell monthCell = headrow.createCell(5 + (i * 2));
-        	HSSFCell monthCell2 = headrow.createCell(6 + (i * 2)); 
-         	HSSFCell sendminCell = headrow2.createCell(5 + (i * 2)); 
-         	HSSFCell scoreCell = headrow2.createCell(6 + (i * 2)); 
+        	HSSFCell monthCell = headrow.createCell(2 + (i * 2));
+        	HSSFCell monthCell2 = headrow.createCell(3 + (i * 2)); 
+         	HSSFCell sendminCell = headrow2.createCell(2 + (i * 2)); 
+         	HSSFCell scoreCell = headrow2.createCell(3 + (i * 2)); 
          	
-         	sheet.addMergedRegion(new CellRangeAddress(6, 6, 5 + (i * 2), 6 + (i * 2))); 
+         	sheet.addMergedRegion(new CellRangeAddress(6, 6, 2 + (i * 2), 3 + (i * 2))); 
          	
          	monthCell.setCellValue((i+1) + "월"); 
          	sendminCell.setCellValue("제보건수"); 
@@ -4583,6 +4595,248 @@ public class ExportPoiHssfExcel extends AbstractView {
          	sendminCell.setCellStyle(sendStyle); // 스타일 적용
          	scoreCell.setCellStyle(scoreStyle); // 스타일 적용
         }
+     
+        
+        CellStyle dataStyle = wb.createCellStyle();
+        dataStyle.setAlignment(HSSFCellStyle.ALIGN_CENTER); 
+        dataStyle.setVerticalAlignment(CellStyle.VERTICAL_CENTER); // 중앙 정렬 (세로 기준)
+        dataStyle.setBorderRight(HSSFCellStyle.BORDER_THIN); // 테두리 설정
+        dataStyle.setBorderLeft(HSSFCellStyle.BORDER_THIN);
+        dataStyle.setBorderTop(HSSFCellStyle.BORDER_THIN);
+        dataStyle.setBorderBottom(HSSFCellStyle.BORDER_THIN);
+		
+		Font dataStyleF = wb.createFont(); // 폰트 객체 생성
+		dataStyleF.setFontHeightInPoints((short) 14); // 폰트 크기 설정
+		dataStyleF.setFontName("굴림체");
+		dataStyle.setFont(dataStyleF); // 폰트 스타일을 셀 스타일에 적용 
+		
+		
+		CellStyle dataStyle2 = wb.createCellStyle();
+        dataStyle2.setAlignment(HSSFCellStyle.ALIGN_RIGHT); 
+        dataStyle2.setVerticalAlignment(CellStyle.VERTICAL_CENTER); // 중앙 정렬 (세로 기준)
+        dataStyle2.setBorderRight(HSSFCellStyle.BORDER_THIN); // 테두리 설정
+        dataStyle2.setBorderLeft(HSSFCellStyle.BORDER_THIN);
+        dataStyle2.setBorderTop(HSSFCellStyle.BORDER_THIN);
+        dataStyle2.setBorderBottom(HSSFCellStyle.BORDER_THIN);
+		
+		Font dataStyle2F = wb.createFont(); // 폰트 객체 생성
+		dataStyle2F.setFontHeightInPoints((short) 14); // 폰트 크기 설정
+		dataStyle2F.setFontName("굴림체");
+		dataStyle2.setFont(dataStyle2F); // 폰트 스타일을 셀 스타일에 적용 
+		
+		
+        int rowcnt = 8; //행 카운터
+        int Mval = 0;
+        
+        
+        // 받아온 데이터 넣기
+        for(int i=0; i < allInformer; i++) {
+        	int monthSum = 0;
+        	Map<String, Object> record = (Map<String, Object>) dataList.get(i);
+        	
+        	HSSFRow datarow = sheet.createRow(rowcnt); // 1. 행 생성
+        	
+        	HSSFCell org = datarow.createCell(0);
+        	org.setCellValue(record.get("ORG_NAME").toString()); 
+        	org.setCellStyle(dataStyle);
+        	
+        	// 월별 데이터 넣기
+        	HSSFCell JAN = datarow.createCell(2); //1월
+        	HSSFCell JANval = datarow.createCell(3);
+        	
+        	Mval = Integer.parseInt(record.get("JAN").toString());
+        	JAN.setCellValue(Integer.parseInt(record.get("JAN").toString()));
+        	JANval.setCellValue(Math.round(((double) Mval / maxSend) * allPer * 100) / 100.0);
+
+        	JAN.setCellStyle(dataStyle2);
+        	JANval.setCellStyle(dataStyle2);
+        	
+        	monthSum = monthSum + Integer.parseInt(record.get("JAN").toString());
+        	
+        	
+        	
+        	HSSFCell FEB = datarow.createCell(4); //2월
+        	HSSFCell FEBval = datarow.createCell(5);
+        	
+        	Mval = Integer.parseInt(record.get("FEB").toString());
+        	FEB.setCellValue(Integer.parseInt(record.get("FEB").toString()));
+        	FEBval.setCellValue(Math.round(((double) Mval / maxSend) * allPer * 100) / 100.0);
+        	
+        	FEB.setCellStyle(dataStyle2);
+        	FEBval.setCellStyle(dataStyle2);
+        	monthSum = monthSum + Integer.parseInt(record.get("FEB").toString());
+        	
+        	
+        	
+        	HSSFCell MAR = datarow.createCell(6); //3월
+        	HSSFCell MARval = datarow.createCell(7);
+        	
+        	Mval = Integer.parseInt(record.get("MAR").toString());
+        	MAR.setCellValue(Integer.parseInt(record.get("MAR").toString()));
+        	MARval.setCellValue(Math.round(((double) Mval / maxSend) * allPer * 100) / 100.0);
+        	
+        	MAR.setCellStyle(dataStyle2);
+        	MARval.setCellStyle(dataStyle2);
+        	monthSum = monthSum + Integer.parseInt(record.get("MAR").toString());
+        	
+        	HSSFCell APR = datarow.createCell(8); //4월
+        	HSSFCell APRval = datarow.createCell(9);
+        	
+        	Mval = Integer.parseInt(record.get("APR").toString());
+        	APR.setCellValue(Integer.parseInt(record.get("APR").toString()));
+        	APRval.setCellValue(Math.round(((double) Mval / maxSend) * allPer * 100) / 100.0);
+        	
+        	APR.setCellStyle(dataStyle2);
+        	APRval.setCellStyle(dataStyle2);
+        	monthSum = monthSum +Integer.parseInt(record.get("APR").toString());
+        	
+        	
+        	
+        	
+        	HSSFCell MAY = datarow.createCell(10); //5월
+        	HSSFCell MAYval = datarow.createCell(11);
+        	
+        	Mval = Integer.parseInt(record.get("MAY").toString());
+        	MAY.setCellValue(Integer.parseInt(record.get("MAY").toString()));
+        	MAYval.setCellValue(Math.round(((double) Mval / maxSend) * allPer * 100) / 100.0);
+        	
+        	MAY.setCellStyle(dataStyle2);
+        	MAYval.setCellStyle(dataStyle2);
+        	monthSum = monthSum +Integer.parseInt(record.get("MAY").toString());
+        	
+        	
+        	
+        	
+        	HSSFCell JUN = datarow.createCell(12);//6월
+        	HSSFCell JUNval = datarow.createCell(13);
+        	
+        	Mval = Integer.parseInt(record.get("JUN").toString());
+        	JUN.setCellValue(Integer.parseInt(record.get("JUN").toString()));
+        	JUNval.setCellValue(Math.round(((double) Mval / maxSend) * allPer * 100) / 100.0);
+        	
+        	JUN.setCellStyle(dataStyle2);
+        	JUNval.setCellStyle(dataStyle2);
+        	monthSum = monthSum + Integer.parseInt(record.get("JUN").toString());
+        	
+        	
+        	
+        	
+        	HSSFCell JUL = datarow.createCell(14); //7월
+        	HSSFCell JULval = datarow.createCell(15);
+        	
+        	Mval = Integer.parseInt(record.get("JUL").toString());
+        	JUL.setCellValue(Integer.parseInt(record.get("JUL").toString()));
+        	JULval.setCellValue(Math.round(((double) Mval / maxSend) * allPer * 100) / 100.0);
+        	
+        	JUL.setCellStyle(dataStyle2);
+        	JULval.setCellStyle(dataStyle2);
+        	monthSum = monthSum + Integer.parseInt(record.get("JUL").toString());
+        	
+        	
+        	
+        	
+        	HSSFCell AUG = datarow.createCell(16); //8월
+        	HSSFCell AUGval = datarow.createCell(17);
+        	
+        	Mval = Integer.parseInt(record.get("AUG").toString());
+        	AUG.setCellValue(Integer.parseInt(record.get("AUG").toString()));
+        	AUGval.setCellValue(Math.round(((double) Mval / maxSend) * allPer * 100) / 100.0);
+        	
+        	AUG.setCellStyle(dataStyle2);
+        	AUGval.setCellStyle(dataStyle2);
+        	monthSum = monthSum + Integer.parseInt(record.get("AUG").toString());
+        	
+        	
+        	
+        	
+        	HSSFCell SEP = datarow.createCell(18); //9월
+        	HSSFCell SEPval = datarow.createCell(19);
+        	
+        	Mval = Integer.parseInt(record.get("SEP").toString());
+        	SEP.setCellValue(Integer.parseInt(record.get("SEP").toString()));
+        	SEPval.setCellValue(Math.round(((double) Mval / maxSend) * allPer * 100) / 100.0);
+        	
+        	SEP.setCellStyle(dataStyle2);
+        	SEPval.setCellStyle(dataStyle2);
+        	monthSum = monthSum +Integer.parseInt(record.get("SEP").toString());
+        	
+        	
+        	
+        	
+        	HSSFCell OCT = datarow.createCell(20); //10월
+        	HSSFCell OCTval = datarow.createCell(21);
+        	
+        	Mval = Integer.parseInt(record.get("OCT").toString());
+        	OCT.setCellValue(Integer.parseInt(record.get("OCT").toString()));
+        	OCTval.setCellValue(Math.round(((double) Mval / maxSend) * allPer * 100) / 100.0);
+        	
+        	OCT.setCellStyle(dataStyle2);
+        	OCTval.setCellStyle(dataStyle2); 
+        	monthSum = monthSum + Integer.parseInt(record.get("OCT").toString());
+        	
+        	
+        	
+        	
+        	HSSFCell NOV = datarow.createCell(22); //11월
+        	HSSFCell NOVval = datarow.createCell(23);
+        	
+        	Mval = Integer.parseInt(record.get("NOV").toString());
+        	NOV.setCellValue(Integer.parseInt(record.get("NOV").toString()));
+        	NOVval.setCellValue(Math.round(((double) Mval / maxSend) * allPer * 100) / 100.0);
+        	
+        	NOV.setCellStyle(dataStyle2);
+        	NOVval.setCellStyle(dataStyle2);
+        	monthSum = monthSum + Integer.parseInt(record.get("NOV").toString());
+        	
+        	
+        	
+        	
+        	HSSFCell DEC = datarow.createCell(24); //12월
+        	HSSFCell DECval = datarow.createCell(25);
+        	
+        	Mval = Integer.parseInt(record.get("DEC").toString());
+        	DEC.setCellValue(Integer.parseInt(record.get("DEC").toString()));
+        	DECval.setCellValue(Math.round(((double) Mval / maxSend) * allPer * 100) / 100.0);
+        	
+        	DEC.setCellStyle(dataStyle2);
+        	DECval.setCellStyle(dataStyle2);
+        	monthSum = monthSum + Integer.parseInt(record.get("DEC").toString());
+        	
+        	
+        	
+        	HSSFCell allsendCell = datarow.createCell(1); // 제보건수 넣기
+        	allsendCell.setCellValue(monthSum);
+        	allsendCell.setCellStyle(dataStyle);
+        	// 마지막 최종 제보 건수 구하기
+        	allSum = allSum + monthSum;
+        	rowcnt++; // 행 카운터 증가
+        	Mval = 0;
+        	
+        	
+        }
+        
+        CellStyle infoStyle = wb.createCellStyle();
+        infoStyle.setVerticalAlignment(CellStyle.VERTICAL_CENTER); // 중앙 정렬 (세로 기준)
+		
+		Font infoStyleF = wb.createFont(); // 폰트 객체 생성
+		infoStyleF.setFontHeightInPoints((short) 14); // 폰트 크기 설정
+		infoStyleF.setFontName("굴림체");
+		infoStyle.setFont(infoStyleF); // 폰트 스타일을 셀 스타일에 적용 
+        
+        
+        // 총 인원수, 총 건수 넣기
+        HSSFRow inforow = sheet.createRow(5);
+        
+        HSSFCell allInfrmCell = inforow.createCell(0); // 셀 생성
+        sheet.addMergedRegion(new CellRangeAddress(5, 5, 0, 2)); 
+        allInfrmCell.setCellValue("소속 수 : " + allInformer + "개");
+        allInfrmCell.setCellStyle(infoStyle);
+        
+        HSSFCell allsendCell = inforow.createCell(5); // 셀 생성
+        sheet.addMergedRegion(new CellRangeAddress(5, 5, 5, 10)); 
+        allsendCell.setCellValue("총 건수 : " + allSum + "건");
+        allsendCell.setCellStyle(infoStyle);
+        
     }
     
 }

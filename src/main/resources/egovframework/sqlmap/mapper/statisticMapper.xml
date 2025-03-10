@@ -2494,4 +2494,73 @@
 		) 
 		WHERE ROWNUM = 1
 	</select>
+	
+	
+	
+	<!-- 연간 지역별 통계 -->
+	<select id="yearOrgStat" parameterType="params" resultType="java.util.HashMap">
+		SELECT 
+		    b.org_id,
+		    b.ORG_NAME,
+		    COUNT(CASE WHEN TO_CHAR(RECEIPT_DAY, 'MM') = '01' THEN 1 END) AS JAN,
+            COUNT(CASE WHEN TO_CHAR(RECEIPT_DAY, 'MM') = '02' THEN 1 END) AS FEB,
+            COUNT(CASE WHEN TO_CHAR(RECEIPT_DAY, 'MM') = '03' THEN 1 END) AS MAR,
+            COUNT(CASE WHEN TO_CHAR(RECEIPT_DAY, 'MM') = '04' THEN 1 END) AS APR,
+            COUNT(CASE WHEN TO_CHAR(RECEIPT_DAY, 'MM') = '05' THEN 1 END) AS MAY,
+            COUNT(CASE WHEN TO_CHAR(RECEIPT_DAY, 'MM') = '06' THEN 1 END) AS JUN,
+            COUNT(CASE WHEN TO_CHAR(RECEIPT_DAY, 'MM') = '07' THEN 1 END) AS JUL,
+            COUNT(CASE WHEN TO_CHAR(RECEIPT_DAY, 'MM') = '08' THEN 1 END) AS AUG,
+            COUNT(CASE WHEN TO_CHAR(RECEIPT_DAY, 'MM') = '09' THEN 1 END) AS SEP,
+            COUNT(CASE WHEN TO_CHAR(RECEIPT_DAY, 'MM') = '10' THEN 1 END) AS OCT,
+            COUNT(CASE WHEN TO_CHAR(RECEIPT_DAY, 'MM') = '11' THEN 1 END) AS NOV,
+            COUNT(CASE WHEN TO_CHAR(RECEIPT_DAY, 'MM') = '12' THEN 1 END) AS DEC,
+		    count(*) as total
+		FROM 
+		    report_receipt a
+		LEFT JOIN 
+		    organization b ON a.org_id = b.ORG_ID
+		WHERE 
+		    a.region_id = #{REGION_ID}
+		    AND a.RECEIPT_DAY BETWEEN TO_DATE(#{start_date}, 'YY/MM/DD') AND TO_DATE(#{end_date}, 'YY/MM/DD')
+		    AND b.area_code = #{REGION_ID}
+		    AND a.individual_type = '0'
+		GROUP BY 
+		    b.org_id, b.ORG_NAME
+	</select>
+	
+	<select id="totalListOrg" parameterType="params" resultType="java.util.HashMap">
+		SELECT * 
+		FROM (
+		    SELECT 
+		        b.org_id,
+		        b.ORG_NAME,
+		        COUNT(CASE WHEN TO_CHAR(RECEIPT_DAY, 'MM') = '01' THEN 1 END) AS JAN,
+		        COUNT(CASE WHEN TO_CHAR(RECEIPT_DAY, 'MM') = '02' THEN 1 END) AS FEB,
+		        COUNT(CASE WHEN TO_CHAR(RECEIPT_DAY, 'MM') = '03' THEN 1 END) AS MAR,
+		        COUNT(CASE WHEN TO_CHAR(RECEIPT_DAY, 'MM') = '04' THEN 1 END) AS APR,
+		        COUNT(CASE WHEN TO_CHAR(RECEIPT_DAY, 'MM') = '05' THEN 1 END) AS MAY,
+		        COUNT(CASE WHEN TO_CHAR(RECEIPT_DAY, 'MM') = '06' THEN 1 END) AS JUN,
+		        COUNT(CASE WHEN TO_CHAR(RECEIPT_DAY, 'MM') = '07' THEN 1 END) AS JUL,
+		        COUNT(CASE WHEN TO_CHAR(RECEIPT_DAY, 'MM') = '08' THEN 1 END) AS AUG,
+		        COUNT(CASE WHEN TO_CHAR(RECEIPT_DAY, 'MM') = '09' THEN 1 END) AS SEP,
+		        COUNT(CASE WHEN TO_CHAR(RECEIPT_DAY, 'MM') = '10' THEN 1 END) AS OCT,
+		        COUNT(CASE WHEN TO_CHAR(RECEIPT_DAY, 'MM') = '11' THEN 1 END) AS NOV,
+		        COUNT(CASE WHEN TO_CHAR(RECEIPT_DAY, 'MM') = '12' THEN 1 END) AS DEC,
+		        COUNT(*) AS total 
+		    FROM 
+		        report_receipt a
+		    LEFT JOIN 
+		        organization b ON a.org_id = b.ORG_ID
+		    WHERE 
+		        a.region_id = #{REGION_ID}
+		        AND a.RECEIPT_DAY BETWEEN TO_DATE(#{start_date}, 'YY/MM/DD') AND TO_DATE(#{end_date}, 'YY/MM/DD')
+		        AND b.area_code = #{REGION_ID}
+		        AND a.individual_type = '0'
+		    GROUP BY 
+		        b.org_id, b.ORG_NAME
+		    ORDER BY total DESC  
+		) 
+		WHERE ROWNUM = 1
+		
+	</select>
 </mapper>

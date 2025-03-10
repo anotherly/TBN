@@ -75,6 +75,8 @@ public interface StatisticMapper{
 		
 		public List totalList(ParamsDto params) throws Exception;
 		
+		public List totalListOrg(ParamsDto params) throws Exception;
+		
 		public List<AwardVO> perList(ParamsDto params) throws Exception;
 		
 		// 연간지역소속별통계

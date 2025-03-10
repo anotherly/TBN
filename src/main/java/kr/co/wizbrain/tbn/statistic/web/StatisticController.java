@@ -527,7 +527,14 @@ public class StatisticController extends BaseController{
 	public String yearOrgStat (Model model, HttpServletRequest request) throws Exception {
 		ParamsDto params = getParams(true);
 		
+		// 시상관리 % 가져오기
+		List<AwardVO> perList = statisticService.perList(params);
+				
 		List dataList = statisticService.yearOrgStat(params); // 엑셀에 사용할 데이터 리스트 가져오기
+		
+		// 최대 값(total) 가져오기
+		List totalList = statisticService.totalListOrg(params);
+				
 		int allInformer = dataList.size(); // 총 인원수 구해오기 
 		// 총 건수 구해오기
 		
@@ -539,6 +546,8 @@ public class StatisticController extends BaseController{
 		model.addAttribute("start_date", params.get("start_date"));
 		model.addAttribute("end_date", params.get("end_date"));
 		model.addAttribute("allInformer",allInformer);
+		model.addAttribute("perList",perList);
+		model.addAttribute("totalList",totalList);
 		
 		return "hssfExcel";
 	}
