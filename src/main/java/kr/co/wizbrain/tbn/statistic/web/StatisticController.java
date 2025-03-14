@@ -368,7 +368,7 @@ public class StatisticController extends BaseController{
 		return "hssfExcel";
 	}
 	
-	/*4. 제보건수 및 가공건수
+	/*4. 교통통신원 제보건수 및 접수직원 가공건수
 	 * @param model
 	 * @return
 	 * @throws Exception
@@ -408,7 +408,7 @@ public class StatisticController extends BaseController{
 		}
 
 		model.addAttribute("mapping", "standardInformUse");
-		model.addAttribute("fileName", "제보건수 및 가공건수"+params.getString("city")+".xls");
+		model.addAttribute("fileName", "교통통신원 제보건수 및 접수직원 가공건수"+params.getString("city")+".xls");
 		model.addAttribute("sheetNames", sheetNames);
 		
 		model.addAttribute("monthReceipt", monthReceiptMain);
@@ -570,7 +570,7 @@ public class StatisticController extends BaseController{
 			monList.add(i);
 		}
 		params.add("monList", monList);
-		List Data = statisticService.nationalIncident(params);	//무 제보자 통신원 목록
+		List Data = statisticService.nationalIncident(params);	
 		
 		model.addAttribute("mapping", "nationalIncident");
 		model.addAttribute("fileName", "돌발 교통정보 제공실적"+params.getString("city")+".xls");
