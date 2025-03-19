@@ -10,6 +10,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -25,6 +26,7 @@ import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.DataFormat;
 import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.util.CellRangeAddress;
@@ -218,6 +220,7 @@ public class ExportPoiHssfExcel extends AbstractView {
 			headCell2.setCellStyle(headStyle);
 		}
 
+		DataFormat format = wb.createDataFormat();
 		
 		CellStyle dataStyle = wb.createCellStyle();
 		dataStyle.setAlignment(HSSFCellStyle.ALIGN_LEFT); // 가운데 정렬 (가로 기준)
@@ -226,7 +229,7 @@ public class ExportPoiHssfExcel extends AbstractView {
 		dataStyle.setBorderLeft(HSSFCellStyle.BORDER_THIN);
 		dataStyle.setBorderTop(HSSFCellStyle.BORDER_THIN);
 		dataStyle.setBorderBottom(HSSFCellStyle.BORDER_THIN);
- 	    
+		dataStyle.setDataFormat(format.getFormat("#,##0"));
  	    Font dataStylefont = wb.createFont(); // 폰트 객체 생성
  	    dataStylefont.setFontHeightInPoints((short) 14); // 폰트 크기 설정
  	    dataStyle.setFont(dataStylefont); // 폰트 스타일을 셀 스타일에 적용
@@ -278,8 +281,11 @@ public class ExportPoiHssfExcel extends AbstractView {
 			ourheadCell.setCellValue("자국");
 			otherheadCell.setCellValue("타국");
 			
-			ourheadCell.setCellStyle(dataStyle);
-			otherheadCell.setCellStyle(dataStyle);
+			ourheadCell.setCellStyle(headStyle);
+			otherheadCell.setCellStyle(headStyle);
+			
+			sheet1.setColumnWidth(j * 2 + 2, 4000);
+			sheet1.setColumnWidth(j * 2 + 3, 4000);
 		}
 
 		rowCnt++;
@@ -518,10 +524,14 @@ public class ExportPoiHssfExcel extends AbstractView {
 			}
 		}
 
+		
+		
+		
+		
 	}
     
 	
-	// 긴급 교통정보 방송 현황 분석
+	// 긴급교통정보 방송 현황 분석
     protected void extrBro(Map model, HSSFWorkbook wb) {
     	
     	// 기본 변수 생성
@@ -619,6 +629,8 @@ public class ExportPoiHssfExcel extends AbstractView {
 	        currentDate = currentDate.plusDays(1); 
 	    }
 
+	    DataFormat format = wb.createDataFormat();
+
 	    CellStyle dataStyle = wb.createCellStyle();
 		dataStyle.setAlignment(HSSFCellStyle.ALIGN_LEFT); // 가운데 정렬 (가로 기준)
 		dataStyle.setVerticalAlignment(CellStyle.VERTICAL_CENTER); // 중앙 정렬 (세로 기준)
@@ -626,6 +638,7 @@ public class ExportPoiHssfExcel extends AbstractView {
 		dataStyle.setBorderLeft(HSSFCellStyle.BORDER_THIN);
 		dataStyle.setBorderTop(HSSFCellStyle.BORDER_THIN);
 		dataStyle.setBorderBottom(HSSFCellStyle.BORDER_THIN);
+	    dataStyle.setDataFormat(format.getFormat("#,##0"));
  	    
  	    Font dataStylefont = wb.createFont(); // 폰트 객체 생성
  	    dataStylefont.setFontHeightInPoints((short) 14); // 폰트 크기 설정
@@ -773,6 +786,8 @@ public class ExportPoiHssfExcel extends AbstractView {
 	        currentDate = currentDate.plusDays(1); 
 	    }
 
+	    DataFormat format = wb.createDataFormat();
+	    
 	    CellStyle dataStyle = wb.createCellStyle();
 		dataStyle.setAlignment(HSSFCellStyle.ALIGN_LEFT); // 가운데 정렬 (가로 기준)
 		dataStyle.setVerticalAlignment(CellStyle.VERTICAL_CENTER); // 중앙 정렬 (세로 기준)
@@ -780,7 +795,8 @@ public class ExportPoiHssfExcel extends AbstractView {
 		dataStyle.setBorderLeft(HSSFCellStyle.BORDER_THIN);
 		dataStyle.setBorderTop(HSSFCellStyle.BORDER_THIN);
 		dataStyle.setBorderBottom(HSSFCellStyle.BORDER_THIN);
- 	    
+		dataStyle.setDataFormat(format.getFormat("#,##0"));
+		
  	    Font dataStylefont = wb.createFont(); // 폰트 객체 생성
  	    dataStylefont.setFontHeightInPoints((short) 14); // 폰트 크기 설정
  	    dataStyle.setFont(dataStylefont); // 폰트 스타일을 셀 스타일에 적용
@@ -914,6 +930,8 @@ public class ExportPoiHssfExcel extends AbstractView {
 		HSSFRow[] dataRow1 = new HSSFRow[headListMdata.size()];
 		int[] monArr = new int[12];
 
+		DataFormat format = wb.createDataFormat();
+
 		CellStyle dataStyle = wb.createCellStyle();
 		dataStyle.setAlignment(HSSFCellStyle.ALIGN_LEFT); // 가운데 정렬 (가로 기준)
 		dataStyle.setVerticalAlignment(CellStyle.VERTICAL_CENTER); // 중앙 정렬 (세로 기준)
@@ -921,6 +939,7 @@ public class ExportPoiHssfExcel extends AbstractView {
 		dataStyle.setBorderLeft(HSSFCellStyle.BORDER_THIN);
 		dataStyle.setBorderTop(HSSFCellStyle.BORDER_THIN);
 		dataStyle.setBorderBottom(HSSFCellStyle.BORDER_THIN);
+		dataStyle.setDataFormat(format.getFormat("#,##0"));
  	    
  	    Font dataStylefont = wb.createFont(); // 폰트 객체 생성
  	    dataStylefont.setFontHeightInPoints((short) 14); // 폰트 크기 설정
@@ -1117,7 +1136,6 @@ public class ExportPoiHssfExcel extends AbstractView {
 
 	}
 	
-	// 교통통신원 제보건수 및 접수직원 가공건수
 	protected void standardInformUse(Map model, HSSFWorkbook wb) {
         List sheetNames = (List) model.get("sheetNames");
         List monthReceiptMain = (List) model.get("monthReceipt");
@@ -1132,313 +1150,328 @@ public class ExportPoiHssfExcel extends AbstractView {
     }
 
 	// 교통통신원 제보건수 및 접수직원 가공건수 실제 함수
-	protected void informUse(HSSFWorkbook wb, String sheetNames, List monthReceiptMain, List monthOurReceiptMain,
-			List monthOtherReceiptMain, List monthInformerMain, List monthInformer1InformMain, String thDateTime) {
-		int rowCnt = 0;
-		HSSFSheet sheet1 = wb.createSheet(sheetNames);
-		HSSFRow titlerow = sheet1.createRow(rowCnt);
-		
-		CellStyle titleStyle = wb.createCellStyle();
-        titleStyle.setAlignment(HSSFCellStyle.ALIGN_CENTER); // 가운데 정렬 (가로 기준)
-        titleStyle.setVerticalAlignment(CellStyle.VERTICAL_CENTER); // 중앙 정렬 (세로 기준)
- 	    
- 	    Font font = wb.createFont(); // 폰트 객체 생성
- 	    font.setFontHeightInPoints((short) 24); // 폰트 크기 설정
- 	    titleStyle.setFont(font); // 폰트 스타일을 셀 스타일에 적용
-		
- 	    HSSFCell titleCell = titlerow.createCell(rowCnt);
- 	    sheet1.addMergedRegion(new CellRangeAddress(0, 0, 0, 8));
- 	    titleCell.setCellValue("통신원 제보건수 및 접수요원 가공건수");
- 	    titleCell.setCellStyle(titleStyle);	    
- 	    
-		rowCnt++;
-		HSSFRow headrow = sheet1.createRow(rowCnt);
-		rowCnt++;
-		HSSFRow rbRow = sheet1.createRow(rowCnt);
-		rowCnt++;
-		HSSFRow rbRow1 = sheet1.createRow(rowCnt);
-		
-		CellStyle headStyle = wb.createCellStyle();
-     	headStyle.setAlignment(HSSFCellStyle.ALIGN_CENTER); // 오른쪽 정렬 (가로 기준)
-     	headStyle.setVerticalAlignment(CellStyle.VERTICAL_CENTER); // 중앙 정렬 (세로 기준)
-     	headStyle.setFillForegroundColor(IndexedColors.PALE_BLUE.getIndex()); // 배경색 설정*/ 	   
-     	headStyle.setFillPattern(CellStyle.SOLID_FOREGROUND);  // 배경색이 채워지도록 패턴 설정
-     	headStyle.setBorderRight(HSSFCellStyle.BORDER_THIN); // 테두리 설정
-     	headStyle.setBorderLeft(HSSFCellStyle.BORDER_THIN);
-     	headStyle.setBorderTop(HSSFCellStyle.BORDER_THIN);
-     	headStyle.setBorderBottom(HSSFCellStyle.BORDER_THIN);
-		
-		Font headStyleF = wb.createFont(); // 폰트 객체 생성
-		headStyleF.setFontHeightInPoints((short) 14); // 폰트 크기 설정
-		headStyleF.setFontName("굴림체");
-		headStyle.setFont(headStyleF); // 폰트 스타일을 셀 스타일에 적용
-		
-		HSSFCell headCell = headrow.createCell(1);
-		HSSFCell headCell1 = headrow.createCell(2);
-		headCell.setCellValue("총 제보건수");
-		headCell.setCellStyle(headStyle);
-		headCell1.setCellStyle(headStyle);
-		sheet1.addMergedRegion(new CellRangeAddress(rowCnt - 2, rowCnt - 2, 1, 2));
-		
-		HSSFCell headCell2 = headrow.createCell(3);
-		HSSFCell headCell22 = headrow.createCell(4);
-		HSSFCell headCell23 = headrow.createCell(5);
-		HSSFCell headCell24 = headrow.createCell(6);
-		HSSFCell headCell25 = headrow.createCell(7);
-		HSSFCell headCell26 = headrow.createCell(8);
-		
-		headCell2.setCellValue(sheetNames);
-		headCell2.setCellStyle(headStyle);
-		headCell22.setCellStyle(headStyle);
-		headCell23.setCellStyle(headStyle);
-		headCell24.setCellStyle(headStyle);
-		headCell25.setCellStyle(headStyle);
-		headCell26.setCellStyle(headStyle);
-		
-		sheet1.addMergedRegion(new CellRangeAddress(rowCnt - 2, rowCnt - 2, 3, 8));
-		
-		HSSFCell headCell3 = rbRow.createCell(1);
-		headCell3.setCellValue("월간");
-		headCell3.setCellStyle(headStyle);
-		sheet1.addMergedRegion(new CellRangeAddress(rowCnt - 1, rowCnt, 1, 1));
-		
-		HSSFCell headCell4 = rbRow.createCell(2);
-		headCell4.setCellValue("일간");
-		headCell4.setCellStyle(headStyle);
-		sheet1.addMergedRegion(new CellRangeAddress(rowCnt - 1, rowCnt, 2, 2));
-		
-		HSSFCell headCell5 = rbRow.createCell(3);
-		headCell5.setCellValue("제보건수(건)");
-		headCell5.setCellStyle(headStyle);
-		sheet1.addMergedRegion(new CellRangeAddress(rowCnt - 1, rowCnt - 1, 3, 4));
-		
-		HSSFCell headCell6 = rbRow.createCell(5);
-		headCell6.setCellValue("총인원(명)");
-		headCell6.setCellStyle(headStyle);
-		sheet1.addMergedRegion(new CellRangeAddress(rowCnt - 1, rowCnt, 5, 5));
-		
-		HSSFCell headCell7 = rbRow.createCell(6);
-		headCell7.setCellValue("1인당 제보건수(총인원 대비)");
-		headCell7.setCellStyle(headStyle);
-		sheet1.addMergedRegion(new CellRangeAddress(rowCnt - 1, rowCnt, 6, 6));
-		
-		HSSFCell headCell8 = rbRow.createCell(7);
-		headCell8.setCellValue("1건이상 제보자수");
-		headCell8.setCellStyle(headStyle);
-		sheet1.addMergedRegion(new CellRangeAddress(rowCnt - 1, rowCnt, 7, 7));
-		
-		HSSFCell headCell9 = rbRow.createCell(8);
-		headCell9.setCellValue("1인당 제보건수(1건이상 제보자대비)");
-		headCell9.setCellStyle(headStyle);
-		sheet1.addMergedRegion(new CellRangeAddress(rowCnt - 1, rowCnt, 8, 8));
-		
-		HSSFCell ourCell = rbRow1.createCell(3);
-		HSSFCell otherCell = rbRow1.createCell(4);
-		HSSFCell bottomCell = rbRow1.createCell(1);
-		HSSFCell bottomCell2 = rbRow1.createCell(2);
-		HSSFCell bottomCell3 = rbRow1.createCell(5);
-		HSSFCell bottomCell4 = rbRow1.createCell(6);
-		HSSFCell bottomCell5 = rbRow1.createCell(7);
-		HSSFCell bottomCell6 = rbRow1.createCell(8);
-		
-		ourCell.setCellValue("자국");
-		otherCell.setCellValue("타국");
-		
-		ourCell.setCellStyle(headStyle);
-		otherCell.setCellStyle(headStyle);
-		bottomCell.setCellStyle(headStyle);
-		bottomCell2.setCellStyle(headStyle);
-		bottomCell3.setCellStyle(headStyle);
-		bottomCell4.setCellStyle(headStyle);
-		bottomCell5.setCellStyle(headStyle);
-		bottomCell6.setCellStyle(headStyle);
-		
-		
-		int monthCnt = 12;
-		rowCnt++;
-		HSSFRow[] dataRow = new HSSFRow[monthCnt];
-		int[] maxDay = new int[monthCnt];
-
-		CellStyle dataStyle = wb.createCellStyle();
-		dataStyle.setAlignment(HSSFCellStyle.ALIGN_LEFT); // 가운데 정렬 (가로 기준)
-		dataStyle.setVerticalAlignment(CellStyle.VERTICAL_CENTER); // 중앙 정렬 (세로 기준)
-		dataStyle.setBorderRight(HSSFCellStyle.BORDER_THIN); // 테두리 설정
-		dataStyle.setBorderLeft(HSSFCellStyle.BORDER_THIN);
-		dataStyle.setBorderTop(HSSFCellStyle.BORDER_THIN);
-		dataStyle.setBorderBottom(HSSFCellStyle.BORDER_THIN);
- 	    
- 	    Font dataStylefont = wb.createFont(); // 폰트 객체 생성
- 	    dataStylefont.setFontHeightInPoints((short) 14); // 폰트 크기 설정
- 	    dataStyle.setFont(dataStylefont); // 폰트 스타일을 셀 스타일에 적용
- 	    
-		int i;
-		int statDate;
-		for (i = 0; i < monthCnt; ++i) {
-			dataRow[i] = sheet1.createRow(rowCnt);
+		protected void informUse(HSSFWorkbook wb, String sheetNames, List monthReceiptMain, List monthOurReceiptMain,
+				List monthOtherReceiptMain, List monthInformerMain, List monthInformer1InformMain, String thDateTime) {
+			int rowCnt = 0;
+			HSSFSheet sheet1 = wb.createSheet(sheetNames);
+			HSSFRow titlerow = sheet1.createRow(rowCnt);
 			
-			HSSFCell monCell = dataRow[i].createCell(0);
-			monCell.setCellValue(i + 1 + "월");
-			monCell.setCellStyle(dataStyle);
+			CellStyle titleStyle = wb.createCellStyle();
+	        titleStyle.setAlignment(HSSFCellStyle.ALIGN_CENTER); // 가운데 정렬 (가로 기준)
+	        titleStyle.setVerticalAlignment(CellStyle.VERTICAL_CENTER); // 중앙 정렬 (세로 기준)
+	 	    
+	 	    Font font = wb.createFont(); // 폰트 객체 생성
+	 	    font.setFontHeightInPoints((short) 24); // 폰트 크기 설정
+	 	    titleStyle.setFont(font); // 폰트 스타일을 셀 스타일에 적용
 			
-			Calendar ca = Calendar.getInstance();
-			int thYear = Integer.parseInt(thDateTime.substring(0, 4));
-			statDate = Integer.parseInt(thDateTime.substring(4, 6));
-			ca.set(thYear, i, statDate);
-			maxDay[i] = ca.getActualMaximum(5);
+	 	    HSSFCell titleCell = titlerow.createCell(rowCnt);
+	 	    sheet1.addMergedRegion(new CellRangeAddress(0, 0, 0, 8));
+	 	    titleCell.setCellValue("통신원 제보건수 및 접수요원 가공건수");
+	 	    titleCell.setCellStyle(titleStyle);	    
+	 	    
 			rowCnt++;
-		}
+			HSSFRow headrow = sheet1.createRow(rowCnt);
+			rowCnt++;
+			HSSFRow rbRow = sheet1.createRow(rowCnt);
+			rowCnt++;
+			HSSFRow rbRow1 = sheet1.createRow(rowCnt);
+			
+			CellStyle headStyle = wb.createCellStyle();
+	     	headStyle.setAlignment(HSSFCellStyle.ALIGN_CENTER); // 오른쪽 정렬 (가로 기준)
+	     	headStyle.setVerticalAlignment(CellStyle.VERTICAL_CENTER); // 중앙 정렬 (세로 기준)
+	     	headStyle.setFillForegroundColor(IndexedColors.PALE_BLUE.getIndex()); // 배경색 설정*/ 	   
+	     	headStyle.setFillPattern(CellStyle.SOLID_FOREGROUND);  // 배경색이 채워지도록 패턴 설정
+	     	headStyle.setBorderRight(HSSFCellStyle.BORDER_THIN); // 테두리 설정
+	     	headStyle.setBorderLeft(HSSFCellStyle.BORDER_THIN);
+	     	headStyle.setBorderTop(HSSFCellStyle.BORDER_THIN);
+	     	headStyle.setBorderBottom(HSSFCellStyle.BORDER_THIN);
+			
+			Font headStyleF = wb.createFont(); // 폰트 객체 생성
+			headStyleF.setFontHeightInPoints((short) 14); // 폰트 크기 설정
+			headStyleF.setFontName("굴림체");
+			headStyle.setFont(headStyleF); // 폰트 스타일을 셀 스타일에 적용
+			
+			HSSFCell headCell = headrow.createCell(1);
+			HSSFCell headCell1 = headrow.createCell(2);
+			headCell.setCellValue("총 제보건수");
+			headCell.setCellStyle(headStyle);
+			headCell1.setCellStyle(headStyle);
+			sheet1.addMergedRegion(new CellRangeAddress(rowCnt - 2, rowCnt - 2, 1, 2));
+			
+			HSSFCell headCell2 = headrow.createCell(3);
+			HSSFCell headCell22 = headrow.createCell(4);
+			HSSFCell headCell23 = headrow.createCell(5);
+			HSSFCell headCell24 = headrow.createCell(6);
+			HSSFCell headCell25 = headrow.createCell(7);
+			HSSFCell headCell26 = headrow.createCell(8);
+			
+			headCell2.setCellValue(sheetNames);
+			headCell2.setCellStyle(headStyle);
+			headCell22.setCellStyle(headStyle);
+			headCell23.setCellStyle(headStyle);
+			headCell24.setCellStyle(headStyle);
+			headCell25.setCellStyle(headStyle);
+			headCell26.setCellStyle(headStyle);
+			
+			sheet1.addMergedRegion(new CellRangeAddress(rowCnt - 2, rowCnt - 2, 3, 8));
+			
+			HSSFCell headCell3 = rbRow.createCell(1);
+			headCell3.setCellValue("월간");
+			headCell3.setCellStyle(headStyle);
+			sheet1.addMergedRegion(new CellRangeAddress(rowCnt - 1, rowCnt, 1, 1));
+			
+			HSSFCell headCell4 = rbRow.createCell(2);
+			headCell4.setCellValue("일간");
+			headCell4.setCellStyle(headStyle);
+			sheet1.addMergedRegion(new CellRangeAddress(rowCnt - 1, rowCnt, 2, 2));
+			
+			HSSFCell headCell5 = rbRow.createCell(3);
+			headCell5.setCellValue("제보건수(건)");
+			headCell5.setCellStyle(headStyle);
+			sheet1.addMergedRegion(new CellRangeAddress(rowCnt - 1, rowCnt - 1, 3, 4));
+			
+			HSSFCell headCell6 = rbRow.createCell(5);
+			headCell6.setCellValue("총인원(명)");
+			headCell6.setCellStyle(headStyle);
+			sheet1.addMergedRegion(new CellRangeAddress(rowCnt - 1, rowCnt, 5, 5));
+			
+			HSSFCell headCell7 = rbRow.createCell(6);
+			headCell7.setCellValue("1인당 제보건수(총인원 대비)");
+			headCell7.setCellStyle(headStyle);
+			sheet1.addMergedRegion(new CellRangeAddress(rowCnt - 1, rowCnt, 6, 6));
+			
+			HSSFCell headCell8 = rbRow.createCell(7);
+			headCell8.setCellValue("1건이상 제보자수");
+			headCell8.setCellStyle(headStyle);
+			sheet1.addMergedRegion(new CellRangeAddress(rowCnt - 1, rowCnt, 7, 7));
+			
+			HSSFCell headCell9 = rbRow.createCell(8);
+			headCell9.setCellValue("1인당 제보건수(1건이상 제보자대비)");
+			headCell9.setCellStyle(headStyle);
+			sheet1.addMergedRegion(new CellRangeAddress(rowCnt - 1, rowCnt, 8, 8));
+			
+			HSSFCell ourCell = rbRow1.createCell(3);
+			HSSFCell otherCell = rbRow1.createCell(4);
+			HSSFCell bottomCell = rbRow1.createCell(1);
+			HSSFCell bottomCell2 = rbRow1.createCell(2);
+			HSSFCell bottomCell3 = rbRow1.createCell(5);
+			HSSFCell bottomCell4 = rbRow1.createCell(6);
+			HSSFCell bottomCell5 = rbRow1.createCell(7);
+			HSSFCell bottomCell6 = rbRow1.createCell(8);
+			
+			ourCell.setCellValue("자국");
+			otherCell.setCellValue("타국");
+			
+			ourCell.setCellStyle(headStyle);
+			otherCell.setCellStyle(headStyle);
+			bottomCell.setCellStyle(headStyle);
+			bottomCell2.setCellStyle(headStyle);
+			bottomCell3.setCellStyle(headStyle);
+			bottomCell4.setCellStyle(headStyle);
+			bottomCell5.setCellStyle(headStyle);
+			bottomCell6.setCellStyle(headStyle);
+			
+			
+			int monthCnt = 12;
+			rowCnt++;
+			HSSFRow[] dataRow = new HSSFRow[monthCnt];
+			int[] maxDay = new int[monthCnt];
 
-		DecimalFormat df = new DecimalFormat("##0.0");
+			DataFormat format = wb.createDataFormat();
+			 
+			CellStyle dataStyle = wb.createCellStyle();
+			dataStyle.setAlignment(HSSFCellStyle.ALIGN_LEFT); // 가운데 정렬 (가로 기준)
+			dataStyle.setVerticalAlignment(CellStyle.VERTICAL_CENTER); // 중앙 정렬 (세로 기준)
+			dataStyle.setBorderRight(HSSFCellStyle.BORDER_THIN); // 테두리 설정
+			dataStyle.setBorderLeft(HSSFCellStyle.BORDER_THIN);
+			dataStyle.setBorderTop(HSSFCellStyle.BORDER_THIN);
+			dataStyle.setBorderBottom(HSSFCellStyle.BORDER_THIN);
+			dataStyle.setDataFormat(format.getFormat("#,##0"));
+			
+	 	    Font dataStylefont = wb.createFont(); // 폰트 객체 생성
+	 	    dataStylefont.setFontHeightInPoints((short) 14); // 폰트 크기 설정
+	 	    dataStyle.setFont(dataStylefont); // 폰트 스타일을 셀 스타일에 적용
+	 	    
+			int i;
+			int statDate;
+			for (i = 0; i < monthCnt; ++i) {
+				dataRow[i] = sheet1.createRow(rowCnt);
+				
+				HSSFCell monCell = dataRow[i].createCell(0);
+				monCell.setCellValue(i + 1 + "월");
+				monCell.setCellStyle(dataStyle);
+				
+				Calendar ca = Calendar.getInstance();
+				int thYear = Integer.parseInt(thDateTime.substring(0, 4));
+				statDate = Integer.parseInt(thDateTime.substring(4, 6));
+				ca.set(thYear, i, statDate);
+				maxDay[i] = ca.getActualMaximum(5);
+				rowCnt++;
+			}
 
-		int j;
-		RecordDto record;
+			DecimalFormat df = new DecimalFormat("##0.0");
 
-		
-		for (i = 0; i < monthReceiptMain.size(); ++i) {
-			record = (RecordDto) monthReceiptMain.get(i);
-			statDate = Integer.parseInt(record.getString("STAT_MONTH").substring(4, 6));
+			int j;
+			RecordDto record;
+			
 
-			for (j = 0; j < monthCnt; ++j) {
-				if (j == statDate - 1) {
-					
-					HSSFCell dataCell = dataRow[statDate - 1].createCell(1);
-					HSSFCell dataCell2 = dataRow[statDate - 1].createCell(2);
-					
-					dataCell.setCellValue((double) record.getInt("CNT"));
-					dataCell2.setCellValue(df.format(record.getDouble("CNT") / (double) maxDay[j]));
-					
-					dataCell.setCellStyle(dataStyle);
-					dataCell2.setCellStyle(dataStyle);
-				} else {
-					HSSFCell dataCell = dataRow[j].createCell(1);
-					HSSFCell dataCell2 = dataRow[j].createCell(2);
-					
-					dataCell.setCellValue(0.0);
-					dataCell2.setCellValue(0.0);
-					
-					dataCell.setCellStyle(dataStyle);
-					dataCell2.setCellStyle(dataStyle);
+			for (i = 0; i < monthReceiptMain.size(); ++i) {
+
+				
+				record = (RecordDto) monthReceiptMain.get(i);
+				
+				statDate = Integer.parseInt(record.getString("STAT_MONTH").substring(4, 6));
+
+				for (j = 0; j < monthCnt; ++j) {
+					if (j == statDate - 1) {
+						
+						HSSFCell dataCell = dataRow[statDate - 1].createCell(1);
+						HSSFCell dataCell2 = dataRow[statDate - 1].createCell(2);
+						
+						dataCell.setCellValue((double) record.getInt("CNT"));
+						dataCell2.setCellValue(df.format(record.getDouble("CNT") / (double) maxDay[j]));
+						
+						dataCell.setCellStyle(dataStyle);
+						dataCell2.setCellStyle(dataStyle);
+					} else {
+						HSSFCell dataCell = dataRow[j].createCell(1);
+						HSSFCell dataCell2 = dataRow[j].createCell(2);
+						
+						dataCell.setCellValue(0.0);
+						dataCell2.setCellValue(0.0);
+						
+						dataCell.setCellStyle(dataStyle);
+						dataCell2.setCellStyle(dataStyle);
+					}
 				}
 			}
-		}
 
-		/*this.setRowData(monthOurReceiptMain, monthCnt, dataRow, 3);
-		this.setRowData(monthOtherReceiptMain, monthCnt, dataRow, 4);*/
+			/*this.setRowData(monthOurReceiptMain, monthCnt, dataRow, 3);
+			this.setRowData(monthOtherReceiptMain, monthCnt, dataRow, 4);*/
 
-		for (int z = 0; z < monthOurReceiptMain.size(); z++) {
-            record = (RecordDto) monthOurReceiptMain.get(z);
-            int statDate2 = Integer.parseInt(record.getString("STAT_MONTH").substring(4, 6));
-            for (int x = 0; x < monthCnt; x++) {
-                if (x == statDate2 - 1) {
-                	HSSFCell dateCell = dataRow[statDate2 - 1].createCell(3);
-                	dateCell.setCellValue(record.getInt("CNT"));
-                	dateCell.setCellStyle(dataStyle);
-                } else {
-                	HSSFCell dateCell = dataRow[x].createCell(3);
-                	 dateCell.setCellValue(0.0d);
-                	 dateCell.setCellStyle(dataStyle);
-                }
-            }
-        }
-		
-		for (int z = 0; z < monthOtherReceiptMain.size(); z++) {
-            record = (RecordDto) monthOtherReceiptMain.get(z);
-            int statDate2 = Integer.parseInt(record.getString("STAT_MONTH").substring(4, 6));
-            for (int x = 0; x < monthCnt; x++) {
-                if (x == statDate2 - 1) {
-                	HSSFCell dateCell = dataRow[statDate2 - 1].createCell(4);
-                	dateCell.setCellValue(record.getInt("CNT"));
-                	dateCell.setCellStyle(dataStyle);
-                } else {
-                	HSSFCell dateCell = dataRow[x].createCell(4);
-                	 dateCell.setCellValue(0.0d);
-                	 dateCell.setCellStyle(dataStyle);
-                }
-            }
-        }
-		
-		
-		
-		for (i = 0; i < monthInformerMain.size(); ++i) {
-			record = (RecordDto) monthInformerMain.get(i);
-			statDate = Integer.parseInt(record.getString("STAT_MONTH").substring(4, 6));
+			for (int z = 0; z < monthOurReceiptMain.size(); z++) {
+	            record = (RecordDto) monthOurReceiptMain.get(z);
+	            int statDate2 = Integer.parseInt(record.getString("STAT_MONTH").substring(4, 6));
+	            for (int x = 0; x < monthCnt; x++) {
+	                if (x == statDate2 - 1) {
+	                	HSSFCell dateCell = dataRow[statDate2 - 1].createCell(3);
+	                	dateCell.setCellValue(record.getInt("CNT"));
+	                	dateCell.setCellStyle(dataStyle);
+	                } else {
+	                	HSSFCell dateCell = dataRow[x].createCell(3);
+	                	 dateCell.setCellValue(0.0d);
+	                	 dateCell.setCellStyle(dataStyle);
+	                }
+	            }
+	        }
+			
+			for (int z = 0; z < monthOtherReceiptMain.size(); z++) {
+	            record = (RecordDto) monthOtherReceiptMain.get(z);
+	            int statDate2 = Integer.parseInt(record.getString("STAT_MONTH").substring(4, 6));
+	            for (int x = 0; x < monthCnt; x++) {
+	                if (x == statDate2 - 1) {
+	                	HSSFCell dateCell = dataRow[statDate2 - 1].createCell(4);
+	                	dateCell.setCellValue(record.getInt("CNT"));
+	                	dateCell.setCellStyle(dataStyle);
+	                } else {
+	                	HSSFCell dateCell = dataRow[x].createCell(4);
+	                	 dateCell.setCellValue(0.0d);
+	                	 dateCell.setCellStyle(dataStyle);
+	                }
+	            }
+	        }
+			
+			
+			
+			for (i = 0; i < monthInformerMain.size(); ++i) {
+				record = (RecordDto) monthInformerMain.get(i);
+				statDate = Integer.parseInt(record.getString("STAT_MONTH").substring(4, 6));
 
-			for (j = 0; j < monthCnt; ++j) {
-				if (j == statDate - 1) {
-					HSSFCell dataCell = dataRow[statDate - 1].createCell(5);
-					HSSFCell dataCell2 = dataRow[statDate - 1].createCell(6);		
-					
-					dataCell.setCellValue((double) record.getInt("CNT"));
-					dataCell2.setCellValue(df
-							.format(dataRow[statDate - 1].getCell(1).getNumericCellValue() / record.getDouble("CNT")));
-					
-					dataCell.setCellStyle(dataStyle);
-					dataCell2.setCellStyle(dataStyle);
-					
-				} else {
-					HSSFCell dataCell = dataRow[j].createCell(5);
-					HSSFCell dataCell2 = dataRow[j].createCell(6);		
-					
-					dataCell.setCellValue(0.0);
-					dataCell2.setCellValue(0.0);
-					
-					dataCell.setCellStyle(dataStyle);
-					dataCell2.setCellStyle(dataStyle);
+				for (j = 0; j < monthCnt; ++j) {
+					if (j == statDate - 1) {
+						HSSFCell dataCell = dataRow[statDate - 1].createCell(5);
+						HSSFCell dataCell2 = dataRow[statDate - 1].createCell(6);		
+						
+						dataCell.setCellValue((double) record.getInt("CNT"));
+						// 문제 발생 지점
+						dataCell2.setCellValue(df.format(dataRow[statDate - 1].getCell(1).getNumericCellValue() / record.getDouble("CNT")));
+						
+						dataCell.setCellStyle(dataStyle);
+						dataCell2.setCellStyle(dataStyle);
+						
+					} else {
+						HSSFCell dataCell = dataRow[j].createCell(5);
+						HSSFCell dataCell2 = dataRow[j].createCell(6);		
+						
+						dataCell.setCellValue(0.0);
+						dataCell2.setCellValue(0.0);
+						
+						dataCell.setCellStyle(dataStyle);
+						dataCell2.setCellStyle(dataStyle);
+					}
 				}
 			}
-		}
 
-		for (i = 0; i < monthInformer1InformMain.size(); ++i) {
-			record = (RecordDto) monthInformer1InformMain.get(i);
-			statDate = Integer.parseInt(record.getString("STAT_MONTH").substring(4, 6));
+			for (i = 0; i < monthInformer1InformMain.size(); ++i) {
+				record = (RecordDto) monthInformer1InformMain.get(i);
+				statDate = Integer.parseInt(record.getString("STAT_MONTH").substring(4, 6));
 
-			for (j = 0; j < monthCnt; ++j) {
-				if (j == statDate - 1) {
-					
-					
-					HSSFCell dataCell = dataRow[statDate - 1].createCell(7);
-					HSSFCell dataCell2 = dataRow[statDate - 1].createCell(8);
+				for (j = 0; j < monthCnt; ++j) {
+					if (j == statDate - 1) {
+						
+						
+						HSSFCell dataCell = dataRow[statDate - 1].createCell(7);
+						HSSFCell dataCell2 = dataRow[statDate - 1].createCell(8);
 
-					dataCell.setCellValue((double) record.getInt("CNT"));
-					dataCell2.setCellValue(df
-							.format(dataRow[statDate - 1].getCell(1).getNumericCellValue() / record.getDouble("CNT")));
+						dataCell.setCellValue((double) record.getInt("CNT"));
+						dataCell2.setCellValue(df
+								.format(dataRow[statDate - 1].getCell(1).getNumericCellValue() / record.getDouble("CNT")));
+						
+						dataCell.setCellStyle(dataStyle);
+						dataCell2.setCellStyle(dataStyle);
+						
+					} else {
+						HSSFCell dataCell = dataRow[j].createCell(7);
+						HSSFCell dataCell2 = dataRow[j].createCell(8);
+						
+						dataCell.setCellValue(0.0);
+						dataCell2.setCellValue(0.0);
+						
+						dataCell.setCellStyle(dataStyle);
+						dataCell2.setCellStyle(dataStyle);
+					}
 					
-					dataCell.setCellStyle(dataStyle);
-					dataCell2.setCellStyle(dataStyle);
 					
-				} else {
-					HSSFCell dataCell = dataRow[j].createCell(7);
-					HSSFCell dataCell2 = dataRow[j].createCell(8);
 					
-					dataCell.setCellValue(0.0);
-					dataCell2.setCellValue(0.0);
 					
-					dataCell.setCellStyle(dataStyle);
-					dataCell2.setCellStyle(dataStyle);
 				}
-				
-				
-				
-				
 			}
-		}
+			
+			sheet1.setColumnWidth(1, 5500);
+			sheet1.setColumnWidth(2, 5500);
+			sheet1.setColumnWidth(3, 5500);
+			sheet1.setColumnWidth(4, 5500);
+			sheet1.setColumnWidth(5, 5500);
+			sheet1.setColumnWidth(6, 5500);
+			sheet1.setColumnWidth(7, 5500);
+			sheet1.setColumnWidth(8, 5500);
 
-	}
-	
-	protected void setRowData(List<?> data, int cnt, HSSFRow[] dataRow, int cellIndex) {
- 	    
-        for (int i = 0; i < data.size(); i++) {
-            RecordDto record = (RecordDto) data.get(i);
-            int statDate = Integer.parseInt(record.getString("STAT_MONTH").substring(4, 6));
-            for (int j = 0; j < cnt; j++) {
-                if (j == statDate - 1) {
-                    dataRow[statDate - 1].createCell(cellIndex).setCellValue(record.getInt("CNT"));
-                } else {
-                    dataRow[j].createCell(cellIndex).setCellValue(0.0d);
-                }
-            }
-        }
-    }
+		}
+		
+		protected void setRowData(List<?> data, int cnt, HSSFRow[] dataRow, int cellIndex) {
+	 	    
+	        for (int i = 0; i < data.size(); i++) {
+	            RecordDto record = (RecordDto) data.get(i);
+	            int statDate = Integer.parseInt(record.getString("STAT_MONTH").substring(4, 6));
+	            for (int j = 0; j < cnt; j++) {
+	                if (j == statDate - 1) {
+	                    dataRow[statDate - 1].createCell(cellIndex).setCellValue(record.getInt("CNT"));
+	                } else {
+	                    dataRow[j].createCell(cellIndex).setCellValue(0.0d);
+	                }
+	            }
+	        }
+	    }
 
 	protected void standartdReceiptUse(Map model, HSSFWorkbook wb) {
 		int rowCnt = 0;
@@ -1525,6 +1558,8 @@ public class ExportPoiHssfExcel extends AbstractView {
 
 		++rowCnt;
 		
+		DataFormat format = wb.createDataFormat();
+		
 		CellStyle dataStyle = wb.createCellStyle();
 		dataStyle.setAlignment(HSSFCellStyle.ALIGN_LEFT); // 가운데 정렬 (가로 기준)
 		dataStyle.setVerticalAlignment(CellStyle.VERTICAL_CENTER); // 중앙 정렬 (세로 기준)
@@ -1532,6 +1567,8 @@ public class ExportPoiHssfExcel extends AbstractView {
 		dataStyle.setBorderLeft(HSSFCellStyle.BORDER_THIN);
 		dataStyle.setBorderTop(HSSFCellStyle.BORDER_THIN);
 		dataStyle.setBorderBottom(HSSFCellStyle.BORDER_THIN);
+		dataStyle.setDataFormat(format.getFormat("#,##0"));
+
  	    
  	    Font dataStylefont = wb.createFont(); // 폰트 객체 생성
  	    dataStylefont.setFontHeightInPoints((short) 14); // 폰트 크기 설정
@@ -1581,6 +1618,9 @@ public class ExportPoiHssfExcel extends AbstractView {
 			
 			ourCell.setCellStyle(dataStyle);
 			otherCell.setCellStyle(dataStyle);
+			
+			sheet1.setColumnWidth(j * 2 + 1, 4000);
+			sheet1.setColumnWidth(j * 2 + 2, 4000);
 		}
 
 		++rowCnt;
@@ -2455,6 +2495,7 @@ public class ExportPoiHssfExcel extends AbstractView {
         headCell5.setCellStyle(headStyle);
         headCell6.setCellStyle(headStyle);
         
+        DataFormat format = wb.createDataFormat();
         
         CellStyle dataStyle = wb.createCellStyle();
 		dataStyle.setAlignment(HSSFCellStyle.ALIGN_LEFT); // 가운데 정렬 (가로 기준)
@@ -2463,6 +2504,8 @@ public class ExportPoiHssfExcel extends AbstractView {
 		dataStyle.setBorderLeft(HSSFCellStyle.BORDER_THIN);
 		dataStyle.setBorderTop(HSSFCellStyle.BORDER_THIN);
 		dataStyle.setBorderBottom(HSSFCellStyle.BORDER_THIN);
+        dataStyle.setDataFormat(format.getFormat("#,##0"));
+
  	    
  	    Font dataStylefont = wb.createFont(); // 폰트 객체 생성
  	    dataStylefont.setFontHeightInPoints((short) 14); // 폰트 크기 설정
@@ -2620,6 +2663,8 @@ public class ExportPoiHssfExcel extends AbstractView {
 		headStyleF.setFontName("굴림체");
 		headStyle.setFont(headStyleF); // 폰트 스타일을 셀 스타일에 적용
 		
+		DataFormat format = wb.createDataFormat();
+		
 		CellStyle dataStyle = wb.createCellStyle();
 		dataStyle.setAlignment(HSSFCellStyle.ALIGN_LEFT); // 가운데 정렬 (가로 기준)
 		dataStyle.setVerticalAlignment(CellStyle.VERTICAL_CENTER); // 중앙 정렬 (세로 기준)
@@ -2627,6 +2672,8 @@ public class ExportPoiHssfExcel extends AbstractView {
 		dataStyle.setBorderLeft(HSSFCellStyle.BORDER_THIN);
 		dataStyle.setBorderTop(HSSFCellStyle.BORDER_THIN);
 		dataStyle.setBorderBottom(HSSFCellStyle.BORDER_THIN);
+		dataStyle.setDataFormat(format.getFormat("#,##0"));
+
  	    
  	    Font dataStylefont = wb.createFont(); // 폰트 객체 생성
  	    dataStylefont.setFontHeightInPoints((short) 14); // 폰트 크기 설정
@@ -3128,6 +3175,8 @@ public class ExportPoiHssfExcel extends AbstractView {
 		headStyleF.setFontName("굴림체");
 		headStyle.setFont(headStyleF); // 폰트 스타일을 셀 스타일에 적용
 
+		DataFormat format = wb.createDataFormat();
+
 		CellStyle dataStyle = wb.createCellStyle();
 		dataStyle.setAlignment(HSSFCellStyle.ALIGN_LEFT); // 가운데 정렬 (가로 기준)
 		dataStyle.setVerticalAlignment(CellStyle.VERTICAL_CENTER); // 중앙 정렬 (세로 기준)
@@ -3135,6 +3184,8 @@ public class ExportPoiHssfExcel extends AbstractView {
 		dataStyle.setBorderLeft(HSSFCellStyle.BORDER_THIN);
 		dataStyle.setBorderTop(HSSFCellStyle.BORDER_THIN);
 		dataStyle.setBorderBottom(HSSFCellStyle.BORDER_THIN);
+		dataStyle.setDataFormat(format.getFormat("#,##0"));
+		
  	    
  	    Font dataStylefont = wb.createFont(); // 폰트 객체 생성
  	    dataStylefont.setFontHeightInPoints((short) 14); // 폰트 크기 설정
@@ -3318,133 +3369,132 @@ public class ExportPoiHssfExcel extends AbstractView {
             dataCell5.setCellStyle(dataStyle);
 
             HSSFCell dataCell6 = dataRow[i].createCell(6);
-            dataCell6.setCellValue(record.getString("SUM_CNT"));
+            dataCell6.setCellValue(record.getString("SUM_CNT") != null && !record.getString("SUM_CNT").isEmpty() ? Integer.parseInt(record.getString("SUM_CNT")) : 0);
             dataCell6.setCellStyle(dataStyle);
 
             HSSFCell dataCell7 = dataRow[i].createCell(7);
-            dataCell7.setCellValue(record.getString("D1"));
+            dataCell7.setCellValue(record.getString("D1") != null && !record.getString("D1").isEmpty() ? Integer.parseInt(record.getString("D1")) : 0);
             dataCell7.setCellStyle(dataStyle);
 
             HSSFCell dataCell8 = dataRow[i].createCell(8);
-            dataCell8.setCellValue(record.getString("D2"));
+            dataCell8.setCellValue(record.getString("D2") != null && !record.getString("D2").isEmpty() ? Integer.parseInt(record.getString("D2")) : 0);
             dataCell8.setCellStyle(dataStyle);
 
             HSSFCell dataCell9 = dataRow[i].createCell(9);
-            dataCell9.setCellValue(record.getString("D3"));
+            dataCell9.setCellValue(record.getString("D3") != null && !record.getString("D3").isEmpty() ? Integer.parseInt(record.getString("D3")) : 0);
             dataCell9.setCellStyle(dataStyle);
 
             HSSFCell dataCell10 = dataRow[i].createCell(10);
-            dataCell10.setCellValue(record.getString("D4"));
+            dataCell10.setCellValue(record.getString("D4") != null && !record.getString("D4").isEmpty() ? Integer.parseInt(record.getString("D4")) : 0);
             dataCell10.setCellStyle(dataStyle);
 
             HSSFCell dataCell11 = dataRow[i].createCell(11);
-            dataCell11.setCellValue(record.getString("D5"));
+            dataCell11.setCellValue(record.getString("D5") != null && !record.getString("D5").isEmpty() ? Integer.parseInt(record.getString("D5")) : 0);
             dataCell11.setCellStyle(dataStyle);
 
             HSSFCell dataCell12 = dataRow[i].createCell(12);
-            dataCell12.setCellValue(record.getString("D6"));
+            dataCell12.setCellValue(record.getString("D6") != null && !record.getString("D6").isEmpty() ? Integer.parseInt(record.getString("D6")) : 0);
             dataCell12.setCellStyle(dataStyle);
 
             HSSFCell dataCell13 = dataRow[i].createCell(13);
-            dataCell13.setCellValue(record.getString("D7"));
+            dataCell13.setCellValue(record.getString("D7") != null && !record.getString("D7").isEmpty() ? Integer.parseInt(record.getString("D7")) : 0);
             dataCell13.setCellStyle(dataStyle);
 
             HSSFCell dataCell14 = dataRow[i].createCell(14);
-            dataCell14.setCellValue(record.getString("D8"));
+            dataCell14.setCellValue(record.getString("D8") != null && !record.getString("D8").isEmpty() ? Integer.parseInt(record.getString("D8")) : 0);
             dataCell14.setCellStyle(dataStyle);
 
             HSSFCell dataCell15 = dataRow[i].createCell(15);
-            dataCell15.setCellValue(record.getString("D9"));
+            dataCell15.setCellValue(record.getString("D9") != null && !record.getString("D9").isEmpty() ? Integer.parseInt(record.getString("D9")) : 0);
             dataCell15.setCellStyle(dataStyle);
 
             HSSFCell dataCell16 = dataRow[i].createCell(16);
-            dataCell16.setCellValue(record.getString("D10"));
+            dataCell16.setCellValue(record.getString("D10") != null && !record.getString("D10").isEmpty() ? Integer.parseInt(record.getString("D10")) : 0);
             dataCell16.setCellStyle(dataStyle);
 
             HSSFCell dataCell17 = dataRow[i].createCell(17);
-            dataCell17.setCellValue(record.getString("D11"));
+            dataCell17.setCellValue(record.getString("D11") != null && !record.getString("D11").isEmpty() ? Integer.parseInt(record.getString("D11")) : 0);
             dataCell17.setCellStyle(dataStyle);
 
             HSSFCell dataCell18 = dataRow[i].createCell(18);
-            dataCell18.setCellValue(record.getString("D12"));
+            dataCell18.setCellValue(record.getString("D12") != null && !record.getString("D12").isEmpty() ? Integer.parseInt(record.getString("D12")) : 0);
             dataCell18.setCellStyle(dataStyle);
 
             HSSFCell dataCell19 = dataRow[i].createCell(19);
-            dataCell19.setCellValue(record.getString("D13"));
+            dataCell19.setCellValue(record.getString("D13") != null && !record.getString("D13").isEmpty() ? Integer.parseInt(record.getString("D13")) : 0);
             dataCell19.setCellStyle(dataStyle);
 
             HSSFCell dataCell20 = dataRow[i].createCell(20);
-            dataCell20.setCellValue(record.getString("D14"));
+            dataCell20.setCellValue(record.getString("D14") != null && !record.getString("D14").isEmpty() ? Integer.parseInt(record.getString("D14")) : 0);
             dataCell20.setCellStyle(dataStyle);
 
             HSSFCell dataCell21 = dataRow[i].createCell(21);
-            dataCell21.setCellValue(record.getString("D15"));
+            dataCell21.setCellValue(record.getString("D15") != null && !record.getString("D15").isEmpty() ? Integer.parseInt(record.getString("D15")) : 0);
             dataCell21.setCellStyle(dataStyle);
 
             HSSFCell dataCell22 = dataRow[i].createCell(22);
-            dataCell22.setCellValue(record.getString("D16"));
+            dataCell22.setCellValue(record.getString("D16") != null && !record.getString("D16").isEmpty() ? Integer.parseInt(record.getString("D16")) : 0);
             dataCell22.setCellStyle(dataStyle);
 
             HSSFCell dataCell23 = dataRow[i].createCell(23);
-            dataCell23.setCellValue(record.getString("D17"));
+            dataCell23.setCellValue(record.getString("D17") != null && !record.getString("D17").isEmpty() ? Integer.parseInt(record.getString("D17")) : 0);
             dataCell23.setCellStyle(dataStyle);
 
             HSSFCell dataCell24 = dataRow[i].createCell(24);
-            dataCell24.setCellValue(record.getString("D18"));
+            dataCell24.setCellValue(record.getString("D18") != null && !record.getString("D18").isEmpty() ? Integer.parseInt(record.getString("D18")) : 0);
             dataCell24.setCellStyle(dataStyle);
 
             HSSFCell dataCell25 = dataRow[i].createCell(25);
-            dataCell25.setCellValue(record.getString("D19"));
+            dataCell25.setCellValue(record.getString("D19") != null && !record.getString("D19").isEmpty() ? Integer.parseInt(record.getString("D19")) : 0);
             dataCell25.setCellStyle(dataStyle);
 
             HSSFCell dataCell26 = dataRow[i].createCell(26);
-            dataCell26.setCellValue(record.getString("D20"));
+            dataCell26.setCellValue(record.getString("D20") != null && !record.getString("D20").isEmpty() ? Integer.parseInt(record.getString("D20")) : 0);
             dataCell26.setCellStyle(dataStyle);
 
             HSSFCell dataCell27 = dataRow[i].createCell(27);
-            dataCell27.setCellValue(record.getString("D21"));
+            dataCell27.setCellValue(record.getString("D21") != null && !record.getString("D21").isEmpty() ? Integer.parseInt(record.getString("D21")) : 0);
             dataCell27.setCellStyle(dataStyle);
 
             HSSFCell dataCell28 = dataRow[i].createCell(28);
-            dataCell28.setCellValue(record.getString("D22"));
+            dataCell28.setCellValue(record.getString("D22") != null && !record.getString("D22").isEmpty() ? Integer.parseInt(record.getString("D22")) : 0);
             dataCell28.setCellStyle(dataStyle);
-
+            
             HSSFCell dataCell29 = dataRow[i].createCell(29);
-            dataCell29.setCellValue(record.getString("D23"));
+            dataCell29.setCellValue(record.getString("D23") != null && !record.getString("D23").isEmpty() ? Integer.parseInt(record.getString("D23")) : 0);
             dataCell29.setCellStyle(dataStyle);
-
+            
             HSSFCell dataCell30 = dataRow[i].createCell(30);
-            dataCell30.setCellValue(record.getString("D24"));
+            dataCell30.setCellValue(record.getString("D24") != null && !record.getString("D24").isEmpty() ? Integer.parseInt(record.getString("D24")) : 0);
             dataCell30.setCellStyle(dataStyle);
 
             HSSFCell dataCell31 = dataRow[i].createCell(31);
-            dataCell31.setCellValue(record.getString("D25"));
+            dataCell31.setCellValue(record.getString("D25") != null && !record.getString("D25").isEmpty() ? Integer.parseInt(record.getString("D25")) : 0);
             dataCell31.setCellStyle(dataStyle);
-
+            
             HSSFCell dataCell32 = dataRow[i].createCell(32);
-            dataCell32.setCellValue(record.getString("D26"));
+            dataCell32.setCellValue(record.getString("D26") != null && !record.getString("D26").isEmpty() ? Integer.parseInt(record.getString("D26")) : 0);
             dataCell32.setCellStyle(dataStyle);
 
             HSSFCell dataCell33 = dataRow[i].createCell(33);
-            dataCell33.setCellValue(record.getString("D27"));
+            dataCell33.setCellValue(record.getString("D27") != null && !record.getString("D27").isEmpty() ? Integer.parseInt(record.getString("D27")) : 0);
             dataCell33.setCellStyle(dataStyle);
-
+            
             HSSFCell dataCell34 = dataRow[i].createCell(34);
-            dataCell34.setCellValue(record.getString("D28"));
+            dataCell34.setCellValue(record.getString("D28") != null && !record.getString("D28").isEmpty() ? Integer.parseInt(record.getString("D28")) : 0);
             dataCell34.setCellStyle(dataStyle);
-
+            
             HSSFCell dataCell35 = dataRow[i].createCell(35);
-            dataCell35.setCellValue(record.getString("D29"));
+            dataCell35.setCellValue(record.getString("D29") != null && !record.getString("D29").isEmpty() ? Integer.parseInt(record.getString("D29")) : 0);
             dataCell35.setCellStyle(dataStyle);
-
+            
             HSSFCell dataCell36 = dataRow[i].createCell(36);
-            dataCell36.setCellValue(record.getString("D30"));
+            dataCell36.setCellValue(record.getString("D30") != null && !record.getString("D30").isEmpty() ? Integer.parseInt(record.getString("D30")) : 0);
             dataCell36.setCellStyle(dataStyle);
-
+            
             HSSFCell dataCell37 = dataRow[i].createCell(37);
-            dataCell37.setCellValue(record.getString("D31"));
+            dataCell37.setCellValue(record.getString("D31") != null && !record.getString("D31").isEmpty() ? Integer.parseInt(record.getString("D31")) : 0);
             dataCell37.setCellStyle(dataStyle);
-
         }
     }
 
@@ -3488,6 +3538,8 @@ public class ExportPoiHssfExcel extends AbstractView {
 		headStyleF.setFontName("굴림체");
 		headStyle.setFont(headStyleF); // 폰트 스타일을 셀 스타일에 적용
 
+		DataFormat format = wb.createDataFormat();
+
 		CellStyle dataStyle = wb.createCellStyle();
 		dataStyle.setAlignment(HSSFCellStyle.ALIGN_LEFT); // 가운데 정렬 (가로 기준)
 		dataStyle.setVerticalAlignment(CellStyle.VERTICAL_CENTER); // 중앙 정렬 (세로 기준)
@@ -3495,6 +3547,7 @@ public class ExportPoiHssfExcel extends AbstractView {
 		dataStyle.setBorderLeft(HSSFCellStyle.BORDER_THIN);
 		dataStyle.setBorderTop(HSSFCellStyle.BORDER_THIN);
 		dataStyle.setBorderBottom(HSSFCellStyle.BORDER_THIN);
+		dataStyle.setDataFormat(format.getFormat("#,##0"));
  	    
  	    Font dataStylefont = wb.createFont(); // 폰트 객체 생성
  	    dataStylefont.setFontHeightInPoints((short) 14); // 폰트 크기 설정
@@ -3672,131 +3725,131 @@ public class ExportPoiHssfExcel extends AbstractView {
             dataCell5.setCellStyle(dataStyle);
 
             HSSFCell dataCell6 = dataRow[i].createCell(6);
-            dataCell6.setCellValue(record.getString("SUM_CNT"));
+            dataCell6.setCellValue(record.getString("SUM_CNT") != null && !record.getString("SUM_CNT").isEmpty() ? Integer.parseInt(record.getString("SUM_CNT")) : 0);
             dataCell6.setCellStyle(dataStyle);
 
             HSSFCell dataCell7 = dataRow[i].createCell(7);
-            dataCell7.setCellValue(record.getString("D1"));
+            dataCell7.setCellValue(record.getString("D1") != null && !record.getString("D1").isEmpty() ? Integer.parseInt(record.getString("D1")) : 0);
             dataCell7.setCellStyle(dataStyle);
 
             HSSFCell dataCell8 = dataRow[i].createCell(8);
-            dataCell8.setCellValue(record.getString("D2"));
+            dataCell8.setCellValue(record.getString("D2") != null && !record.getString("D2").isEmpty() ? Integer.parseInt(record.getString("D2")) : 0);
             dataCell8.setCellStyle(dataStyle);
 
             HSSFCell dataCell9 = dataRow[i].createCell(9);
-            dataCell9.setCellValue(record.getString("D3"));
+            dataCell9.setCellValue(record.getString("D3") != null && !record.getString("D3").isEmpty() ? Integer.parseInt(record.getString("D3")) : 0);
             dataCell9.setCellStyle(dataStyle);
 
             HSSFCell dataCell10 = dataRow[i].createCell(10);
-            dataCell10.setCellValue(record.getString("D4"));
+            dataCell10.setCellValue(record.getString("D4") != null && !record.getString("D4").isEmpty() ? Integer.parseInt(record.getString("D4")) : 0);
             dataCell10.setCellStyle(dataStyle);
 
             HSSFCell dataCell11 = dataRow[i].createCell(11);
-            dataCell11.setCellValue(record.getString("D5"));
+            dataCell11.setCellValue(record.getString("D5") != null && !record.getString("D5").isEmpty() ? Integer.parseInt(record.getString("D5")) : 0);
             dataCell11.setCellStyle(dataStyle);
 
             HSSFCell dataCell12 = dataRow[i].createCell(12);
-            dataCell12.setCellValue(record.getString("D6"));
+            dataCell12.setCellValue(record.getString("D6") != null && !record.getString("D6").isEmpty() ? Integer.parseInt(record.getString("D6")) : 0);
             dataCell12.setCellStyle(dataStyle);
 
             HSSFCell dataCell13 = dataRow[i].createCell(13);
-            dataCell13.setCellValue(record.getString("D7"));
+            dataCell13.setCellValue(record.getString("D7") != null && !record.getString("D7").isEmpty() ? Integer.parseInt(record.getString("D7")) : 0);
             dataCell13.setCellStyle(dataStyle);
 
             HSSFCell dataCell14 = dataRow[i].createCell(14);
-            dataCell14.setCellValue(record.getString("D8"));
+            dataCell14.setCellValue(record.getString("D8") != null && !record.getString("D8").isEmpty() ? Integer.parseInt(record.getString("D8")) : 0);
             dataCell14.setCellStyle(dataStyle);
 
             HSSFCell dataCell15 = dataRow[i].createCell(15);
-            dataCell15.setCellValue(record.getString("D9"));
+            dataCell15.setCellValue(record.getString("D9") != null && !record.getString("D9").isEmpty() ? Integer.parseInt(record.getString("D9")) : 0);
             dataCell15.setCellStyle(dataStyle);
 
             HSSFCell dataCell16 = dataRow[i].createCell(16);
-            dataCell16.setCellValue(record.getString("D10"));
+            dataCell16.setCellValue(record.getString("D10") != null && !record.getString("D10").isEmpty() ? Integer.parseInt(record.getString("D10")) : 0);
             dataCell16.setCellStyle(dataStyle);
 
             HSSFCell dataCell17 = dataRow[i].createCell(17);
-            dataCell17.setCellValue(record.getString("D11"));
+            dataCell17.setCellValue(record.getString("D11") != null && !record.getString("D11").isEmpty() ? Integer.parseInt(record.getString("D11")) : 0);
             dataCell17.setCellStyle(dataStyle);
 
             HSSFCell dataCell18 = dataRow[i].createCell(18);
-            dataCell18.setCellValue(record.getString("D12"));
+            dataCell18.setCellValue(record.getString("D12") != null && !record.getString("D12").isEmpty() ? Integer.parseInt(record.getString("D12")) : 0);
             dataCell18.setCellStyle(dataStyle);
 
             HSSFCell dataCell19 = dataRow[i].createCell(19);
-            dataCell19.setCellValue(record.getString("D13"));
+            dataCell19.setCellValue(record.getString("D13") != null && !record.getString("D13").isEmpty() ? Integer.parseInt(record.getString("D13")) : 0);
             dataCell19.setCellStyle(dataStyle);
 
             HSSFCell dataCell20 = dataRow[i].createCell(20);
-            dataCell20.setCellValue(record.getString("D14"));
+            dataCell20.setCellValue(record.getString("D14") != null && !record.getString("D14").isEmpty() ? Integer.parseInt(record.getString("D14")) : 0);
             dataCell20.setCellStyle(dataStyle);
 
             HSSFCell dataCell21 = dataRow[i].createCell(21);
-            dataCell21.setCellValue(record.getString("D15"));
+            dataCell21.setCellValue(record.getString("D15") != null && !record.getString("D15").isEmpty() ? Integer.parseInt(record.getString("D15")) : 0);
             dataCell21.setCellStyle(dataStyle);
 
             HSSFCell dataCell22 = dataRow[i].createCell(22);
-            dataCell22.setCellValue(record.getString("D16"));
+            dataCell22.setCellValue(record.getString("D16") != null && !record.getString("D16").isEmpty() ? Integer.parseInt(record.getString("D16")) : 0);
             dataCell22.setCellStyle(dataStyle);
 
             HSSFCell dataCell23 = dataRow[i].createCell(23);
-            dataCell23.setCellValue(record.getString("D17"));
+            dataCell23.setCellValue(record.getString("D17") != null && !record.getString("D17").isEmpty() ? Integer.parseInt(record.getString("D17")) : 0);
             dataCell23.setCellStyle(dataStyle);
 
             HSSFCell dataCell24 = dataRow[i].createCell(24);
-            dataCell24.setCellValue(record.getString("D18"));
+            dataCell24.setCellValue(record.getString("D18") != null && !record.getString("D18").isEmpty() ? Integer.parseInt(record.getString("D18")) : 0);
             dataCell24.setCellStyle(dataStyle);
 
             HSSFCell dataCell25 = dataRow[i].createCell(25);
-            dataCell25.setCellValue(record.getString("D19"));
+            dataCell25.setCellValue(record.getString("D19") != null && !record.getString("D19").isEmpty() ? Integer.parseInt(record.getString("D19")) : 0);
             dataCell25.setCellStyle(dataStyle);
 
             HSSFCell dataCell26 = dataRow[i].createCell(26);
-            dataCell26.setCellValue(record.getString("D20"));
+            dataCell26.setCellValue(record.getString("D20") != null && !record.getString("D20").isEmpty() ? Integer.parseInt(record.getString("D20")) : 0);
             dataCell26.setCellStyle(dataStyle);
 
             HSSFCell dataCell27 = dataRow[i].createCell(27);
-            dataCell27.setCellValue(record.getString("D21"));
+            dataCell27.setCellValue(record.getString("D21") != null && !record.getString("D21").isEmpty() ? Integer.parseInt(record.getString("D21")) : 0);
             dataCell27.setCellStyle(dataStyle);
 
             HSSFCell dataCell28 = dataRow[i].createCell(28);
-            dataCell28.setCellValue(record.getString("D22"));
+            dataCell28.setCellValue(record.getString("D22") != null && !record.getString("D22").isEmpty() ? Integer.parseInt(record.getString("D22")) : 0);
             dataCell28.setCellStyle(dataStyle);
-
+            
             HSSFCell dataCell29 = dataRow[i].createCell(29);
-            dataCell29.setCellValue(record.getString("D23"));
+            dataCell29.setCellValue(record.getString("D23") != null && !record.getString("D23").isEmpty() ? Integer.parseInt(record.getString("D23")) : 0);
             dataCell29.setCellStyle(dataStyle);
-
+            
             HSSFCell dataCell30 = dataRow[i].createCell(30);
-            dataCell30.setCellValue(record.getString("D24"));
+            dataCell30.setCellValue(record.getString("D24") != null && !record.getString("D24").isEmpty() ? Integer.parseInt(record.getString("D24")) : 0);
             dataCell30.setCellStyle(dataStyle);
 
             HSSFCell dataCell31 = dataRow[i].createCell(31);
-            dataCell31.setCellValue(record.getString("D25"));
+            dataCell31.setCellValue(record.getString("D25") != null && !record.getString("D25").isEmpty() ? Integer.parseInt(record.getString("D25")) : 0);
             dataCell31.setCellStyle(dataStyle);
-
+            
             HSSFCell dataCell32 = dataRow[i].createCell(32);
-            dataCell32.setCellValue(record.getString("D26"));
+            dataCell32.setCellValue(record.getString("D26") != null && !record.getString("D26").isEmpty() ? Integer.parseInt(record.getString("D26")) : 0);
             dataCell32.setCellStyle(dataStyle);
 
             HSSFCell dataCell33 = dataRow[i].createCell(33);
-            dataCell33.setCellValue(record.getString("D27"));
+            dataCell33.setCellValue(record.getString("D27") != null && !record.getString("D27").isEmpty() ? Integer.parseInt(record.getString("D27")) : 0);
             dataCell33.setCellStyle(dataStyle);
-
+            
             HSSFCell dataCell34 = dataRow[i].createCell(34);
-            dataCell34.setCellValue(record.getString("D28"));
+            dataCell34.setCellValue(record.getString("D28") != null && !record.getString("D28").isEmpty() ? Integer.parseInt(record.getString("D28")) : 0);
             dataCell34.setCellStyle(dataStyle);
-
+            
             HSSFCell dataCell35 = dataRow[i].createCell(35);
-            dataCell35.setCellValue(record.getString("D29"));
+            dataCell35.setCellValue(record.getString("D29") != null && !record.getString("D29").isEmpty() ? Integer.parseInt(record.getString("D29")) : 0);
             dataCell35.setCellStyle(dataStyle);
-
+            
             HSSFCell dataCell36 = dataRow[i].createCell(36);
-            dataCell36.setCellValue(record.getString("D30"));
+            dataCell36.setCellValue(record.getString("D30") != null && !record.getString("D30").isEmpty() ? Integer.parseInt(record.getString("D30")) : 0);
             dataCell36.setCellStyle(dataStyle);
-
+            
             HSSFCell dataCell37 = dataRow[i].createCell(37);
-            dataCell37.setCellValue(record.getString("D31"));
+            dataCell37.setCellValue(record.getString("D31") != null && !record.getString("D31").isEmpty() ? Integer.parseInt(record.getString("D31")) : 0);
             dataCell37.setCellStyle(dataStyle);
         }
     }
@@ -3977,7 +4030,7 @@ public class ExportPoiHssfExcel extends AbstractView {
 					dataCell2.setCellValue(record.getString("ACT_ID"));
 					dataCell3.setCellValue(record.getString("INFORMER_NAME"));
 					dataCell4.setCellValue(record.getString("PHONE_CELL"));
-					dataCell5.setCellValue(record.getString("SUM_CNT"));
+					dataCell5.setCellValue(Integer.parseInt(record.getString("SUM_CNT")));
 					
 					dataCell.setCellStyle(dataStyle);
 					dataCell2.setCellStyle(dataStyle);
@@ -4020,18 +4073,32 @@ public class ExportPoiHssfExcel extends AbstractView {
 			HSSFCell sumCell11 = dataRow1[i].createCell(gl + 11);
 			HSSFCell sumCell12 = dataRow1[i].createCell(gl + 12);
 			
-			sumCell.setCellValue(record.getString("D1"));
-			sumCell2.setCellValue(record.getString("D2"));
-			sumCell3.setCellValue(record.getString("D3"));
-			sumCell4.setCellValue(record.getString("D4"));
-			sumCell5.setCellValue(record.getString("D5"));
-			sumCell6.setCellValue(record.getString("D6"));
-			sumCell7.setCellValue(record.getString("D7"));
-			sumCell8.setCellValue(record.getString("D8"));
-			sumCell9.setCellValue(record.getString("D9"));
-			sumCell10.setCellValue(record.getString("D10"));
-			sumCell11.setCellValue(record.getString("D11"));
-			sumCell12.setCellValue(record.getString("D12"));
+			/*sumCell.setCellValue(Integer.parseInt(record.getString("D1")));
+			sumCell2.setCellValue(Integer.parseInt(record.getString("D2")));
+			sumCell3.setCellValue(Integer.parseInt(record.getString("D3")));
+			sumCell4.setCellValue(Integer.parseInt(record.getString("D4")));
+			sumCell5.setCellValue(Integer.parseInt(record.getString("D5")));
+			sumCell6.setCellValue(Integer.parseInt(record.getString("D6")));
+			sumCell7.setCellValue(Integer.parseInt(record.getString("D7")));
+			sumCell8.setCellValue(Integer.parseInt(record.getString("D8")));
+			sumCell9.setCellValue(Integer.parseInt(record.getString("D9")));
+			sumCell10.setCellValue(Integer.parseInt(record.getString("D10")));
+			sumCell11.setCellValue(Integer.parseInt(record.getString("D11")));
+			sumCell12.setCellValue(Integer.parseInt(record.getString("D12")));*/
+			
+			sumCell.setCellValue(record.getString("D1") != null && !record.getString("D1").isEmpty() ? Integer.parseInt(record.getString("D1")) : 0);
+			sumCell2.setCellValue(record.getString("D2") != null && !record.getString("D2").isEmpty() ? Integer.parseInt(record.getString("D2")) : 0);
+			sumCell3.setCellValue(record.getString("D3") != null && !record.getString("D3").isEmpty() ? Integer.parseInt(record.getString("D3")) : 0);
+			sumCell4.setCellValue(record.getString("D4") != null && !record.getString("D4").isEmpty() ? Integer.parseInt(record.getString("D4")) : 0);
+			sumCell5.setCellValue(record.getString("D5") != null && !record.getString("D5").isEmpty() ? Integer.parseInt(record.getString("D5")) : 0);
+			sumCell6.setCellValue(record.getString("D6") != null && !record.getString("D6").isEmpty() ? Integer.parseInt(record.getString("D6")) : 0);
+			sumCell7.setCellValue(record.getString("D7") != null && !record.getString("D7").isEmpty() ? Integer.parseInt(record.getString("D7")) : 0);
+			sumCell8.setCellValue(record.getString("D8") != null && !record.getString("D8").isEmpty() ? Integer.parseInt(record.getString("D8")) : 0);
+			sumCell9.setCellValue(record.getString("D9") != null && !record.getString("D9").isEmpty() ? Integer.parseInt(record.getString("D9")) : 0);
+			sumCell10.setCellValue(record.getString("D10") != null && !record.getString("D10").isEmpty() ? Integer.parseInt(record.getString("D10")) : 0);
+			sumCell11.setCellValue(record.getString("D11") != null && !record.getString("D11").isEmpty() ? Integer.parseInt(record.getString("D11")) : 0);
+			sumCell12.setCellValue(record.getString("D12") != null && !record.getString("D12").isEmpty() ? Integer.parseInt(record.getString("D12")) : 0);
+
 			
 			sumCell.setCellStyle(dataStyle);
 			sumCell2.setCellStyle(dataStyle);
@@ -4207,10 +4274,12 @@ public class ExportPoiHssfExcel extends AbstractView {
 			dataCell.setCellStyle(dataStyle);
 		}
 		
+		sheet1.setColumnWidth(2, 4000);
 		sheet1.setColumnWidth(3, 6000);
 		sheet1.setColumnWidth(4, 6000);
 		sheet1.setColumnWidth(5, 6000);
-		sheet1.setColumnWidth(5, 4000);
+		sheet1.setColumnWidth(5, 6000);
+		sheet1.setColumnWidth(6, 4000);
 		sheet1.setColumnWidth(7, 6000);
 
 	}
@@ -4251,14 +4320,61 @@ public class ExportPoiHssfExcel extends AbstractView {
 		HSSFSheet sheet1 = wb.createSheet(model.get("sheetNames1").toString());
 		HSSFRow titlerow = sheet1.createRow(rowCnt);
 		
+		CellStyle titleStyle = wb.createCellStyle();
+        titleStyle.setAlignment(HSSFCellStyle.ALIGN_CENTER); // 가운데 정렬 (가로 기준)
+        titleStyle.setVerticalAlignment(CellStyle.VERTICAL_CENTER); // 중앙 정렬 (세로 기준)
+ 	    
+ 	    Font font = wb.createFont(); // 폰트 객체 생성
+ 	    font.setFontHeightInPoints((short) 24); // 폰트 크기 설정
+ 	    titleStyle.setFont(font); // 폰트 스타일을 셀 스타일에 적용
+
+ 	    CellStyle mainStyle = wb.createCellStyle();
+		mainStyle.setAlignment(HSSFCellStyle.ALIGN_CENTER); // 가운데 정렬 (가로 기준)
+		mainStyle.setVerticalAlignment(CellStyle.VERTICAL_CENTER); // 중앙 정렬 (세로 기준)
+ 	    
+ 	    Font mainStylefont = wb.createFont(); // 폰트 객체 생성
+ 	    mainStylefont.setFontHeightInPoints((short) 14); // 폰트 크기 설정
+ 	    mainStyle.setFont(mainStylefont); // 폰트 스타일을 셀 스타일에 적용
+
+ 	    CellStyle headStyle = wb.createCellStyle();
+     	headStyle.setAlignment(HSSFCellStyle.ALIGN_CENTER); // 오른쪽 정렬 (가로 기준)
+     	headStyle.setVerticalAlignment(CellStyle.VERTICAL_CENTER); // 중앙 정렬 (세로 기준)
+     	headStyle.setFillForegroundColor(IndexedColors.PALE_BLUE.getIndex()); // 배경색 설정*/ 	   
+     	headStyle.setFillPattern(CellStyle.SOLID_FOREGROUND);  // 배경색이 채워지도록 패턴 설정
+     	headStyle.setBorderRight(HSSFCellStyle.BORDER_THIN); // 테두리 설정
+     	headStyle.setBorderLeft(HSSFCellStyle.BORDER_THIN);
+     	headStyle.setBorderTop(HSSFCellStyle.BORDER_THIN);
+     	headStyle.setBorderBottom(HSSFCellStyle.BORDER_THIN);
+		
+		Font headStyleF = wb.createFont(); // 폰트 객체 생성
+		headStyleF.setFontHeightInPoints((short) 14); // 폰트 크기 설정
+		headStyleF.setFontName("굴림체");
+		headStyle.setFont(headStyleF); // 폰트 스타일을 셀 스타일에 적용
+
+		CellStyle dataStyle = wb.createCellStyle();
+		dataStyle.setAlignment(HSSFCellStyle.ALIGN_LEFT); // 가운데 정렬 (가로 기준)
+		dataStyle.setVerticalAlignment(CellStyle.VERTICAL_CENTER); // 중앙 정렬 (세로 기준)
+		dataStyle.setBorderRight(HSSFCellStyle.BORDER_THIN); // 테두리 설정
+		dataStyle.setBorderLeft(HSSFCellStyle.BORDER_THIN);
+		dataStyle.setBorderTop(HSSFCellStyle.BORDER_THIN);
+		dataStyle.setBorderBottom(HSSFCellStyle.BORDER_THIN);
+ 	    
+ 	    Font dataStylefont = wb.createFont(); // 폰트 객체 생성
+ 	    dataStylefont.setFontHeightInPoints((short) 14); // 폰트 크기 설정
+ 	    dataStyle.setFont(dataStylefont); // 폰트 스타일을 셀 스타일에 적용
+ 	    
+ 	    HSSFCell titleCell = titlerow.createCell(0);
 		sheet1.addMergedRegion(new CellRangeAddress(0, 0, 0, 26)); // 타이틀 셀 병합
-		titlerow.createCell(0).setCellValue("제보자별 제보현황");// 제목 넣음
+		titleCell.setCellValue("제보자별 제보현황");// 제목 넣음
+		titleCell.setCellStyle(titleStyle);
 		
 		rowCnt++; //1
 		// 시작일 ~ 종료일
 		HSSFRow daterow = sheet1.createRow(rowCnt);
 		sheet1.addMergedRegion(new CellRangeAddress(1, 1, 0, 26));
-		daterow.createCell(0).setCellValue(startDate + endDate);
+		HSSFCell dateCell = daterow.createCell(0);
+		dateCell.setCellValue(startDate + endDate);
+		dateCell.setCellStyle(mainStyle);
 		
 		rowCnt++; //2
 		// 공백 행 하나 생성
@@ -4270,7 +4386,9 @@ public class ExportPoiHssfExcel extends AbstractView {
 		sheet1.addMergedRegion(new CellRangeAddress(2, 2, 0, 2)); // 총인원 수 셀 병합
 		sheet1.addMergedRegion(new CellRangeAddress(2, 2, 4, 6)); // 총 건수 셀 병합
 		
-		subTitle1.createCell(0).setCellValue(allInformer);
+		HSSFCell subTitleCell = subTitle1.createCell(0);
+		subTitleCell.setCellValue(allInformer);
+		subTitleCell.setCellStyle(mainStyle);
 		/*subTitle1.createCell(2).setCellValue(allReport);*/
 		
 		rowCnt++; // 4
@@ -4291,39 +4409,176 @@ public class ExportPoiHssfExcel extends AbstractView {
 		sheet1.addMergedRegion(new CellRangeAddress(4, 4, 9, 17)); // 제보건수 상세 행 병합
 		sheet1.addMergedRegion(new CellRangeAddress(4, 4, 18, 26)); // 방송건수 상세 행 병합
 		
-		rowTitle1.createCell(0).setCellValue("통신원 ID");
-		rowTitle1.createCell(1).setCellValue("통신원 이름");
-		rowTitle1.createCell(2).setCellValue("통신원 유형");
-		rowTitle1.createCell(3).setCellValue("통신원 소속");
-		rowTitle1.createCell(4).setCellValue("소속 상세");
-		rowTitle1.createCell(5).setCellValue("연락처");
-		rowTitle1.createCell(6).setCellValue("제보건수");
-		rowTitle1.createCell(7).setCellValue("방송건수");
-		rowTitle1.createCell(8).setCellValue("주요제보");
-		rowTitle1.createCell(9).setCellValue("제보건수");
-		rowTitle1.createCell(18).setCellValue("방송건수");
+		HSSFCell headCell0 = rowTitle1.createCell(0);
+		headCell0.setCellValue("통신원 ID");
+		headCell0.setCellStyle(headStyle);
+		rowTitle2.createCell(0).setCellStyle(headStyle);
 		
-		// 제보건수 상세 열
-		rowTitle2.createCell(9).setCellValue("원활");
-		rowTitle2.createCell(10).setCellValue("정체");
-		rowTitle2.createCell(11).setCellValue("공사");
-		rowTitle2.createCell(12).setCellValue("행사");
-		rowTitle2.createCell(13).setCellValue("사고");
-		rowTitle2.createCell(14).setCellValue("기상");
-		rowTitle2.createCell(15).setCellValue("기타");
-		rowTitle2.createCell(16).setCellValue("안내");
-		rowTitle2.createCell(17).setCellValue("기관통보");
+		HSSFCell headCell1 = rowTitle1.createCell(1);
+		headCell1.setCellValue("통신원 이름");
+		headCell1.setCellStyle(headStyle);
+		rowTitle2.createCell(1).setCellStyle(headStyle);
+
+		HSSFCell headCell2 = rowTitle1.createCell(2);
+		headCell2.setCellValue("통신원 유형");
+		headCell2.setCellStyle(headStyle);
+		rowTitle2.createCell(2).setCellStyle(headStyle);
+
+		HSSFCell headCell3 = rowTitle1.createCell(3);
+		headCell3.setCellValue("통신원 소속");
+		headCell3.setCellStyle(headStyle);
+		rowTitle2.createCell(3).setCellStyle(headStyle);
+
+		HSSFCell headCell4 = rowTitle1.createCell(4);
+		headCell4.setCellValue("소속 상세");
+		headCell4.setCellStyle(headStyle);
+		rowTitle2.createCell(4).setCellStyle(headStyle);
+
+		HSSFCell headCell5 = rowTitle1.createCell(5);
+		headCell5.setCellValue("연락처");
+		headCell5.setCellStyle(headStyle);
+		rowTitle2.createCell(5).setCellStyle(headStyle);
+
+		HSSFCell headCell6 = rowTitle1.createCell(6);
+		headCell6.setCellValue("제보건수");
+		headCell6.setCellStyle(headStyle);
+		rowTitle2.createCell(6).setCellStyle(headStyle);
+
+		HSSFCell headCell7 = rowTitle1.createCell(7);
+		headCell7.setCellValue("방송건수");
+		headCell7.setCellStyle(headStyle);
+		rowTitle2.createCell(7).setCellStyle(headStyle);
+
+		HSSFCell headCell8 = rowTitle1.createCell(8);
+		headCell8.setCellValue("주요제보");
+		headCell8.setCellStyle(headStyle);
+		rowTitle2.createCell(8).setCellStyle(headStyle);
+
+		HSSFCell headCell9 = rowTitle1.createCell(9);
+		headCell9.setCellValue("제보건수");
+		headCell9.setCellStyle(headStyle);
+		rowTitle1.createCell(10).setCellStyle(headStyle);
+		rowTitle1.createCell(11).setCellStyle(headStyle);
+		rowTitle1.createCell(12).setCellStyle(headStyle);
+		rowTitle1.createCell(13).setCellStyle(headStyle);
+		rowTitle1.createCell(14).setCellStyle(headStyle);
+		rowTitle1.createCell(15).setCellStyle(headStyle);
+		rowTitle1.createCell(16).setCellStyle(headStyle);
+		rowTitle1.createCell(17).setCellStyle(headStyle);
+
+		HSSFCell headCell18 = rowTitle1.createCell(18);
+		headCell18.setCellValue("방송건수");
+		headCell18.setCellStyle(headStyle);
+		rowTitle1.createCell(19).setCellStyle(headStyle);
+		rowTitle1.createCell(20).setCellStyle(headStyle);
+		rowTitle1.createCell(21).setCellStyle(headStyle);
+		rowTitle1.createCell(22).setCellStyle(headStyle);
+		rowTitle1.createCell(23).setCellStyle(headStyle);
+		rowTitle1.createCell(24).setCellStyle(headStyle);
+		rowTitle1.createCell(25).setCellStyle(headStyle);
+		rowTitle1.createCell(26).setCellStyle(headStyle);
 		
+		
+		
+		sheet1.setColumnWidth(0, 4000);
+		sheet1.setColumnWidth(1, 5000);
+		sheet1.setColumnWidth(2, 4000);
+		sheet1.setColumnWidth(4, 5000);
+		sheet1.setColumnWidth(5, 6000);
+		sheet1.setColumnWidth(6, 5000);
+		sheet1.setColumnWidth(7, 5000);
+		sheet1.setColumnWidth(8, 5000);
+		
+		
+		// rowTitle2 설정
+		HSSFCell headCell9_2 = rowTitle2.createCell(9);
+		headCell9_2.setCellValue("원활");
+		headCell9_2.setCellStyle(headStyle);
+
+		HSSFCell headCell10 = rowTitle2.createCell(10);
+		headCell10.setCellValue("정체");
+		headCell10.setCellStyle(headStyle);
+
+		HSSFCell headCell11 = rowTitle2.createCell(11);
+		headCell11.setCellValue("공사");
+		headCell11.setCellStyle(headStyle);
+
+		HSSFCell headCell12 = rowTitle2.createCell(12);
+		headCell12.setCellValue("행사");
+		headCell12.setCellStyle(headStyle);
+
+		HSSFCell headCell13 = rowTitle2.createCell(13);
+		headCell13.setCellValue("사고");
+		headCell13.setCellStyle(headStyle);
+
+		HSSFCell headCell14 = rowTitle2.createCell(14);
+		headCell14.setCellValue("기상");
+		headCell14.setCellStyle(headStyle);
+
+		HSSFCell headCell15 = rowTitle2.createCell(15);
+		headCell15.setCellValue("기타");
+		headCell15.setCellStyle(headStyle);
+
+		HSSFCell headCell16 = rowTitle2.createCell(16);
+		headCell16.setCellValue("안내");
+		headCell16.setCellStyle(headStyle);
+
+		HSSFCell headCell17 = rowTitle2.createCell(17);
+		headCell17.setCellValue("기관통보");
+		headCell17.setCellStyle(headStyle);
+
 		// 방송건수 상세 열
-		rowTitle2.createCell(18).setCellValue("원활");
-		rowTitle2.createCell(19).setCellValue("정체");
-		rowTitle2.createCell(20).setCellValue("공사");
-		rowTitle2.createCell(21).setCellValue("행사");
-		rowTitle2.createCell(22).setCellValue("사고");
-		rowTitle2.createCell(23).setCellValue("기상");
-		rowTitle2.createCell(24).setCellValue("기타");
-		rowTitle2.createCell(25).setCellValue("안내");
-		rowTitle2.createCell(26).setCellValue("기관통보");
+		HSSFCell headCell18_2 = rowTitle2.createCell(18);
+		headCell18_2.setCellValue("원활");
+		headCell18_2.setCellStyle(headStyle);
+
+		HSSFCell headCell19 = rowTitle2.createCell(19);
+		headCell19.setCellValue("정체");
+		headCell19.setCellStyle(headStyle);
+
+		HSSFCell headCell20 = rowTitle2.createCell(20);
+		headCell20.setCellValue("공사");
+		headCell20.setCellStyle(headStyle);
+
+		HSSFCell headCell21 = rowTitle2.createCell(21);
+		headCell21.setCellValue("행사");
+		headCell21.setCellStyle(headStyle);
+
+		HSSFCell headCell22 = rowTitle2.createCell(22);
+		headCell22.setCellValue("사고");
+		headCell22.setCellStyle(headStyle);
+
+		HSSFCell headCell23 = rowTitle2.createCell(23);
+		headCell23.setCellValue("기상");
+		headCell23.setCellStyle(headStyle);
+
+		HSSFCell headCell24 = rowTitle2.createCell(24);
+		headCell24.setCellValue("기타");
+		headCell24.setCellStyle(headStyle);
+
+		HSSFCell headCell25 = rowTitle2.createCell(25);
+		headCell25.setCellValue("안내");
+		headCell25.setCellStyle(headStyle);
+
+		HSSFCell headCell26 = rowTitle2.createCell(26);
+		headCell26.setCellValue("기관통보");
+		headCell26.setCellStyle(headStyle);
+
+		DataFormat format = wb.createDataFormat();
+
+		CellStyle intStyle = wb.createCellStyle();
+ 	    intStyle.setAlignment(HSSFCellStyle.ALIGN_LEFT); // 가운데 정렬 (가로 기준)
+ 	    intStyle.setVerticalAlignment(CellStyle.VERTICAL_CENTER); // 중앙 정렬 (세로 기준)
+ 	    intStyle.setBorderRight(HSSFCellStyle.BORDER_THIN); // 테두리 설정
+ 	    intStyle.setBorderLeft(HSSFCellStyle.BORDER_THIN);
+ 	    intStyle.setBorderTop(HSSFCellStyle.BORDER_THIN);
+ 	    intStyle.setBorderBottom(HSSFCellStyle.BORDER_THIN);
+ 	    intStyle.setDataFormat(format.getFormat("#,##0"));
+ 	    
+	    Font intStylefont = wb.createFont(); // 폰트 객체 생성
+	    intStylefont.setFontHeightInPoints((short) 14); // 폰트 크기 설정
+	    intStyle.setFont(intStylefont); // 폰트 스타일을 셀 스타일에 적용
+		
 		
 		rowCnt++;
 		HSSFRow[] dataRow = new HSSFRow[dataList.size()];
@@ -4339,46 +4594,132 @@ public class ExportPoiHssfExcel extends AbstractView {
 		    int getReport = Integer.parseInt(record.get("제보건수").toString());		    
 		    allReport = allReport + getReport;
 		    
-		    // record의 각 필드를 Map을 통해 접근
-		    dataRow[i].createCell(0).setCellValue(record.get("통신원ID").toString());
-		    dataRow[i].createCell(1).setCellValue(record.get("통신원이름").toString());
-		    dataRow[i].createCell(2).setCellValue(/*record.get("유형").toString()*/ "통신원"); // 어차피 통신원(0)만 추출하기 때문에 필요 없음
-		    dataRow[i].createCell(3).setCellValue(record.get("통신원소속").toString());
-		    dataRow[i].createCell(4).setCellValue(record.get("소속상세").toString());
-		    dataRow[i].createCell(5).setCellValue(record.get("연락처").toString());
-		    dataRow[i].createCell(6).setCellValue(Integer.parseInt(record.get("제보건수").toString()));
-		    dataRow[i].createCell(7).setCellValue(Integer.parseInt(record.get("방송건수").toString()));
-		    dataRow[i].createCell(8).setCellValue(Integer.parseInt(record.get("주요제보").toString()));
-		    dataRow[i].createCell(9).setCellValue(Integer.parseInt(record.get("제보건수_원활").toString()));
-		    dataRow[i].createCell(10).setCellValue(Integer.parseInt(record.get("제보건수_정체").toString()));
-		    dataRow[i].createCell(11).setCellValue(Integer.parseInt(record.get("제보건수_공사").toString()));
-		    dataRow[i].createCell(12).setCellValue(Integer.parseInt(record.get("제보건수_행사").toString()));
-		    dataRow[i].createCell(13).setCellValue(Integer.parseInt(record.get("제보건수_사고").toString()));
-		    dataRow[i].createCell(14).setCellValue(Integer.parseInt(record.get("제보건수_기상").toString()));
-		    dataRow[i].createCell(15).setCellValue(Integer.parseInt(record.get("제보건수_기타").toString()));
-		    dataRow[i].createCell(16).setCellValue(Integer.parseInt(record.get("제보건수_안내").toString()));
-		    dataRow[i].createCell(17).setCellValue(Integer.parseInt(record.get("제보건수_기관통보").toString()));
-		    dataRow[i].createCell(18).setCellValue(Integer.parseInt(record.get("방송건수_원활").toString()));
-		    dataRow[i].createCell(19).setCellValue(Integer.parseInt(record.get("방송건수_정체").toString()));
-		    dataRow[i].createCell(20).setCellValue(Integer.parseInt(record.get("방송건수_공사").toString()));
-		    dataRow[i].createCell(21).setCellValue(Integer.parseInt(record.get("방송건수_행사").toString()));
-		    dataRow[i].createCell(22).setCellValue(Integer.parseInt(record.get("방송건수_사고").toString()));
-		    dataRow[i].createCell(23).setCellValue(Integer.parseInt(record.get("방송건수_기상").toString()));
-		    dataRow[i].createCell(24).setCellValue(Integer.parseInt(record.get("방송건수_기타").toString()));
-		    dataRow[i].createCell(25).setCellValue(Integer.parseInt(record.get("방송건수_안내").toString()));
-		    dataRow[i].createCell(26).setCellValue(Integer.parseInt(record.get("방송건수_기관통보").toString()));
+		    
+		    
+		    HSSFCell dataCell0 = dataRow[i].createCell(0);
+		    dataCell0.setCellValue(record.get("통신원ID").toString());
+		    dataCell0.setCellStyle(dataStyle);
+
+		    HSSFCell dataCell1 = dataRow[i].createCell(1);
+		    dataCell1.setCellValue(record.get("통신원이름").toString());
+		    dataCell1.setCellStyle(dataStyle);
+
+		    HSSFCell dataCell2 = dataRow[i].createCell(2);
+		    dataCell2.setCellValue("통신원"); // 어차피 통신원(0)만 추출하기 때문에 필요 없음
+		    dataCell2.setCellStyle(dataStyle);
+
+		    HSSFCell dataCell3 = dataRow[i].createCell(3);
+		    dataCell3.setCellValue(record.get("통신원소속").toString());
+		    dataCell3.setCellStyle(dataStyle);
+
+		    HSSFCell dataCell4 = dataRow[i].createCell(4);
+		    dataCell4.setCellValue(record.get("소속상세").toString());
+		    dataCell4.setCellStyle(dataStyle);
+
+		    HSSFCell dataCell5 = dataRow[i].createCell(5);
+		    dataCell5.setCellValue(record.get("연락처").toString());
+		    dataCell5.setCellStyle(dataStyle);
+
+		    HSSFCell dataCell6 = dataRow[i].createCell(6);
+		    dataCell6.setCellValue(Integer.parseInt(record.get("제보건수").toString()));
+		    dataCell6.setCellStyle(intStyle);
+
+		    HSSFCell dataCell7 = dataRow[i].createCell(7);
+		    dataCell7.setCellValue(Integer.parseInt(record.get("방송건수").toString()));
+		    dataCell7.setCellStyle(intStyle);
+
+		    HSSFCell dataCell8 = dataRow[i].createCell(8);
+		    dataCell8.setCellValue(Integer.parseInt(record.get("주요제보").toString()));
+		    dataCell8.setCellStyle(intStyle);
+
+		    HSSFCell dataCell9 = dataRow[i].createCell(9);
+		    dataCell9.setCellValue(Integer.parseInt(record.get("제보건수_원활").toString()));
+		    dataCell9.setCellStyle(intStyle);
+
+		    HSSFCell dataCell10 = dataRow[i].createCell(10);
+		    dataCell10.setCellValue(Integer.parseInt(record.get("제보건수_정체").toString()));
+		    dataCell10.setCellStyle(intStyle);
+
+		    HSSFCell dataCell11 = dataRow[i].createCell(11);
+		    dataCell11.setCellValue(Integer.parseInt(record.get("제보건수_공사").toString()));
+		    dataCell11.setCellStyle(dataStyle);
+
+		    HSSFCell dataCell12 = dataRow[i].createCell(12);
+		    dataCell12.setCellValue(Integer.parseInt(record.get("제보건수_행사").toString()));
+		    dataCell12.setCellStyle(intStyle);
+
+		    HSSFCell dataCell13 = dataRow[i].createCell(13);
+		    dataCell13.setCellValue(Integer.parseInt(record.get("제보건수_사고").toString()));
+		    dataCell13.setCellStyle(intStyle);
+
+		    HSSFCell dataCell14 = dataRow[i].createCell(14);
+		    dataCell14.setCellValue(Integer.parseInt(record.get("제보건수_기상").toString()));
+		    dataCell14.setCellStyle(dataStyle);
+
+		    HSSFCell dataCell15 = dataRow[i].createCell(15);
+		    dataCell15.setCellValue(Integer.parseInt(record.get("제보건수_기타").toString()));
+		    dataCell15.setCellStyle(intStyle);
+
+		    HSSFCell dataCell16 = dataRow[i].createCell(16);
+		    dataCell16.setCellValue(Integer.parseInt(record.get("제보건수_안내").toString()));
+		    dataCell16.setCellStyle(intStyle);
+
+		    HSSFCell dataCell17 = dataRow[i].createCell(17);
+		    dataCell17.setCellValue(Integer.parseInt(record.get("제보건수_기관통보").toString()));
+		    dataCell17.setCellStyle(intStyle);
+
+		    HSSFCell dataCell18 = dataRow[i].createCell(18);
+		    dataCell18.setCellValue(Integer.parseInt(record.get("방송건수_원활").toString()));
+		    dataCell18.setCellStyle(intStyle);
+
+		    HSSFCell dataCell19 = dataRow[i].createCell(19);
+		    dataCell19.setCellValue(Integer.parseInt(record.get("방송건수_정체").toString()));
+		    dataCell19.setCellStyle(intStyle);
+
+		    HSSFCell dataCell20 = dataRow[i].createCell(20);
+		    dataCell20.setCellValue(Integer.parseInt(record.get("방송건수_공사").toString()));
+		    dataCell20.setCellStyle(intStyle);
+
+		    HSSFCell dataCell21 = dataRow[i].createCell(21);
+		    dataCell21.setCellValue(Integer.parseInt(record.get("방송건수_행사").toString()));
+		    dataCell21.setCellStyle(intStyle);
+
+		    HSSFCell dataCell22 = dataRow[i].createCell(22);
+		    dataCell22.setCellValue(Integer.parseInt(record.get("방송건수_사고").toString()));
+		    dataCell22.setCellStyle(intStyle);
+
+		    HSSFCell dataCell23 = dataRow[i].createCell(23);
+		    dataCell23.setCellValue(Integer.parseInt(record.get("방송건수_기상").toString()));
+		    dataCell23.setCellStyle(intStyle);
+
+		    HSSFCell dataCell24 = dataRow[i].createCell(24);
+		    dataCell24.setCellValue(Integer.parseInt(record.get("방송건수_기타").toString()));
+		    dataCell24.setCellStyle(intStyle);
+
+		    HSSFCell dataCell25 = dataRow[i].createCell(25);
+		    dataCell25.setCellValue(Integer.parseInt(record.get("방송건수_안내").toString()));
+		    dataCell25.setCellStyle(intStyle);
+
+		    HSSFCell dataCell26 = dataRow[i].createCell(26);
+		    dataCell26.setCellValue(Integer.parseInt(record.get("방송건수_기관통보").toString()));
+		    dataCell26.setCellStyle(intStyle);
+
 			
 		    
 		}
 		
 		// 총 건수 넣기
 		String allReportVal = "총 건수 : " + allReport +"건";
-		subTitle1.createCell(2).setCellValue(allReportVal);
+		HSSFCell subTitleCell2 = subTitle1.createCell(2);
+		subTitleCell2.setCellValue(allReportVal);
+		subTitleCell2.setCellStyle(mainStyle);
 		
+		sheet1.addMergedRegion(new CellRangeAddress(0, 0, 0, 3));
+
     }
     
     
-    //통신원 중/소 분류별 통계
+    // 통신원 중/소 분류별 통계
     protected void orgOrgSub(Map model, HSSFWorkbook wb) {
         List dataList = (List) model.get("orgOrgSub");
         List eraList = (List) model.get("eraList");
@@ -4420,6 +4761,8 @@ public class ExportPoiHssfExcel extends AbstractView {
     	headStyle.setVerticalAlignment(CellStyle.VERTICAL_CENTER); // 중앙 정렬 (세로 기준)
     	headStyle.setBorderLeft(HSSFCellStyle.BORDER_THIN);
 		
+    	DataFormat format = wb.createDataFormat();
+    	
 		CellStyle mainStyle = wb.createCellStyle();
 		mainStyle.setAlignment(HSSFCellStyle.ALIGN_CENTER); // 가운데 정렬 (가로 기준)
 		mainStyle.setVerticalAlignment(CellStyle.VERTICAL_CENTER); // 중앙 정렬 (세로 기준)
@@ -4492,6 +4835,7 @@ public class ExportPoiHssfExcel extends AbstractView {
         sheet1.addMergedRegion(new CellRangeAddress(0, 0, 0, mergedSize));
         
         
+
         CellStyle dataStyle = wb.createCellStyle();
 		dataStyle.setAlignment(HSSFCellStyle.ALIGN_LEFT); // 가운데 정렬 (가로 기준)
 		dataStyle.setVerticalAlignment(CellStyle.VERTICAL_CENTER); // 중앙 정렬 (세로 기준)
@@ -4504,6 +4848,20 @@ public class ExportPoiHssfExcel extends AbstractView {
  	    dataStylefont.setFontHeightInPoints((short) 14); // 폰트 크기 설정
  	    dataStyle.setFont(dataStylefont); // 폰트 스타일을 셀 스타일에 적용
 
+ 	    
+ 	    CellStyle intStyle = wb.createCellStyle();
+ 	    intStyle.setAlignment(HSSFCellStyle.ALIGN_LEFT); // 가운데 정렬 (가로 기준)
+ 	    intStyle.setVerticalAlignment(CellStyle.VERTICAL_CENTER); // 중앙 정렬 (세로 기준)
+ 	    intStyle.setBorderRight(HSSFCellStyle.BORDER_THIN); // 테두리 설정
+ 	    intStyle.setBorderLeft(HSSFCellStyle.BORDER_THIN);
+ 	    intStyle.setBorderTop(HSSFCellStyle.BORDER_THIN);
+ 	    intStyle.setBorderBottom(HSSFCellStyle.BORDER_THIN);
+ 	    intStyle.setDataFormat(format.getFormat("#,##0"));
+ 	    
+	    Font intStylefont = wb.createFont(); // 폰트 객체 생성
+	    intStylefont.setFontHeightInPoints((short) 14); // 폰트 크기 설정
+	    intStyle.setFont(intStylefont); // 폰트 스타일을 셀 스타일에 적용
+ 	    
  	    
         int rowCnt3 = rowCnt2 + 1;
         HSSFRow[] dataRow = new HSSFRow[dataList.size()];
@@ -4527,7 +4885,7 @@ public class ExportPoiHssfExcel extends AbstractView {
             dataCell5.setCellValue(record.getString("ORG_NAME"));
             dataCell6.setCellValue(record.getString("ORG_SNAME"));
             dataCell7.setCellValue(record.getString("BIRTHDAY"));
-            dataCell8.setCellValue(record.getString("SUM_CNT"));
+            dataCell8.setCellValue(Integer.parseInt(record.getString("SUM_CNT")));
             
             dataCell.setCellStyle(dataStyle);
             dataCell2.setCellStyle(dataStyle);
@@ -4536,7 +4894,7 @@ public class ExportPoiHssfExcel extends AbstractView {
             dataCell5.setCellStyle(dataStyle);
             dataCell6.setCellStyle(dataStyle);
             dataCell7.setCellStyle(dataStyle);
-            dataCell8.setCellStyle(dataStyle);
+            dataCell8.setCellStyle(intStyle);
                
 //            for (int j = 1; j <= 31; j++) {
 //            	dataRow[i].createCell(nxtCnt+j).setCellValue(record.getString("D"+j));
@@ -4546,8 +4904,8 @@ public class ExportPoiHssfExcel extends AbstractView {
 	           	 String key_date = record2.getString("KEY_DATE");
 	           	 
 	           	 HSSFCell dateCell = dataRow[i].createCell(nxtCnt+j);
-	           	 dateCell.setCellValue(record.getString(key_date));
-	           	 dateCell.setCellStyle(dataStyle);
+	           	 dateCell.setCellValue(Integer.parseInt(record.getString(key_date)));
+	           	 dateCell.setCellStyle(intStyle);
 	   		}
         }
         
@@ -5223,6 +5581,8 @@ public class ExportPoiHssfExcel extends AbstractView {
 		 	gubunF.setFontName("굴림체");
 		 	gubun.setFont(gubunF); // 폰트 스타일을 셀 스타일에 적용
 		 	
+		 	DataFormat format = wb.createDataFormat();
+		 	
 		// 오전, 오후 표 안 데이터 스타일
 		 	CellStyle dataStyle = wb.createCellStyle();  
 		 	dataStyle.setAlignment(HSSFCellStyle.ALIGN_RIGHT); 
@@ -5231,6 +5591,7 @@ public class ExportPoiHssfExcel extends AbstractView {
 		 	dataStyle.setBorderLeft(HSSFCellStyle.BORDER_THIN);
 		 	dataStyle.setBorderTop(HSSFCellStyle.BORDER_THIN);
 		 	dataStyle.setBorderBottom(HSSFCellStyle.BORDER_THIN);
+		 	dataStyle.setDataFormat(format.getFormat("#,##0"));
 		 	
 		Font dataStyleF = wb.createFont(); // 폰트 객체 생성
 		dataStyleF.setFontHeightInPoints((short) 14); // 폰트 크기 설정
@@ -5973,6 +6334,10 @@ public class ExportPoiHssfExcel extends AbstractView {
 		 			}
 		 		}
 	 		}
+	 		sheet.setColumnWidth(1, 4000);
+	 		sheet.setColumnWidth(2, 5000);
+	 		sheet.setColumnWidth(3, 3500);
+
 
 	 	}
 	 	
@@ -6491,7 +6856,8 @@ public class ExportPoiHssfExcel extends AbstractView {
         int allSend = 0; // 제보 건수
         int rowcnt = 8; //행 카운터
         
-        
+        DataFormat format = wb.createDataFormat();
+
         
         CellStyle dataStyle = wb.createCellStyle();
         dataStyle.setAlignment(HSSFCellStyle.ALIGN_CENTER); 
@@ -6500,6 +6866,7 @@ public class ExportPoiHssfExcel extends AbstractView {
         dataStyle.setBorderLeft(HSSFCellStyle.BORDER_THIN);
         dataStyle.setBorderTop(HSSFCellStyle.BORDER_THIN);
         dataStyle.setBorderBottom(HSSFCellStyle.BORDER_THIN);
+        dataStyle.setDataFormat(format.getFormat("#,##0"));
 		
 		Font dataStyleF = wb.createFont(); // 폰트 객체 생성
 		dataStyleF.setFontHeightInPoints((short) 14); // 폰트 크기 설정
@@ -6514,12 +6881,25 @@ public class ExportPoiHssfExcel extends AbstractView {
         dataStyle2.setBorderLeft(HSSFCellStyle.BORDER_THIN);
         dataStyle2.setBorderTop(HSSFCellStyle.BORDER_THIN);
         dataStyle2.setBorderBottom(HSSFCellStyle.BORDER_THIN);
+        dataStyle2.setDataFormat(format.getFormat("#,##0"));
 		
 		Font dataStyle2F = wb.createFont(); // 폰트 객체 생성
 		dataStyle2F.setFontHeightInPoints((short) 14); // 폰트 크기 설정
 		dataStyle2F.setFontName("굴림체");
 		dataStyle2.setFont(dataStyle2F); // 폰트 스타일을 셀 스타일에 적용 
 		
+		CellStyle dataStyle3 = wb.createCellStyle();
+        dataStyle3.setAlignment(HSSFCellStyle.ALIGN_RIGHT); 
+        dataStyle3.setVerticalAlignment(CellStyle.VERTICAL_CENTER); // 중앙 정렬 (세로 기준)
+        dataStyle3.setBorderRight(HSSFCellStyle.BORDER_THIN); // 테두리 설정
+        dataStyle3.setBorderLeft(HSSFCellStyle.BORDER_THIN);
+        dataStyle3.setBorderTop(HSSFCellStyle.BORDER_THIN);
+        dataStyle3.setBorderBottom(HSSFCellStyle.BORDER_THIN);
+		
+		Font dataStyle3F = wb.createFont(); // 폰트 객체 생성
+		dataStyle3F.setFontHeightInPoints((short) 14); // 폰트 크기 설정
+		dataStyle3F.setFontName("굴림체");
+		dataStyle3.setFont(dataStyle3F); // 폰트 스타일을 셀 스타일에 적용 
 
 		int Mval = 0;
 		
@@ -6554,7 +6934,7 @@ public class ExportPoiHssfExcel extends AbstractView {
         	JANval.setCellValue(Math.round(((double) Mval / maxSend) * allPer * 100) / 100.0);
 
         	JAN.setCellStyle(dataStyle2);
-        	JANval.setCellStyle(dataStyle2);
+        	JANval.setCellStyle(dataStyle3);
         	
         	infrmSend = infrmSend + Integer.parseInt(record.get("JAN").toString());
         	
@@ -6568,7 +6948,7 @@ public class ExportPoiHssfExcel extends AbstractView {
         	FEBval.setCellValue(Math.round(((double) Mval / maxSend) * allPer * 100) / 100.0);
         	
         	FEB.setCellStyle(dataStyle2);
-        	FEBval.setCellStyle(dataStyle2);
+        	FEBval.setCellStyle(dataStyle3);
         	infrmSend = infrmSend + Integer.parseInt(record.get("FEB").toString());
         	
         	
@@ -6581,7 +6961,7 @@ public class ExportPoiHssfExcel extends AbstractView {
         	MARval.setCellValue(Math.round(((double) Mval / maxSend) * allPer * 100) / 100.0);
         	
         	MAR.setCellStyle(dataStyle2);
-        	MARval.setCellStyle(dataStyle2);
+        	MARval.setCellStyle(dataStyle3);
         	infrmSend = infrmSend + Integer.parseInt(record.get("MAR").toString());
         	
         	HSSFCell APR = datarow.createCell(11); //4월
@@ -6592,7 +6972,7 @@ public class ExportPoiHssfExcel extends AbstractView {
         	APRval.setCellValue(Math.round(((double) Mval / maxSend) * allPer * 100) / 100.0);
         	
         	APR.setCellStyle(dataStyle2);
-        	APRval.setCellStyle(dataStyle2);
+        	APRval.setCellStyle(dataStyle3);
         	infrmSend = infrmSend +Integer.parseInt(record.get("APR").toString());
         	
         	
@@ -6606,7 +6986,7 @@ public class ExportPoiHssfExcel extends AbstractView {
         	MAYval.setCellValue(Math.round(((double) Mval / maxSend) * allPer * 100) / 100.0);
         	
         	MAY.setCellStyle(dataStyle2);
-        	MAYval.setCellStyle(dataStyle2);
+        	MAYval.setCellStyle(dataStyle3);
         	infrmSend = infrmSend +Integer.parseInt(record.get("MAY").toString());
         	
         	
@@ -6620,7 +7000,7 @@ public class ExportPoiHssfExcel extends AbstractView {
         	JUNval.setCellValue(Math.round(((double) Mval / maxSend) * allPer * 100) / 100.0);
         	
         	JUN.setCellStyle(dataStyle2);
-        	JUNval.setCellStyle(dataStyle2);
+        	JUNval.setCellStyle(dataStyle3);
         	infrmSend = infrmSend + Integer.parseInt(record.get("JUN").toString());
         	
         	
@@ -6634,7 +7014,7 @@ public class ExportPoiHssfExcel extends AbstractView {
         	JULval.setCellValue(Math.round(((double) Mval / maxSend) * allPer * 100) / 100.0);
         	
         	JUL.setCellStyle(dataStyle2);
-        	JULval.setCellStyle(dataStyle2);
+        	JULval.setCellStyle(dataStyle3);
         	infrmSend = infrmSend + Integer.parseInt(record.get("JUL").toString());
         	
         	
@@ -6648,7 +7028,7 @@ public class ExportPoiHssfExcel extends AbstractView {
         	AUGval.setCellValue(Math.round(((double) Mval / maxSend) * allPer * 100) / 100.0);
         	
         	AUG.setCellStyle(dataStyle2);
-        	AUGval.setCellStyle(dataStyle2);
+        	AUGval.setCellStyle(dataStyle3);
         	infrmSend = infrmSend + Integer.parseInt(record.get("AUG").toString());
         	
         	
@@ -6662,7 +7042,7 @@ public class ExportPoiHssfExcel extends AbstractView {
         	SEPval.setCellValue(Math.round(((double) Mval / maxSend) * allPer * 100) / 100.0);
         	
         	SEP.setCellStyle(dataStyle2);
-        	SEPval.setCellStyle(dataStyle2);
+        	SEPval.setCellStyle(dataStyle3);
         	infrmSend = infrmSend +Integer.parseInt(record.get("SEP").toString());
         	
         	
@@ -6676,7 +7056,7 @@ public class ExportPoiHssfExcel extends AbstractView {
         	OCTval.setCellValue(Math.round(((double) Mval / maxSend) * allPer * 100) / 100.0);
         	
         	OCT.setCellStyle(dataStyle2);
-        	OCTval.setCellStyle(dataStyle2); 
+        	OCTval.setCellStyle(dataStyle3); 
         	infrmSend = infrmSend + Integer.parseInt(record.get("OCT").toString());
         	
         	
@@ -6690,7 +7070,7 @@ public class ExportPoiHssfExcel extends AbstractView {
         	NOVval.setCellValue(Math.round(((double) Mval / maxSend) * allPer * 100) / 100.0);
         	
         	NOV.setCellStyle(dataStyle2);
-        	NOVval.setCellStyle(dataStyle2);
+        	NOVval.setCellStyle(dataStyle3);
         	infrmSend = infrmSend + Integer.parseInt(record.get("NOV").toString());
         	
         	
@@ -6704,7 +7084,7 @@ public class ExportPoiHssfExcel extends AbstractView {
         	DECval.setCellValue(Math.round(((double) Mval / maxSend) * allPer * 100) / 100.0);
         	
         	DEC.setCellStyle(dataStyle2);
-        	DECval.setCellStyle(dataStyle2);
+        	DECval.setCellStyle(dataStyle3);
         	infrmSend = infrmSend + Integer.parseInt(record.get("DEC").toString());
         	
         	HSSFCell allsendCell = datarow.createCell(4); // 제보건수 넣기
@@ -6738,7 +7118,7 @@ public class ExportPoiHssfExcel extends AbstractView {
         allsendCell.setCellValue("총 건수 : " + allSend + "건");
         allsendCell.setCellStyle(infoStyle);
         
-        
+        sheet.setColumnWidth(3, 6000);
     }
     
     
@@ -6869,6 +7249,11 @@ public class ExportPoiHssfExcel extends AbstractView {
 		scoreStyleF.setFontName("굴림체");
 		scoreStyle.setFont(scoreStyleF); // 폰트 스타일을 셀 스타일에 적용 
 		
+		sheet.setColumnWidth(0, 6000);
+		sheet.setColumnWidth(1, 4000);
+		
+		
+		
      	HSSFRow headrow = sheet.createRow(6);
      	HSSFRow headrow2 = sheet.createRow(7);
      	
@@ -6907,8 +7292,12 @@ public class ExportPoiHssfExcel extends AbstractView {
          	monthCell2.setCellStyle(headStyle);
          	sendminCell.setCellStyle(sendStyle); // 스타일 적용
          	scoreCell.setCellStyle(scoreStyle); // 스타일 적용
+         	
+         	sheet.setColumnWidth(2 + (i * 2), 3500);
+         	sheet.setColumnWidth(3 + (i * 2), 3500);
         }
      
+        DataFormat format = wb.createDataFormat();
         
         CellStyle dataStyle = wb.createCellStyle();
         dataStyle.setAlignment(HSSFCellStyle.ALIGN_CENTER); 
@@ -6917,6 +7306,7 @@ public class ExportPoiHssfExcel extends AbstractView {
         dataStyle.setBorderLeft(HSSFCellStyle.BORDER_THIN);
         dataStyle.setBorderTop(HSSFCellStyle.BORDER_THIN);
         dataStyle.setBorderBottom(HSSFCellStyle.BORDER_THIN);
+        dataStyle.setDataFormat(format.getFormat("#,##0"));
 		
 		Font dataStyleF = wb.createFont(); // 폰트 객체 생성
 		dataStyleF.setFontHeightInPoints((short) 14); // 폰트 크기 설정
@@ -6931,11 +7321,27 @@ public class ExportPoiHssfExcel extends AbstractView {
         dataStyle2.setBorderLeft(HSSFCellStyle.BORDER_THIN);
         dataStyle2.setBorderTop(HSSFCellStyle.BORDER_THIN);
         dataStyle2.setBorderBottom(HSSFCellStyle.BORDER_THIN);
+        dataStyle2.setDataFormat(format.getFormat("#,##0"));
 		
 		Font dataStyle2F = wb.createFont(); // 폰트 객체 생성
 		dataStyle2F.setFontHeightInPoints((short) 14); // 폰트 크기 설정
 		dataStyle2F.setFontName("굴림체");
 		dataStyle2.setFont(dataStyle2F); // 폰트 스타일을 셀 스타일에 적용 
+		
+		
+		CellStyle dataStyle3 = wb.createCellStyle();
+        dataStyle3.setAlignment(HSSFCellStyle.ALIGN_RIGHT); 
+        dataStyle3.setVerticalAlignment(CellStyle.VERTICAL_CENTER); // 중앙 정렬 (세로 기준)
+        dataStyle3.setBorderRight(HSSFCellStyle.BORDER_THIN); // 테두리 설정
+        dataStyle3.setBorderLeft(HSSFCellStyle.BORDER_THIN);
+        dataStyle3.setBorderTop(HSSFCellStyle.BORDER_THIN);
+        dataStyle3.setBorderBottom(HSSFCellStyle.BORDER_THIN);
+        dataStyle3.setDataFormat(format.getFormat("#,##0"));
+		
+		Font dataStyle3F = wb.createFont(); // 폰트 객체 생성
+		dataStyle3F.setFontHeightInPoints((short) 14); // 폰트 크기 설정
+		dataStyle3F.setFontName("굴림체");
+		dataStyle3.setFont(dataStyle3F); // 폰트 스타일을 셀 스타일에 적용 
 		
 		
         int rowcnt = 8; //행 카운터
@@ -6962,7 +7368,7 @@ public class ExportPoiHssfExcel extends AbstractView {
         	JANval.setCellValue(Math.round(((double) Mval / maxSend) * allPer * 100) / 100.0);
 
         	JAN.setCellStyle(dataStyle2);
-        	JANval.setCellStyle(dataStyle2);
+        	JANval.setCellStyle(dataStyle3);
         	
         	monthSum = monthSum + Integer.parseInt(record.get("JAN").toString());
         	
@@ -6976,7 +7382,7 @@ public class ExportPoiHssfExcel extends AbstractView {
         	FEBval.setCellValue(Math.round(((double) Mval / maxSend) * allPer * 100) / 100.0);
         	
         	FEB.setCellStyle(dataStyle2);
-        	FEBval.setCellStyle(dataStyle2);
+        	FEBval.setCellStyle(dataStyle3);
         	monthSum = monthSum + Integer.parseInt(record.get("FEB").toString());
         	
         	
@@ -6989,7 +7395,7 @@ public class ExportPoiHssfExcel extends AbstractView {
         	MARval.setCellValue(Math.round(((double) Mval / maxSend) * allPer * 100) / 100.0);
         	
         	MAR.setCellStyle(dataStyle2);
-        	MARval.setCellStyle(dataStyle2);
+        	MARval.setCellStyle(dataStyle3);
         	monthSum = monthSum + Integer.parseInt(record.get("MAR").toString());
         	
         	HSSFCell APR = datarow.createCell(8); //4월
@@ -7000,7 +7406,7 @@ public class ExportPoiHssfExcel extends AbstractView {
         	APRval.setCellValue(Math.round(((double) Mval / maxSend) * allPer * 100) / 100.0);
         	
         	APR.setCellStyle(dataStyle2);
-        	APRval.setCellStyle(dataStyle2);
+        	APRval.setCellStyle(dataStyle3);
         	monthSum = monthSum +Integer.parseInt(record.get("APR").toString());
         	
         	
@@ -7014,7 +7420,7 @@ public class ExportPoiHssfExcel extends AbstractView {
         	MAYval.setCellValue(Math.round(((double) Mval / maxSend) * allPer * 100) / 100.0);
         	
         	MAY.setCellStyle(dataStyle2);
-        	MAYval.setCellStyle(dataStyle2);
+        	MAYval.setCellStyle(dataStyle3);
         	monthSum = monthSum +Integer.parseInt(record.get("MAY").toString());
         	
         	
@@ -7028,7 +7434,7 @@ public class ExportPoiHssfExcel extends AbstractView {
         	JUNval.setCellValue(Math.round(((double) Mval / maxSend) * allPer * 100) / 100.0);
         	
         	JUN.setCellStyle(dataStyle2);
-        	JUNval.setCellStyle(dataStyle2);
+        	JUNval.setCellStyle(dataStyle3);
         	monthSum = monthSum + Integer.parseInt(record.get("JUN").toString());
         	
         	
@@ -7042,7 +7448,7 @@ public class ExportPoiHssfExcel extends AbstractView {
         	JULval.setCellValue(Math.round(((double) Mval / maxSend) * allPer * 100) / 100.0);
         	
         	JUL.setCellStyle(dataStyle2);
-        	JULval.setCellStyle(dataStyle2);
+        	JULval.setCellStyle(dataStyle3);
         	monthSum = monthSum + Integer.parseInt(record.get("JUL").toString());
         	
         	
@@ -7056,7 +7462,7 @@ public class ExportPoiHssfExcel extends AbstractView {
         	AUGval.setCellValue(Math.round(((double) Mval / maxSend) * allPer * 100) / 100.0);
         	
         	AUG.setCellStyle(dataStyle2);
-        	AUGval.setCellStyle(dataStyle2);
+        	AUGval.setCellStyle(dataStyle3);
         	monthSum = monthSum + Integer.parseInt(record.get("AUG").toString());
         	
         	
@@ -7070,7 +7476,7 @@ public class ExportPoiHssfExcel extends AbstractView {
         	SEPval.setCellValue(Math.round(((double) Mval / maxSend) * allPer * 100) / 100.0);
         	
         	SEP.setCellStyle(dataStyle2);
-        	SEPval.setCellStyle(dataStyle2);
+        	SEPval.setCellStyle(dataStyle3);
         	monthSum = monthSum +Integer.parseInt(record.get("SEP").toString());
         	
         	
@@ -7084,7 +7490,7 @@ public class ExportPoiHssfExcel extends AbstractView {
         	OCTval.setCellValue(Math.round(((double) Mval / maxSend) * allPer * 100) / 100.0);
         	
         	OCT.setCellStyle(dataStyle2);
-        	OCTval.setCellStyle(dataStyle2); 
+        	OCTval.setCellStyle(dataStyle3); 
         	monthSum = monthSum + Integer.parseInt(record.get("OCT").toString());
         	
         	
@@ -7098,7 +7504,7 @@ public class ExportPoiHssfExcel extends AbstractView {
         	NOVval.setCellValue(Math.round(((double) Mval / maxSend) * allPer * 100) / 100.0);
         	
         	NOV.setCellStyle(dataStyle2);
-        	NOVval.setCellStyle(dataStyle2);
+        	NOVval.setCellStyle(dataStyle3);
         	monthSum = monthSum + Integer.parseInt(record.get("NOV").toString());
         	
         	
@@ -7112,7 +7518,7 @@ public class ExportPoiHssfExcel extends AbstractView {
         	DECval.setCellValue(Math.round(((double) Mval / maxSend) * allPer * 100) / 100.0);
         	
         	DEC.setCellStyle(dataStyle2);
-        	DECval.setCellStyle(dataStyle2);
+        	DECval.setCellStyle(dataStyle3);
         	monthSum = monthSum + Integer.parseInt(record.get("DEC").toString());
         	
         	

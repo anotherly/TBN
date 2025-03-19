@@ -168,6 +168,11 @@ public class AwardController{
 		return mv;
 	}
 	
+	
+	
+	
+	
+	// 수상자 선정 엑셀 다운로드
 	@RequestMapping("/informer/award/excelDownloadInformerList.do")
 	public String exselDownload(Model model,@ModelAttribute("AwardVO") AwardVO paramVO) throws Exception {
 		logger.debug("★★★"+paramVO);
@@ -207,6 +212,10 @@ public class AwardController{
 		return "hssfView";
 	}
 	
+	
+	
+	
+	// 수상자 조회 엑셀 다운로드
 	@RequestMapping("/informer/award/excelDownloadUserList.do")
 	public String exselDownloadUserList(Model model,@ModelAttribute("AwardVO") AwardVO paramVO) throws Exception {
 		List awardInformerList = awardService.selectUserAwardList2(paramVO);

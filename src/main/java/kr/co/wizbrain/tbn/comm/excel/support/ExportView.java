@@ -108,6 +108,20 @@ public class ExportView extends AbstractView {
 					}
 				}
 			}
+			
+			sheet1.setColumnWidth(1, 5000);
+			sheet1.setColumnWidth(2, 6000);
+			sheet1.setColumnWidth(3, 6000);
+			sheet1.setColumnWidth(4, 6000);
+			sheet1.setColumnWidth(5, 5500);
+			sheet1.setColumnWidth(6, 5500);
+			sheet1.setColumnWidth(7, 5500);
+			sheet1.setColumnWidth(8, 5500);
+			sheet1.setColumnWidth(9, 5500);
+			sheet1.setColumnWidth(10, 5500);
+			sheet1.setColumnWidth(11, 5500);
+			
+			
 			//ListExcelView
 			OutputStream out = response.getOutputStream();
 			response.setContentType(super.getContentType());
@@ -205,8 +219,24 @@ public class ExportView extends AbstractView {
 							dataCell.setCellStyle(dataStyle);
 						}
 					}
-				}		
+				}	
+				
+				
+				sheet.setColumnWidth(1, 5000);
+				sheet.setColumnWidth(2, 6000);
+				sheet.setColumnWidth(3, 6000);
+				sheet.setColumnWidth(4, 6000);
+				sheet.setColumnWidth(5, 5500);
+				sheet.setColumnWidth(6, 5500);
+				sheet.setColumnWidth(7, 5500);
+				sheet.setColumnWidth(8, 5500);
+				sheet.setColumnWidth(9, 5500);
+				sheet.setColumnWidth(10, 5500);
+				sheet.setColumnWidth(11, 5500);
 			}
+			
+			
+			
 			
 			//ListExcelView
 			OutputStream out = response.getOutputStream();

@@ -1,7 +1,9 @@
 package kr.co.wizbrain.tbn.statistic.web;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -386,8 +388,7 @@ public class StatisticController extends BaseController{
 		
 		List informerType = statisticService.selectInfrm();	//제보자 유형 title
 		
-		// 수정 후 버전으로 돌려서 엑셀 비교 해보고 record 디버깅 해보기
-		// 그 후 DB에서 직접 아무거나 값넣어서 인포머 타입 9개로 생성되게 해보기
+		List nullCatch = new ArrayList();
 		
 		for(int i=0; i<informerType.size(); i++){
 			RecordDto record = (RecordDto) informerType.get(i);
@@ -398,6 +399,39 @@ public class StatisticController extends BaseController{
 			List monthOtherReceipt = statisticService.monthOtherReceipt(params); //월별 타국 수집건수
 			List monthInformer = statisticService.monthInformer(params); //월별 제보자 수
 			List monthInformer1Inform = statisticService.monthInformer1Inform(params); //월별 1건이상 제보자 수
+			
+			
+			if (monthReceipt == null || monthReceipt.isEmpty()) {
+				RecordDto defaultData = new RecordDto();
+				defaultData.put("CNT", 0);
+				defaultData.put("STAT_MONTH", params.get("start_date"));  // thDateTime에 맞는 값을 넣어주세요
+
+				// 리스트에 추가
+				monthReceipt = new ArrayList<>();
+				monthReceipt.add(defaultData);
+			} else {
+				
+			}
+			
+			if (monthOurReceipt == null || monthOurReceipt.isEmpty()) {
+				RecordDto defaultData = new RecordDto();
+				defaultData.put("CNT", 0);
+				defaultData.put("STAT_MONTH", params.get("start_date"));  // thDateTime에 맞는 값을 넣어주세요
+
+				// 리스트에 추가
+				monthOurReceipt = new ArrayList<>();
+				monthOurReceipt.add(defaultData);
+			}
+			
+			if (monthOtherReceipt == null || monthOtherReceipt.isEmpty()) {
+				RecordDto defaultData = new RecordDto();
+				defaultData.put("CNT", 0);
+				defaultData.put("STAT_MONTH", params.get("start_date"));  // thDateTime에 맞는 값을 넣어주세요
+
+				// 리스트에 추가
+				monthOtherReceipt = new ArrayList<>();
+				monthOtherReceipt.add(defaultData);
+			}
 			
 			sheetNames.add(i, record.get("CODE_NAME"));
 			monthReceiptMain.add(i, monthReceipt);
