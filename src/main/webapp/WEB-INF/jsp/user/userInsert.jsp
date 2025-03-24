@@ -26,8 +26,8 @@
                     <input type="hidden" id="editDiv" name="editDiv" value="${editDiv}"/>
                     <table width="100%" border="0" cellspacing="0" cellpadding="0" class="admin_list">
                          <tr>
-                             <td class="strong">사용자ID</td>
-						         <td><input class="input_base" type="text" id="userId" name="userId" maxlength="14" onkeyup="spaceChk(this);" onkeydown="spaceChk(this);" required/></td>
+                             <td class="strong">사용자ID<p class="rem">영문+숫자 6~10자 이내</p></td>
+						         <td><input class="input_base" type="text" id="userId" name="userId" maxlength="10" onkeyup="spaceChk(this);" onkeydown="spaceChk(this);" required/></td>
                          </tr>
                          <tr>
                              <td class="strong">소속</td>
@@ -58,11 +58,11 @@
                              </td>
                          </tr>
                          <tr>
-                             <td class="strong">비밀번호<p class="rem">영문+숫자+특수 15자이상</p></td>
+                             <td class="strong">비밀번호<p class="rem">영문+숫자+특수 8~15자 이내</p></td>
                              <td><input class="input_base" type="password" id="userPw" name="userPw" maxlength="20" onkeyup="spaceChk(this);" onkeydown="spaceChk(this);" required/></td>
                          </tr>
                          <tr>
-                             <td class="strong">비밀번호 확인<p class="rem">영문+숫자+특수 15자이상</p></td>
+                             <td class="strong">비밀번호 확인<p class="rem">영문+숫자+특수 8~15자 이내</p></td>
                              <td><input class="input_base" type="password" id="userPw2" name="userPw2" maxlength="20" onkeyup="spaceChk(this);" onkeydown="spaceChk(this);" required/></td>
                          </tr>
                          <tr>
@@ -101,8 +101,10 @@ $(document).ready(function(){
 	console.log("userInsert");
 	var tagId = "${userInfo.userId}";
 	
+	
+	// 등록 버튼 클릭 시 실행 되는 함수 
 	$("#editUserFrm").submit(function(event){
-		console.log(event);
+
 		//화면이동 방지
 		event.preventDefault();
 		saveUser(this);

@@ -179,9 +179,13 @@ public class InfrmController implements ApplicationContextAware {
 		try {
 			thvo=ifmVO;
 			//관리자 제외 지역코드 삽입
-			if(!(nlVo.getAuthCode().equals("999"))) {//999 관리자 권한
+			/*if(!(nlVo.getAuthCode().equals("999"))) {//999 관리자 권한
 				thvo.setAreaCode(nlVo.getRegionId());
-			}
+			}*/
+			
+			// 모든 사용자 지역 코드 삽입
+			thvo.setAreaCode(nlVo.getRegionId());
+			
 			/*if(thvo.getsDate()==null||thvo.getsDate().equals("")) {
 			    SimpleDateFormat date = new SimpleDateFormat("yyyy-MM-dd");
 			    Calendar day = Calendar.getInstance();

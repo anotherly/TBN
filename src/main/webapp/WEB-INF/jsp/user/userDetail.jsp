@@ -60,11 +60,11 @@
                          </tr>
                          <tr>
                              <td class="strong">비밀번호<p class="rem">변경시에만 입력</p></td>
-                             <td><input class="input_base" type="password" id="userPw" name="userPw" maxlength="12"  onkeyup="spaceChk(this);" onkeydown="spaceChk(this);"/></td>
+                             <td><input class="input_base" type="password" id="userPw" name="userPw" maxlength="20"  onkeyup="spaceChk(this);" onkeydown="spaceChk(this);"/></td>
                          </tr>
                          <tr>
                              <td class="strong">비밀번호 확인<p class="rem">변경시에만 입력</p></td>
-                             <td><input class="input_base" type="password" id="userPw2" name="userPw2" maxlength="12" onkeyup="spaceChk(this);" onkeydown="spaceChk(this);"/></td>
+                             <td><input class="input_base" type="password" id="userPw2" name="userPw2" maxlength="20" onkeyup="spaceChk(this);" onkeydown="spaceChk(this);"/></td>
                          </tr>
                          <tr>
                              <td class="strong">전화번호</td>
@@ -86,7 +86,7 @@
                      </table>
                      <!-- 등록버튼 시작-->
 			          <div class="btnArg mgt10">
-			            <button type="submit" onclick="saveUser();"><img src="/images/btn_reget1.png" alt="저장" title="저장"></button>
+			            <button type="submit"><img src="/images/btn_reget1.png" alt="저장" title="저장"></button>
 			            <input id="btnCl" onclick="self.close();" type="image" src="/images/btn_cl.png" alt="취소" title="취소"/>
 			            <input id="delBtn" onclick="deleteUser();"  style="height:31px;" type="image" src="/images/btn_del.png" alt="삭제" title="삭제"  />
 			        </div>
@@ -109,13 +109,13 @@ $(document).ready(function(){
 		$("#userPhone2").val(tagPhone.split('-')[1]);
 		$("#userPhone3").val(tagPhone.split('-')[2]);
 	}
-	/* $("#editUserFrm").submit(function(event){
-		alert(event);
-		console.log(event);
+	
+	// 등록 버튼 클릭 시 실행 되는 함수 
+	$("#editUserFrm").submit(function(event){
 		//화면이동 방지
 		event.preventDefault();
-		saveUser();
-	}); */
+		saveUser(this);
+	});
 });
 
 /**
@@ -124,11 +124,11 @@ $(document).ready(function(){
  /**
   * 사용자 저장
   */
-function saveUser(){
+function saveUser(that){
 	//화면이동 방지
 	//event.preventDefault();
-	var form = $("#editUserFrm");
-	if(boardWriteCheck(form) && telChk()){
+	/* var form = $("#editUserFrm"); */
+	if(boardWriteCheck(that) && telChk()){
 		var options = {
 	            url:"/user/userUpdate.ajax",
 	            type:'post',
@@ -145,7 +145,7 @@ function saveUser(){
 	            }
 	    };
 		//화면이동 방지
-		//event.preventDefault();
+		event.preventDefault();
 		if(typeof options !=="undefined"){
 		    $.ajax(options);
 		}

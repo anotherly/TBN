@@ -94,6 +94,7 @@ function reloadOrKill(isClose){
 2020.07.30   정다빈       최초작성
 ************************************************************************/
 function boardWriteCheck(form) {
+
 	//특수문자 정규식
 	var regExp = /[\{\}\[\]\/?.,;:|\)*~`!^\-_+<>@\#$%&\\\=\(\'\"]/gi;
 	//영문+숫자 관련 정규식
@@ -103,22 +104,22 @@ function boardWriteCheck(form) {
 	
 	for (var i = 0; i < form.length; i++) {
 		//id의 경우 6자 이상인지
-//		if(form[i].name =='userId'){
-//			if(form[i].value.length<6){
-//				alert("id 형식이 올바르지 않습니다.");
-//				form[i].focus();
-//				return false;
-//
-//			}
-//		}
+		if(form[i].name =='userId'){
+			if(form[i].value.length < 6 || form[i].value.length > 10){
+				alert("id 형식이 올바르지 않습니다. (6자 ~10자 이내)");
+				form[i].focus();
+				return false;
+
+			}
+		}
 		//pw : (영문 특수문자 포함  15자 이상)
-		if(form[i].name =='userPw' && form[i].value.length>0){
+		if(form[i].name =='userPw'){
 			console.log("비번 : "+form[i]);
-			if(form[i].value.length<15 
+			if(form[i].value.length > 15 || form[i].value.length < 8
 					|| !(regExp.test(form[i].value))
 					|| !(dfExp.test(form[i].value))
 			){
-				alert("비밀번호 형식이 올바르지 않습니다. (영문+숫자+특수 15자이상)");
+				alert("비밀번호 형식이 올바르지 않습니다. (영문+숫자+특수 8~15자 이내)");
 				form[i].focus();
 				return false;
 			}

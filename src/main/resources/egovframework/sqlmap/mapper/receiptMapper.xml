@@ -1144,13 +1144,23 @@
 		)
 	</insert>
 
-	<!-- 당일 로그인 사용자에 대한 임시저장 전체목록 불러오기 -->
-	<select id="tempsaveList" resultType="TempSaveVo">
+	<!-- 당일 로그인 사용자에 대한 임시저장 전체목록 불러오기 (금일만)-->
+	<!-- <select id="tempsaveList" resultType="TempSaveVo">
 	    <![CDATA[
 		SELECT TS_TIME,RECEPTION_ID,INDIVIDUAL_NAME FROM TEMP_SAVE 
 		WHERE RECEPTION_ID = #{RECEPTION_ID}
 		AND TO_DATE(TO_DATE(TS_TIME,'yyyy-mm-dd hh24:mi:ss'),'yyyy-mm-dd') 
 		>= TO_DATE(sysdate,'yyyy-mm-dd')
+		ORDER BY TS_TIME DESC
+		]]>
+	</select> -->
+	
+	
+	<!-- 당일 로그인 사용자에 대한 임시저장 전체목록 불러오기(전체 기간) -->
+	<select id="tempsaveList" resultType="TempSaveVo">
+	    <![CDATA[
+		SELECT TS_TIME,RECEPTION_ID,INDIVIDUAL_NAME FROM TEMP_SAVE 
+		WHERE RECEPTION_ID = #{RECEPTION_ID}
 		ORDER BY TS_TIME DESC
 		]]>
 	</select>
