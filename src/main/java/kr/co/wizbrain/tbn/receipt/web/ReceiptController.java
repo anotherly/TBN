@@ -732,9 +732,27 @@ public class ReceiptController {
 	public ModelAndView getSearchTotalPageFR(ReceiptSearchVO vo) throws Exception {
 		ModelAndView mv = new ModelAndView("jsonView");
 		
+		String angleBracket = vo.getCONTENT1(); //검색어 1 가져오기
+		String angleBracket2 = vo.getCONTENT2(); // 검색어 2 가져오기
+		
+		String angleBracketL = "&lt;";
+		String angleBracketR = "&gt;";
+		
+		angleBracket = angleBracket.replace(angleBracketL, "<");
+		angleBracket = angleBracket.replace(angleBracketR, ">");
+		
+		angleBracket2 = angleBracket2.replace(angleBracketL, "<");
+		angleBracket2 = angleBracket2.replace(angleBracketR, ">");
+		
+		vo.setCONTENT1(angleBracket);
+		vo.setCONTENT2(angleBracket2);
+		
 		int total = receiptService.countSearchStatusListFR(vo);
 		System.out.println("total: " + total);
 		System.out.println("vo: " + vo.toString());
+		
+		
+		
 		
 		int size = 300;
 		int totalPages = total/size;
@@ -767,6 +785,10 @@ public class ReceiptController {
 		return mv;
 	}
 	
+	
+	
+	
+	// 전체 접수 이력 검색 (검색결과 0 이상인 경우)
 	@RequestMapping("/receipt/searchFullStatusFR.do")
 	public ModelAndView searchFullStatusFR(HttpServletRequest request, ReceiptSearchVO searchVO) throws Exception{
 		logger.info("------------------searchFullStatus진입------------------");
@@ -784,6 +806,26 @@ public class ReceiptController {
 		int size = 300;
 		int startRow = Integer.parseInt(request.getParameter("startRow"));
 		System.out.println("startRow: " + startRow);
+		
+		String angleBracket = searchVO.getCONTENT1(); //검색어 1 가져오기
+		String angleBracket2 = searchVO.getCONTENT2(); // 검색어 2 가져오기
+		
+		String angleBracketL = "&lt;";
+		String angleBracketR = "&gt;";
+		
+		angleBracket = angleBracket.replace(angleBracketL, "<");
+		angleBracket = angleBracket.replace(angleBracketR, ">");
+		
+		angleBracket2 = angleBracket2.replace(angleBracketL, "<");
+		angleBracket2 = angleBracket2.replace(angleBracketR, ">");
+		
+		searchVO.setCONTENT1(angleBracket);
+		
+		
+		
+		
+		searchVO.setCONTENT2(angleBracket2);
+		
 		
 		searchVO.setSize(size);
 		searchVO.setStartRow((startRow-1) * size);

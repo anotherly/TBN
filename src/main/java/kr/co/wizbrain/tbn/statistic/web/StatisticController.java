@@ -826,8 +826,9 @@ public class StatisticController extends BaseController{
 	    ParamsDto params = getParams(true);
 	    System.out.println("resultVO: " + searchVO.toString());
 	    UserVO nlVo = (UserVO)request.getSession().getAttribute("login");
-	    if (!nlVo.getAuthCode().equals("999"))
-	      searchVO.setAreaCode(nlVo.getRegionId()); 
+	    
+	    /*if (!nlVo.getAuthCode().equals("999"))*/
+	    searchVO.setAreaCode(nlVo.getRegionId()); 
 	    List<InfrmVO> Data = new ArrayList<>();
 	    Data = this.infrmService.selectInfrmList(searchVO);
 	    model.addAttribute("mapping", "informerDown");

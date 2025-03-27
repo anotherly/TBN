@@ -23,6 +23,7 @@
 		<result property="orgName" 			column="ORG_NAME"/>
 		<result property="regDate" 			column="REG_DATE"/>
 		<result property="flagAct" 			column="FLAG_ACT"/>
+		<result property="addressHome" 			column="ADDRESS_HOME"/>
 	</resultMap>
 	
 	
@@ -78,6 +79,7 @@
                 ,A.ORG_ID
                 ,A.FLAG_ACT		
                 ,A.REG_DATE		
+                ,NVL(A.ADDRESS_HOME,'미입력') as ADDRESS_HOME
                 FROM INFORMER A
                 LEFT JOIN CODE_AREACODE B
                 ON A.AREA_CODE=B.AREA_CODE

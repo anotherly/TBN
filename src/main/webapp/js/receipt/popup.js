@@ -101,7 +101,7 @@ function searchFullStatus(frm){
 	
 	var searchVO = generateSearchVO(frm);
 	var totalAjax;
-	
+
 	//전체접수일 경우
 	if(tabMenu == 'fullReceivedHistorySearch'){
 		 opener.allSchVo = searchVO;

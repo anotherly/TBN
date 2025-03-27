@@ -4228,6 +4228,11 @@ public class ExportPoiHssfExcel extends AbstractView {
 		headCell7.setCellValue("등록일");
 		headCell7.setCellStyle(headStyle);
 
+		HSSFCell headCell8 = headrow1.createCell(8);
+		headCell8.setCellValue("주소");
+		headCell8.setCellStyle(headStyle);
+		
+		
 		rowCnt++;
 		HSSFRow[] dataRow = new HSSFRow[dataList.size()];
 
@@ -4272,6 +4277,10 @@ public class ExportPoiHssfExcel extends AbstractView {
 			HSSFCell dataCell = dataRow[i].createCell(7);
 			dataCell.setCellValue(record.getRegDate());
 			dataCell.setCellStyle(dataStyle);
+			
+			HSSFCell dataCell8 = dataRow[i].createCell(8);
+			dataCell8.setCellValue(record.getAddressHome());
+			dataCell8.setCellStyle(dataStyle);
 		}
 		
 		sheet1.setColumnWidth(2, 4000);
@@ -4281,6 +4290,7 @@ public class ExportPoiHssfExcel extends AbstractView {
 		sheet1.setColumnWidth(5, 6000);
 		sheet1.setColumnWidth(6, 4000);
 		sheet1.setColumnWidth(7, 6000);
+		sheet1.setColumnWidth(8, 25000);
 
 	}
     
