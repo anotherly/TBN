@@ -38,6 +38,19 @@ public class InfrmServiceImpl implements InfrmService{
 		return tlist;
 	}
 	
+	public List<InfrmVO> countInfrmList(InfrmVO infrmVO) throws Exception{
+		System.out.println(infrmVO);
+		List<InfrmVO> tlist = infrmMapper.countInfrmList(infrmVO);
+		return tlist;
+	}
+	
+	//전체 회원정보 조회(스크롤)
+	public List<InfrmVO> selectInfrmList2(InfrmVO infrmVO, int startRnum , int endRnum) throws Exception{
+		System.out.println(infrmVO);
+		List<InfrmVO> tlist = infrmMapper.selectInfrmList2(infrmVO,startRnum,endRnum);
+		return tlist;
+	}
+	
 	//특정 사용자 조회
 	public InfrmVO selectInfrm(InfrmVO infrmVO) throws Exception {
 		InfrmVO rvo = infrmMapper.selectInfrmList(infrmVO).get(0);

@@ -23,6 +23,12 @@ public interface InfrmService {
 
 	//전체 사용자 조회
 	public List<InfrmVO> selectInfrmList(InfrmVO InfrmVO) throws Exception;
+	
+	public List<InfrmVO> countInfrmList(InfrmVO InfrmVO) throws Exception;
+	
+	//전체 사용자 조회 (스크롤)
+	public List<InfrmVO> selectInfrmList2(InfrmVO InfrmVO, int startRnum, int endRnum) throws Exception;
+		
 	//특정 사용자 조회
 	public InfrmVO selectInfrm(InfrmVO infrmVO) throws Exception;
 	//신규 id생성

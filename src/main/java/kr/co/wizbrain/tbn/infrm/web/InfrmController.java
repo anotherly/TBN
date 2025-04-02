@@ -176,6 +176,8 @@ public class InfrmController implements ApplicationContextAware {
 		//url로 h,g 판별하여 해당하는 값만 조회
 		ModelAndView mav = new ModelAndView("jsonView");
 		List<InfrmVO> infrmList= null;
+		List<InfrmVO> infrmCntList= null;
+		
 		try {
 			thvo=ifmVO;
 			//관리자 제외 지역코드 삽입
@@ -196,16 +198,48 @@ public class InfrmController implements ApplicationContextAware {
 			/*if(thvo.getFlagAct()==null||thvo.getFlagAct().equals("")) {
 				thvo.setFlagAct("Y");
 			}*/
-			infrmList = infrmService.selectInfrmList(thvo);
+			
+			infrmList = infrmService.selectInfrmList(thvo); // 20건 가져오기
+			infrmCntList = infrmService.countInfrmList(thvo);// 전체 건수 가져오기
+			
+			
 			mav.setViewName("/informer/informerList");
 			mav.addObject("informerList", infrmList);
-			mav.addObject("cnt", infrmList.size());
+			mav.addObject("cnt", infrmCntList.size());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return mav;
 	}
 	
+	// 25-03-28 : 스크롤 시 조회 기능
+	@RequestMapping(value="/informer/ifrmNextScroll.ajax") 
+	public ModelAndView ifrmNextScroll(@RequestParam("startRnum") int startRnum , @RequestParam("endRnum") int endRnum ,
+			@ModelAttribute("ifmVO") InfrmVO ifmVO, HttpServletRequest request) throws Exception{
+		logger.debug("▶▶▶▶▶▶▶.회원정보 조회 목록!!!!!!!!!!!!!!!!");
+		ModelAndView mav = new ModelAndView("jsonView");
+		
+		InfrmVO thvo = new InfrmVO();
+		UserVO nlVo = (UserVO) request.getSession().getAttribute("login");
+		List<InfrmVO> infrmList= null;
+		
+		try {
+			thvo=ifmVO;
+			thvo.setAreaCode(nlVo.getRegionId());
+			
+			infrmList = infrmService.selectInfrmList2(thvo,startRnum,endRnum); // service 수정
+			
+			/*mav.setViewName("/informer/informerList");*/
+			mav.addObject("informerList", infrmList);
+			mav.addObject("cnt", infrmList.size());
+		} catch (Exception e){
+			e.printStackTrace();
+		}
+		
+		return mav;
+	}
+	
+
 	/**
 	 * 통신원 이력 정보
 	 * @param model
@@ -541,4 +575,10 @@ public class InfrmController implements ApplicationContextAware {
 		// TODO Auto-generated method stub
 		this.context = (WebApplicationContext) applicationContext;
 	}
+	
+	
+	
+	
+	
+	
 }

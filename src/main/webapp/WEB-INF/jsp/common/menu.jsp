@@ -13,7 +13,7 @@
 	    		
 	    		$('.mileageMenu').hide();
 	    	} else {
-	    		console.log(authCode);
+	    		/* console.log(authCode); */
 	    		$('.mileageMenu').show();
 	    	}
 	    }

@@ -69,6 +69,7 @@ $(document).ready(function(){
 	console.log("informerList.jsp 진입");
 	
 	var totalSize = '${cnt}';
+	// 전체 건수 몇건인지 가져오기
 	$("#resultListTotal span").text(totalSize);
 	
 	if($("#informer_table tbody").prop('scrollHeight') - $("#informer_table tbody").prop('clientHeight') > 0){
@@ -264,6 +265,95 @@ function reverseTD( index,that  ){
 	replace.descending( index );
 	$(that).css("color","red");	
 } 
+
+
+
+// 무한 스크롤 함수 ( 처음에 로드될 때 rownum 1~20까지 불러온다.)
+
+//기본 변수
+var startRnum = 1; // 시작 rownum
+var endRnum = 21; // 끝 rownum
+var lastScrollTop = 0; // 이전 스크롤 좌표 기본값 초기화
+var loadFlag = 'Y';
+
+// 위로 스크롤이 max일 때 , 아래로 스크롤이 max일 때 구현
+$("#informer_table tbody").scroll(function() {
+
+    var nowScrollTop = $("#informer_table tbody").scrollTop();
+    var scrollHeight = $("#informer_table tbody")[0].scrollHeight; // 전체 컨텐츠 높이
+    var clientHeight = $("#informer_table tbody")[0].clientHeight; // 보이는 영역 높이
+	var ifmVO = $('#searchFrm').serialize();
+    
+    if (nowScrollTop > lastScrollTop) {
+        // 다운스크롤
+        console.log("다운스크롤");
+
+        // 스크롤이 맨 아래에 도달했을 때
+        if (nowScrollTop + clientHeight >= scrollHeight) {
+            console.log("스크롤이 맨 아래에 도달했습니다.");
+            
+            startRnum = startRnum + 20; //다음 목록을 불러오기 위해 숫자 추가
+            endRnum = endRnum + 20; //다음 목록을 불러오기 위해 숫자 추가
+            
+            // ajax로 이후 데이터를 불러오고, append 함수를 이용하여 컨텐츠 추가
+            $.ajax({
+            	url : '/informer/ifrmNextScroll.ajax',
+            	type : 'post',
+            	data : ifmVO + '&startRnum=' + startRnum + '&endRnum=' + endRnum, // 다음페이지 시작 번호와 끝 번호 넘기기
+            	success : function(data) {
+            		console.log("받아오기 성공"); // 일단 이렇게만 작성
+	
+            		if(loadFlag == 'Y') {
+            			// append 할 str 작성 
+
+            			for(var i = 0; i< data.cnt; i++) {
+            				var informer = data.informerList[i];
+
+            	            var trHtml = '<tr>';
+            	            trHtml += '<td style="width:50px;"><input type="checkbox" id="Selection" name="Selection" value="' + informer.informerId + '"/></td>';
+            	            trHtml += '<td onclick="editInformer(\'' + informer.informerId + '\');" style="cursor: pointer;width:90px;">' + informer.actId + '</td>';
+            	            trHtml += '<td onclick="editInformer(\'' + informer.informerId + '\');" style="cursor: pointer;width:100px;">' + informer.areaName + '</td>';
+            	            trHtml += '<td onclick="editInformer(\'' + informer.informerId + '\');" style="cursor: pointer;width:80px;">' + informer.informerTypeName + '</td>';
+            	            trHtml += '<td onclick="editInformer(\'' + informer.informerId + '\');" style="cursor: pointer;width:130px;">' + informer.orgName + '</td>';
+            	            trHtml += '<td onclick="editInformer(\'' + informer.informerId + '\');" style="cursor: pointer;width:150px;">' + informer.informerName + '</td>';
+            	            trHtml += '<td onclick="editInformer(\'' + informer.informerId + '\');" style="cursor: pointer;width:150px;">' + informer.phoneCell + '</td>';
+            	            trHtml += '<td onclick="editInformer(\'' + informer.informerId + '\');" style="cursor: pointer;width:100px;">' + (informer.flagAct == 'Y' ? '위촉' : '해촉') + '</td>';
+            	            trHtml += '<td onclick="editInformer(\'' + informer.informerId + '\');" style="cursor: pointer;width:102px;">' + informer.regDate + '</td>';
+            	            trHtml += '<td style="width:62px;"><img src="/images/btn_view2.gif" onclick="showInformerHistory(\'' + informer.informerId + '\');" style="cursor: pointer;"/></td>';
+            	            trHtml += '</tr>';
+            	            
+            	            $("#informer_table tbody").append(trHtml);
+            			} 
+            			
+            		} else { // 그리고 append 되지 않도록 처리
+            			startRnum = startRnum - 20; 
+                        endRnum = endRnum - 20; 
+            		}   
+            		
+            		var cnt = data.cnt;
+            		if(cnt != 20) { // 20보다 크거나 작은 경우
+            			loadFlag = 'N'; // 더이상 불러오지 않음
+            		} else {
+            			loadFlag = 'Y';
+            		}
+	         		
+            	},
+            	error : function() {
+            		console.log(" ajax 요청 중 에러 발생 ");
+            	}
+            	
+            });
+            
+            // 더이상 불러올 데이터가 없는경우 예외처리 필요 (불러온 데이터가 20보다 작은 경우)
+        }
+
+    } 
+
+    // 마지막 스크롤 좌표 업데이트
+    lastScrollTop = nowScrollTop;
+});
+
+
 
 </script>
 

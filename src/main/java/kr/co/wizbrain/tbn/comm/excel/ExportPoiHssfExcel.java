@@ -4460,7 +4460,7 @@ public class ExportPoiHssfExcel extends AbstractView {
 		rowTitle2.createCell(7).setCellStyle(headStyle);
 
 		HSSFCell headCell8 = rowTitle1.createCell(8);
-		headCell8.setCellValue("주요제보");
+		headCell8.setCellValue("긴급제보");
 		headCell8.setCellStyle(headStyle);
 		rowTitle2.createCell(8).setCellStyle(headStyle);
 
