@@ -185,9 +185,12 @@ public class InfrmController implements ApplicationContextAware {
 				thvo.setAreaCode(nlVo.getRegionId());
 			}*/
 			
-			// 모든 사용자 지역 코드 삽입
-			thvo.setAreaCode(nlVo.getRegionId());
-			
+			// 첫 진입이라면
+			if(thvo.getSearchValue() == null) {
+				// 모든 사용자 지역 코드 삽입
+				thvo.setAreaCode(nlVo.getRegionId());
+			} 
+
 			/*if(thvo.getsDate()==null||thvo.getsDate().equals("")) {
 			    SimpleDateFormat date = new SimpleDateFormat("yyyy-MM-dd");
 			    Calendar day = Calendar.getInstance();
@@ -199,6 +202,7 @@ public class InfrmController implements ApplicationContextAware {
 				thvo.setFlagAct("Y");
 			}*/
 			
+
 			infrmList = infrmService.selectInfrmList(thvo); // 20건 가져오기
 			infrmCntList = infrmService.countInfrmList(thvo);// 전체 건수 가져오기
 			
@@ -309,7 +313,7 @@ public class InfrmController implements ApplicationContextAware {
 		List<OptInftVo> t3List = new ArrayList<OptInftVo>();//세부기관
 		
 		//관리자 제외 지역코드 삽입
-		if(!(nlVo.getAuthCode().equals("999"))) {//999 관리자 권한
+		if(!(nlVo.getAuthCode().equals("999")) && !(nlVo.getAuthCode().equals("1"))) {//999 관리자 권한
 			areaVo.setAreaCode(nlVo.getRegionId());
 			thvo.setAreaCode(nlVo.getRegionId());
 			iTypeVo.setAreaCode(nlVo.getRegionId());

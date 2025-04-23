@@ -15,7 +15,7 @@ function startPickupCallPolling(){
 //통신원 존재하면 전화받은 통신원정보 반영
 function checkIfPickUpInfoExists(){
 //	console.log("checkIfPickUpInfoExists : "+currentTimeSmall());
-	//console.log("inTelNum: " + inTelNum);
+	//console.log("inTelN um: " + inTelNum);
 	//console.log("AREA_CODE: " + lgnArea);
 	var voList = ajaxMethod("/receipt/checkIfPickUpInfoExists.ajax", {"PICKUP_CALL_INTEL": inTelNum
 																		, "AREA_CODE" : lgnArea}).data;

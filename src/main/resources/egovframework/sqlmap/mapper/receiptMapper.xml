@@ -112,6 +112,14 @@
 		from notice_info
 		where start_date <![CDATA[<=]]> #{today}
 		and end_date <![CDATA[>=]]> #{today}
+		<choose>
+			<when test="authCode != '999'">
+				and open_type in (#{authCode},'all')
+			</when>
+			<otherwise>
+				and open_type in ('999','1','2','3','4','all')
+			</otherwise>
+		</choose>
 		ORDER BY start_date DESC
 		LIMIT 1
 	</select>

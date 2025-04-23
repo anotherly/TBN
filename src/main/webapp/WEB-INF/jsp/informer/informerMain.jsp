@@ -6,12 +6,13 @@
 <script type="text/javascript" charset="utf-8" src="<%=request.getContextPath()%>/js/jquery.form.js"></script>
 
 <!-- DateTimePicker -->
-<!-- <script src="<=request.getContextPath()%>/calender/moment.js"></script>
-<script src="<=request.getContextPath()%>/calender/mo_ko.js"></script>
-<script src="<=request.getContextPath()%>/calender/bootstrap-datetimepicker.js"></script>
-<link rel="stylesheet" type="text/css" href="<=request.getContextPath()%>/calender/no-boot-calendar-custom.css" />
-<link rel="stylesheet" type="text/css" href="<=request.getContextPath()%>/calender/datetimepickerstyle.css" />
- -->
+<script src="<%= request.getContextPath() %>/calender/moment.js"></script>
+<script src="<%= request.getContextPath() %>/calender/mo_ko.js"></script>
+<script src="<%= request.getContextPath() %>/calender/bootstrap-datetimepicker.js"></script>
+<link rel="stylesheet" type="text/css" href="<%= request.getContextPath() %>/calender/no-boot-calendar-custom.css" />
+<link rel="stylesheet" type="text/css" href="<%= request.getContextPath() %>/calender/datetimepickerstyle.css" />
+
+
 <div id="contentWrap"  style="width:1030px;">
 <!-- <div id="posi"><a href="/main.do"><img src="../images/ico_home.gif" alt="home" /></a>제보자관리 > 제보자관리</div> -->
 <div id="searchDiv">
@@ -46,7 +47,7 @@
 	                                         </c:choose>
                                              <c:forEach var="informerArea" items="${informerAreaList}">
                                                  <option value="${informerArea.areaCode}" 
-                                                  <c:if test="${informerArea.areaCode eq informerInfo.areaCode}">selected</c:if>>
+                                                  <c:if test="${informerArea.areaCode eq login.regionId}">selected</c:if>>
 														${informerArea.areaName}
                                                  </option>
                                              </c:forEach>
@@ -116,7 +117,7 @@
 	</div>
 </div>
 <form id="listFrm" name="listFrm">
-<input type="hidden" name="labelType" id="labelT">
+<input type="hidden" name="labelType" id="labelT"> 
 <div id="listDiv">
 </div>
 </form>
@@ -140,6 +141,8 @@ $(document).ready(function(){
 	fromDate = getFormatDate(fromDate);
 	var toDate = getFormatDate(new Date());
 	
+	console.log("fromDate :" + fromDate);
+	console.log("toDate :" + toDate);
 	//var infrmCalender = dateFunc("dateText","dateText1","dateText2",search,fromDate,toDate);
 	dateFunc('sDate','eDate',fromDate,toDate);
 	

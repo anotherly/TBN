@@ -22,14 +22,14 @@
 	    <thead>
 	        <tr>
 	        	<th style="width:50px;">선택</th>
-	            <th style="width:90px;">ID<div class='sortDiv' ><button onclick="sortTD ( 0 ,this)">▲</button><button onclick="reverseTD ( 0 ,this)">▼</button></div></th>
-	            <th style="width:100px;">방송국<div class='sortDiv' ><button onclick="sortTD ( 1 ,this)">▲</button><button onclick="reverseTD ( 1 ,this)">▼</button></div></th>
-	            <th style="width:80px;">유형<div class='sortDiv' ><button onclick="sortTD ( 2 ,this)">▲</button><button onclick="reverseTD ( 2 ,this)">▼</button></div></th>
-	            <th style="width:130px;">소속기관<div class='sortDiv' ><button onclick="sortTD ( 2 ,this)">▲</button><button onclick="reverseTD ( 2 ,this)">▼</button></div></th>
-	            <th style="width:150px;">이름<div class='sortDiv' ><button onclick="sortTD ( 3 ,this)">▲</button><button onclick="reverseTD ( 3 ,this)">▼</button></div></th>
-	            <th style="width:150px;">전화<div class='sortDiv' ><button onclick="sortTD ( 4 ,this)">▲</button><button onclick="reverseTD ( 4 ,this)">▼</button></div></th>
-	            <th style="width:100px;">활동여부<div class='sortDiv' ><button onclick="sortTD ( 5 ,this)">▲</button><button onclick="reverseTD ( 5 ,this)">▼</button></div></th>
-	            <th style="width:102px;">등록일<div class='sortDiv' ><button onclick="sortTD ( 6 ,this)">▲</button><button onclick="reverseTD ( 6 ,this)">▼</button></div></th>
+	            <th style="width:90px;">ID<div class='sortDiv' ><button onclick="sortTD ( 0 ,this,event )">▲</button><button onclick="reverseTD ( 0 ,this ,event)">▼</button></div></th>
+	            <th style="width:100px;">방송국<div class='sortDiv' ><button onclick="sortTD ( 1 ,this ,event)">▲</button><button onclick="reverseTD ( 1 ,this ,event)">▼</button></div></th>
+	            <th style="width:80px;">유형<div class='sortDiv' ><button onclick="sortTD ( 2 ,this ,event)">▲</button><button onclick="reverseTD ( 2 ,this ,event)">▼</button></div></th>
+	            <th style="width:130px;">소속기관<div class='sortDiv' ><button onclick="sortTD ( 2 ,this ,event)">▲</button><button onclick="reverseTD ( 2 ,this ,event)">▼</button></div></th>
+	            <th style="width:150px;">이름<div class='sortDiv' ><button onclick="sortTD ( 3 ,this ,event)">▲</button><button onclick="reverseTD ( 3 ,this ,event)">▼</button></div></th>
+	            <th style="width:150px;">전화<div class='sortDiv' ><button onclick="sortTD ( 4 ,this ,event)">▲</button><button onclick="reverseTD ( 4 ,this ,event)">▼</button></div></th>
+	            <th style="width:100px;">활동여부<div class='sortDiv' ><button onclick="sortTD ( 5 ,this ,event)">▲</button><button onclick="reverseTD ( 5 ,this ,event)">▼</button></div></th>
+	            <th style="width:102px;">등록일<div class='sortDiv' ><button onclick="sortTD ( 6 ,this ,event)">▲</button><button onclick="reverseTD ( 6 ,this ,event)">▼</button></div></th>
 	            <th style="width:62px;">이력정보</th>
 	        </tr>
 	    </thead>
@@ -255,15 +255,21 @@ function getTextByClone( tag ){
 var myTable = document.getElementById( "informer_table" ); 
 var replace = replacement( myTable ); 
 
-function sortTD( index,that ){  
+function sortTD( index,that,event ){  
 	$(".sortDiv button").css("color","black");
 	replace.ascending( index );
 	$(that).css("color","red");	
+	
+	event.preventDefault(); // 폼 제출 막기
+	
+
 } 
-function reverseTD( index,that  ){
+function reverseTD( index,that ,event ){
 	$(".sortDiv button").css("color","black");
 	replace.descending( index );
 	$(that).css("color","red");	
+	
+	event.preventDefault(); // 폼 제출 막기
 } 
 
 
@@ -285,12 +291,8 @@ $("#informer_table tbody").scroll(function() {
 	var ifmVO = $('#searchFrm').serialize();
     
     if (nowScrollTop > lastScrollTop) {
-        // 다운스크롤
-        console.log("다운스크롤");
-
         // 스크롤이 맨 아래에 도달했을 때
         if (nowScrollTop + clientHeight >= scrollHeight) {
-            console.log("스크롤이 맨 아래에 도달했습니다.");
             
             startRnum = startRnum + 20; //다음 목록을 불러오기 위해 숫자 추가
             endRnum = endRnum + 20; //다음 목록을 불러오기 위해 숫자 추가
@@ -301,7 +303,6 @@ $("#informer_table tbody").scroll(function() {
             	type : 'post',
             	data : ifmVO + '&startRnum=' + startRnum + '&endRnum=' + endRnum, // 다음페이지 시작 번호와 끝 번호 넘기기
             	success : function(data) {
-            		console.log("받아오기 성공"); // 일단 이렇게만 작성
 	
             		if(loadFlag == 'Y') {
             			// append 할 str 작성 

@@ -765,7 +765,7 @@ function getFormatDate(date){
 2024.10.22   정다빈       datetimepicker 로 변경
 ************************************************************************/
 function dateFunc(id1,id2,sdt,edt,format,callback){
-	
+
 	var fmt="YYYY-MM-DD";
 	if(typeof format !== "undefined" && typeof format != ""){
 		fmt=format;

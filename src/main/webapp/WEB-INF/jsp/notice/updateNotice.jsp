@@ -206,10 +206,18 @@
 			                <tr style="height: 50px; border-bottom: 1px solid black;">
 			                    <th>작성자 </th>
 			                    <td>${uList[0].WRITER_NAME}</td>
-	<!-- 		                    <th>공지사항 유형 </th>
+	                 			<th style="width:150px;">공개 범위</th>
 			                    <td>
-			                    	<input type="radio" name="notice_type" vlaue="">
-			                    </td> -->
+			                    	<select name="OPEN_TYPE" id="OPEN_TYPE">
+									    <option value="all"<c:if test="${uList[0].OPEN_TYPE == 'all'}">selected</c:if>>전체</option>
+									    <option value="999"<c:if test="${uList[0].OPEN_TYPE == '999'}">selected</c:if>>관리자만</option>
+									    <option value="1"<c:if test="${uList[0].OPEN_TYPE == '1'}">selected</c:if>>지역관리자만</option>
+									    <option value="2"<c:if test="${uList[0].OPEN_TYPE == '2'}">selected</c:if>>접수자만</option>
+									    <option value="3"<c:if test="${uList[0].OPEN_TYPE == '3'}">selected</c:if>>PD만</option>
+									    <option value="4"<c:if test="${uList[0].OPEN_TYPE == '4'}">selected</c:if>>캐스터만</option>
+									</select>
+
+			                    </td>
 			                </tr >
 			                <tr style="height: 50px; border-bottom: 1px solid black;">
 			                    <th>시작일 </th>

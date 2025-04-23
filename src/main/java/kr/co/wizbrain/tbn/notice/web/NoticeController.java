@@ -27,6 +27,7 @@ import kr.co.wizbrain.tbn.notice.service.NoticeService;
 import kr.co.wizbrain.tbn.notice.vo.NoticeVO;
 import kr.co.wizbrain.tbn.notice.vo.nFileVO;
 import kr.co.wizbrain.tbn.receipt.web.ReceiptController;
+import kr.co.wizbrain.tbn.user.vo.UserVO;
 
 @Controller
 public class NoticeController implements ApplicationContextAware{
@@ -62,9 +63,11 @@ public class NoticeController implements ApplicationContextAware{
 		logger.debug("▶▶▶▶▶▶▶.request.getContextPath() : "+request.getContextPath());
 		
 		ModelAndView mav = new ModelAndView("jsonView");
+		UserVO nlVo = (UserVO) request.getSession().getAttribute("login"); // 현재 로그인 중인 사용자 정보 가져오기
 		
+		String authCode = nlVo.getAuthCode(); // 현재 로그인 중인 사용자의 권한 코드 가져오기
 		// 공지사항 전체 조회 (목록)
-		List<NoticeVO> noticeList = noticeService.noticeList(searchText,searchDate);
+		List<NoticeVO> noticeList = noticeService.noticeList(searchText,searchDate,authCode);
 		mav.addObject("noticeList",noticeList);
 		
 		url = request.getRequestURI().substring(request.getContextPath().length()).split(".do")[0];
@@ -230,10 +233,14 @@ public class NoticeController implements ApplicationContextAware{
 	
 	// 24-11-11 : 제보접수 페이지 이동 시 공지사항 조회
 		@RequestMapping(value="/notice/selectNotice.ajax")
-		public @ResponseBody ModelAndView selectNotice(@RequestParam("today")String today) throws Exception {
+		public @ResponseBody ModelAndView selectNotice(@RequestParam("today")String today ,
+				HttpSession httpSession, HttpServletRequest request, Model model) throws Exception {
 			
 			ModelAndView mav = new ModelAndView("jsonView");
-			List<NoticeVO> NoticeList = noticeService.selectNotice(today);
+			UserVO nlVo = (UserVO) request.getSession().getAttribute("login"); // 현재 로그인 중인 사용자 정보 가져오기
+			
+			String authCode = nlVo.getAuthCode(); // 현재 로그인 중인 사용자의 권한 코드 가져오기
+			List<NoticeVO> NoticeList = noticeService.selectNotice(today,authCode);
 			
 			int moreCount = (noticeService.selectNoticeCnt(today).size())-1; // 화면에 띄울 공지도 같이 포함이기 떄문에 -1 필요
 			

@@ -198,11 +198,18 @@
 			                </tr>
 			                <tr style="height: 50px; border-bottom: 1px solid black;">
 			                    <th>작성자 </th>
-			                    <td colspan='3'>${login.userName}</td>
-	<!-- 		                    <th>공지사항 유형 </th>
+			                    <td style="width:263px;">${login.userName}</td>
+	 		                    <th style="width:150px;">공개 범위</th>
 			                    <td>
-			                    	<input type="radio" name="notice_type" vlaue="">
-			                    </td> -->
+			                    	<select name="OPEN_TYPE" id="OPEN_TYPE">
+			                    		<option value="all">전체</option>
+			                    		<option value="999">관리자만</option>
+			                    		<option value="1">지역관리자만</option>
+			                    		<option value="2">접수자만</option>
+			                    		<option value="3">PD만</option>
+			                    		<option value="4">캐스터만</option>
+			                    	</select>
+			                    </td>
 			                </tr >
 			                <tr style="height: 50px; border-bottom: 1px solid black; position: relative;">
 			                    <th>시작일 </th>

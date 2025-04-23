@@ -48,7 +48,14 @@ public class NoticeVO {
 	
 	public String filePath;
 	
+	public String OPEN_TYPE;
 	
+	public String getOPEN_TYPE() {
+		return OPEN_TYPE;
+	}
+	public void setOPEN_TYPE(String oPEN_TYPE) {
+		OPEN_TYPE = oPEN_TYPE;
+	}
 	public String getWRITER_ID() {
 		return WRITER_ID;
 	}
@@ -139,11 +146,6 @@ public class NoticeVO {
 	public void setREG_DT(String rEG_DT) {
 		REG_DT = rEG_DT;
 	}
-	
-	
-	
-	
-	
 	
 	public String getFilePath() {
 		return filePath;

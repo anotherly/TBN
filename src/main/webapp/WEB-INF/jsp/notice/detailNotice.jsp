@@ -43,6 +43,17 @@
 </style>
 <script>
 	$(document).ready(function(){
+		var writer = $('#writer_id').val();
+		var nowUser;
+		
+		// 부모창에서 정보 가져옴
+		window.addEventListener('message', function (event) {
+			const data = event.data;
+			nowUser = data.userId;
+			
+		});
+		
+		console.log(writer);
 		$("#menu").load("/common/menu.do");
 		
 		comparisonCode();
@@ -77,36 +88,46 @@
 		
 		
 		$('.deleteButton').on('click', function(){
-			var deleteCheck = confirm("정말로 삭제하시겠습니까?");
 			var noticeId = $('#notice_id').val();
+			var writerId = $('#writer_id').val();
 			
-			if(deleteCheck) {
-
-				$.ajax({
-					url : "/notice/delete.do",
-					data : {"noticeId" : noticeId},
-					type : "post",
-					async : false,
-		            dataType: 'json',
-					success : function(data) {	
-						console.log("요청 성공"+data);
-						
-						alert('삭제되었습니다.');
-
-						var val = true;
-						opener.search(val);
-						self.close();
-					},
-					error : function(xhr, status, error) {
-						console.log('공지사항 불러오기 ajax 요청에 문제가 있습니다.');
-					}
-				});
-					
-					
-					
-			} else {
+			// 작성자와 현재 삭제하려는 유저의 아이디가 다르다면
+			if(nowUser != writerId) {
+				alert("작성자만 삭제할 수 있습니다.");
 				return false;
+			} else {
+				var deleteCheck = confirm("정말로 삭제하시겠습니까?");
+				
+				if(deleteCheck) {
+
+					$.ajax({
+						url : "/notice/delete.do",
+						data : {"noticeId" : noticeId},
+						type : "post",
+						async : false,
+			            dataType: 'json',
+						success : function(data) {	
+							console.log("요청 성공"+data);
+							
+							alert('삭제되었습니다.');
+
+							var val = true;
+							opener.search(val);
+							self.close();
+						},
+						error : function(xhr, status, error) {
+							console.log('공지사항 불러오기 ajax 요청에 문제가 있습니다.');
+						}
+					});
+						
+						
+						
+				} else {
+					return false;
+				}
 			}
+			
+			
 		});
 		
 		

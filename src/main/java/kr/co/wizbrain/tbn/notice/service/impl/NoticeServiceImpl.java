@@ -21,13 +21,13 @@ public class NoticeServiceImpl implements NoticeService {
 	
 	// 24-11-14 : 공지사항 전체 조회
 	@Override
-	public List<NoticeVO> noticeList(String searchText,String searchDate) throws Exception {
+	public List<NoticeVO> noticeList(String searchText,String searchDate,String authCode) throws Exception {
 		
 		Map<String,String> map = new HashMap<String, String>();
 		map.put("searchText", searchText);
 		map.put("searchDate", searchDate);
 		
-		return noticeMapper.noticeList(map);
+		return noticeMapper.noticeList(searchText,searchDate,authCode);
 	}
 	
 	// 24-11-15 : 공지사항 등록
@@ -87,8 +87,8 @@ public class NoticeServiceImpl implements NoticeService {
 	}
 	
 	@Override
-	public List<NoticeVO> selectNotice(String today) throws Exception {
-		return noticeMapper.selectNotice(today);
+	public List<NoticeVO> selectNotice(String today, String authCode) throws Exception {
+		return noticeMapper.selectNotice(today, authCode);
 	}
 	
 	// 24-12-09 : 조회된 공지사항이 여러 개인 경우 공지사항 목록으로 이동하게 하기 위한 행 개수 조회

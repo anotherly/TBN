@@ -78,7 +78,7 @@ public class ReceiptController {
 		
 		url = request.getRequestURI().substring(request.getContextPath().length()).split(".do")[0];
 		logger.debug("▶▶▶▶▶▶▶.보내려는 url : "+url);
-		mv.setViewName(url);
+ 		mv.setViewName(url);
 		return mv;
 	}
 	

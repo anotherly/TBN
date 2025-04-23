@@ -80,9 +80,16 @@
 	            
 	            // tr 요소 내에서 input[type="hidden"] 값을 가져옴
 	            var noticeId = tr.find('input[type="hidden"]').val();
-	            
-	            var detailPop = window.open('/notice/detailNotice.do?noticeId='+noticeId,'공지사항 상세','width=1200px,height=800px,scrollbars=yes');
-	        });
+	            var detailPop = window.open('/notice/detailNotice.do?noticeId=' + noticeId, '공지사항 상세', 'width=1200px,height=800px,scrollbars=yes');
+
+	            const noticeData = { userId: userId };
+
+	            // 팝업 로딩 후 메시지 전송
+	            detailPop.onload = function () {
+	              detailPop.postMessage(noticeData, '*'); // '*' 대신 정확한 origin을 넣는 게 더 안전
+	            };
+
+			});
 			
 			
 			// 24-11-25 : 등록 버튼 클릭 시 

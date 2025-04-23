@@ -176,8 +176,8 @@
             (
                 SELECT
                 A.INFORMER_ID	
-                ,A.ACT_ID	
-                ,A.INFORMER_NAME	
+                ,NVL(A.ACT_ID , '정보없음') as ACT_ID	 
+                ,NVL(A.INFORMER_NAME, '정보없음') as INFORMER_NAME	
                 ,A.AREA_CODE		
                 ,REPLACE(B.AREA_NAME,'교통방송','') AS AREA_NAME
 				
@@ -194,8 +194,8 @@
 				
                 ,A.INFORMER_TYPE 	
                 ,A.ORG_ID
-                ,A.FLAG_ACT		
-                ,A.REG_DATE		
+                ,NVL(A.FLAG_ACT, '정보없음') as FLAG_ACT		
+                ,NVL(A.REG_DATE, '정보없음') as REG_DATE		
                 ,NVL(A.ADDRESS_HOME,'미입력') as ADDRESS_HOME
                 FROM INFORMER A
                 LEFT JOIN CODE_AREACODE B
@@ -240,7 +240,7 @@
 			    </choose>
 			</if>
 			<if test="sDate != null and  eDate != null and !sDate.equals('') and !eDate.equals('')">
-		    	AND T.REG_DATE BETWEEN #{sDate} AND TO_DATE(#{eDate}, 'YYYY-MM-DD')+1
+		    	AND T.REG_DATE BETWEEN #{sDate} AND #{eDate}
 			</if>
 			AND ROWNUM <![CDATA[<=]]> 20
 			ORDER BY T.REG_DATE DESC nulls last
@@ -260,8 +260,8 @@
 	                   C.TYPE_NAME AS INFORMER_TYPE_NAME
 	            FROM (
 	                SELECT A.INFORMER_ID, 
-	                       A.ACT_ID, 
-	                       A.INFORMER_NAME, 
+	                       NVL(A.ACT_ID, '정보없음') as ACT_ID, 
+	                       NVL(A.INFORMER_NAME, '정보없음') as INFORMER_NAME,
 	                       A.AREA_CODE, 
 	                       REPLACE(B.AREA_NAME, '교통방송', '') AS AREA_NAME, 
 	                       CASE 
@@ -276,8 +276,8 @@
 	                       END AS PHONE_CELL, 
 	                       A.INFORMER_TYPE, 
 	                       A.ORG_ID, 
-	                       A.FLAG_ACT, 
-	                       A.REG_DATE, 
+	                       NVL(A.FLAG_ACT, '정보없음') as FLAG_ACT,
+	                       NVL(A.REG_DATE , '정보없음') as REG_DATE, 
 	                       NVL(A.ADDRESS_HOME, '미입력') AS ADDRESS_HOME
 	                FROM INFORMER A
 	                LEFT JOIN CODE_AREACODE B
@@ -321,7 +321,7 @@
 	        </choose>
 	    </if>
 	    <if test="InfrmVO.sDate != null and InfrmVO.eDate != null and !InfrmVO.sDate.equals('') and !InfrmVO.eDate.equals('')">
-	        AND T.REG_DATE BETWEEN #{InfrmVO.sDate} AND TO_DATE(#{InfrmVO.eDate}, 'YYYY-MM-DD') + 1
+	        AND T.REG_DATE BETWEEN #{InfrmVO.sDate} AND #{InfrmVO.eDate}
 	    </if>
 	) T
 	WHERE T.RN >= #{startRnum}

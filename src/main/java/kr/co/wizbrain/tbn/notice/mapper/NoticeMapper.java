@@ -1,7 +1,8 @@
 package kr.co.wizbrain.tbn.notice.mapper;
 
 import java.util.List;
-import java.util.Map;
+
+import org.apache.ibatis.annotations.Param;
 
 import egovframework.rte.psl.dataaccess.mapper.Mapper;
 import kr.co.wizbrain.tbn.notice.vo.NoticeVO;
@@ -11,7 +12,7 @@ import kr.co.wizbrain.tbn.notice.vo.nFileVO;
 public interface NoticeMapper {
 
 	//24-11-14 :공지사항 전체 조회
-	public List<NoticeVO> noticeList(Map<String,String> map) throws Exception;
+	public List<NoticeVO> noticeList(@Param("searchText")String searchText, @Param("searchDate") String searchDate, @Param("authCode") String authCode) throws Exception;
 
 	// 24-11-15 : 공지사항 등록
 	public void insertNotice(NoticeVO vo) throws Exception;
@@ -40,7 +41,7 @@ public interface NoticeMapper {
 	// 파일 삭제
 	public void deleteNFile(String noticeId) throws Exception;
 	
-	public List<NoticeVO> selectNotice(String today) throws Exception;
+	public List<NoticeVO> selectNotice(@Param("today") String today, @Param("authCode") String authCode) throws Exception;
 	
 	public List<NoticeVO> selectNoticeCnt(String today) throws Exception;
 	
