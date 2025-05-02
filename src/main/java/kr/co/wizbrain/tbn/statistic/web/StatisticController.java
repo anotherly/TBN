@@ -360,12 +360,13 @@ public class StatisticController extends BaseController{
 		List Data = statisticService.muJeboList(params);	//무 제보자 통신원 목록
 		
 		model.addAttribute("mapping", "muJebo2");
-		model.addAttribute("fileName", "무 제보자 현황("+params.getString("start_date")+") "+params.getString("city")+".xls");
-		model.addAttribute("titleName", "무 제보자 현황("+params.getString("start_date")+") "+params.getString("city"));
+		model.addAttribute("fileName", "무 제보자 현황("+params.getString("end_date")+") "+params.getString("city")+".xls");
+		model.addAttribute("titleName", "무 제보자 현황("+params.getString("end_date")+") "+params.getString("city"));
 		model.addAttribute("sheetNames1", "무 제보자 현황");
 		model.addAttribute("headList", headList);
 		model.addAttribute("Data", Data);
 		model.addAttribute("start_date", params.get("start_date"));
+		model.addAttribute("start_date", params.get("end_date"));
 		
 		return "hssfExcel";
 	}

@@ -788,6 +788,15 @@ function dateFunc(id1,id2,sdt,edt,format,callback){
 			/*console.log("날짜변경");
 			alert("날짜변경");*/
 		});
+	} else if(id1 == 'standardDate') {
+		$('#' + id1).datetimepicker({
+		    format: 'YYYY-MM',  
+		    viewMode: 'months'    
+		}).on('dp.change',function(e){// 변경 상황 있을 때 사용   
+			/*console.log("날짜변경");
+			alert("날짜변경");*/
+		});
+
 	} else {
 		$('#'+id1).datetimepicker({
 			 format:fmt,

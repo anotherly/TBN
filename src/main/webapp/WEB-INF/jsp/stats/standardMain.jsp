@@ -121,12 +121,7 @@ System.out.println("%%%%%%%%%%%%%%%% : "+monthAgo);
 					$('#start_date').val(startDate.replaceAll("-",""));
 					$('#end_date').val(endDate.replaceAll("-",""));
 					$('#city').val("("+$("#areaOptSel option:selected").text().substr(0,2)+")");
-					
-					/* if(url == 'stats/muInformer2.do') { // 무제보자의 경우 YYYYMMDD가 아닌 YYYYMM 형식이므로 format
-						var stDate = $('#start_date').val();
-						var fmDate = stDate.slice(0, 6);
-						$('#start_date').val(fmDate); 
-					} */
+
 					
 					rkFlag = true;	
 					frmExcel.action = '<c:url value="/"/>'+url;
@@ -155,7 +150,12 @@ System.out.println("%%%%%%%%%%%%%%%% : "+monthAgo);
 					rkFlag = true; 
 				} else if(url == 'stats/muInformer2.do') { // 무제보자의 경우 yyyy01 ~ yyyy12 값이 필요
 					$('#start_date').val($('#sYear').val()+"01");
-					$('#end_date').val($('#sYear').val()+"12");
+					var dateVal = ($('#sDate').val() < 10) ? '0' + Number($('#sDate').val()) : $('#sDate').val();
+					
+					$('#end_date').val($('#sYear').val() + dateVal);
+					
+					console.log("기준일 :" + $('#start_date').val());
+					console.log("기준일 끝 :" + $('#end_date').val());
 					
 					rkFlag = true;
 					frmExcel.action = '<c:url value="/"/>'+url;

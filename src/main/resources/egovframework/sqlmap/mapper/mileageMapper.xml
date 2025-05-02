@@ -31,230 +31,342 @@
     	]]>
 	</select>
 
-	<select id="allMileList" parameterType="kr.co.wizbrain.tbn.mileage.vo.MserchVO" resultType="kr.co.wizbrain.tbn.mileage.vo.MileageVO">
-		SELECT MILE.INFORMER_ID, MILE.ACT_ID, IFM.INFORMER_NAME, NVL(IFM.ORG_NAME,'무소속') AS ORG_NAME,
-		IFM.PHONE_CELL, MILE.ALL_MILEAGE
-		FROM MILEAGE_INFO MILE
-		JOIN INFORMER IFM
-		ON IFM.INFORMER_ID = MILE.INFORMER_ID
-		WHERE IFM.INFORMER_ID = MILE.INFORMER_ID
-			<if test="areaCode != null  and !areaCode.equals('')">
-				AND IFM.AREA_CODE=#{areaCode}
-			</if>
-			<if test="informerType != null and !informerType.equals('')">
-				AND IFM.informer_type=#{informerType}
-			</if>
-			<if test="orgId != null and !orgId.equals('')">
-				AND IFM.ORG_ID=#{orgId}
-			</if>
-			<if test="flagAct != null and !flagAct.equals('')">
-				AND IFM.FLAG_ACT=#{flagAct}
-			</if>
-			<if test="searchValue != null and !searchValue.equals('')">
-			    <choose>
-					<when test="searchType.equals('actId')">
-						AND IFM.ACT_ID LIKE '%'||#{searchValue}||'%'
-					</when>
-					<when test="searchType.equals('informerName')">
-						AND IFM.INFORMER_NAME LIKE '%'||#{searchValue}||'%'
-					</when>
-					<otherwise>
-						AND IFM.phone_cell LIKE '%'||#{searchValue}||'%'
-					</otherwise>					        
-			    </choose>
-			</if>
-		ORDER BY MILE.ALL_MILEAGE DESC
+	
+	<!--  시상별 배점 갱신  -->
+	<update id="updateGrade" parameterType="awardVo"> 
+		UPDATE EXCELLENCE_GRADE SET ALL_PER=#{ALL_PER} ,MAIN_PER=#{MAIN_PER} ,ADD_PER=#{ADD_PER} WHERE AREA_CODE=#{AREA_CODE} 
+	</update>
+	
+	
+	<!--  종류에 따른 시상대상자 조회  -->
+	<select id="getExcellInformerList" parameterType="awardVo" resultType="awardVo">
+	    with mntb as (
+	        select ind_id, 
+	               sum(mon_cnt) as mon_cnt, 
+	               sum(main_cnt) as main_cnt, 
+	               sum(add_cnt) as add_cnt 
+	        from stat_tbn_monrpt 
+	        where stat_mon between #{SDATE} and #{EDATE} 
+	          and ind_type IN ('1','2','5','6','7')
+	          and area_code=#{AREA_CODE} 
+	          and ind_id not in (
+	            select informer_id 
+	            from excellence_info 
+	            where sdate=#{SDATE} 
+	              and edate=#{EDATE} 
+	              and aw_type=#{searchType} 
+	              and area_code=#{AREA_CODE}
+	        ) 
+	        group by ind_id
+	    ), agp as (
+	        select * 
+	        from excellence_grade 
+	        where area_code=#{AREA_CODE}
+	    )
+	    SELECT C.* 
+	    FROM (
+	        select
+	            <choose>
+	                <when test="searchType == 0"> 
+	                    row_number() over(order by to_number(a.ALL_RANK) desc) as rnum 
+	                </when>
+	                <when test="searchType == 1"> 
+	                    row_number() over(order by to_number(a.MAIN_CNT) desc) as rnum 
+	                </when>
+	                <otherwise> 
+	                    row_number() over(order by to_number(a.ADD_CNT) desc) as rnum 
+	                </otherwise>
+	            </choose>,
+	            b.*, 
+	            a.* 
+	        from (
+	            select 
+	                ind_id,
+	                mon_cnt,
+	                TO_CHAR(round((mon_cnt/a1.mx_mon)* agp.ALL_PER,2), 'FM9990.00') as RPT_GRADE,
+	                main_cnt,
+	                TO_CHAR(round((main_cnt/a2.main_mx)* agp.MAIN_PER, 2), 'FM9990.00') as MAIN_GRADE,
+	                add_cnt,
+	                TO_CHAR(round((GREATEST(add_cnt, 0)/a3.add_mx)* agp.ADD_PER, 2), 'FM9990.00') as ADD_GRADE,
+	                TO_CHAR(
+	                    round((mon_cnt/a1.mx_mon)* agp.ALL_PER, 2) + 
+	                    round((main_cnt/a2.main_mx)* agp.MAIN_PER, 2) + 
+	                    round((GREATEST(add_cnt, 0)/a3.add_mx)* agp.ADD_PER, 2), 
+	                    'FM9990.00'
+	                ) as ALL_RANK
+	            from mntb, agp
+	            ,(select decode(max(mon_cnt), 0, 1, max(mon_cnt)) as mx_mon from mntb) a1,
+	            (select decode(max(main_cnt), 0, 1, max(main_cnt)) as main_mx from mntb) a2,
+	            (select decode(max(add_cnt), 0, 1, max(add_cnt)) as add_mx from mntb) a3
+	            WHERE 1=1
+	            <if test="XSDATE !=null and XSDATE neq ''">
+	                and ind_id not in (
+	                    select informer_id 
+	                    from excellence_info 
+	                    where sdate <![CDATA[ >= ]]> #{XSDATE} 
+	                      and edate <![CDATA[ <= ]]> #{XEDATE} 
+	                      and aw_type=#{searchType} 
+	                      and area_code=#{AREA_CODE}
+	                )
+	            </if>
+	        ) a 
+	        left join (
+	            select t1.*, 
+	                   t2.org_name as org_name 
+	            from (
+	                select informer_id, act_id, informer_name, area_code, org_id, 
+	                       REGEXP_REPLACE(phone_cell, '(02|.{3})(.+)(.{4})', '\1-\2-\3') as PHONE_CELL
+	                from informer 
+	                WHERE area_code=#{AREA_CODE}
+	            ) t1 
+	            left join (
+	                select org_id, org_name 
+	                from organization 
+	                WHERE area_code=#{AREA_CODE}
+	            ) t2 
+	            on(t1.org_id = t2.org_id)
+	        ) b 
+	        on(a.ind_id = b.informer_id)
+	    ) C 
+	    where C.RNUM BETWEEN 1 AND #{searchNum}
 	</select>
-
-
-	<!-- 등급 조회 -->
-	<select id="gradeList" parameterType="kr.co.wizbrain.tbn.mileage.vo.MserchVO" resultType="kr.co.wizbrain.tbn.mileage.vo.MileageVO">
-		SELECT MILE.INFORMER_ID, MILE.ACT_ID, IFM.INFORMER_NAME, NVL(IFM.ORG_NAME,'무소속')AS ORG_NAME, IFM.PHONE_CELL,
-		MILE.CUM_MILEAGE, NVL(GRD.GRADE, '없음')AS GRADE
-		FROM MILEAGE_INFO MILE
-		JOIN INFORMER IFM
-		ON MILE.INFORMER_ID = IFM.INFORMER_ID
-		LEFT JOIN GRADE_INFO GRD
-		ON MILE.INFORMER_ID = GRD.INFORMER_ID
-		WHERE 1=1
-		<if test="areaCode != null  and !areaCode.equals('')">
-				AND IFM.AREA_CODE=#{areaCode}
-			</if>
-			<if test="informerType != null and !informerType.equals('')">
-				AND IFM.informer_type=#{informerType}
-			</if>
-			<if test="orgId != null and !orgId.equals('')">
-				AND IFM.ORG_ID=#{orgId}
-			</if>
-			<if test="flagAct != null and !flagAct.equals('')">
-				AND IFM.FLAG_ACT=#{flagAct}
-			</if>
-			<if test="searchValue != null and !searchValue.equals('')">
-			    <choose>
-					<when test="searchType.equals('actId')">
-						AND IFM.ACT_ID LIKE '%'||#{searchValue}||'%'
-					</when>
-					<when test="searchType.equals('informerName')">
-						AND IFM.INFORMER_NAME LIKE '%'||#{searchValue}||'%'
-					</when>
-					<otherwise>
-						AND IFM.phone_cell LIKE '%'||#{searchValue}||'%'
-					</otherwise>					        
-			    </choose>
-			</if>
-		ORDER BY MILE.CUM_MILEAGE DESC	
+	
+	
+	
+	<!-- 엑셀 다운로드용 시상선정기준 조회 -->
+	<select id="getAwardInformerList2" parameterType="awardVo" resultType="record">
+	    with mntb as (
+	        select 
+	            ind_id,
+	            sum(mon_cnt) as mon_cnt,
+	            sum(main_cnt) as main_cnt,
+	            sum(add_cnt) as add_cnt
+	        from stat_tbn_monrpt
+	        where stat_mon between #{SDATE} and #{EDATE}
+	            and ind_type in ('1','2','5','6','7')
+	            and area_code = #{AREA_CODE}
+	            and ind_id not in (
+	                select informer_id
+	                from excellence_info
+	                where sdate = #{SDATE}
+	                    and edate = #{EDATE}
+	                    and aw_type = #{searchType}
+	                    and area_code = #{AREA_CODE}
+	            )
+	        group by ind_id
+	    ),
+	    agp as (
+	        select * from excellence_grade where area_code = #{AREA_CODE}
+	    )
+	    SELECT C.*
+	    FROM (
+	        select
+	            <!-- 상 종류에 따라 정렬방식 변경 -->
+	            <choose>
+	                <when test="searchType == 0">
+	                    row_number() over(order by to_number(a.ALL_RANK) desc) as rnum
+	                </when>
+	                <when test="searchType == 1">
+	                    row_number() over(order by to_number(a.MAIN_CNT) desc) as rnum
+	                </when>
+	                <otherwise>
+	                    row_number() over(order by to_number(a.ADD_CNT) desc) as rnum
+	                </otherwise>
+	            </choose>,
+	            b.*, a.*
+	        from (
+	            select
+	                ind_id,
+	                mon_cnt,
+	                TO_CHAR(round((mon_cnt / a1.mx_mon) * agp.ALL_PER, 2), 'FM9990.00') as RPT_GRADE,
+	                <!-- 전체제보 -->
+	                main_cnt,
+	                TO_CHAR(round((main_cnt / a2.main_mx) * agp.MAIN_PER, 2), 'FM9990.00') as MAIN_GRADE,
+	                <!-- 주요제보 -->
+	                add_cnt,
+	                <!-- 음수일 경우 0점 처리 -->
+	                TO_CHAR(round((GREATEST(add_cnt, 0) / a3.add_mx) * agp.ADD_PER, 2), 'FM9990.00') as ADD_GRADE,
+	                <!-- 증감 -->
+	                <!-- 총점 -->
+	                TO_CHAR(
+	                    round((mon_cnt / a1.mx_mon) * agp.ALL_PER, 2) + 
+	                    round((main_cnt / a2.main_mx) * agp.MAIN_PER, 2) + 
+	                    round((GREATEST(add_cnt, 0) / a3.add_mx) * agp.ADD_PER, 2), 
+	                    'FM9990.00'
+	                ) as ALL_RANK
+	            from mntb, agp
+	            <!-- 항목 별 최대값
+	                 0건일 경우 분모가 1이 될 수 없으므로 1로 변경
+	                 1로 변경해도 최대값이 0이라는 건 0/1 이므로 결국 0으로 환산됨 -->
+	            <!-- 전체제보 -->
+	            ,(select decode(max(mon_cnt), 0, 1, max(mon_cnt)) as mx_mon from mntb) a1
+	            <!-- 주요제보 -->
+	            ,(select decode(max(main_cnt), 0, 1, max(main_cnt)) as main_mx from mntb) a2
+	            <!-- 증감 -->
+	            ,(select decode(max(add_cnt), 0, 1, max(add_cnt)) as add_mx from mntb) a3
+	            WHERE 1 = 1
+	            <!-- 제외기간이 존재할 경우 -->
+	            <if test="XSDATE != null and XSDATE neq ''">
+	                and ind_id not in (
+	                    select informer_id 
+	                    from excellence_info 
+	                    where sdate <![CDATA[ >= ]]> #{XSDATE} 
+	                    and edate <![CDATA[ <= ]]> #{XEDATE} 
+	                    and aw_type = #{searchType} 
+	                    and area_code = #{AREA_CODE}
+	                )
+	            </if>
+	        ) a
+	        left join (
+	            select 
+	                t1.*, 
+	                t2.org_name as org_name 
+	            from (
+	                select 
+	                    informer_id,
+	                    act_id,
+	                    informer_name,
+	                    area_code,
+	                    org_id,
+	                    REGEXP_REPLACE(phone_cell, '(02|.{3})(.+)(.{4})', '\1-\2-\3') as PHONE_CELL 
+	                from informer 
+	                WHERE area_code = #{AREA_CODE}
+	            ) t1 
+	            left join (
+	                select org_id, org_name 
+	                from organization 
+	                WHERE area_code = #{AREA_CODE}
+	            ) t2 on(t1.org_id = t2.org_id)
+	        ) b on(a.ind_id = b.informer_id)
+	    ) C 
+	    where C.RNUM BETWEEN 1 AND #{searchNum}
 	</select>
-
-	<insert id="paymentMile" parameterType="java.util.List">
-	    insert into mileage_history (ACT_ID, INFORMER_ID, PAYMENT_DATE, PAYMENT_MILE, START_DATE ,PAYMENT_YN)
-	    <foreach collection="chkArr" item="item" index="i" separator="UNION ALL">
-	        SELECT #{item.ACT_ID}, #{item.INFORMER_ID}, SYSDATE, #{item.PAYMENT_MILE}, #{item.START_DATE}, 'Y'
-	        FROM INFORMER
-				WHERE INFORMER_ID =#{item.INFORMER_ID}
+	
+	
+	
+	
+	<!-- 우수 제보자 > 수상자 조회 엑셀 다운로드  -->
+	<select id="selectUserAwardList2" parameterType="awardVo" resultType="record">
+	    SELECT 
+	        ROW_NUMBER() OVER(ORDER BY B.REG_DATE DESC) RNUM, 
+	        c.informer_id, 
+	        E.CITY as REGION_NM, 
+	        D.ORG_NAME, 
+	        C.ACT_ID, 
+	        C.INFORMER_NAME, 
+	        DECODE(B.AW_TYPE, '0', '교통제보우수자', '1', '주요정보제공우수자', '2', '실적증가자') AS AW_TYPE, 
+	        B.AW_NAME, 
+	        REGEXP_REPLACE(C.PHONE_CELL, '(02|.{3})(.+)(.{4})', '\1-\2-\3') as PHONE_CELL, 
+	        TO_CHAR(TO_DATE(B.REG_DATE, 'YYYYMMDD'), 'YYYY-MM-DD') AS REG_DATE, 
+	        B.RPT_GRADE, 
+	        B.MAIN_GRADE, 
+	        B.ADD_GRADE, 
+	        B.ALL_RANK 
+	    FROM EXCELLENCE_INFO B 
+	    LEFT JOIN (
+	        SELECT 
+	            INFORMER_ID, 
+	            INFORMER_NAME, 
+	            AREA_CODE, 
+	            ORG_ID, 
+	            ACT_ID, 
+	            PHONE_CELL 
+	        FROM INFORMER 
+	        WHERE AREA_CODE = #{AREA_CODE}
+	    ) C ON(B.INFORMER_ID = C.INFORMER_ID)
+	    LEFT JOIN (
+	        SELECT 
+	            ORG_ID, 
+	            ORG_NAME, 
+	            AREA_CODE 
+	        FROM ORGANIZATION 
+	        WHERE AREA_CODE = #{AREA_CODE}
+	    ) D ON(C.ORG_ID = D.ORG_ID)
+	    LEFT JOIN CODE_AREACODE E ON(B.AREA_CODE = E.AREA_CODE)
+	    WHERE B.AREA_CODE = #{AREA_CODE} 
+	        AND B.AW_TYPE = #{searchType} 
+	        AND B.SDATE <![CDATA[ >= ]]> #{SDATE} 
+	        AND B.EDATE <![CDATA[ <= ]]> #{EDATE}
+	    ORDER BY ALL_RANK DESC
+	</select>
+	
+	
+	
+	<!--  시상별 배점 조회  -->
+	<select id="excellGrade" parameterType="OptAreaVo" resultType="awardVo">
+		SELECT * FROM EXCELLENCE_GRADE
+		<if test="areaCode !=null and areaCode neq ''"> WHERE AREA_CODE=#{areaCode} </if>
+	</select>
+	
+	
+	<!-- 우수 제보자 > 수상자 조회 -->
+	<select id="selectUserAwardList" parameterType="awardVo" resultType="awardVo">
+	    SELECT 
+	        ROW_NUMBER() OVER(ORDER BY B.REG_DATE DESC) RNUM, 
+	        B.AW_ID, 
+	        c.informer_id, 
+	        E.CITY as REGION_NM, 
+	        D.ORG_NAME, 
+	        C.ACT_ID, 
+	        C.INFORMER_NAME, 
+	        DECODE(B.AW_TYPE, '0', '교통제보우수자', '1', '주요정보제공우수자', '2', '실적증가자') AS AW_TYPE, 
+	        B.AW_NAME, 
+	        REGEXP_REPLACE(C.PHONE_CELL, '(02|.{3})(.+)(.{4})', '\1-\2-\3') as PHONE_CELL, 
+	        TO_CHAR(TO_DATE(B.REG_DATE, 'YYYYMMDD'), 'YYYY-MM-DD') AS REG_DATE, 
+	        B.RPT_GRADE, 
+	        B.MAIN_GRADE, 
+	        B.ADD_GRADE, 
+	        B.ALL_RANK 
+	    FROM EXCELLENCE_INFO B 
+	    LEFT JOIN (
+	        SELECT INFORMER_ID, INFORMER_NAME, AREA_CODE, ORG_ID, ACT_ID, PHONE_CELL 
+	        FROM INFORMER 
+	        WHERE AREA_CODE = #{AREA_CODE}
+	    ) C ON(B.INFORMER_ID = C.INFORMER_ID) 
+	    LEFT JOIN (
+	        SELECT ORG_ID, ORG_NAME, AREA_CODE 
+	        FROM ORGANIZATION 
+	        WHERE AREA_CODE = #{AREA_CODE}
+	    ) D ON(C.ORG_ID = D.ORG_ID) 
+	    LEFT JOIN CODE_AREACODE E ON(B.AREA_CODE = E.AREA_CODE) 
+	    WHERE B.AREA_CODE = #{AREA_CODE} 
+	      AND B.AW_TYPE = #{searchType} 
+	      AND B.SDATE <![CDATA[ >= ]]> #{SDATE} 
+	      AND B.EDATE <![CDATA[ <= ]]> #{EDATE}
+	    ORDER BY ALL_RANK DESC
+	</select>
+	
+	
+	<!-- 시상 저장 -->
+	<update id="saveAward">
+	    INSERT INTO EXCELLENCE_INFO (
+	        AW_ID, INFORMER_ID, ACT_ID, AW_TYPE, AREA_CODE, AW_NAME, 
+	        AW_DATE, REG_DATE, SDATE, EDATE, RPT_GRADE, MAIN_GRADE, 
+	        ADD_GRADE, ALL_RANK
+	    )
+	    <foreach collection="chkArr" item="item" index="i" separator="union">
+	        SELECT (
+	            SELECT INFORMER_ID || TO_CHAR(SYSDATE, 'YYYYMMDDHH24MISS') 
+	            FROM DUAL
+	        ), 
+	        INFORMER_ID, ACT_ID, #{thvo.searchType}, AREA_CODE, #{thvo.AW_NAME}, 
+	        TO_CHAR(SYSDATE, 'YYYYMM'), TO_CHAR(SYSDATE, 'YYYYMMDD'), 
+	        #{thvo.SDATE}, #{thvo.EDATE}, #{item.RPT_GRADE}, 
+	        #{item.MAIN_GRADE}, #{item.ADD_GRADE}, #{item.ALL_RANK}
+	        FROM INFORMER 
+	        WHERE INFORMER_ID = #{item.INFORMER_ID}
 	    </foreach>
-	</insert>
-	
-	<insert id="insertMile" parameterType="java.util.List">
-		insert into mileage_info
-		(ACT_ID,ALL_MILEAGE,CUM_MILEAGE,INFORMER_ID)
-		values
-		(#{mileList[0].ACT_ID},#{mileList[0].PAYMENT_MILE},#{mileList[0].PAYMENT_MILE},#{mileList[0].INFORMER_ID})
-	</insert>
-	
-	<update id="updateMile" parameterType="java.util.List">
-	        update mileage_info
-	        set 
-	            ALL_MILEAGE = ALL_MILEAGE + #{mileList[0].PAYMENT_MILE},
-	            CUM_MILEAGE = CUM_MILEAGE + #{mileList[0].PAYMENT_MILE}
-	        where INFORMER_ID = #{mileList[0].INFORMER_ID}
 	</update>
 	
-	<select id="selectMile" parameterType="java.util.List" resultType="kr.co.wizbrain.tbn.mileage.vo.MileageVO">
-		select *
-		from mileage_info
-		where INFORMER_ID = #{mileList[0].INFORMER_ID}
-	</select>
 	
-	<!--  상품 지급을 위한 통신원 정보 가져오기  -->
-	<select id="selectIfm" resultType="kr.co.wizbrain.tbn.mileage.vo.MileageVO">
-		SELECT MILE.INFORMER_ID, MILE.ACT_ID, IFM.INFORMER_NAME, NVL(IFM.ORG_NAME,'무소속') AS ORG_NAME,
-		IFM.PHONE_CELL, MILE.ALL_MILEAGE
-		FROM MILEAGE_INFO MILE
-		JOIN INFORMER IFM
-		ON IFM.INFORMER_ID = MILE.INFORMER_ID
-		WHERE MILE.INFORMER_ID = #{ifmId}
-	</select>
-
-	<!--  상품 정보 가져오기  -->
-	<select id="getGift" resultType="kr.co.wizbrain.tbn.mileage.vo.GiftVO">
-		SELECT *
-		FROM GIFT_INFO
-	</select>
-	
-	<!--  등급 부여를 위한 통신원 정보 가져오기  -->
-	<select id="gSelectIfm" resultType="kr.co.wizbrain.tbn.mileage.vo.MileageVO">
-		SELECT MILE.INFORMER_ID, MILE.ACT_ID, IFM.INFORMER_NAME, NVL(IFM.ORG_NAME,'무소속')AS ORG_NAME, IFM.PHONE_CELL,
-		MILE.CUM_MILEAGE, NVL(GRD.GRADE, '없음')AS GRADE, MILE.ALL_MILEAGE
-		FROM MILEAGE_INFO MILE
-		JOIN INFORMER IFM
-		ON MILE.INFORMER_ID = IFM.INFORMER_ID
-		LEFT JOIN GRADE_INFO GRD
-		ON MILE.INFORMER_ID = GRD.INFORMER_ID
-		WHERE MILE.INFORMER_ID = #{ifmId}
-	</select>
-	
-	<!--  등급 정보 가져오기  -->
-	<select id="getGrade" resultType="kr.co.wizbrain.tbn.mileage.vo.GradeVO">
-		select * from payment_grade
-	</select>
-	
-	
-	<!-- 마일리지 차감 작업  -->
-	<update id="minusMile" parameterType="kr.co.wizbrain.tbn.mileage.vo.MileageVO">
-		UPDATE MILEAGE_INFO
-		SET ALL_MILEAGE = ALL_MILEAGE - #{MINUS_MILE}
-		WHERE INFORMER_ID = #{INFORMER_ID}
-	</update>
-	 
-	<!-- 상품 지급 로그 작업 -->
-	<insert id="giftHistory" parameterType="kr.co.wizbrain.tbn.mileage.vo.MileageVO">
-		insert into gift_history(ACT_ID,INFORMER_ID,MINUS_MILE,PAYMENT_DATE,PAYMENT_GCOD,PAYMENT_GIFT,PAYMENT_TEXT,PAYMENT_YN)
-		values(#{ACT_ID},#{INFORMER_ID},#{MINUS_MILE},SYSDATE,#{GCODE},#{PAYMENT_GIFT},#{PAYMENT_TEXT},'Y')
-	</insert>
-	
-	<!-- 등급 부여 로그 작업 -->
-	<insert id="gradeHistory" parameterType="kr.co.wizbrain.tbn.mileage.vo.MileageVO">
-		INSERT INTO GRADE_HISTORY(ACT_ID,CUM_MILEAGE,GRADE,GRADE_DATE,INFORMER_ID)
-		VALUES(#{ACT_ID},#{CUM_MILEAGE},#{GRADE},SYSDATE,#{INFORMER_ID})
-	</insert>
-	
-	<!-- 등급 부여 전 이력 확인 -->
-	<select id="gradeChecker" parameterType="kr.co.wizbrain.tbn.mileage.vo.MileageVO" resultType="kr.co.wizbrain.tbn.mileage.vo.MileageVO">
-		SELECT * FROM GRADE_INFO
-		WHERE INFORMER_ID = #{INFORMER_ID}
-	</select>
-	
-	<!-- 부여된 등급 반영(등록) -->
-	<insert id="insertGrade" parameterType="kr.co.wizbrain.tbn.mileage.vo.MileageVO">
-		INSERT INTO GRADE_INFO(ACT_ID,CUM_MILEAGE,GRADE,INFORMER_ID)
-		VALUES(#{ACT_ID},#{CUM_MILEAGE},#{GRADE},#{INFORMER_ID})
-	</insert>
-	
-	<!-- 부여된 등급 반영(수정) -->
-	<update id="updateGrade" parameterType="kr.co.wizbrain.tbn.mileage.vo.MileageVO">
-		UPDATE GRADE_INFO
-		SET CUM_MILEAGE = #{CUM_MILEAGE},
-		GRADE = #{GRADE}
-		WHERE INFORMER_ID = #{INFORMER_ID}
+	<!-- 시상 삭제 -->
+	<update id="deleteAward">
+	    DELETE FROM EXCELLENCE_INFO 
+	    WHERE AW_ID IN
+	    <foreach collection="selection" item="item" index="index" separator="," open="(" close=")">
+	        #{item}
+	    </foreach>
 	</update>
 	
-	<!-- 마일리지 지급 이력 - 통신원 정보 가져오기 -->
-	<select id="informerInfo" resultType="kr.co.wizbrain.tbn.mileage.vo.MileageVO">
-		SELECT MILE.INFORMER_ID, NVL(IFM.ORG_NAME , '무소속') AS ORG_NAME, IFM.INFORMER_NAME, IFM.PHONE_CELL, MILE.ALL_MILEAGE, MILE.CUM_MILEAGE
-		,NVL(GRD.GRADE, '없음') AS GRADE
-		FROM MILEAGE_INFO MILE
-		JOIN INFORMER IFM
-		ON MILE.INFORMER_ID = IFM.INFORMER_ID
-		LEFT JOIN GRADE_INFO GRD
-		ON GRD.INFORMER_ID = MILE.INFORMER_ID
-		WHERE MILE.INFORMER_ID = #{ifmId}
-	</select>
-	
-	<!-- 마일리지 지급 이력 - 마일리지 지급 이력 가져오기 -->
-	<select id="mileLogList" resultType="kr.co.wizbrain.tbn.mileage.vo.MileageVO">
-		SELECT TO_CHAR(PAYMENT_DATE, 'YYYY-MM-DD HH24:MI:SS') AS PAYMENT_DATE,ACT_ID,INFORMER_ID,PAYMENT_MILE,PAYMENT_YN,START_DATE
-		FROM MILEAGE_HISTORY
-		WHERE INFORMER_ID = #{ifmId}
-		ORDER BY PAYMENT_DATE
-	</select>
-	
-	<!-- 마일리지 지급 이력 - 상품 지급 이력 가져오기 -->
-	<select id="giftLogList" resultType="kr.co.wizbrain.tbn.mileage.vo.MileageVO">
-		SELECT TO_CHAR(PAYMENT_DATE, 'YYYY-MM-DD HH24:MI:SS') AS PAYMENT_DATE,ACT_ID,INFORMER_ID,MINUS_MILE,PAYMENT_GCOD,PAYMENT_GIFT
-		,PAYMENT_TEXT,PAYMENT_YN
-		FROM GIFT_HISTORY
-		WHERE INFORMER_ID = #{ifmId}
-		ORDER BY PAYMENT_DATE
-	</select>
-	
-	<!-- 등급 부여 이력 - 등급 부여 이력 가져오기 -->
-	<select id="gradeLogList" resultType="kr.co.wizbrain.tbn.mileage.vo.MileageVO">
-		SELECT TO_CHAR(GRADE_DATE, 'YYYY-MM-DD HH24:MI:SS') AS GRADE_DATE, ACT_ID,CUM_MILEAGE,GRADE,INFORMER_ID
-		FROM GRADE_HISTORY
-		WHERE INFORMER_ID = #{ifmId}
-		ORDER BY GRADE_DATE
-	</select>
-	
-	<!-- 마일리지 반영 - 엑셀 다운로드 기능 -->
-	<select id="getMileList" parameterType="kr.co.wizbrain.tbn.mileage.vo.MileageVO" resultType="record">
-		SELECT *
-		FROM MILEAGE_INFO
-		WHERE start_date = #{START_DATE}
-	</select>          
-	
-	 
-	<!--  총 마일리지 조회 - 엑셀 다운로드 기능 -->
-	
-	<!--  등급 조회 - 엑셀 다운로드 기능 -->
 	
 </mapper>

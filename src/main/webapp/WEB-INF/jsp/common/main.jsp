@@ -132,8 +132,7 @@
 	            type: "POST",
 	            success: function(data) {
 	                appendNotice(data);
-	                
-	                console.log("공지사항 불러오기");
+
 	                var nCount = data.moreCount;
 	                
 	                if(nCount > 0){
@@ -160,8 +159,7 @@
 
         // 공지사항 append 함수
         function appendNotice(data) {
-			
-        console.log("공지사항 만들기");
+    
         	// 값이 있는 경우에만 생성
         	if(data.NoticeList.length !== 0) {
         		// 공지사항(화면) 생성에 필요한 값들

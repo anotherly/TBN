@@ -80,7 +80,9 @@
 			<mvc:mapping path="/informer/informerMain.do"/>
 			<mvc:mapping path="/informer/award/awardMain.do"/>
 			<mvc:mapping path="/informer/event/eventMain.do"/>
-			<mvc:mapping path="/informer/mileage/mileageMain.do"/> <!--  24-11-26 : 마일리지 추가 -->
+			<mvc:mapping path="/informer/mileage/mileageMain.do"/> <!--  25-04-25 : 굿 제보 마일리지 추가 -->
+			<mvc:mapping path="/informer/excellenceIfrm/excellenceIfrmMain.do"/> <!-- 25-04-25 : 우수 제보자 추가 -->
+			<mvc:mapping path="/informer/bestIfrm/bestIfrmMain.do"/> <!-- 25-04-25 : 최고 통신원 추가 -->
 			<mvc:mapping path="/option/codeMng.do"/>
 			<mvc:mapping path="/option/auth/authList.do"/>
 			<mvc:mapping path="/notice/notice.do"/> <!-- 24-11-13 : 공지사항 추가 -->

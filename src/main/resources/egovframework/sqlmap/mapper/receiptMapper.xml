@@ -46,6 +46,7 @@
 		, AREA_ID
 		, RECEPTION_EVA
 		, FLAG_WEB
+		, FLAG_DMB_SEND
 		)
 		VALUES(
 		#{RECEIPT_ID}
@@ -98,6 +99,7 @@
 		, #{AREA_ID}
 		, #{LANE}
 		, #{FLAG_WEB}
+		, #{FLAG_DMB_SEND}
 		)
 	</insert>
 

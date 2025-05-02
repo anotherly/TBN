@@ -444,6 +444,12 @@ function memoAddSentnece() {
 	if(FLAG_DISASTOR.is(":checked")){
 		changeStr += "<재난>";
 	}
+	var FLAG_DMB = $("input:checkbox[id=FLAG_DMB_SEND]");
+	if(FLAG_DMB.is(":checked")){
+		changeStr += "<사진/영상>";
+	}
+	
+	
 	return changeStr;
 	
 	/*var REPORT_TYPE3 = $("#REPORT_TYPE3").val();
@@ -471,6 +477,16 @@ function saveReceipt(){
 	if(!isProperInput(form)){
 		return;
 	}
+	
+	
+	var disastor_flag ;
+	var dmb_flag ;
+	
+	if(disastor_flag == true && dmb_flag == ture) {
+		alert("재난 제보와 사진/영상은 중복 체크할 수 업습니다. (택1)");
+	}
+	
+	
 	//제보내용 객체 생성
 	var str="";
 	//긴급,중요 꺽쇠표시

@@ -138,6 +138,7 @@
 				                	<input type="checkbox" name="FLAG_IMPORTANT" id="FLAG_EMERGENCY" value="Y" /> 긴급접수
 									<input type="checkbox" name="FLAG_SEND" id="FLAG_REQUEST" value="Y" checked/> 방송요청
 									<input type="checkbox" name="FLAG_WEB" id="FLAG_WEB" value="Y" checked/> 홈페이지 게시
+									<input type="checkbox" name="FLAG_DMB_SEND" id="FLAG_DMB_SEND" value="Y"/> 사진/영상 제보
 								</td>
 							</tr>
 							<tr>

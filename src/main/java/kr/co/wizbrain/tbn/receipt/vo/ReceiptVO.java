@@ -65,9 +65,12 @@ public class ReceiptVO {
 	
 	private String FLAG_WEB;
 	
+	private String FLAG_DMB_SEND;
 	
 	public ReceiptVO() {}
 	
+	
+
 	public ReceiptVO(String rECEIPT_ID, String iNDIVIDUAL_ID, String iNDIVIDUAL_NAME, String iNDIVIDUAL_TYPE,
 			String oRG_ID, String oRG_NAME, String rECEPTION_ID, String rECEPTION_NAME, String mEMO, String aRTERY_ID,
 			String f_LINK_ID, String t_LINK_ID, String f_NODE_NAME, String t_NODE_NAME, String rEGION_ID,
@@ -76,7 +79,8 @@ public class ReceiptVO {
 			String fLAG_DISASTOR, String r_TEL, String x_COORDINATE, String y_COORDINATE, String rEPORT_TYPE2,
 			String rEPORT_TYPE3, String aREA_ID, String lANE, String iNFORMER_ID, String aCT_ID, String iNFORMER_NAME,
 			String rEGIONSUB_ID, String rEGIONSUB_NAME, String pHONE_CELL, String pHONE_HOME, String iNFORMER_TYPE,
-			String aDDRESS_HOME, String zIPCODE, String fLAG_BLACKLIST, int sTAT1, int sTAT2, int sTAT3 , String fLAG_WEB) {
+			String aDDRESS_HOME, String zIPCODE, String fLAG_BLACKLIST, int sTAT1, int sTAT2, int sTAT3 , String fLAG_WEB,
+			String fLAG_DMB_SEND) {
 		super();
 		RECEIPT_ID = rECEIPT_ID;
 		INDIVIDUAL_ID = iNDIVIDUAL_ID;
@@ -126,6 +130,7 @@ public class ReceiptVO {
 		STAT2 = sTAT2;
 		STAT3 = sTAT3;
 		FLAG_WEB = fLAG_WEB;
+		FLAG_DMB_SEND = fLAG_DMB_SEND;
 	}
 
 
@@ -455,9 +460,6 @@ public class ReceiptVO {
 	public void setLANE(String lANE) {
 		LANE = lANE;
 	}
-	
-	
-	
 
 	public String getFLAG_WEB() {
 		return FLAG_WEB;
@@ -465,6 +467,14 @@ public class ReceiptVO {
 
 	public void setFLAG_WEB(String fLAG_WEB) {
 		FLAG_WEB = fLAG_WEB;
+	}
+	
+	public String getFLAG_DMB_SEND() {
+		return FLAG_DMB_SEND;
+	}
+
+	public void setFLAG_DMB_SEND(String fLAG_DMB_SEND) {
+		FLAG_DMB_SEND = fLAG_DMB_SEND;
 	}
 
 	@Override

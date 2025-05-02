@@ -17,31 +17,34 @@
 <html>
 <head>
 <meta charset="UTF-8">
+<style>
+ 	table, th, td {
+	  border: 1px solid black;
+	  border-collapse: collapse;
+	}
+	
+	table {
+		width : 100%;
+		height : auto;
+	}
+	
+	
+	th, td {
+		text-align: center;
+		font-size : 16px;
+		line-height : 40px;
+	}
+	
+	th {
+		background-color : #dededf;
+	}
+	
+</style>
 <script>
- 	$(document).ready(function(){
- 		dateFunc("standardDate");
- 		
- 		search(); // 첫 진입 시 실행 함수	 */
- 	});
-	
-	
-	// 검색 버튼 클릭하기 
-	function search(){
-		
-		var options = {
-	            url:"/mileage/mileageMainsearch.do",
-	            type:"post",
-	            target: '#listDiv',
-	            success: function(){
-	            },
-	            error: function(res,error){
-	                alert("에러가 발생했습니다."+error);
-	            }
-	    };
-	    $('#searchFrm').ajaxSubmit(options);	    
-	} 
-	
-	
+/*  	$(document).ready(function(){
+
+ 	}); */
+	 
 	// 페이지 이동
 	function changePage(url){
 		
@@ -116,44 +119,41 @@
 					<!-- 서브메뉴 탭영역 시작 -->
 					<div class="gnb_tab">
 						<ul class="lst_tab">
-							<li class="on"><a href="javascript:changePage('goodMile')">굿 제보 마일리지 조회</a></li>
+							<li ><a href="javascript:changePage('goodMile')">굿 제보 마일리지 조회</a></li>
 							<li class="ns"></li>
-							<li><a href="javascript:changePage('allMile')">우수 통신원</a></li>
+							<li><a href="javascript:changePage('ecellIfrm')">우수 통신원</a></li>
 							<li class="ns"></li>
-							<li><a href="javascript:changePage('standard')">선정 기준</a></li>
+							<li class="on"><a href="javascript:changePage('standard')">선정 기준</a></li>
 						</ul>
 					</div>
-					<div style="position: absolute;right: 0px;top: 52px;">
-				       <select id="areaOptSel" name="searchAreaCode">
-                           <c:forEach var="informerRegion" items="${informerRegionList}" varStatus="idx">
-                               <option value="${informerRegion.areaCode}" 
-                               <c:if test="${informerRegion.areaCode eq login.regionId}">selected</c:if>>
-                               <c:out value="${informerRegion.areaName}"/></option>
-                           </c:forEach>
-						</select>
-					</div>
 					
-					<!-- 검색조건 영역 시작 -->
-					<div class="rounding_wrap mgt10">
-						<div class="wrap_top"></div>
-						<div class="wrap_center">
-							<fieldset style="display: flex; align-items: center; justify-content: center;">
-								<div>
-									기준 년월 :
-										<input type="text" id="standardDate" name="standardDate" style="margin-right : 15px;">
-								</div>
-								<div id="awardSdiv">
-									 <img src="../images/btn_search.gif" onclick="search();" style="cursor: pointer;     margin-left: 10px;" alt="검색" /> 
-								</div>
-	
-							</fieldset>
-						</div>
-						<div class="wrap_bottom"></div>
+					<div id="listDiv">
+						<table>
+							<tr>
+								<th>선정 기준
+								</th>
+								<th>적립 마일리지
+								</th>
+							</tr>
+							<tr>
+								<td>당월 주요제보(사고, 공사, 행사 등) 건수</td>
+								<td>건 당 2점</td>
+							</tr>
+							<tr>
+								<td>전월 주요제보(사고, 공사, 행사 등) 건수</td>
+								<td>건 당 1점</td>
+							</tr>
+							<tr>
+								<td>재난제보 건수</td>
+								<td>건 당 5점</td>
+							</tr>
+							<tr>
+								<td>영상, 사진제보</td>
+								<td>건 당 5점</td>
+							</tr>
+						</table>
+					
 					</div>
-				</div>
-				<input type="hidden" name="PAYMENT_DATE" id="PAYMENT_DATE">
-				<!-- list -->
-				<div id="listDiv"></div>
 			</div>
 		</div>
 		

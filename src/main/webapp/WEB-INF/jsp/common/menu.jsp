@@ -67,9 +67,12 @@
 		<li><a id="/informer/first.do" class="goUrlMenu">통신원관리</a>
 			<ul class="submenu">
 				<li id="/informer/informerMain.do" class="goUrlMenu"><a>통신원관리</a></li>
-				<li id="/informer/mileage/mileageMain.do" class="goUrlMenu mileageMenu"><a>마일리지</a></li>
+				<li id="/informer/mileage/mileageMain.do" class="goUrlMenu mileageMenu"><a>굿 제보 마일리지</a></li>
+				<li id="/informer/excellenceIfrm/excellenceIfrmMain.do" class="goUrlMenu mileageMenu"><a>우수 제보자</a></li>
 				<li id="/informer/award/awardMain.do" class="goUrlMenu"><a>시상관리</a></li>
 				<li id="/informer/event/eventMain.do" class="goUrlMenu"><a>행사관리</a></li>
+				<li id="/informer/bestIfrm/bestIfrmMain.do" class="goUrlMenu mileageMenu"><a>최고 통신원</a></li>
+				
 			</ul>
 		</li>
 		<li><a id="/option/codeMng.do" class="goUrlMenu">정보관리</a>
