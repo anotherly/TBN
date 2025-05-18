@@ -66,12 +66,12 @@
 		
 				}
 			);
-		} else if(url == 'paymentMile'){
+		} else if(url == 'excellenceIfrm'){
 			$.ajax
 			(
 				{
 					type : "post" ,
-					url : "/informer/mileage/mileageMain.do" ,
+					url : "/mileage/excellenceIfrmMain.do" ,
 					dataType : "html" ,
 					cache : false ,
 					success:function(html){
@@ -121,7 +121,7 @@
 						<ul class="lst_tab">
 							<li ><a href="javascript:changePage('goodMile')">굿 제보 마일리지 조회</a></li>
 							<li class="ns"></li>
-							<li><a href="javascript:changePage('ecellIfrm')">우수 통신원</a></li>
+							<li><a href="javascript:changePage('excellenceIfrm')">우수 통신원</a></li>
 							<li class="ns"></li>
 							<li class="on"><a href="javascript:changePage('standard')">선정 기준</a></li>
 						</ul>

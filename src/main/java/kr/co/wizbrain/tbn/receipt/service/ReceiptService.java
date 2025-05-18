@@ -2,6 +2,7 @@ package kr.co.wizbrain.tbn.receipt.service;
 
 import java.util.List;
 
+import kr.co.wizbrain.tbn.mileage.vo.MileageVO;
 import kr.co.wizbrain.tbn.notice.vo.NoticeVO;
 import kr.co.wizbrain.tbn.receipt.vo.AreaCodeVO;
 import kr.co.wizbrain.tbn.receipt.vo.AreaSubCodeVO;
@@ -45,6 +46,10 @@ public interface ReceiptService {
 	//제보접수 등록
 	public int insertReceipt(ReceiptVO ReceiptVO) throws Exception;
 	public int updateMonthlyStat(ReceiptVO vo) throws Exception;
+	
+	// 최고 통신원, 우수 통신원 조회
+	public List<MileageVO> selectIfrm(ReceiptVO vo) throws Exception;
+	
 	
 	//통신원(제보접수용) 조회
 	//public InformerVO selectInformerByPhone(String phone_cell) throws Exception;

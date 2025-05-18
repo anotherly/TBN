@@ -25,6 +25,12 @@ public class MileageServiceImpl implements MileageService {
 	public List<MileageVO> mileList(MileageVO MileageVO) throws Exception {
 		return mileageMapper.mileList(MileageVO);
 	}
+	
+	// 우수 제보자 조회
+	@Override
+	public List<MileageVO> excellenceList(MileageVO MileageVO) throws Exception {
+		return mileageMapper.excellenceList(MileageVO);
+	}
 
 	// 시상별 배점 갱신
 	public void updateGrade(AwardVO thvo) {
@@ -75,5 +81,17 @@ public class MileageServiceImpl implements MileageService {
 	@Override
 	public List selectUserAwardList2(AwardVO paramVO) {
 		return mileageMapper.selectUserAwardList2(paramVO);
+	}
+	
+	// 최고 통신원 기본 정보 조회
+	@Override
+	public List<MileageVO> bestIfrmList(MileageVO MileageVO){
+		return mileageMapper.bestIfrmList(MileageVO);
+	}
+	
+	// 최고 통신원 전체 제보건수 조회
+	@Override
+	public List<MileageVO> bestIfrmCnt(List<MileageVO> bestIfrmList) {
+		return mileageMapper.bestIfrmCnt(bestIfrmList);
 	}
 }

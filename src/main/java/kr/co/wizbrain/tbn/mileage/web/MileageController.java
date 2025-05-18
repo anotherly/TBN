@@ -1,8 +1,9 @@
 package kr.co.wizbrain.tbn.mileage.web;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -13,17 +14,16 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
+import kr.co.wizbrain.tbn.award.service.AwardService;
 import kr.co.wizbrain.tbn.award.vo.AwardVO;
 import kr.co.wizbrain.tbn.award.web.AwardController;
+import kr.co.wizbrain.tbn.comm.BaseController;
+import kr.co.wizbrain.tbn.comm.ParamsDto;
 import kr.co.wizbrain.tbn.infrm.service.InfrmService;
 import kr.co.wizbrain.tbn.mileage.service.MileageService;
-import kr.co.wizbrain.tbn.mileage.vo.GiftVO;
-import kr.co.wizbrain.tbn.mileage.vo.GradeVO;
 import kr.co.wizbrain.tbn.mileage.vo.MileageVO;
-import kr.co.wizbrain.tbn.mileage.vo.MserchVO;
 import kr.co.wizbrain.tbn.option.service.AreaOptService;
 import kr.co.wizbrain.tbn.option.service.InfrmOptService;
 import kr.co.wizbrain.tbn.option.vo.OptAreaVo;
@@ -31,16 +31,10 @@ import kr.co.wizbrain.tbn.option.vo.OptInftVo;
 import kr.co.wizbrain.tbn.user.vo.UserVO;
 
 @Controller
-public class MileageController {
+public class MileageController extends BaseController{
 
 	private static final Logger logger = LoggerFactory.getLogger(AwardController.class);
 	public String url="";
-	
-	@Resource(name="mileageService")
-	private MileageService mileageService;
-	
-	@Resource(name="areaOptService")
-	private AreaOptService areaOptService;
 	
 	@Resource(name="infrmService")
 	private InfrmService infrmService;
@@ -48,352 +42,490 @@ public class MileageController {
 	@Resource(name="infrmOptService")
 	private InfrmOptService infrmOptService;
 	
+	@Resource(name="areaOptService")
+	private AreaOptService areaOptService;
+		
+	@Resource(name="mileageService")
+	private MileageService mileageService;
 
-	@RequestMapping(value= {"/informer/mileage/mileageMain.do","/mileage/allMile.do","/mileage/mileGrade.do"})
-	public ModelAndView mileageMain(HttpServletRequest request,Model model) throws Exception {
-		ModelAndView mav = new ModelAndView("jsonView");
-		OptAreaVo areaVo = new OptAreaVo();
+	@Resource(name="awardService")
+	private AwardService awardService;
+	
+	
+	
+	
+	////////////////////////////////////////////////////////////////////////////////////
+	/*     < 굿 제보 마일리지 >     */
+	////////////////////////////////////////////////////////////////////////////////////
+	
+	
+	
+	// 1. 굿 제보 마일리지 최초 이동 ( + 검색 옵션 셋팅 등 = 검색 기능 X )
+	@RequestMapping(value= {"/informer/mileage/mileageMain.do"})
+	public ModelAndView mileageMain(HttpServletRequest request) throws Exception {
+		logger.debug("▶▶ 굿 제보 마일리지 메뉴 클릭");
 		
 		url = request.getRequestURI().substring(request.getContextPath().length()).split(".do")[0];
+		ModelAndView mav = new ModelAndView(url);
+		
+		// 현재 세션에 대해 로그인한 사용자 정보를 가져옴
 		UserVO nlVo = (UserVO) request.getSession().getAttribute("login");
 		
-		if(!(nlVo.getAuthCode().equals("999"))) {//999 관리자 권한
-			areaVo.setAreaCode(nlVo.getRegionId());
+		OptAreaVo avo = new OptAreaVo();
+		if(!(nlVo.getAuthCode().equals("999"))) {
+			avo.setAreaCode(nlVo.getRegionId()); // 관리자는 제외하고 
 		}
-		
-		List<OptAreaVo> alist = areaOptService.selectAreaOpt1(areaVo);
-		
-		mav.addObject("informerRegionList", alist);
+
 		mav.addObject("informerTypeList", infrmOptService.selectInft1(new OptInftVo()));
-		mav.addObject("informerRegionList", areaOptService.selectAreaOpt1(areaVo));
-		mav.addObject("informerAreaList", this.areaOptService.selectAreaOpt1(areaVo));
+		mav.addObject("informerRegionList", areaOptService.selectAreaOpt1(avo));
+		mav.addObject("informerAreaList", this.areaOptService.selectAreaOpt1(avo));
 		
-		if(url .equals( "/informer/mileage/mileageMain")) {
-			mav.setViewName("/mileage/mileageMain");
+		mav.setViewName("/mileage/mileageMain");
+		
+		return mav;
+	}
+	
+
+	
+	// 2. 굿 제보 마일리지 이동 및 검색
+	@RequestMapping(value = {"/mileage/mileageMainLoad.do","/mileage/mileageMainsearch.do" })
+	public ModelAndView mileagList (HttpServletRequest request, Model model,
+		@ModelAttribute("MileageVO") MileageVO MileageVO) throws Exception {
+		logger.debug("▶▶ 굿 제보 마일리지로 이동");
+		ModelAndView mav = new ModelAndView("/mileage/mileageList");// ModelAndView 객체 생성
+
+		url = request.getRequestURI().substring(request.getContextPath().length()).split(".do")[0]; // 이동할 페이지 url 추출
+		
+		// 현재 세션에 대해 로그인한 사용자 정보를 가져옴
+		UserVO nlVo = (UserVO) request.getSession().getAttribute("login");	
+		
+		// 첫 이동일 경우, 현재 날짜의 년월을 기준으로 조회 (현재 날짜의 -1달)
+		if (MileageVO.getStandardDate().equals("")) {
+		    LocalDate currentDate = LocalDate.now().minusMonths(1);
+		    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMM");
+		    MileageVO.setStandardDate(currentDate.format(formatter));
 		} else {
+		    String beforeDate = MileageVO.getStandardDate();
+		    beforeDate = beforeDate.replace("-", "");
+		    MileageVO.setStandardDate(beforeDate);
+		}
+
+
+		
+		// 목록 불러오기
+		List<MileageVO> mileList = null;
+		mileList = mileageService.mileList(MileageVO); // 초기 조회 , 검색 결과 반환
+
+		
+		mav.addObject("mileageList", mileList);
+		mav.addObject("mileageListcnt", mileList.size());
+		
+		return mav; // ModelAndView 객체 반환
+	}
+	
+	
+	// 3. 굿 제보 마일리지 엑셀 다운로드 기능 생성
+	@RequestMapping(value="/mileage/mileExcelDown.do")
+	public String mileExcel(@ModelAttribute("MileageVO") MileageVO MileageVO, Model model,
+	HttpServletRequest request) throws Exception {
+/*		ParamsDto params = getParams(true);*/
+		
+		String startDate;
+		// 첫 이동일 경우, 현재 날짜의 년월을 기준으로 조회 (현재 날짜의 -1달)
+		if (MileageVO.getStandardDate().equals("")) {
+			LocalDate currentDate = LocalDate.now().minusMonths(1);
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMM");
+			MileageVO.setStandardDate(currentDate.format(formatter));
+			startDate = currentDate.format(formatter);
+		} else {
+			String beforeDate = MileageVO.getStandardDate();
+			beforeDate = beforeDate.replace("-", "");
+			MileageVO.setStandardDate(beforeDate);
+			startDate = beforeDate;
+		}
+				
+		List<MileageVO> mileList = null;
+		mileList = mileageService.mileList(MileageVO);
+		
+		
+		model.addAttribute("mapping", "mileageExcel");
+		model.addAttribute("fileName", "굿 제보 마일리지(" + startDate + ").xls");
+		model.addAttribute("titleName", "굿 제보 마일리지(" + startDate + ")" );
+		model.addAttribute("mileData", mileList);
+
+		return "hssfExcel";
+
+	}
+	
+	
+	// 4. 우수 통신원 화면으로 최초 이동
+	@RequestMapping(value="/mileage/excellenceIfrmMain.do")
+	public ModelAndView excellenceIfrmMain(HttpServletRequest request) throws Exception {
+		logger.debug("▶▶ 우수 통신원(우수 제보자 X) 기준 탭 클릭");
+		
+		url = request.getRequestURI().substring(request.getContextPath().length()).split(".do")[0];
+		ModelAndView mav = new ModelAndView(url);
+		
+		// 현재 세션에 대해 로그인한 사용자 정보를 가져옴
+		UserVO nlVo = (UserVO) request.getSession().getAttribute("login");
+				
+		OptAreaVo avo = new OptAreaVo();
+		if(!(nlVo.getAuthCode().equals("999"))) {
+			avo.setAreaCode(nlVo.getRegionId()); // 관리자는 제외하고 
+		}
+
+		mav.addObject("informerTypeList", infrmOptService.selectInft1(new OptInftVo()));
+		mav.addObject("informerRegionList", areaOptService.selectAreaOpt1(avo));
+		mav.addObject("informerAreaList", this.areaOptService.selectAreaOpt1(avo));
+				
+		mav.setViewName("/mileage/excellenceIfrmMain");
+		
+		return mav;
+	}
+
+	
+	// 5. 우수 통신원 목록 조회
+	@RequestMapping(value="/mileage/excellenceIfrmMainsearch.do") 
+	public ModelAndView excelleneceSearch (@ModelAttribute("MileageVO") MileageVO MileageVO, Model model,
+			HttpServletRequest request) throws Exception {
+		logger.debug("▶▶ 우수 통신원 조회로 이동");
+		ModelAndView mav = new ModelAndView("/mileage/excellenceIfrmList");// ModelAndView 객체 생성
+		
+		url = request.getRequestURI().substring(request.getContextPath().length()).split(".do")[0]; // 이동할 페이지 url 추출
+		
+		// 현재 세션에 대해 로그인한 사용자 정보를 가져옴
+		UserVO nlVo = (UserVO) request.getSession().getAttribute("login");	
+		
+		// 날짜 작업
+		String startDate;
+		String endDate;
+		String standardDate = MileageVO.getStandardDate();
+		
+		int year = Integer.parseInt(standardDate);
+		startDate = (year - 1) + "08";  // 전년도 8월
+		endDate = year + "07";  // 해당년도 7월
+		
+		MileageVO.setStartDate(startDate);
+		MileageVO.setEndDate(endDate);
+		
+		// 목록 조회하기
+		List<MileageVO> mileList = mileageService.excellenceList(MileageVO);
+		
+		mav.addObject("mileageList", mileList);
+		mav.addObject("mileageListcnt", mileList.size());
+		
+		return mav;
+	}
+	
+	
+	// 6. 우수 통신원 엑셀 다운로드
+	@RequestMapping(value="/mileage/excellenceIfrmExcelDown.do")
+	public String excellenceIfrmExcel (@ModelAttribute("MileageVO") MileageVO MileageVO, Model model,
+			HttpServletRequest request) throws Exception {
+		
+		// 현재 세션에 대해 로그인한 사용자 정보를 가져옴
+		UserVO nlVo = (UserVO) request.getSession().getAttribute("login");	
+				
+		// 날짜 작업
+		String startDate;
+		String endDate;
+		String standardDate = MileageVO.getStandardDate();
+				
+		int year = Integer.parseInt(standardDate);
+		startDate = (year - 1) + "08";  // 전년도 8월
+		endDate = year + "07";  // 해당년도 7월
+				
+		MileageVO.setStartDate(startDate);
+		MileageVO.setEndDate(endDate);
+		
+		// 목록 조회하기
+		List<MileageVO> mileList = mileageService.excellenceList(MileageVO);
+		
+		model.addAttribute("mapping", "excellenceExcel");
+		model.addAttribute("fileName", "우수통신원(" + standardDate + ").xls");
+		model.addAttribute("titleName", "우수통신원(" + standardDate + ")" );
+		model.addAttribute("mileData", mileList);
+
+		return "hssfExcel";
+	}
+	
+	// 7. 선정 기준 화면으로 최초 이동
+	@RequestMapping(value="/mileage/standard.do")
+	public ModelAndView standardMain(HttpServletRequest request) throws Exception {
+		logger.debug("▶▶ 마일리지 선정 기준 탭 클릭");
+		
+		url = request.getRequestURI().substring(request.getContextPath().length()).split(".do")[0];
+		ModelAndView mav = new ModelAndView(url);
+		
+		mav.setViewName("/mileage/standardMain");
+		
+		return mav;
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	////////////////////////////////////////////////////////////////////////////////////
+	/*     < 우수 제보자 >     */
+	////////////////////////////////////////////////////////////////////////////////////
+	
+	// 1. 우수 제보자 최초 이동 ( + 검색 옵션 셋팅 등 )
+		@RequestMapping(value= {"/informer/excellenceIfrm/excellenceIfrmMain.do", "/excellenceIfrm/excellenceUserMain.do"})
+		public ModelAndView excellenceMain(HttpServletRequest request) throws Exception {
+			logger.debug("▶▶ 우수 제보자 메뉴 클릭");
+			
+			url = request.getRequestURI().substring(request.getContextPath().length()).split(".do")[0];
+			
+			if(url.equals("/informer/excellenceIfrm/excellenceIfrmMain")) {
+				url = "/excellenceIfrm/excellenceIfrmMain";
+			}
+			
+			ModelAndView mav = new ModelAndView("jsonView");
+			
+			// 현재 세션에 대해 로그인한 사용자 정보를 가져옴
+			UserVO nlVo = (UserVO) request.getSession().getAttribute("login");
+			
+			OptAreaVo avo = new OptAreaVo();
+			if(!(nlVo.getAuthCode().equals("999"))) {
+				avo.setAreaCode(nlVo.getRegionId()); // 관리자는 제외하고 
+			}
+
+			// 시상 배점 기준 가져오기
+			List<AwardVO> excellGrade = mileageService.excellGrade(avo);
+			
+			mav.addObject("informerTypeList", infrmOptService.selectInft1(new OptInftVo()));
+			mav.addObject("informerRegionList", areaOptService.selectAreaOpt1(avo));
+			mav.addObject("informerAreaList", this.areaOptService.selectAreaOpt1(avo));
+			mav.addObject("excellGrade", excellGrade.get(0));
+			
 			mav.setViewName(url);
+			
+			return mav;
 		}
 		
 		
-		return mav;
-	}
-	
-	
-	// 마일리지 지급 목록
-	@RequestMapping("/mileage/mileageList.do")
-	public ModelAndView mileageList(@ModelAttribute("MileageVO") MileageVO paramVO, HttpServletRequest request) throws Exception {
-		ModelAndView mav = new ModelAndView("/mileage/mileageList");
+	// 2. 우수 제보자 이동 및 검색
+		@RequestMapping(value = "/excellenceIfrm/excellenceIfrmMainList.do")
+		public ModelAndView excellenceList (@ModelAttribute("AwardVO") AwardVO paramVO, HttpServletRequest request) 
+		throws Exception {
+			logger.debug("▶▶ 우수 제보자로 이동");
+			ModelAndView mav = new ModelAndView("/excellenceIfrm/excellenceInformerList");// ModelAndView 객체 생성
 
-		List<Map<String, Object>> mileageList = mileageService.mileList(paramVO);
-		int mileageListCount = mileageList.size();
-		
-        mav.addObject("mileageList", mileageList);
-        mav.addObject("mileageListCount", mileageListCount);
-		return mav;
-	}
+			// 시상별 배점 갱신
+			if(!(paramVO.getALL_PER().equals("") || paramVO.getMAIN_PER().equals("") || paramVO.getADD_PER().equals(""))) {
+				mileageService.updateGrade(paramVO);
+			}
+
+			// 목록 불러오기
+			List<AwardVO> awardInformerList = mileageService.getExcellInformerList(paramVO);
+			
+			mav.addObject("awardInformerList", awardInformerList);
+	        mav.addObject("awardInformerListSize", awardInformerList.size());
+	        mav.addObject("params", paramVO);
+
+			return mav; // ModelAndView 객체 반환
+		}
 	
-	
-	// 총 마일리지 목록
-	@RequestMapping("/mileage/allMileList.do")
-	public ModelAndView allMileList(@ModelAttribute("MserchVO") MserchVO paramVO, HttpServletRequest request) throws Exception {
-		ModelAndView mav = new ModelAndView("/mileage/allMileList");
 		
-		List<MileageVO> allMileList = mileageService.allMileList(paramVO);
-		int allMileListCount = allMileList.size();
-		
-		mav.addObject("allMileList", allMileList);
-        mav.addObject("allMileListCount", allMileListCount);
-        
-		return mav;
-	}
-	
-	// 등급 조회 목록
-	@RequestMapping("/mileage/gradeList.do")
-	public ModelAndView gradeList(@ModelAttribute("MserchVO") MserchVO paramVO, HttpServletRequest request) throws Exception {
-		ModelAndView mav = new ModelAndView("/mileage/gradeList");
-		
-		List<MileageVO> gradeList = mileageService.gradeList(paramVO);
-		int gradeListCount = gradeList.size();
-		
-		mav.addObject("gradeList", gradeList);
-		mav.addObject("gradeListCount", gradeListCount);
-		
-		return mav;
-		
-	}
-	
-	
-	// 상품 지급 팝업
-	@RequestMapping("/mileage/giftPop.do")
-	public ModelAndView paymentGift(@RequestParam("INFORMER_ID")String ifmId, HttpServletRequest req) throws Exception {
-		ModelAndView mv = new ModelAndView(); 
-		
-		// 통신원 기본 정보 가져오기 (1인)
-		List<MileageVO> mileList = mileageService.selectIfm(ifmId);
-		
-		// 상품 정보 가져오기
-		List<GiftVO> giftList = mileageService.getGift();
-		
-		mv.addObject("mileList", mileList);
-		mv.addObject("giftList", giftList);
-		mv.setViewName("/mileage/giftPop");
-		
-		return mv;
-	}
-	
-	
-	// 등급 부여 팝업
-	@RequestMapping("/mileage/gradePop.do")
-	public ModelAndView paymentGrade(@RequestParam("INFORMER_ID") String ifmId, HttpServletRequest req) throws Exception {
-		ModelAndView mav = new ModelAndView();
-		
-		// 통신원 기본 정보 가져오기 (1인)
-		List<MileageVO> mileList = mileageService.gSelectIfm(ifmId);
-		
-		// 등급 정보 가져오기
-		List<GradeVO> gradeList = mileageService.getGrade();
-		
-		mav.addObject("mileList", mileList);
-		mav.addObject("gradeList", gradeList);
-		mav.setViewName("/mileage/gradePop");
-		
-		return mav;
-	}
-	
-	// 총 마일리지 - 마일리지 지급 내역 (로그 확인)
-	@RequestMapping("/mileage/allMilePop.do")
-	public ModelAndView paymentMileLog(@RequestParam("INFORMER_ID") String ifmId, HttpServletRequest req) throws Exception {
-		ModelAndView mav = new ModelAndView();
-		
-		List<MileageVO> informerInfo = mileageService.informerInfo(ifmId);
-		List<MileageVO> mileList = mileageService.mileLogList(ifmId);
-		List<MileageVO> giftList = mileageService.giftLogList(ifmId);
-		
-		
-		mav.addObject("informerInfo",informerInfo);
-		mav.addObject("mileList",mileList);
-		mav.addObject("giftList",giftList);
-		mav.setViewName("/mileage/allMilePop");
-		
-		return mav;
-	}
-	
-	// 등급 조회 - 등급 부여 내역(로그 확인)
-	@RequestMapping("/mileage/gradeLogPop.do")
-	public ModelAndView gradeLog(@RequestParam("INFORMER_ID") String ifmId, HttpServletRequest req) throws Exception {
-		ModelAndView mav = new ModelAndView();
-		
-		List<MileageVO> informerInfo = mileageService.informerInfo(ifmId);
-		List<MileageVO> mileList = mileageService.mileLogList(ifmId);
-		List<MileageVO> gradeList = mileageService.gradeLogList(ifmId);
-		
-		
-		mav.addObject("informerInfo",informerInfo);
-		mav.addObject("mileList",mileList);
-		mav.addObject("gradeList",gradeList);
-		mav.setViewName("/mileage/gradeLogPop");
-		
-		return mav;
-	}
-	
-	
-	// 상품 지급 후 마일리지 변동 및 상품 지급 로그
-	@RequestMapping("/mileage/sendGift.do")
-	public ModelAndView sendGift(@ModelAttribute("MileageVO") MileageVO paramVO, HttpServletRequest req) throws Exception {
-		ModelAndView mv = new ModelAndView("jsonView");
-		
-		// 마일리지 차감 작업
-		mileageService.minusMile(paramVO);
-		
-		// 상품 지급 로그 작업
-		mileageService.giftHistory(paramVO);
-		
-		mv.addObject("msg","success");
-		return mv;
-	}
-	
-	// 등급 부여 및 등급 부여 로그
-	@RequestMapping("/mileage/sendGrade.do")
-	public ModelAndView sendGrade(@ModelAttribute("MileageVO") MileageVO paramVO, HttpServletRequest req) throws Exception {
-		ModelAndView mav = new ModelAndView("jsonView");
-		
-		// 등급 부여 로그 작업
-		mileageService.gradeHistory(paramVO);
-		
-		// 등급 부여 작업
-		boolean checker = mileageService.gradeChecker(paramVO);
-		
-		if(checker) { // 조회 결과가 있는 경우 => 업데이트
-			mileageService.updateGrade(paramVO);
-		} else { // 조회 결과가 없는 경우 => 등록
-			mileageService.insertGrade(paramVO);
+	// 2-1. 우수 제보자 수상자 선정 저장
+		@RequestMapping("/excellenceIfrm/excellenceInformerSave.do")
+		public ModelAndView excellenceInformerSave(Model model,HttpServletRequest req,@ModelAttribute("AwardVO") AwardVO paramVO) throws Exception {
+			ModelAndView mav = new ModelAndView("jsonView");  
+			String[] Selection = req.getParameterValues("Selection");
+			logger.debug("Selection===>"+Selection[0]);
+
+			
+			List<AwardVO> alist = new ArrayList<>(); 
+			
+			for (int i = 0; i < Selection.length; i++) {
+				AwardVO awvo = new AwardVO();
+				String[] str = Selection[i].split("%%");
+				awvo.setINFORMER_ID(str[0]);
+				awvo.setRPT_GRADE(str[1]);
+				awvo.setMAIN_GRADE(str[2]);
+				awvo.setADD_GRADE(str[3]);
+				awvo.setALL_RANK(str[4]);
+				alist.add(awvo);
+			}
+
+			mileageService.saveAward(paramVO,alist);
+			
+			mav.addObject("msg", "success");
+			return mav;
 		}
 		
-		mav.addObject("msg", "success");
-		return mav;
-	}
 	
-	// 마일리지 지급
-	@RequestMapping("/mileage/paymentMile.do")
-	public ModelAndView paymentMile(Model model,HttpServletRequest req,@ModelAttribute("MileageVO") MileageVO paramVO) throws Exception {
-		ModelAndView mv = new ModelAndView("jsonView");  
-		String[] Selection = req.getParameterValues("Selection");
-		logger.debug("Selection===>"+Selection[0]);
-
-		String getDate = paramVO.getPAYMENT_DATE();
-		String startDate = paramVO.getSTART_DATE();
-		
-		List<MileageVO> alist = new ArrayList<>(); 
-		
-		for (int i = 0; i < Selection.length; i++) {
-			MileageVO mlvo = new MileageVO();
-			String[] str = Selection[i].split("%%");
-			mlvo.setINFORMER_ID(str[0]);
-			mlvo.setACT_ID(str[1]);
-			mlvo.setORG_NAME(str[3]);
-			mlvo.setPHONE_CELL(str[4]);
-			mlvo.setPAYMENT_MILE(str[5]);
-			mlvo.setPAYMENT_DATE(getDate);
-			mlvo.setSTART_DATE(startDate);
-			alist.add(mlvo);
+	// 3. 우수제보자 수상자 조회 이동 및 검색
+		@RequestMapping(value="/excellenceIfrm/excellenceUserList.do")
+		public ModelAndView selectUserExcellenceList(HttpServletRequest request,Model model,@ModelAttribute("AwardVO") AwardVO paramVO) 
+		throws Exception {
+			logger.debug("▶▶ 우수 제보자 > 수상자 조회로 이동");
+			ModelAndView mav = new ModelAndView("/excellenceIfrm/excellenceUserList");
+			// 현재 세션에 대해 로그인한 사용자 정보를 가져옴
+	     	UserVO nlVo = (UserVO) request.getSession().getAttribute("login");
+	     	
+	     	//지역관련
+			OptAreaVo avo = new OptAreaVo();
+			if(!(nlVo.getAuthCode().equals("999"))) {//999 관리자 권한
+				avo.setAreaCode(nlVo.getRegionId());
+				paramVO.setREGION_ID(nlVo.getRegionId());
+			}
+			
+	        List awardInformerList = mileageService.selectUserAwardList(paramVO);
+	        
+	        mav.addObject("awardInformerList", awardInformerList);
+	        mav.addObject("awardInformerListSize", awardInformerList.size());
+	        mav.addObject("params", paramVO);
+	        
+			return mav;
 		}
+		
+	// 3-1. 수상자 선정 취소
+		@RequestMapping("/excellenceIfrm/deleteExcellence.do")
+		public ModelAndView deleteExcellence(Model model,HttpServletRequest req,@ModelAttribute("AwardVO") AwardVO paramVO) throws Exception {
+			ModelAndView mav = new ModelAndView("jsonView");
+			
+			String[] Selection = req.getParameterValues("Selection");
+			logger.debug("Selection===>"+Selection[0]);
 
- 		mileageService.paymentMile(paramVO,alist);
- 		
- 		for(int i=0; i < Selection.length; i++) {
- 			MileageVO mlvo = new MileageVO();
-			String[] str = Selection[i].split("%%");
+			mileageService.deleteAward(Selection);
 			
-			List<MileageVO> mileList = new ArrayList<>();
-			
-			mlvo.setINFORMER_ID(str[0]);
-			mlvo.setACT_ID(str[1]);
-			mlvo.setORG_NAME(str[3]);
-			mlvo.setPHONE_CELL(str[4]);
-			mlvo.setPAYMENT_MILE(str[5]);
-			mlvo.setPAYMENT_DATE(getDate);
-			mlvo.setSTART_DATE(startDate);
-			mileList.add(mlvo);
-			
-			boolean checker = mileageService.selectMile(paramVO,mileList);
-			
- 			if(!checker) {
- 				mileageService.insertMile(paramVO,mileList);
- 			} else {
- 				mileageService.updateMile(paramVO,mileList);
- 			}
- 		}
-		
-		mv.addObject("msg", "success");
-		return mv;
-	}
+			mav.addObject("msg", "success");
+			return mav;
+		}
 	
-	// 마일리지 반영 - 엑셀 다운로드 기능
-	@RequestMapping("/informer/mileage/excelDownloadMileList.do")
-	public String exselDownload(Model model,@ModelAttribute("MileageVO") MileageVO paramVO) throws Exception {
-		logger.debug("★★★"+paramVO);
-		
-		List mileageList = mileageService.getMileList(paramVO);
-		
-		
-		model.addAttribute("fileName", "마일리지 반영 목록.xls");
-		model.addAttribute("columnTitles", new String[]{
-				"ID"
-				,"이름"
-				,"소속"
-				,"연락처"
-				,"월 제보건수" 
-				,"지급 마일리지"
-		});
-		model.addAttribute("columnNames", new String[]{
-				"ACT_ID",
-				"INFORMER_NAME",
-				"ORG_NAME",
-				"PHONE_CELL",
-				"MON_RPT",
-				"PAYMENT_MILEAGE"
-		});
-		model.addAttribute("exportData", mileageList);
-		
-		return "hssfView";
-	}
 	
-	// 총 마일리지 조회 - 엑셀 다운로드 기능
-	/*@RequestMapping("/informer/mileage/excelDownloadMileList.do")
-	public String exselDownload(Model model,@ModelAttribute("AwardVO") AwardVO paramVO) throws Exception {
-		logger.debug("★★★"+paramVO);
-		List awardInformerList = mileageService.getAllMileList2(paramVO);
+	// 4. 우수 제보자 엑셀 다운로드 기능 생성
+		@RequestMapping("/excellenceIfrm/excelDownloadInformerList.do")
+		public String exselDownload(Model model,@ModelAttribute("AwardVO") AwardVO paramVO) throws Exception {
+			logger.debug("★★★"+paramVO);
+			List awardInformerList = mileageService.getAwardInformerList2(paramVO);
+			
+			model.addAttribute("fileName", "우수 제보자 수상자선정.xls");
+			model.addAttribute("columnTitles", new String[]{
+					"순위"
+					,"ID"
+					,"이름"
+					,"소속"
+					,"연락처"
+					,"제보건수" 
+					,"제보점수"
+					,"주요제보건수"
+					,"주요제보점수"
+					,"전월건수"
+					,"전월점수"
+					,"총점"
+			});
+			model.addAttribute("columnNames", new String[]{
+					"RNUM",
+					"ACT_ID",
+					"INFORMER_NAME",
+					"ORG_NAME",
+					"PHONE_CELL",
+					"MON_CNT",
+					"RPT_GRADE",
+					"MAIN_CNT",
+					"MAIN_GRADE",
+					"ADD_CNT",
+					"ADD_GRADE",
+					"ALL_RANK",
+			});
+			model.addAttribute("exportData", awardInformerList);
+			
+			return "hssfView";
+		}
 		
-		model.addAttribute("fileName", "총 마일리지 조회 목록.xls");
-		model.addAttribute("columnTitles", new String[]{
-				,"ID"
-				,"이름"
-				,"소속"
-				,"연락처"
-				,"제보건수" 
-				,"제보점수"
-				,"주요제보건수"
-				,"주요제보점수"
-				,"전월건수"
-				,"전월점수"
-				,"총점"
-		});
-		model.addAttribute("columnNames", new String[]{
-				"RNUM",
-				"ACT_ID",
-				"INFORMER_NAME",
-				"ORG_NAME",
-				"PHONE_CELL",
-				"MON_CNT",
-				"RPT_GRADE",
-				"MAIN_CNT",
-				"MAIN_GRADE",
-				"ADD_CNT",
-				"ADD_GRADE",
-				"ALL_RANK",
-		});
-		model.addAttribute("exportData", awardInformerList);
-		
-		return "hssfView";
-	}
 	
-	// 등급 조회 - 엑셀 다운로드 기능
-	@RequestMapping("/informer/award/excelDownloadInformerList.do")
-	public String exselDownload(Model model,@ModelAttribute("AwardVO") AwardVO paramVO) throws Exception {
-		logger.debug("★★★"+paramVO);
-		List awardInformerList = awardService.getAwardInformerList2(paramVO);
 		
-		model.addAttribute("fileName", "수상자선정.xls");
-		model.addAttribute("columnTitles", new String[]{
-				"순위"
-				,"ID"
-				,"이름"
-				,"소속"
-				,"연락처"
-				,"제보건수" 
-				,"제보점수"
-				,"주요제보건수"
-				,"주요제보점수"
-				,"전월건수"
-				,"전월점수"
-				,"총점"
-		});
-		model.addAttribute("columnNames", new String[]{
-				"RNUM",
-				"ACT_ID",
-				"INFORMER_NAME",
-				"ORG_NAME",
-				"PHONE_CELL",
-				"MON_CNT",
-				"RPT_GRADE",
-				"MAIN_CNT",
-				"MAIN_GRADE",
-				"ADD_CNT",
-				"ADD_GRADE",
-				"ALL_RANK",
-		});
-		model.addAttribute("exportData", awardInformerList);
+	// 4-1. 우수 제보자 > 수상자 조회 엑셀 다운로드 기능 
+		@RequestMapping("/excellenceIfrm/excelDownloadUserList.do")
+		public String exselDownloadUserList(Model model,@ModelAttribute("AwardVO") AwardVO paramVO) throws Exception {
+			List awardInformerList = mileageService.selectUserAwardList2(paramVO);
+			
+			model.addAttribute("fileName", "우수 제보자 수상자.xls");
+			model.addAttribute("columnTitles", new String[]{
+					"방송국",
+					"소속", 
+					"ID", 
+					"이름",
+					"전화번호",
+					"시상종류", 
+					"시상명", 
+					"총점", 
+					"등록일"  
+			});
+			model.addAttribute("columnNames", new String[]{
+					"REGION_NM",
+					"ORG_NAME",
+					"ACT_ID",
+					"INFORMER_NAME",
+					"PHONE_CELL",
+					"AW_TYPE",
+					"AW_NAME",
+					"ALL_RANK",
+					"REG_DATE"
+			});
+			model.addAttribute("exportData", awardInformerList);
+			
+			return "hssfView";
+		}
+	
+	
+	////////////////////////////////////////////////////////////////////////////////////
+	/*     < 최고 통신원 >     */
+	////////////////////////////////////////////////////////////////////////////////////
 		
-		return "hssfView";
-	}*/
+	// 1. 최고 통신원 최초 이동 ( + 검색 옵션 셋팅 등 )
+		@RequestMapping(value= {"/informer/bestIfrm/bestIfrmMain.do"})
+		public ModelAndView bestMain(HttpServletRequest request) throws Exception {
+			logger.debug("▶▶ 최고 통신원 메뉴 클릭");
+				
+				url = request.getRequestURI().substring(request.getContextPath().length()).split(".do")[0];
+				ModelAndView mav = new ModelAndView(url);
+				
+				// 현재 세션에 대해 로그인한 사용자 정보를 가져옴
+				UserVO nlVo = (UserVO) request.getSession().getAttribute("login");
+				
+				OptAreaVo avo = new OptAreaVo();
+				if(!(nlVo.getAuthCode().equals("999"))) {
+					avo.setAreaCode(nlVo.getRegionId()); // 관리자는 제외하고 
+				}
+
+				mav.addObject("informerTypeList", infrmOptService.selectInft1(new OptInftVo()));
+				mav.addObject("informerRegionList", areaOptService.selectAreaOpt1(avo));
+				mav.addObject("informerAreaList", this.areaOptService.selectAreaOpt1(avo));
+				mav.addObject("login", nlVo);
+				mav.setViewName("/bestIfrm/bestIfrmMain");
+				
+				return mav;
+			}
+			
+			
+		// 2. 최고 통신원 이동 및 검색
+			@RequestMapping(value = "/bestIfrm/bestIfrmList.do")
+			public ModelAndView bestList (HttpServletRequest request, Model model,
+				@ModelAttribute("MileageVO") MileageVO MileageVO) throws Exception {
+				logger.debug("▶▶ 최고 통신원으로 이동");
+				ModelAndView mav = new ModelAndView("/bestIfrm/bestIfrmList");// ModelAndView 객체 생성
+
+				/*url = request.getRequestURI().substring(request.getContextPath().length()).split(".do")[0];*/ // 이동할 페이지 url 추출
+				
+				// 목록 불러오기 1
+				// 통신원 아이디, 통신원 이름, 통신원 소속 등 기본 정보 가져오기
+				List<MileageVO> bestIfrmList = mileageService.bestIfrmList(MileageVO); 
+
+				mav.addObject("bestIfrmList", bestIfrmList);
+				mav.addObject("bestIfrmListCount", bestIfrmList.size());
+				
+				return mav; // ModelAndView 객체 반환
+			}
+			
+			
+			// 3. 최고 통신원 엑셀 다운로드 기능 생성
 }

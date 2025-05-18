@@ -5,6 +5,7 @@ import java.util.List;
 import org.apache.ibatis.annotations.Param;
 
 import egovframework.rte.psl.dataaccess.mapper.Mapper;
+import kr.co.wizbrain.tbn.mileage.vo.MileageVO;
 import kr.co.wizbrain.tbn.notice.vo.NoticeVO;
 import kr.co.wizbrain.tbn.receipt.vo.AreaCodeVO;
 import kr.co.wizbrain.tbn.receipt.vo.AreaSubCodeVO;
@@ -34,6 +35,9 @@ public interface ReceiptMapper{
 	public int insertReceipt(ReceiptVO ReceiptVO) throws Exception;
 	public int updateMonthlyStat(ReceiptVO vo) throws Exception;
 
+	//25-05-15 : 우수 통신원, 최고 통신원 조회
+	public List<MileageVO> selectIfrm(ReceiptVO vo) throws Exception;
+	
 	// 24-11-11 : 공지사항 조회
 	public List<NoticeVO> selectNotice(String today) throws Exception;
 	

@@ -66,6 +66,7 @@ public class ReceiptVO {
 	private String FLAG_WEB;
 	
 	private String FLAG_DMB_SEND;
+	private String FLAG_KNEX;
 	
 	public ReceiptVO() {}
 	
@@ -80,7 +81,7 @@ public class ReceiptVO {
 			String rEPORT_TYPE3, String aREA_ID, String lANE, String iNFORMER_ID, String aCT_ID, String iNFORMER_NAME,
 			String rEGIONSUB_ID, String rEGIONSUB_NAME, String pHONE_CELL, String pHONE_HOME, String iNFORMER_TYPE,
 			String aDDRESS_HOME, String zIPCODE, String fLAG_BLACKLIST, int sTAT1, int sTAT2, int sTAT3 , String fLAG_WEB,
-			String fLAG_DMB_SEND) {
+			String fLAG_DMB_SEND, String fLAG_KNEX) {
 		super();
 		RECEIPT_ID = rECEIPT_ID;
 		INDIVIDUAL_ID = iNDIVIDUAL_ID;
@@ -131,6 +132,7 @@ public class ReceiptVO {
 		STAT3 = sTAT3;
 		FLAG_WEB = fLAG_WEB;
 		FLAG_DMB_SEND = fLAG_DMB_SEND;
+		FLAG_KNEX = fLAG_KNEX;
 	}
 
 
@@ -152,6 +154,18 @@ public class ReceiptVO {
 	}
 	
 	
+	public String getFLAG_KNEX() {
+		return FLAG_KNEX;
+	}
+
+
+
+	public void setFLAG_KNEX(String fLAG_KNEX) {
+		FLAG_KNEX = fLAG_KNEX;
+	}
+
+
+
 	public String getFLAG_DISASTOR() {
 		return FLAG_DISASTOR;
 	}

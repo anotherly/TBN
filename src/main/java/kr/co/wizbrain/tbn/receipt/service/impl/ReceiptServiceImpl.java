@@ -7,6 +7,7 @@ import javax.annotation.Resource;
 
 import org.springframework.stereotype.Service;
 
+import kr.co.wizbrain.tbn.mileage.vo.MileageVO;
 import kr.co.wizbrain.tbn.notice.vo.NoticeVO;
 import kr.co.wizbrain.tbn.receipt.mapper.ReceiptMapper;
 import kr.co.wizbrain.tbn.receipt.service.ReceiptService;
@@ -39,6 +40,12 @@ public class ReceiptServiceImpl implements ReceiptService{
 	public int insertReceipt(ReceiptVO ReceiptVO) throws Exception {
 		return receiptMapper.insertReceipt(ReceiptVO);
 	}
+	
+	// 25-05-15 : 최고 통신원, 우수 통신원 조회
+	public List<MileageVO> selectIfrm(ReceiptVO vo) throws Exception {
+		return receiptMapper.selectIfrm(vo);
+	}
+	
 	
 	//24-11-11 : 공지사항 조회
 	@Override

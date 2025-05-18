@@ -789,14 +789,32 @@ function dateFunc(id1,id2,sdt,edt,format,callback){
 			alert("날짜변경");*/
 		});
 	} else if(id1 == 'standardDate') {
-		$('#' + id1).datetimepicker({
+		/*$('#' + id1).datetimepicker({
 		    format: 'YYYY-MM',  
 		    viewMode: 'months'    
 		}).on('dp.change',function(e){// 변경 상황 있을 때 사용   
-			/*console.log("날짜변경");
-			alert("날짜변경");*/
-		});
+			console.log("날짜변경");
+			alert("날짜변경");
+		});*/
+		
+		
+		// 현재 달부터는 선택 못하도록 막음
+		$('#' + id1).datetimepicker({
+		    format: 'YYYY-MM',  
+		    viewMode: 'months',
+		    maxDate: moment().subtract(1, 'months').endOf('month') 
+		}).on('dp.change', function(e) {
 
+		});
+	} else if(id1 == 'excellenceDate') {
+		$('#' + id1).datetimepicker({
+		    format: 'YYYY',        
+		    viewMode: 'years',     
+		    maxDate: moment().endOf('year'),
+		    defaultDate: moment()
+		}).on('dp.change', function(e) {
+		    
+		});
 	} else {
 		$('#'+id1).datetimepicker({
 			 format:fmt,

@@ -479,11 +479,12 @@ function saveReceipt(){
 	}
 	
 	
-	var disastor_flag ;
-	var dmb_flag ;
+	var disastor_flag = $("input:checkbox[id=FLAG_DISASTOR]");
+	var dmb_flag = $("input:checkbox[id=FLAG_DMB_SEND]");
 	
-	if(disastor_flag == true && dmb_flag == ture) {
+	if(disastor_flag.is(":checked") && dmb_flag.is(":checked")) {
 		alert("재난 제보와 사진/영상은 중복 체크할 수 업습니다. (택1)");
+		return false;
 	}
 	
 	

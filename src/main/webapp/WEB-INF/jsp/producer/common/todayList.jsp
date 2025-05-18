@@ -93,8 +93,12 @@ $(document).ready(function(){
 		</span>
 		<span style="width: 9%;" id="time${toadysListVO.RECEIPT_ID }">${toadysListVO.RECEIPT_TIME } <br/> ${toadysListVO.BROAD_TIME }</span>
 		<span style="width: 10%; color:${toadysListVO.f_COLOR }; background-color:${toadysListVO.b_COLOR };" id="report_type${toadysListVO.RECEIPT_ID }">${toadysListVO.BAS_NAME }</span>
-		<span style="width: 12%;font-size: calc(6px + 0.6vw);line-height: calc(12px + 0.8vw);" id="informer_name${toadysListVO.RECEIPT_ID }">${toadysListVO.TYPE_NAME } <br/> ${toadysListVO.INDIVIDUAL_NAME }</span>
-		<span style="width: 10%;" id="r_tel${toadysListVO.RECEIPT_ID }">${toadysListVO.r_TEL }</span>
+		<span style="width: 12%;font-size: calc(6px + 0.6vw);line-height: calc(12px + 0.8vw);
+				<c:if test="${toadysListVO.FLAG_KNEX =='Y'}">
+					background-color:#00FFFF;
+				</c:if>
+		" id="informer_name${toadysListVO.RECEIPT_ID }">${toadysListVO.TYPE_NAME } <br/> ${toadysListVO.INDIVIDUAL_NAME }</span>
+		<span style="width: 10%;" id="r_tel${toadysListVO.RECEIPT_ID }">${toadysListVO.r_TEL }</span> <!-- 전화번호 -->
 		
 		<!-- 긴급제보의 경우 노란바탕에 빨간글씨 -->		
 		<c:choose>
@@ -102,8 +106,8 @@ $(document).ready(function(){
    				<span class="blinkcss" style="font-weight:700;color:#FF0000;background-color:#FFFF00;text-align: left;" id="contents${toadysListVO.RECEIPT_ID }">${toadysListVO.MEMO }</span>
    	   		</c:when>
    	   		<c:otherwise>
-   	   			<span id="contents${toadysListVO.RECEIPT_ID }" style="text-align: left;">${toadysListVO.MEMO }</span>
+   	   			<span id="contents${toadysListVO.RECEIPT_ID }" style="text-align: left;">${toadysListVO.MEMO }</span> <!-- 내용 -->
    	   		</c:otherwise>
    		</c:choose>
-		<span style="width: 7%;" id="area_name${toadysListVO.RECEIPT_ID }">${toadysListVO.AREA_NAME }</span>
+		<span style="width: 7%;" id="area_name${toadysListVO.RECEIPT_ID }">${toadysListVO.AREA_NAME }</span> <!-- 방송국 -->
 </c:forEach>

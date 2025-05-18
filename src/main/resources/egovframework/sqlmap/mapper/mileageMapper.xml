@@ -4,31 +4,92 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="kr.co.wizbrain.tbn.mileage.mapper.MileageMapper">
 
+	<!-- 굿 제보 마일리지 조회 -->
 	<select id="mileList" parameterType="kr.co.wizbrain.tbn.mileage.vo.MileageVO" resultType="java.util.Map">
-		<![CDATA[
+    <![CDATA[
+	    SELECT 
+		    RANK() OVER (ORDER BY ALL_POINT DESC) AS RANKING,
+		    A.ACT_ID,
+		    A.INFORMER_ID,
+		    A.INFORMER_NAME,
+		    A.PHONE_CELL,
+		    A.REG_DATE,
+		    A.ALL_POINT,
+		    A.RECEIPT_POINT,
+		    A.BEFORE_POINT,
+		    A.DISASTOR_POINT,
+		    A.VIDEO_POINT
+		FROM (
 		    SELECT 
-			    /*+ INDEX(rpt RPT ) INDEX(ifm IFM) */
-			    rpt.individual_id AS 아이디, 
-			    rpt.individual_name AS 이름, 
-			    NVL(rpt.org_name, '없음') AS 소속,
-			    NVL(ifm.ACT_ID, '없음') AS 통신원코드,
-			    ifm.phone_cell as 연락처,
-			    COUNT(*) AS 월별제보건수, 
-			    COUNT(*) * 2 AS 지급마일리지
-			FROM report_receipt rpt
-			JOIN informer ifm
-			    ON ifm.informer_id = rpt.individual_id
-			WHERE TO_CHAR(rpt.receipt_day, 'YYYY-MM') = #{START_DATE} 
-			AND rpt.region_id = #{AREA_CODE}
-			AND NOT EXISTS (
-			    SELECT 1
-			    FROM mileage_history mh
-			    WHERE mh.start_date = #{START_DATE}
-			    AND mh.informer_id = rpt.individual_id
-			)
-			GROUP BY rpt.individual_id, rpt.individual_name, rpt.org_name, ifm.phone_cell, ifm.ACT_ID
-			ORDER BY 지급마일리지 DESC
-    	]]>
+		        A.ACT_ID,
+		        A.INFORMER_ID,
+		        A.INFORMER_NAME,
+		        A.PHONE_CELL,
+		        A.REG_DATE,  
+		        NVL(A.RECEIPT_POINT, 0) AS RECEIPT_POINT,
+		        NVL(A.BEFORE_POINT, 0) AS BEFORE_POINT,
+		        NVL(A.DISASTOR_POINT, 0) AS DISASTOR_POINT,
+		        NVL(A.VIDEO_POINT, 0) AS VIDEO_POINT,
+		        (NVL(A.RECEIPT_POINT, 0) + 
+		         NVL(A.BEFORE_POINT, 0) + 
+		         NVL(A.DISASTOR_POINT, 0) + 
+		         NVL(A.VIDEO_POINT, 0)) AS ALL_POINT
+		    FROM 
+		        stat_mileage A
+		    LEFT JOIN INFORMER B ON A.INFORMER_ID = B.INFORMER_ID
+		    WHERE 
+		        A.REG_DATE = TO_CHAR(TO_DATE(#{standardDate}, 'YYMM'), 'YY/MM') 
+		        AND B.AREA_CODE = #{searchAreaCode}
+		) A
+		ORDER BY A.ALL_POINT DESC
+
+	    ]]>
+	</select>
+	
+
+	<!-- 우수 통신원 조회 -->
+	<select id="excellenceList" parameterType="kr.co.wizbrain.tbn.mileage.vo.MileageVO" resultType="java.util.Map">
+		<![CDATA[
+			SELECT 
+			    RANK() OVER (ORDER BY ALL_POINT DESC) AS RANKING,
+			    A.INFORMER_ID,
+			    A.ACT_ID,
+			    A.INFORMER_NAME,
+			    A.PHONE_CELL,
+			    A.RECEIPT_POINT,
+			    A.BEFORE_POINT,
+			    A.DISASTOR_POINT,
+			    A.VIDEO_POINT,
+			    A.ALL_POINT
+			FROM (
+			    SELECT 
+			        A.INFORMER_ID,
+			        A.INFORMER_NAME,
+			        A.PHONE_CELL,
+			        A.ACT_ID,
+			        SUM(NVL(A.RECEIPT_POINT, 0)) AS RECEIPT_POINT,
+			        SUM(NVL(A.BEFORE_POINT, 0)) AS BEFORE_POINT,
+			        SUM(NVL(A.DISASTOR_POINT, 0)) AS DISASTOR_POINT,
+			        SUM(NVL(A.VIDEO_POINT, 0)) AS VIDEO_POINT,
+			        SUM(NVL(A.RECEIPT_POINT, 0) + 
+			            NVL(A.BEFORE_POINT, 0) + 
+			            NVL(A.DISASTOR_POINT, 0) + 
+			            NVL(A.VIDEO_POINT, 0)) AS ALL_POINT
+			    FROM 
+			        stat_mileage A
+			    LEFT JOIN INFORMER B ON A.INFORMER_ID = B.INFORMER_ID
+			    WHERE 
+			        A.REG_DATE BETWEEN TO_CHAR(TO_DATE(#{startDate}, 'YYMM'), 'YY/MM') 
+			        AND TO_CHAR(TO_DATE(#{endDate}, 'YYMM'), 'YY/MM') 
+			        AND B.AREA_CODE = #{searchAreaCode}
+			    GROUP BY 
+			        A.INFORMER_ID, 
+			        A.INFORMER_NAME, 
+			        A.ACT_ID,
+			        A.PHONE_CELL
+			) A
+			ORDER BY A.ALL_POINT DESC
+		]]>
 	</select>
 
 	
@@ -369,4 +430,32 @@
 	</update>
 	
 	
+	<!-- 최고 통신원 기본 정보 조회 -->
+	<select id="bestIfrmList" resultType="java.util.Map" parameterType="kr.co.wizbrain.tbn.mileage.vo.MileageVO">
+		with bestifrm as (
+		    select * from bestinformer
+		)
+		select a.informer_id, a.informer_name, a.org_name, a.reg_date , count(b.individual_id) as all_point
+		from report_receipt b
+		left join bestifrm a
+		on a.informer_id = b.individual_id
+		where a.informer_id is not null and b.individual_id is not null
+		and a.area_code = #{AREA_CODE}
+		group by a.informer_id, a.informer_name, a.org_name, a.reg_date
+		order by all_point desc
+	</select>
+	
+	
+	<!-- 최고 통신원 전체 제보건수 조회 -->
+<!-- 	<select id="bestIfrmCnt" resultType="java.util.Map">
+    select individual_id as informer_id, count(*) as all_point
+    from report_receiptz
+    where individual_id in
+    <foreach item="item" index="index" collection="bestIfrmList" open="(" separator="," close=")">
+        #{item.INFORMER_ID}
+    </foreach>
+    group by individual_id
+</select> -->
+	
+
 </mapper>

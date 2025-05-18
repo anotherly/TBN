@@ -19,9 +19,9 @@
 <meta charset="UTF-8">
 <script>
  	$(document).ready(function(){
- 		dateFunc("standardDate");
+ 		dateFunc("excellenceDate");
  		
- 		search(); // 첫 진입 시 실행 함수	 */
+ 		search();  // 첫 진입 시 실행 함수
  	});
 	
 	
@@ -29,7 +29,7 @@
 	function search(){
 		
 		var options = {
-	            url:"/mileage/mileageMainsearch.do",
+	            url:"/mileage/excellenceIfrmMainsearch.do",
 	            type:"post",
 	            target: '#listDiv',
 	            success: function(){
@@ -104,7 +104,7 @@
 	
 	function excelDownload(){
 		rkFlag = true;
-		searchFrm.action = "/mileage/mileExcelDown.do";
+		searchFrm.action = "/mileage/excellenceIfrmExcelDown.do";
 		searchFrm.submit();
 		rkFlag = true;
 	}
@@ -123,9 +123,9 @@
 					<!-- 서브메뉴 탭영역 시작 -->
 					<div class="gnb_tab">
 						<ul class="lst_tab">
-							<li class="on"><a href="javascript:changePage('goodMile')">굿 제보 마일리지 조회</a></li>
+							<li><a href="javascript:changePage('goodMile')">굿 제보 마일리지 조회</a></li>
 							<li class="ns"></li>
-							<li><a href="javascript:changePage('excellenceIfrm')">우수 통신원</a></li>
+							<li class="on"><a href="javascript:changePage('excellenceIfrm')">우수 통신원</a></li>
 							<li class="ns"></li>
 							<li><a href="javascript:changePage('standard')">선정 기준</a></li>
 						</ul>
@@ -146,8 +146,8 @@
 						<div class="wrap_center">
 							<fieldset style="display: flex; align-items: center; justify-content: center;">
 								<div>
-									기준 년월 :
-										<input type="text" id="standardDate" name="standardDate" style="margin-right : 15px;" >
+									기준 년도 :
+										<input type="text" id="excellenceDate" name="standardDate" style="margin-right : 15px;" />
 								</div>
 								<div id="awardSdiv">
 									 <img src="../images/btn_search.gif" onclick="search();" style="cursor: pointer;     margin-left: 10px;" alt="검색" /> 

@@ -24,6 +24,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import kr.co.wizbrain.tbn.cid.TcpAndWebClient;
+import kr.co.wizbrain.tbn.mileage.vo.MileageVO;
 import kr.co.wizbrain.tbn.notice.vo.NoticeVO;
 import kr.co.wizbrain.tbn.receipt.service.ReceiptService;
 import kr.co.wizbrain.tbn.receipt.vo.AreaCodeVO;
@@ -345,6 +346,22 @@ public class ReceiptController {
 		logger.info("------------------insertReceipt진입------------------");
 		ModelAndView mv = new ModelAndView("jsonView");
 		vo.setMEMO(vo.getMEMO().replaceAll("&lt;", "<").replaceAll("&gt;", ">"));
+		
+		String ifrmType = vo.getINDIVIDUAL_TYPE();
+		
+		// 통신원(0)만 진행
+		/*if(ifrmType.equals("0")) {
+			// insert 전에 최고/우수 통신원 판별
+			List<MileageVO> selectIfrm = receiptService.selectIfrm(vo);
+			
+			// 조회 결과가 없다면
+			if(selectIfrm.size() == 0 || selectIfrm == null) {
+				vo.setFLAG_KNEX("N");
+			} else { // 조회 결과가 있다면
+				vo.setFLAG_KNEX("Y");
+			}
+		}*/
+		
 		int result = receiptService.insertReceipt(vo);
 		System.out.println("vo: " + vo.toString());
 		System.out.println("insertRecipt result: "+result);

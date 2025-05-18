@@ -16,6 +16,14 @@ public class BroadCastListVO {
 	private String FLAG_IMPORTANT;
 	private String f_COLOR;
 	private String b_COLOR;
+	private String FLAG_KNEX;
+	
+	public String getFLAG_KNEX() {
+		return FLAG_KNEX;
+	}
+	public void setFLAG_KNEX(String fLAG_KNEX) {
+		FLAG_KNEX = fLAG_KNEX;
+	}
 	public String getRNUM() {
 		return RNUM;
 	}

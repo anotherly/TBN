@@ -108,6 +108,14 @@
 	</select>
 
 
+	<!-- 25-05-15 : 최고 통신원 조회 -->
+	<select id="selectIfrm" parameterType="receiptVO" resultType="java.util.Map">
+		select * from bestinformer
+		where informer_id = #{INDIVIDUAL_ID}
+	</select>
+
+
+
 	<!--  24-11-11 : 공지사항 조회 쿼리  -->
 	<select id="selectNotice" resultType="kr.co.wizbrain.tbn.notice.vo.NoticeVO">
 		select *

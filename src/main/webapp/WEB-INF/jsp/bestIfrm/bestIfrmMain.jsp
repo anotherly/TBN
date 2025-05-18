@@ -23,74 +23,15 @@
 <meta charset="UTF-8">
 <script>
  	$(document).ready(function(){
-		
- 		// 날짜 넣기
- 		selectDate();
-		// 리스트 불러오기
-		/* init(); */
-		
-		getTodayDate();
-		
+ 		search();
  	});
 	
-	function init() {
-		search();
-	}
-	
-	// 날짜 select 박스 생성
-	function selectDate() {
-	    const currentYear = new Date().getFullYear();
-	    const currentMonth = new Date().getMonth() + 1;
-	    const $selectYearElement = $('#standardYear');
-	    $selectYearElement.empty();
-	
-	    for (let year = currentYear; year >= currentYear - 7; year--) {
-	        const $option = $('<option></option>')
-	            .val(year)
-	            .text(year);
-	
-	        if (year === currentYear) {
-	            $option.prop('selected', true);
-	        }
-	
-	        $selectYearElement.append($option);
-	    }
-	
-	    const $selectMonElement = $('#standardMon');
-	    $selectMonElement.empty();
-	
-	    for (let month = 1; month <= 12; month++) {
-	        const monthStr = month < 10 ? '0' + month : month;
-	        const $option = $('<option></option>')
-	            .val(monthStr)
-	            .text(month);
-	
-	        if (month === currentMonth) {
-	            $option.prop('selected', true);
-	        }
-	
-	        $selectMonElement.append($option);
-	    }
-	    
-	    var yearVal = $('#standardYear').val();
-		var monthVal = $('#standardMon').val();
-		var startDateVal = yearVal + "-" + monthVal;
-		
-		$('#START_DATE').val(startDateVal);
-		
-	}
 	
 	// 리스트 검색
 	function search(){
-		
-		var yearVal = $('#standardYear').val();
-		var monthVal = $('#standardMon').val();
-		var startDateVal = yearVal + "-" + monthVal;
-		
-		$('#START_DATE').val(startDateVal);
 
 		var options = {
-	            url:"/mileage/mileageList.do",
+	            url:"/bestIfrm/bestIfrmList.do",
 	            type:"post",
 	            target: '#listDiv',
 	            success: function(){
@@ -235,11 +176,11 @@
 		<!-- <div id="posi"><a href="/main.do"><img src="../images/ico_home.gif" alt="home" /></a>제보자관리 > 시상관리</div> -->
 		<div id="searchDiv">
 			<div id="contents">
-				<h1 class='content-title'>최고 통신원</h1>
+				<h1 class='content-title' style="margin-top:50px;">최고 통신원</h1>
 				<!-- board_list -->
 				<div class="board_list">
 					<!-- 서브메뉴 탭영역 시작 -->
-					<div class="gnb_tab">
+					<!-- <div class="gnb_tab">
 						<ul class="lst_tab">
 							<li class="on"><a href="javascript:changePage('paymentMile')">마일리지 반영</a></li>
 							<li class="ns"></li>
@@ -249,216 +190,41 @@
 							<li class="ns"></li>
 							<li id="paymentMile">마일리지 산정기준</li>
 						</ul>
-					</div>
-					<div style="position: absolute;right: 0px;top: 52px;">
+					</div> -->
+					<%-- <div style="position: absolute;right: 0px;top: 52px;">
 				       <select id="areaOptSel" name="AREA_CODE">
                            <c:forEach var="informerRegion" items="${informerRegionList}" varStatus="idx">
                                <option value="${informerRegion.areaCode}" ><c:out value="${informerRegion.areaName}"/></option>
                            </c:forEach>
 						</select>
-					</div>
+					</div> --%>
 					
 					<!-- 검색조건 영역 시작 -->
 					<div class="rounding_wrap mgt10">
 						<div class="wrap_top"></div>
 						<div class="wrap_center">
-							<fieldset>
+							<fieldset style="display: flex; align-items: center; justify-content: center;">
+								<div>
+									지역 선택 :
+										<select id="areaOptSel" name="AREA_CODE">
+				                           	<c:forEach var="informerRegion" items="${informerRegionList}" varStatus="idx">
+                                                 <option value="${informerRegion.areaCode}" 
+                                                  <c:if test="${informerRegion.areaCode eq login.regionId}">selected</c:if>>
+														${informerRegion.areaName}
+                                                 </option>
+                                             </c:forEach>
+										</select>
+										
+
+								</div>
 								<div id="awardSdiv">
-									시상종류 :  
-									<select class="table_sel1" id="searchType"
-										onchange="search();" name="searchType">
-										<option value="0">교통제보우수자</option>
-									<!--<option value="1">주요정보제공우수자</option>
-										<option value=ㄴ"2">실적증가자</option> -->
-									</select> 
-									<select class="table_sel1" id="searchNum" name="searchNum">
-										<option value="10000">전체 출력</option>
-										<option value="30">30명 출력</option>
-										<option value="50">50명 출력</option>
-										<option value="70">70명 출력</option>
-										<option value="100">100명 출력</option>
-									</select> 
-									
-									제보 : 
-									<input type="text" class="input_base" id="ALL_PER" name="ALL_PER" value="${awardGrade.ALL_PER}" style="width:25px;text-align:center;" maxlength="2" onkeydown='return onlyNumber(event)' onkeyup='removeChar(event)' required/>
-									 % 
-									주요 : 
-									<input type="text" class="input_base" id="MAIN_PER" name="MAIN_PER" value="${awardGrade.MAIN_PER}" style="width:25px;text-align:center;" maxlength="2" onkeydown='return onlyNumber(event)' onkeyup='removeChar(event)'required/>
-									 % 
-									전월 : 
-									<input type="text" class="input_base" id="ADD_PER" name="ADD_PER" value="${awardGrade.ADD_PER}" style="width:25px;text-align:center;" maxlength="2" onkeydown='return onlyNumber(event)' onkeyup='removeChar(event)'required/>
-									 % 
 									 <img src="../images/btn_search.gif" onclick="search();" style="cursor: pointer;     margin-left: 10px;" alt="검색" /> 
 								</div>
-
-								<div id="awardSdiv">
-									<!-- fmt:parseDate : String 형을 받아서 원하는 포맷으로 Date 형태로 변경 
-										fmt:formatDate : Date 형을 받아서 원하는 포맷으로 날짜형태를 변경 -->
-									기준시작 :  
-									<input type="hidden" id="SDATE" name="SDATE"
-										maxlength="15" class="input_base" readonly="readonly"
-										alt="시작일" title="" value=""
-										style="width: 70px; align: center;" />
-									<c:set var="today" value="<%=monthAgo%>" />
-									<c:set var="datetime">
-										<fmt:formatDate value="${today}" pattern="yyyy" />
-									</c:set>
-									<select id="sYear" name="sYear">
-										<c:forEach var="i" begin="0" end="10">
-											<c:choose>
-												<c:when test="${i == 0}">
-													<option value="${datetime}" selected>${datetime}년</option>
-												</c:when>
-												<c:otherwise>
-													<option value="${datetime-i}">${datetime-i}년</option>
-												</c:otherwise>
-											</c:choose>
-										</c:forEach>
-									</select>
-									<c:set var="today" value="<%=monthAgo%>" />
-									<c:set var="datetime">
-										<fmt:formatDate value="${today}" pattern="MM" />
-									</c:set>
-									<select id="sMon" name="sMon">
-										<c:forEach var="i" begin="01" end="12">
-											<c:choose>
-												<c:when test="${i == datetime}">
-													<option value="${i}" selected>${i}월</option>
-												</c:when>
-												<c:otherwise>
-													<option value="${i}">${i}월</option>
-												</c:otherwise>
-											</c:choose>
-										</c:forEach>
-									</select>
-									
-									 기준종료 :  
-									<input type="hidden" id="EDATE" name="EDATE"
-										maxlength="15" class="input_base" readonly="readonly"
-										alt="시작일" title="" value=""
-										style="width: 70px; align: center;" />
-									<c:set var="today" value="<%=monthAgo%>" />
-									<c:set var="datetime">
-										<fmt:formatDate value="${today}" pattern="yyyy" />
-									</c:set>
-									<select id="eYear" name="eYear">
-										<c:forEach var="i" begin="0" end="10">
-											<c:choose>
-												<c:when test="${i == 0}">
-													<option value="${datetime}" selected>${datetime}년</option>
-												</c:when>
-												<c:otherwise>
-													<option value="${datetime-i}">${datetime-i}년</option>
-												</c:otherwise>
-											</c:choose>
-										</c:forEach>
-									</select>
-									
-									<c:set var="today" value="<%=monthAgo%>" />
-									<c:set var="datetime">
-										<fmt:formatDate value="${today}" pattern="MM" />
-									</c:set>
-									<select id="eMon" name="eMon">
-										<c:forEach var="i" begin="01" end="12">
-											<c:choose>
-												<c:when test="${i == datetime}">
-													<option value="${i}" selected>${i}월</option>
-												</c:when>
-												<c:otherwise>
-													<option value="${i}">${i}월</option>
-												</c:otherwise>
-											</c:choose>
-										</c:forEach>
-									</select>
-									
-									<input type="checkbox" id="dchker" />
-									<div id="xdateDiv">
-										제외월 시작 :  
-										<input type="hidden" id="XSDATE" name="XSDATE"
-											maxlength="15" class="input_base" readonly="readonly"
-											alt="시작일" title="" value=""
-											style="width: 70px; align: center;" />
-										<c:set var="today" value="<%=monthAgo%>" />
-										<c:set var="datetime">
-											<fmt:formatDate value="${today}" pattern="yyyy" />
-										</c:set>
-										<select id="xsYear" name="xsYear">
-											<c:forEach var="i" begin="0" end="10">
-												<c:choose>
-													<c:when test="${i == 0}">
-														<option value="${datetime}" selected>${datetime}년</option>
-													</c:when>
-													<c:otherwise>
-														<option value="${datetime-i}">${datetime-i}년</option>
-													</c:otherwise>
-												</c:choose>
-											</c:forEach>
-										</select>
-										
-										<c:set var="today" value="<%=monthAgo%>" />
-										<c:set var="datetime">
-											<fmt:formatDate value="${today}" pattern="MM" />
-										</c:set>
-										<select id="xsMon" name="xsMon">
-											<c:forEach var="i" begin="01" end="12">
-												<c:choose>
-													<c:when test="${i == datetime}">
-														<option value="${i}" selected>${i}월</option>
-													</c:when>
-													<c:otherwise>
-														<option value="${i}">${i}월</option>
-													</c:otherwise>
-												</c:choose>
-											</c:forEach>
-										</select>
-										
-										 제외월 종료 :  
-										<input type="hidden" id="XEDATE" name="XEDATE"
-											maxlength="15" class="input_base" readonly="readonly"
-											alt="시작일" title="" value=""
-											style="width: 70px; align: center;" />
-										<c:set var="today" value="<%=monthAgo%>" />
-										<c:set var="datetime">
-											<fmt:formatDate value="${today}" pattern="yyyy" />
-										</c:set>
-										<select id="xeYear" name="xeYear">
-											<c:forEach var="i" begin="0" end="10">
-												<c:choose>
-													<c:when test="${i == 0}">
-														<option value="${datetime}" selected>${datetime}년</option>
-													</c:when>
-													<c:otherwise>
-														<option value="${datetime-i}">${datetime-i}년</option>
-													</c:otherwise>
-												</c:choose>
-											</c:forEach>
-										</select>
-										
-										<c:set var="today" value="<%=monthAgo%>" />
-										<c:set var="datetime">
-											<fmt:formatDate value="${today}" pattern="MM" />
-										</c:set>
-										<select id="xeMon" name="xeMon">
-											<c:forEach var="i" begin="01" end="12">
-												<c:choose>
-													<c:when test="${i == datetime}">
-														<option value="${i}" selected>${i}월</option>
-													</c:when>
-													<c:otherwise>
-														<option value="${i}">${i}월</option>
-													</c:otherwise>
-												</c:choose>
-											</c:forEach>
-										</select>
-										
-									</div>
-									
-								</div>
+	
 							</fieldset>
 						</div>
 						<div class="wrap_bottom"></div>
 					</div>
-				</div>
 				<input type="hidden" name="PAYMENT_DATE" id="PAYMENT_DATE">
 				<!-- list -->
 				<div id="listDiv"></div>

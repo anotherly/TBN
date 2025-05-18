@@ -56,6 +56,7 @@
 					        , A.FLAG_IMPORTANT
 					        , B.F_COLOR
 		                    , B.B_COLOR
+		                    , A.FLAG_KNEX
 					FROM REPORT_RECEIPT_TODAY A
 					    LEFT OUTER JOIN CODE_REPORT_TYPE B
 					        ON A.REPORT_TYPE = B.BAS_SCOD
