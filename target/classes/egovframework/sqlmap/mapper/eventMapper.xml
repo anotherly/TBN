@@ -54,6 +54,15 @@
 		 WHERE 1 = 1
     </select>
     
+    <select id="getFileList" parameterType="eventVo" resultType="eventVo">
+    	select *
+		from event_file_info
+		where event_id = #{EVENT_ID}
+    	
+    </select>
+    
+    
+    
     <select id="getEventList2" parameterType="eventVo" resultType="eventVo">
         SELECT EVENT_ID, EVENT_NAME, CONTENTS, REGION_ID, EVENT_DATE  
 		  FROM (SELECT EVENT_ID, EVENT_NAME, CONTENTS, REGION_ID
@@ -68,8 +77,18 @@
 		 WHERE 1 = 1
     </select>
     
+    <select id="selectFileList" parameterType="eventVo" resultType="eventVo">
+    	select *
+    	from event_file_info
+    	where file_id = #{FILE_ID}
+    </select>
     
-       
+     <select id="selectFileList2" parameterType="eventVo" resultType="eventVo">
+    	select *
+    	from event_file_info
+    	where EVENT_ID = #{EVENT_ID}
+    </select>
+      
     <resultMap id="getAttendanceList" type="infrmVO" >
 		<result property="informerId" column="INFORMER_ID"/>
 		<result property="actId" column="ACT_ID"/>
@@ -198,7 +217,7 @@
                </if>
            )
 		 <if test ="searchRegion!= null and searchRegion neq ''">
-           AND A.ORG_ID = #{searchRegion}
+           AND A.area_code = #{searchRegion}
          </if>
          <if test ="searchActYn!= null and searchActYn neq ''">
            AND A.FLAG_ACT = #{searchActYn}
@@ -322,5 +341,50 @@
         ON(A.EVENT_ID=B.EVENT_ID)
     </select>
     
+       <!--  행사 등록 후 이벤트 아이디 가져오기  -->
+    <select id="selectEventId" resultType="java.lang.String">
+    	SELECT EVENT_ID
+	    FROM EVENT
+	    WHERE ROWNUM = 1
+	    ORDER BY EVENT_ID DESC
+	  </select>
+        
+	  
+	  <!--  파일 등록  -->
+	<!--   <insert id="insertFile" parameterType="kr.co.wizbrain.tbn.event.vo.eFileVO">
+	    INSERT INTO EVENT_FILE_INFO 
+	    (FILE_ID, FILE_NAME, FILE_DIR, REG_DT,EVENT_ID)
+	    VALUES 
+	    <foreach collection="list" item="item" index="index" separator=",">
+	        (DBMS_RANDOM.STRING('X', 20), #{item.fileName}, #{item.fileDir}, SYSDATE, #{item.eventId})
+	    </foreach>
+	    
+		</insert> -->
+		
+		<insert id="insertFile" parameterType="kr.co.wizbrain.tbn.event.vo.eFileVO">
+			INSERT ALL
+				<foreach collection="list" item="item" index="index" open="" close="" separator="">
+					INTO EVENT_FILE_INFO (FILE_ID, FILE_NAME, FILE_DIR, REG_DT, EVENT_ID) VALUES(DBMS_RANDOM.STRING('X', 20), #{item.fileName}, #{item.fileDir}, SYSDATE, #{item.eventId})
+				</foreach>
+			SELECT *
+			FROM DUAL
+		</insert>
+		
+		
+		
+		<delete id="deleteFile" parameterType="eventVo">
+    	delete from event_file_info
+    	where event_id= #{EVENT_ID}
+    </delete>
     
+    <delete id="deleteFileOne" parameterType="java.lang.String">
+    	delete from event_file_info
+    	where file_id= #{fileId}
+    </delete>
+    
+    <select id="selectFileName" resultType="java.lang.String">
+    	select file_name
+    	from event_file_info
+    	where file_id = #{fileId}
+    </select>
 </mapper>

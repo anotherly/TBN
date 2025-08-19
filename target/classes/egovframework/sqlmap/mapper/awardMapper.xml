@@ -3,372 +3,385 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="kr.co.wizbrain.tbn.award.mapper.AwardMapper">
-<!-- 
-수정일           수정자         수정내용 
-========= ======= ================================================= 
-2020.07.23 정다빈     최초 생성 
--->
-
-	<!-- 시상별 배점 조회 -->
+	<!--  
+	수정일           수정자         수정내용 
+	========= ======= ================================================= 
+	2020.07.23 정다빈     최초 생성 
+	 -->
+	 
+	 
+	 
+	<!--  시상별 배점 조회  -->
 	<select id="selectGrade" parameterType="awardVo" resultType="awardVo">
-	    SELECT * FROM AWARD_GRADE 
-	    <if test="AREA_CODE !=null and AREA_CODE neq ''"> 
-		   WHERE AREA_CODE=#{AREA_CODE}
-	    </if>
+		SELECT * FROM AWARD_GRADE
+		<if test="AREA_CODE !=null and AREA_CODE neq ''"> WHERE AREA_CODE=#{AREA_CODE} </if>
 	</select>
-	<!-- 시상별 배점 갱신 -->
-	<update id="updateGrade" parameterType="awardVo">
-	   UPDATE AWARD_GRADE SET 
-	   ALL_PER=#{ALL_PER}
-	   ,MAIN_PER=#{MAIN_PER}
-	   ,ADD_PER=#{ADD_PER}
-	   WHERE AREA_CODE=#{AREA_CODE}
+	
+	
+	
+	<!--  시상별 배점 갱신  -->
+	<update id="updateGrade" parameterType="awardVo"> 
+		UPDATE AWARD_GRADE SET ALL_PER=#{ALL_PER} ,MAIN_PER=#{MAIN_PER} ,ADD_PER=#{ADD_PER} WHERE AREA_CODE=#{AREA_CODE} 
+	</update>
+	
+	
+
+	<!--  종류에 따른 시상대상자 조회  -->
+	<select id="getAwardInformerList" parameterType="awardVo" resultType="awardVo">
+	    with mntb as (
+	        select ind_id, 
+	               sum(mon_cnt) as mon_cnt, 
+	               sum(main_cnt) as main_cnt, 
+	               sum(add_cnt) as add_cnt 
+	        from stat_tbn_monrpt 
+	        where stat_mon between #{SDATE} and #{EDATE} 
+	          and ind_type='0' 
+	          and area_code=#{AREA_CODE} 
+	          and ind_id not in (
+	            select informer_id 
+	            from award_info 
+	            where sdate=#{SDATE} 
+	              and edate=#{EDATE} 
+	              and aw_type=#{searchType} 
+	              and area_code=#{AREA_CODE}
+	        ) 
+	        group by ind_id
+	    ), agp as (
+	        select * 
+	        from award_grade 
+	        where area_code=#{AREA_CODE}
+	    )
+	    SELECT C.* 
+	    FROM (
+	        select
+	            <choose>
+	                <when test="searchType == 0"> 
+	                    row_number() over(order by to_number(a.ALL_RANK) desc) as rnum 
+	                </when>
+	                <when test="searchType == 1"> 
+	                    row_number() over(order by to_number(a.MAIN_CNT) desc) as rnum 
+	                </when>
+	                <otherwise> 
+	                    row_number() over(order by to_number(a.ADD_CNT) desc) as rnum 
+	                </otherwise>
+	            </choose>,
+	            b.*, 
+	            a.* 
+	        from (
+	            select 
+	                ind_id,
+	                mon_cnt,
+	                TO_CHAR(round((mon_cnt/a1.mx_mon)* agp.ALL_PER,2), 'FM9990.00') as RPT_GRADE,
+	                main_cnt,
+	                TO_CHAR(round((main_cnt/a2.main_mx)* agp.MAIN_PER, 2), 'FM9990.00') as MAIN_GRADE,
+	                add_cnt,
+	                TO_CHAR(round((GREATEST(add_cnt, 0)/a3.add_mx)* agp.ADD_PER, 2), 'FM9990.00') as ADD_GRADE,
+	                TO_CHAR(
+	                    round((mon_cnt/a1.mx_mon)* agp.ALL_PER, 2) + 
+	                    round((main_cnt/a2.main_mx)* agp.MAIN_PER, 2) + 
+	                    round((GREATEST(add_cnt, 0)/a3.add_mx)* agp.ADD_PER, 2), 
+	                    'FM9990.00'
+	                ) as ALL_RANK
+	            from mntb, agp
+	            ,(select decode(max(mon_cnt), 0, 1, max(mon_cnt)) as mx_mon from mntb) a1,
+	            (select decode(max(main_cnt), 0, 1, max(main_cnt)) as main_mx from mntb) a2,
+	            (select decode(max(add_cnt), 0, 1, max(add_cnt)) as add_mx from mntb) a3
+	            WHERE 1=1
+	            <if test="XSDATE !=null and XSDATE neq ''">
+	                and ind_id not in (
+	                    select informer_id 
+	                    from award_info 
+	                    where sdate <![CDATA[ >= ]]> #{XSDATE} 
+	                      and edate <![CDATA[ <= ]]> #{XEDATE} 
+	                      and aw_type=#{searchType} 
+	                      and area_code=#{AREA_CODE}
+	                )
+	            </if>
+	        ) a 
+	        left join (
+	            select t1.*, 
+	                   t2.org_name as org_name 
+	            from (
+	                select informer_id, act_id, informer_name, area_code, org_id, 
+	                       REGEXP_REPLACE(phone_cell, '(02|.{3})(.+)(.{4})', '\1-\2-\3') as PHONE_CELL
+	                from informer 
+	                WHERE area_code=#{AREA_CODE}
+	            ) t1 
+	            left join (
+	                select org_id, org_name 
+	                from organization 
+	                WHERE area_code=#{AREA_CODE}
+	            ) t2 
+	            on(t1.org_id = t2.org_id)
+	        ) b 
+	        on(a.ind_id = b.informer_id)
+	    ) C 
+	    where C.RNUM BETWEEN 1 AND #{searchNum}
+	</select>
+
+
+
+	<!--  이달 교통제보왕이 선정되어있는지 확인  -->
+	<select id="selectAwardCnt" resultType="java.lang.String">
+	    SELECT COUNT(INFORMER_ID) AWARD_CNT 
+	    FROM AWARD_INFO A, AWARD_RECIPIENT B 
+	    WHERE A.AW_ID = B.AW_ID 
+	      AND A.AW_TYPE = 1 
+	      AND SUBSTR(A.AW_DATE, 0, 6) = TO_CHAR(SYSDATE, 'YYYYMM')
+	</select>
+	
+	
+	
+	<select id="selectTodayAward" parameterType="awardVo" resultType="java.lang.String">
+	    SELECT AW_ID 
+	    FROM AWARD_INFO 
+	    WHERE SUBSTR(AW_DATE, 0, 6) = TO_CHAR(SYSDATE, 'YYYYMM') 
+	      AND AW_TYPE = #{searchType}
+	</select>
+	
+	
+	
+	<update id="saveAward">
+	    INSERT INTO AWARD_INFO (
+	        AW_ID, INFORMER_ID, ACT_ID, AW_TYPE, AREA_CODE, AW_NAME, 
+	        AW_DATE, REG_DATE, SDATE, EDATE, RPT_GRADE, MAIN_GRADE, 
+	        ADD_GRADE, ALL_RANK
+	    )
+	    <foreach collection="chkArr" item="item" index="i" separator="union">
+	        SELECT (
+	            SELECT INFORMER_ID || TO_CHAR(SYSDATE, 'YYYYMMDDHH24MISS') 
+	            FROM DUAL
+	        ), 
+	        INFORMER_ID, ACT_ID, #{thvo.searchType}, AREA_CODE, #{thvo.AW_NAME}, 
+	        TO_CHAR(SYSDATE, 'YYYYMM'), TO_CHAR(SYSDATE, 'YYYYMMDD'), 
+	        #{thvo.SDATE}, #{thvo.EDATE}, #{item.RPT_GRADE}, 
+	        #{item.MAIN_GRADE}, #{item.ADD_GRADE}, #{item.ALL_RANK}
+	        FROM INFORMER 
+	        WHERE INFORMER_ID = #{item.INFORMER_ID}
+	    </foreach>
+	</update>
+	
+	
+	
+	<insert id="saveAwardReciptent" parameterType="awardVo">
+	    INSERT INTO AWARD_RECIPIENT (AW_ID, INFORMER_ID, REG_DATE)
+	    VALUES (#{AW_ID}, #{INFORMER_ID}, TO_CHAR(SYSDATE, 'YYYYMMDD'))
+	</insert>
+	
+	
+	
+	<select id="selectUserAwardList" parameterType="awardVo" resultType="awardVo">
+	    SELECT 
+	        ROW_NUMBER() OVER(ORDER BY B.REG_DATE DESC) RNUM, 
+	        B.AW_ID, 
+	        c.informer_id, 
+	        E.CITY as REGION_NM, 
+	        D.ORG_NAME, 
+	        C.ACT_ID, 
+	        C.INFORMER_NAME, 
+	        DECODE(B.AW_TYPE, '0', '교통제보우수자', '1', '주요정보제공우수자', '2', '실적증가자') AS AW_TYPE, 
+	        B.AW_NAME, 
+	        REGEXP_REPLACE(C.PHONE_CELL, '(02|.{3})(.+)(.{4})', '\1-\2-\3') as PHONE_CELL, 
+	        TO_CHAR(TO_DATE(B.REG_DATE, 'YYYYMMDD'), 'YYYY-MM-DD') AS REG_DATE, 
+	        B.RPT_GRADE, 
+	        B.MAIN_GRADE, 
+	        B.ADD_GRADE, 
+	        B.ALL_RANK 
+	    FROM AWARD_INFO B 
+	    LEFT JOIN (
+	        SELECT INFORMER_ID, INFORMER_NAME, AREA_CODE, ORG_ID, ACT_ID, PHONE_CELL 
+	        FROM INFORMER 
+	        WHERE AREA_CODE = #{AREA_CODE}
+	    ) C ON(B.INFORMER_ID = C.INFORMER_ID) 
+	    LEFT JOIN (
+	        SELECT ORG_ID, ORG_NAME, AREA_CODE 
+	        FROM ORGANIZATION 
+	        WHERE AREA_CODE = #{AREA_CODE}
+	    ) D ON(C.ORG_ID = D.ORG_ID) 
+	    LEFT JOIN CODE_AREACODE E ON(B.AREA_CODE = E.AREA_CODE) 
+	    WHERE B.AREA_CODE = #{AREA_CODE} 
+	      AND B.AW_TYPE = #{searchType} 
+	      AND B.SDATE <![CDATA[ >= ]]> #{SDATE} 
+	      AND B.EDATE <![CDATA[ <= ]]> #{EDATE}
+	    ORDER BY ALL_RANK DESC
+	</select>
+
+
+
+	<!-- 특정 통신원 시상 정보  -->
+	<select id="getAwardList" parameterType="awardVo" resultType="awardVo">
+	    SELECT A.AW_NAME, A.AW_DATE
+	    FROM AWARD_INFO A
+	    WHERE A.INFORMER_ID = #{INFORMER_ID}
+	    ORDER BY A.AW_DATE DESC
+	</select>
+	
+	
+	
+	<!-- 엑셀 다운로드용 시상선정기준 조회 -->
+	<select id="getAwardInformerList2" parameterType="awardVo" resultType="record">
+	    with mntb as (
+	        select 
+	            ind_id,
+	            sum(mon_cnt) as mon_cnt,
+	            sum(main_cnt) as main_cnt,
+	            sum(add_cnt) as add_cnt
+	        from stat_tbn_monrpt
+	        where stat_mon between #{SDATE} and #{EDATE}
+	            and ind_type = '0'
+	            and area_code = #{AREA_CODE}
+	            and ind_id not in (
+	                select informer_id
+	                from award_info
+	                where sdate = #{SDATE}
+	                    and edate = #{EDATE}
+	                    and aw_type = #{searchType}
+	                    and area_code = #{AREA_CODE}
+	            )
+	        group by ind_id
+	    ),
+	    agp as (
+	        select * from award_grade where area_code = #{AREA_CODE}
+	    )
+	    SELECT C.*
+	    FROM (
+	        select
+	            <!-- 상 종류에 따라 정렬방식 변경 -->
+	            <choose>
+	                <when test="searchType == 0">
+	                    row_number() over(order by to_number(a.ALL_RANK) desc) as rnum
+	                </when>
+	                <when test="searchType == 1">
+	                    row_number() over(order by to_number(a.MAIN_CNT) desc) as rnum
+	                </when>
+	                <otherwise>
+	                    row_number() over(order by to_number(a.ADD_CNT) desc) as rnum
+	                </otherwise>
+	            </choose>,
+	            b.*, a.*
+	        from (
+	            select
+	                ind_id,
+	                mon_cnt,
+	                TO_CHAR(round((mon_cnt / a1.mx_mon) * agp.ALL_PER, 2), 'FM9990.00') as RPT_GRADE,
+	                <!-- 전체제보 -->
+	                main_cnt,
+	                TO_CHAR(round((main_cnt / a2.main_mx) * agp.MAIN_PER, 2), 'FM9990.00') as MAIN_GRADE,
+	                <!-- 주요제보 -->
+	                add_cnt,
+	                <!-- 음수일 경우 0점 처리 -->
+	                TO_CHAR(round((GREATEST(add_cnt, 0) / a3.add_mx) * agp.ADD_PER, 2), 'FM9990.00') as ADD_GRADE,
+	                <!-- 증감 -->
+	                <!-- 총점 -->
+	                TO_CHAR(
+	                    round((mon_cnt / a1.mx_mon) * agp.ALL_PER, 2) + 
+	                    round((main_cnt / a2.main_mx) * agp.MAIN_PER, 2) + 
+	                    round((GREATEST(add_cnt, 0) / a3.add_mx) * agp.ADD_PER, 2), 
+	                    'FM9990.00'
+	                ) as ALL_RANK
+	            from mntb, agp
+	            <!-- 항목 별 최대값
+	                 0건일 경우 분모가 1이 될 수 없으므로 1로 변경
+	                 1로 변경해도 최대값이 0이라는 건 0/1 이므로 결국 0으로 환산됨 -->
+	            <!-- 전체제보 -->
+	            ,(select decode(max(mon_cnt), 0, 1, max(mon_cnt)) as mx_mon from mntb) a1
+	            <!-- 주요제보 -->
+	            ,(select decode(max(main_cnt), 0, 1, max(main_cnt)) as main_mx from mntb) a2
+	            <!-- 증감 -->
+	            ,(select decode(max(add_cnt), 0, 1, max(add_cnt)) as add_mx from mntb) a3
+	            WHERE 1 = 1
+	            <!-- 제외기간이 존재할 경우 -->
+	            <if test="XSDATE != null and XSDATE neq ''">
+	                and ind_id not in (
+	                    select informer_id 
+	                    from award_info 
+	                    where sdate <![CDATA[ >= ]]> #{XSDATE} 
+	                    and edate <![CDATA[ <= ]]> #{XEDATE} 
+	                    and aw_type = #{searchType} 
+	                    and area_code = #{AREA_CODE}
+	                )
+	            </if>
+	        ) a
+	        left join (
+	            select 
+	                t1.*, 
+	                t2.org_name as org_name 
+	            from (
+	                select 
+	                    informer_id,
+	                    act_id,
+	                    informer_name,
+	                    area_code,
+	                    org_id,
+	                    REGEXP_REPLACE(phone_cell, '(02|.{3})(.+)(.{4})', '\1-\2-\3') as PHONE_CELL 
+	                from informer 
+	                WHERE area_code = #{AREA_CODE}
+	            ) t1 
+	            left join (
+	                select org_id, org_name 
+	                from organization 
+	                WHERE area_code = #{AREA_CODE}
+	            ) t2 on(t1.org_id = t2.org_id)
+	        ) b on(a.ind_id = b.informer_id)
+	    ) C 
+	    where C.RNUM BETWEEN 1 AND #{searchNum}
+	</select>
+
+
+
+	<!--  엑셀 다운로드용 수상자 조회  -->
+	<select id="selectUserAwardList2" parameterType="awardVo" resultType="record">
+	    SELECT 
+	        ROW_NUMBER() OVER(ORDER BY B.REG_DATE DESC) RNUM, 
+	        c.informer_id, 
+	        E.CITY as REGION_NM, 
+	        D.ORG_NAME, 
+	        C.ACT_ID, 
+	        C.INFORMER_NAME, 
+	        DECODE(B.AW_TYPE, '0', '교통제보우수자', '1', '주요정보제공우수자', '2', '실적증가자') AS AW_TYPE, 
+	        B.AW_NAME, 
+	        REGEXP_REPLACE(C.PHONE_CELL, '(02|.{3})(.+)(.{4})', '\1-\2-\3') as PHONE_CELL, 
+	        TO_CHAR(TO_DATE(B.REG_DATE, 'YYYYMMDD'), 'YYYY-MM-DD') AS REG_DATE, 
+	        B.RPT_GRADE, 
+	        B.MAIN_GRADE, 
+	        B.ADD_GRADE, 
+	        B.ALL_RANK 
+	    FROM AWARD_INFO B 
+	    LEFT JOIN (
+	        SELECT 
+	            INFORMER_ID, 
+	            INFORMER_NAME, 
+	            AREA_CODE, 
+	            ORG_ID, 
+	            ACT_ID, 
+	            PHONE_CELL 
+	        FROM INFORMER 
+	        WHERE AREA_CODE = #{AREA_CODE}
+	    ) C ON(B.INFORMER_ID = C.INFORMER_ID)
+	    LEFT JOIN (
+	        SELECT 
+	            ORG_ID, 
+	            ORG_NAME, 
+	            AREA_CODE 
+	        FROM ORGANIZATION 
+	        WHERE AREA_CODE = #{AREA_CODE}
+	    ) D ON(C.ORG_ID = D.ORG_ID)
+	    LEFT JOIN CODE_AREACODE E ON(B.AREA_CODE = E.AREA_CODE)
+	    WHERE B.AREA_CODE = #{AREA_CODE} 
+	        AND B.AW_TYPE = #{searchType} 
+	        AND B.SDATE <![CDATA[ >= ]]> #{SDATE} 
+	        AND B.EDATE <![CDATA[ <= ]]> #{EDATE}
+	    ORDER BY ALL_RANK DESC
+	</select>
+	
+	
+	
+	<update id="deleteAward">
+	    DELETE FROM AWARD_INFO 
+	    WHERE AW_ID IN
+	    <foreach collection="selection" item="item" index="index" separator="," open="(" close=")">
+	        #{item}
+	    </foreach>
 	</update>
 
-	<!-- 종류에 따른 시상대상자 조회 -->
-	<select id="getAwardInformerList" parameterType="awardVo" resultType="awardVo">
-	   
-	    with mntb as 
-		( select ind_id
-		,sum(mon_cnt) as mon_cnt
-		,sum(main_cnt) as main_cnt
-		,sum(add_cnt) as add_cnt from stat_tbn_monrpt 
-		where stat_mon between #{SDATE} and #{EDATE}
-		and ind_type='0' and area_code=#{AREA_CODE}
-		and ind_id not in
-		    (select informer_id from award_info 
-		    where
-		    <!--동일 시상 시작점과 끝점이 동일한 경우는 반드시 제외 -->
-		    sdate=#{SDATE} and edate=#{EDATE} and aw_type=#{searchType} and area_code=#{AREA_CODE}
-			)		
-		group by ind_id 
-		) 
-		,agp as (select * from award_grade where area_code=#{AREA_CODE}) 
-		
-		SELECT C.* FROM
-			(select
-			<!--상 종류에 따라 정렬방식 변경-->
-			<choose>
-			    <when test="searchType == 0">
-			        row_number() over(order by to_number(a.ALL_RANK) desc) as rnum
-			    </when>
-			    <when test="searchType == 1">
-			        row_number() over(order by to_number(a.MAIN_CNT) desc) as rnum
-			    </when>
-			    <otherwise>
-			        row_number() over(order by to_number(a.ADD_CNT) desc) as rnum
-			    </otherwise>
-			</choose>
-			
-			,b.*,a.*
-			from
-			(
-			    select ind_id 
-			    ,mon_cnt
-			    ,TO_CHAR(round((mon_cnt/a1.mx_mon)* agp.ALL_PER,2),'FM9990.00') as RPT_GRADE <!--전체제보--> 
-			    ,main_cnt
-			    ,TO_CHAR(round((main_cnt/a2.main_mx)* agp.MAIN_PER ,2), 'FM9990.00') as MAIN_GRADE <!--주요제보--> 
-			    ,add_cnt
-			    <!-- 음수일 경우 0점 처리 -->
-			    ,TO_CHAR(round((GREATEST(add_cnt, 0)/a3.add_mx)* agp.ADD_PER ,2), 'FM9990.00') as ADD_GRADE <!--증감-->
-			    <!--총점-->
-			    ,TO_CHAR(
-			    round((mon_cnt/a1.mx_mon)* agp.ALL_PER,2) + round((main_cnt/a2.main_mx)* agp.MAIN_PER ,2) 
-			    + round((GREATEST(add_cnt, 0)/a3.add_mx)* agp.ADD_PER ,2), 'FM9990.00'
-			    ) as ALL_RANK 
-			    from mntb, agp
-			    
-			    <!--항목 별 최대값
-			    0건일 경우 분모가 1이 될수 없으므로 1로 변경
-			    1로 변경해도 최대값이 0이라는건 0/1 이므로 결국 0으로 환산됨-->
-			     
-			    <!--전체제보--> 
-			    ,(select decode(max(mon_cnt),0,1,max(mon_cnt)) as mx_mon from mntb) a1 
-			    <!--주요제보--> 
-			    ,(select decode(max(main_cnt),0,1,max(main_cnt)) as main_mx from mntb) a2 
-			    <!--증감--> 
-			    ,(select decode(max(add_cnt),0,1,max(add_cnt)) as add_mx from mntb) a3
-			    
-			    WHERE 1=1
-			    <!--제외기간이 존재할 경우--> 
-			    <if test="XSDATE !=null and XSDATE neq ''"> 
-				    and ind_id not in
-				    (
-				    select informer_id from award_info 
-				    where sdate<![CDATA[ >= ]]> #{XSDATE} 
-				    and edate<![CDATA[ <= ]]> #{XEDATE} 
-				    and aw_type=#{searchType} and area_code=#{AREA_CODE}
-				    )
-				</if>
-			)a
-			left join
-			(
-			    select t1.*,t2.org_name as org_name from
-			    (select informer_id,act_id,informer_name,area_code,org_id
-			    ,REGEXP_REPLACE(phone_cell, '(02|.{3})(.+)(.{4})', '\1-\2-\3') as PHONE_CELL
-			    from informer
-			    WHERE area_code=#{AREA_CODE}
-			    ) t1
-			    left join 
-			    (select org_id,org_name from organization
-			    WHERE area_code=#{AREA_CODE}
-			    ) t2
-			    on(t1.org_id=t2.org_id)
-			)b
-			on(a.ind_id=b.informer_id)
-		)C
-		where C.RNUM BETWEEN 1 AND #{searchNum}
-	</select>
-    
-    <!-- 이달 교통제보왕이 선정되어있는지 확인 -->
-    <select id="selectAwardCnt" resultType="java.lang.String" >
-	SELECT COUNT(INFORMER_ID) AWARD_CNT 
-	  FROM AWARD_INFO A  
-	     , AWARD_RECIPIENT B 
-	 WHERE A.AW_ID = B.AW_ID 
-	       AND A.AW_TYPE = 1 
-	       AND SUBSTR(A.AW_DATE,0,6) = TO_CHAR(SYSDATE , 'YYYYMM')    
-    </select>
-    
-    <select id="selectTodayAward" parameterType="awardVo" resultType="java.lang.String">
-	SELECT AW_ID 
-	  FROM AWARD_INFO 
-	 WHERE SUBSTR(AW_DATE,0,6) = TO_CHAR(SYSDATE , 'YYYYMM') 
-	       AND AW_TYPE = #{searchType}
-    </select> 
-    
-    <update  id="saveAward">
-         INSERT INTO AWARD_INFO 
-	       ( 
-	           AW_ID  
-	         , INFORMER_ID
-	         , ACT_ID
-	         , AW_TYPE  
-	         , AREA_CODE  
-	         , AW_NAME  
-	         , AW_DATE 
-	         , REG_DATE
-	         , SDATE
-	         , EDATE
-	         , RPT_GRADE
-	         , MAIN_GRADE
-	         , ADD_GRADE
-	         , ALL_RANK
-	       )
-			<foreach collection="chkArr" item="item" index="i" separator="union">
-		    SELECT 
-			    (SELECT INFORMER_ID||TO_CHAR(SYSDATE , 'YYYYMMDDHH24MISS') FROM DUAL)
-			    ,INFORMER_ID
-				,ACT_ID
-                ,#{thvo.searchType}
-				,AREA_CODE
-				,#{thvo.AW_NAME}
-				,TO_CHAR(SYSDATE,'YYYYMM')
-				,TO_CHAR(SYSDATE,'YYYYMMDD') 
-				,#{thvo.SDATE}
-				,#{thvo.EDATE}
-				,#{item.RPT_GRADE}
-				,#{item.MAIN_GRADE}
-				,#{item.ADD_GRADE}
-				,#{item.ALL_RANK}
-			FROM INFORMER
-			WHERE INFORMER_ID =#{item.INFORMER_ID}
-	        </foreach>
-    </update >
-    
-    <insert id="saveAwardReciptent" parameterType="awardVo" >
-    INSERT INTO AWARD_RECIPIENT 
-       ( 
-           AW_ID  
-         , INFORMER_ID  
-         , REG_DATE 
-       ) 
-       VALUES
-       ( 
-           #{AW_ID}  
-         , #{INFORMER_ID}  
-         , TO_CHAR(SYSDATE,'YYYYMMDD') 
-       )
-    </insert>
-    
-    <select id="selectUserAwardList" parameterType="awardVo" resultType="awardVo">
-	    SELECT ROW_NUMBER() OVER(ORDER BY B.REG_DATE DESC ) RNUM
-	     , B.AW_ID  
-         , c.informer_id
-	     , E.CITY as REGION_NM
-	     , D.ORG_NAME 
-	     , C.ACT_ID  
-	     , C.INFORMER_NAME  
-	     , DECODE(B.AW_TYPE , '0' , '교통제보우수자' , '1' , '주요정보제공우수자', '2' , '실적증가자') AS AW_TYPE  
-	     , B.AW_NAME  
-	     , REGEXP_REPLACE(C.PHONE_CELL, '(02|.{3})(.+)(.{4})', '\1-\2-\3') as PHONE_CELL
-	     , TO_CHAR(TO_DATE(B.REG_DATE , 'YYYYMMDD') , 'YYYY-MM-DD') AS REG_DATE
-	     , B.RPT_GRADE
-	     , B.MAIN_GRADE
-	     , B.ADD_GRADE
-	     , B.ALL_RANK
-	  FROM 
-        AWARD_INFO B
-		LEFT JOIN 
-	    (SELECT INFORMER_ID,INFORMER_NAME,AREA_CODE,ORG_ID,ACT_ID,PHONE_CELL FROM INFORMER WHERE AREA_CODE=#{AREA_CODE}) C
-	    ON(B.INFORMER_ID = C.INFORMER_ID)
-	    LEFT JOIN   
-	    (SELECT ORG_ID,ORG_NAME,AREA_CODE FROM ORGANIZATION WHERE AREA_CODE=#{AREA_CODE}) D
-	    ON(C.ORG_ID = D.ORG_ID)
-	    LEFT JOIN CODE_AREACODE E
-	    ON(B.AREA_CODE = E.AREA_CODE)
-	 	WHERE B.AREA_CODE =#{AREA_CODE} 
-	 	AND B.AW_TYPE=#{searchType}
-	    AND B.SDATE<![CDATA[ >= ]]> #{SDATE} 
-		AND B.EDATE<![CDATA[ <= ]]> #{EDATE}
-	    <!--  AND ROWNUM BETWEEN 1 AND #{searchNum}   -->
-	   ORDER BY ALL_RANK DESC 
-	   
-    </select>
-	
-      <!--특정 통신원 시상 정보 -->
-    <select id="getAwardList" parameterType="awardVo" resultType="awardVo">
-        SELECT A.AW_NAME, A.AW_DATE
-		  FROM AWARD_INFO A 
-           WHERE A.INFORMER_ID = #{INFORMER_ID}
-         ORDER BY A.AW_DATE DESC
-    </select>
-    
-    <!-- 엑셀 다운로드용 시상선정기준 조회 -->
-    <select id="getAwardInformerList2" parameterType="awardVo" resultType="record">
-	   
-	    with mntb as 
-		( select ind_id
-		,sum(mon_cnt) as mon_cnt
-		,sum(main_cnt) as main_cnt
-		,sum(add_cnt) as add_cnt from stat_tbn_monrpt 
-		where stat_mon between #{SDATE} and #{EDATE}
-		and ind_type='0' and area_code=#{AREA_CODE}
-		and ind_id not in
-		    (select informer_id from award_info 
-		    where
-		    <!--동일 시상 시작점과 끝점이 동일한 경우는 반드시 제외 -->
-		    sdate=#{SDATE} and edate=#{EDATE} and aw_type=#{searchType} and area_code=#{AREA_CODE}
-			)		
-		group by ind_id 
-		) 
-		,agp as (select * from award_grade where area_code=#{AREA_CODE}) 
-		
-		SELECT C.* FROM
-			(select
-			<!--상 종류에 따라 정렬방식 변경-->
-			<choose>
-			    <when test="searchType == 0">
-			        row_number() over(order by to_number(a.ALL_RANK) desc) as rnum
-			    </when>
-			    <when test="searchType == 1">
-			        row_number() over(order by to_number(a.MAIN_CNT) desc) as rnum
-			    </when>
-			    <otherwise>
-			        row_number() over(order by to_number(a.ADD_CNT) desc) as rnum
-			    </otherwise>
-			</choose>
-			
-			,b.*,a.*
-			from
-			(
-			    select ind_id 
-			    ,mon_cnt
-			    ,TO_CHAR(round((mon_cnt/a1.mx_mon)* agp.ALL_PER,2),'FM9990.00') as RPT_GRADE <!--전체제보--> 
-			    ,main_cnt
-			    ,TO_CHAR(round((main_cnt/a2.main_mx)* agp.MAIN_PER ,2), 'FM9990.00') as MAIN_GRADE <!--주요제보--> 
-			    ,add_cnt
-			    <!-- 음수일 경우 0점 처리 -->
-			    ,TO_CHAR(round((GREATEST(add_cnt, 0)/a3.add_mx)* agp.ADD_PER ,2), 'FM9990.00') as ADD_GRADE <!--증감-->
-			    <!--총점-->
-			    ,TO_CHAR(
-			    round((mon_cnt/a1.mx_mon)* agp.ALL_PER,2) + round((main_cnt/a2.main_mx)* agp.MAIN_PER ,2) 
-			    + round((GREATEST(add_cnt, 0)/a3.add_mx)* agp.ADD_PER ,2), 'FM9990.00'
-			    ) as ALL_RANK 
-			    from mntb, agp
-			    
-			    <!--항목 별 최대값
-			    0건일 경우 분모가 1이 될수 없으므로 1로 변경
-			    1로 변경해도 최대값이 0이라는건 0/1 이므로 결국 0으로 환산됨-->
-			     
-			    <!--전체제보--> 
-			    ,(select decode(max(mon_cnt),0,1,max(mon_cnt)) as mx_mon from mntb) a1 
-			    <!--주요제보--> 
-			    ,(select decode(max(main_cnt),0,1,max(main_cnt)) as main_mx from mntb) a2 
-			    <!--증감--> 
-			    ,(select decode(max(add_cnt),0,1,max(add_cnt)) as add_mx from mntb) a3
-			    
-			    WHERE 1=1
-			    <!--제외기간이 존재할 경우--> 
-			    <if test="XSDATE !=null and XSDATE neq ''"> 
-				    and ind_id not in
-				    (
-				    select informer_id from award_info 
-				    where sdate<![CDATA[ >= ]]> #{XSDATE} 
-				    and edate<![CDATA[ <= ]]> #{XEDATE} 
-				    and aw_type=#{searchType} and area_code=#{AREA_CODE}
-				    )
-				</if>
-			)a
-			left join
-			(
-			    select t1.*,t2.org_name as org_name from
-			    (select informer_id,act_id,informer_name,area_code,org_id
-			    ,REGEXP_REPLACE(phone_cell, '(02|.{3})(.+)(.{4})', '\1-\2-\3') as PHONE_CELL
-			    from informer
-			    WHERE area_code=#{AREA_CODE}
-			    ) t1
-			    left join 
-			    (select org_id,org_name from organization
-			    WHERE area_code=#{AREA_CODE}
-			    ) t2
-			    on(t1.org_id=t2.org_id)
-			)b
-			on(a.ind_id=b.informer_id)
-		)C
-		where C.RNUM BETWEEN 1 AND #{searchNum}
-	</select>
-    
-    <!-- 엑셀 다운로드용 수상자 조회 -->
-     <select id="selectUserAwardList2" parameterType="awardVo" resultType="record">
-	    SELECT ROW_NUMBER() OVER(ORDER BY B.REG_DATE DESC ) RNUM  
-         , c.informer_id
-	     , E.CITY as REGION_NM
-	     , D.ORG_NAME 
-	     , C.ACT_ID  
-	     , C.INFORMER_NAME  
-	     , DECODE(B.AW_TYPE , '0' , '교통제보우수자' , '1' , '주요정보제공우수자', '2' , '실적증가자') AS AW_TYPE  
-	     , B.AW_NAME  
-	     , REGEXP_REPLACE(C.PHONE_CELL, '(02|.{3})(.+)(.{4})', '\1-\2-\3') as PHONE_CELL
-	     , TO_CHAR(TO_DATE(B.REG_DATE , 'YYYYMMDD') , 'YYYY-MM-DD') AS REG_DATE
-	     , B.RPT_GRADE
-	     , B.MAIN_GRADE
-	     , B.ADD_GRADE
-	     , B.ALL_RANK 
-	  FROM 
-        AWARD_INFO B
-		LEFT JOIN 
-	    (SELECT INFORMER_ID,INFORMER_NAME,AREA_CODE,ORG_ID,ACT_ID,PHONE_CELL FROM INFORMER WHERE AREA_CODE=#{AREA_CODE}) C
-	    ON(B.INFORMER_ID = C.INFORMER_ID)
-	    LEFT JOIN   
-	    (SELECT ORG_ID,ORG_NAME,AREA_CODE FROM ORGANIZATION WHERE AREA_CODE=#{AREA_CODE}) D
-	    ON(C.ORG_ID = D.ORG_ID)
-	    LEFT JOIN CODE_AREACODE E
-	    ON(B.AREA_CODE = E.AREA_CODE)
-	 	WHERE B.AREA_CODE =#{AREA_CODE} 
-	 	AND B.AW_TYPE=#{searchType}
-	    AND B.SDATE<![CDATA[ >= ]]> #{SDATE} 
-		AND B.EDATE<![CDATA[ <= ]]> #{EDATE}
-	   <!--  AND ROWNUM BETWEEN 1 AND #{searchNum}   -->
-	   ORDER BY ALL_RANK DESC
-    </select>
-    
-         
-    <update  id="deleteAward">
-         DELETE FROM AWARD_INFO WHERE AW_ID IN
-		<foreach collection="selection" item="item" index="index" separator="," open="(" close=")">
-            #{item}
-        </foreach>
-    </update >
-     
 </mapper>
