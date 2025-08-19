@@ -18,27 +18,10 @@
 <head>
 <meta charset="UTF-8">
 <style>
- 	table, th, td {
-	  border: 1px solid black;
-	  border-collapse: collapse;
+	#listDiv p{
+		font-size: 20px;
+    	margin: 20px;
 	}
-	
-	table {
-		width : 100%;
-		height : auto;
-	}
-	
-	
-	th, td {
-		text-align: center;
-		font-size : 16px;
-		line-height : 40px;
-	}
-	
-	th {
-		background-color : #dededf;
-	}
-	
 </style>
 <script>
 /*  	$(document).ready(function(){
@@ -48,12 +31,12 @@
 	// 페이지 이동
 	function changePage(url){
 		
-		if(url == 'goodMile') {
+		if(url == 'select') {
 			$.ajax
 			(
 				{
 					type : "post" ,
-					url : "/informer/mileage/mileageMain.do" ,
+					url : "/informer/award/awardMain.do" ,
 					dataType : "html" ,
 					cache : false ,
 					success:function(html){
@@ -66,12 +49,12 @@
 		
 				}
 			);
-		} else if(url == 'excellenceIfrm'){
+		} else if(url == 'list'){
 			$.ajax
 			(
 				{
 					type : "post" ,
-					url : "/mileage/excellenceIfrmMain.do" ,
+					url : "/informer/award/awardUserMain.do" ,
 					dataType : "html" ,
 					cache : false ,
 					success:function(html){
@@ -89,7 +72,7 @@
 			(
 				{
 					type : "post" ,
-					url : "/mileage/standard.do" ,
+					url : "/informer/award/guideLine.do" ,
 					dataType : "html" ,
 					cache : false ,
 					success:function(html){
@@ -111,48 +94,23 @@
 <body>
 <div id="contentWrap">
 	<form id="searchFrm" name="searchFrm">
-		<div id="searchDiv">
 			<div id="contents">
-				<h1 class='content-title'>굿 제보 마일리지</h1>
+				<h1 class='content-title'>시상관리</h1>
 				<!-- board_list -->
 				<div class="board_list">
 					<!-- 서브메뉴 탭영역 시작 -->
 					<div class="gnb_tab">
 						<ul class="lst_tab">
-							<li ><a href="javascript:changePage('goodMile')">굿 제보 마일리지 조회</a></li>
+							<li><a href="javascript:changePage('select')">수상자선정</a></li>
 							<li class="ns"></li>
-							<li><a href="javascript:changePage('excellenceIfrm')">굿 제보 통신원 선정</a></li>
+							<li><a href="javascript:changePage('list')">수상자조회</a></li>
 							<li class="ns"></li>
-							<li class="on"><a href="javascript:changePage('standard')">선정 기준</a></li>
+							<li class="on">시상관리 활용</li>
 						</ul>
 					</div>
 					
-					<div id="listDiv">
-						<table>
-							<tr>
-								<th>선정 기준
-								</th>
-								<th>적립 마일리지
-								</th>
-							</tr>
-							<tr>
-								<td>당월 주요제보(사고, 공사, 행사 등) 건수</td>
-								<td>건 당 2점</td>
-							</tr>
-							<tr>
-								<td>전월 주요제보(사고, 공사, 행사 등) 건수</td>
-								<td>건 당 1점</td>
-							</tr>
-							<tr>
-								<td>재난제보 건수</td>
-								<td>건 당 5점</td>
-							</tr>
-							<tr>
-								<td>영상, 사진제보</td>
-								<td>건 당 5점</td>
-							</tr>
-						</table>
-					
+					<div id="listDiv" style="margin-bottom:50px;">
+						<p> - 향후 활용방안은 기재 예정입니다</p>							
 					</div>
 			</div>
 		</div>

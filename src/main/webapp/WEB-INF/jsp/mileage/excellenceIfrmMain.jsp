@@ -19,7 +19,10 @@
 <meta charset="UTF-8">
 <script>
  	$(document).ready(function(){
- 		dateFunc("excellenceDate");
+ 		var standardDate=moment().subtract(1, 'months').startOf('month').format('YYYY-MM');
+		//var endate=moment().format('YYYY-MM');
+		//common.js에 생성한 함수 참조(달력생성)
+		dateFunc('standardDate','',standardDate,'','YYYY-MM');
  		
  		search();  // 첫 진입 시 실행 함수
  	});
@@ -125,7 +128,7 @@
 						<ul class="lst_tab">
 							<li><a href="javascript:changePage('goodMile')">굿 제보 마일리지 조회</a></li>
 							<li class="ns"></li>
-							<li class="on"><a href="javascript:changePage('excellenceIfrm')">우수 통신원</a></li>
+							<li class="on"><a href="javascript:changePage('excellenceIfrm')">굿 제보 통신원 선정</a></li>
 							<li class="ns"></li>
 							<li><a href="javascript:changePage('standard')">선정 기준</a></li>
 						</ul>
@@ -145,10 +148,16 @@
 						<div class="wrap_top"></div>
 						<div class="wrap_center">
 							<fieldset style="display: flex; align-items: center; justify-content: center;">
-								<div>
-									기준 년도 :
-										<input type="text" id="excellenceDate" name="standardDate" style="margin-right : 15px;" />
-								</div>
+								<div class="form_daterange" style="display: inline-flex;align-items: center;gap: 5px;" id="schDtBody">
+									기준년월 : 
+									<div class='input-group date' id='datetimepicker1'>
+										<input type='text' class="form-control dt_search" name="standardDate" id="standardDate" required/>
+									</div>
+									<!--  종료일 :  
+									<div class='input-group date' id='datetimepicker2'>
+										<input type="text" class="form-control dt_search" id="edt" name="edt" required/>
+									</div> -->
+								</div> 
 								<div id="awardSdiv">
 									 <img src="../images/btn_search.gif" onclick="search();" style="cursor: pointer;     margin-left: 10px;" alt="검색" /> 
 								</div>

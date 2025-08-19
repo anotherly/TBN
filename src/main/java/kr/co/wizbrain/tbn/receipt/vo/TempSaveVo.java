@@ -52,6 +52,35 @@ public class TempSaveVo {
 	public String F_LINK_ID;
 	public String T_LINK_ID;
 	
+	public String FLAG_DMB_SEND;
+	public String FLAG_KNEX;
+	public String FLAG_WEB;
+	public String DLS_TEXT;
+	
+	public String getDLS_TEXT() {
+		return DLS_TEXT;
+	}
+	public void setDLS_TEXT(String dLS_TEXT) {
+		DLS_TEXT = dLS_TEXT;
+	}
+	public String getFLAG_DMB_SEND() {
+		return FLAG_DMB_SEND;
+	}
+	public void setFLAG_DMB_SEND(String fLAG_DMB_SEND) {
+		FLAG_DMB_SEND = fLAG_DMB_SEND;
+	}
+	public String getFLAG_KNEX() {
+		return FLAG_KNEX;
+	}
+	public void setFLAG_KNEX(String fLAG_KNEX) {
+		FLAG_KNEX = fLAG_KNEX;
+	}
+	public String getFLAG_WEB() {
+		return FLAG_WEB;
+	}
+	public void setFLAG_WEB(String fLAG_WEB) {
+		FLAG_WEB = fLAG_WEB;
+	}
 	public String getFLAG_DISASTOR() {
 		return FLAG_DISASTOR;
 	}

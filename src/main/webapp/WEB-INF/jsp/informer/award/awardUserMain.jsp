@@ -22,7 +22,6 @@
 	$(document).ready(function() {
 		search();
 	})
-
 	/**
 	 * 검색
 	 */
@@ -52,7 +51,6 @@
 		};
 		$('#searchFrm').ajaxSubmit(options);
 	}
-
 	
 	//시상자 제외(수상자 선정 화면으로 통신원 보내기)
 	function deleteAward(){
@@ -63,7 +61,6 @@
 				return;
 			}
 			let tagVal = $("#searchFrm").serialize();
-			
 			console.log(tagVal);
 			$.ajax
 			(
@@ -76,38 +73,71 @@
 					success:function(data){
 						if(data.msg == "success") alert("정상적으로 수상취소 되었습니다");
 						search();
-					} ,
-	
+					},
 					error:function(data,error){
 						alert("시스템에 문제가 생겼습니다.");
 					}
-	
 				}
 			);
 			
 		}else{
 			alert("수상자를 선택해 주세요");
 		}
-		
 	}
 	
-	//시상자목록  -> 수상자선정 화면 전환
-	function changePage() {
-		$.ajax({
-			type : "post",
-			url : "/informer/award/awardMain.do",
-			dataType : "html",
-			data : $("#searchFrm").serialize(),
-			cache : false,
-			success : function(html) {
-				$('#contentWrap').html(html);
-			},
-
-			error : function(data, error) {
-				//alert("시스템에 문제가 생겼습니다." + data);
-			}
-
-		});
+	// 페이지 이동
+	function changePage(url){
+		if(url == 'select') {
+			$.ajax
+			(
+				{
+					type : "post" ,
+					url : "/informer/award/awardMain.do" ,
+					dataType : "html" ,
+					cache : false ,
+					success:function(html){
+						$('#contentWrap').html(html);
+					} ,
+					error:function(data,error){
+						alert("시스템에 문제가 생겼습니다." + data);
+					}
+				}
+			);
+		} else if(url == 'list'){
+			$.ajax
+			(
+				{
+					type : "post" ,
+					url : "/informer/award/awardUserMain.do" ,
+					dataType : "html" ,
+					cache : false ,
+					success:function(html){
+						$('#contentWrap').html(html);
+					} ,
+		
+					error:function(data,error){
+						alert("시스템에 문제가 생겼습니다." + data);
+					}
+		
+				}
+			);
+		} else {
+			$.ajax
+			(
+				{
+					type : "post" ,
+					url : "/informer/award/guideLine.do" ,
+					dataType : "html" ,
+					cache : false ,
+					success:function(html){
+						$('#contentWrap').html(html);
+					} ,
+					error:function(data,error){
+						alert("시스템에 문제가 생겼습니다." + data);
+					}
+				}
+			);
+		}
 	}
 	
 	//엑셀 다운로드 기능 제공
@@ -126,11 +156,14 @@
 				<!-- board_list -->
 				<div class="board_list">
 					<!-- 서브메뉴 탭영역 시작 -->
+					<!-- 서브메뉴 탭영역 시작 -->
 					<div class="gnb_tab">
 						<ul class="lst_tab">
-							<li><a href="javascript:changePage();">수상자선정</a></li>
+							<li><a href="javascript:changePage('select')">수상자선정</a></li>
 							<li class="ns"></li>
 							<li class="on">수상자조회</li>
+							<li class="ns"></li>
+							<li><a href="javascript:changePage('use')">시상관리 활용</a></li>
 						</ul>
 					</div>
 					<div style="position: absolute;right: 0px;top: 52px;">
@@ -149,9 +182,9 @@
 								종류  <!-- onchange="search();" -->
 								<select class="table_sel1" id="searchType"
 									 name="searchType">
-									<option value="0">교통제보우수자</option>
-									<option value="1">주요정보제공우수자</option>
-									<option value="2">실적증가자</option>
+									<option value="0">시상관리1</option>
+									<option value="1">시상관리2</option>
+									<option value="2">시상관리3</option>
 								</select> 
 									기준시작 : 
 									<input type="hidden" id="SDATE" name="SDATE"

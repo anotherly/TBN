@@ -103,30 +103,12 @@
 	// 페이지 이동
 	function changePage(url){
 		
-		if(url == 'allMile') {
+		if(url == 'bestInformerList') {
 			$.ajax
 			(
 				{
 					type : "post" ,
-					url : "/mileage/allMile.do" ,
-					dataType : "html" ,
-					cache : false ,
-					success:function(html){
-						$('#contentWrap').html(html);
-					} ,
-		
-					error:function(data,error){
-						alert("시스템에 문제가 생겼습니다." + data);
-					}
-		
-				}
-			);
-		} else if(url == 'paymentMile'){
-			$.ajax
-			(
-				{
-					type : "post" ,
-					url : "/informer/mileage/mileageMain.do" ,
+					url : "/informer/bestIfrm/bestIfrmMain.do" ,
 					dataType : "html" ,
 					cache : false ,
 					success:function(html){
@@ -144,7 +126,7 @@
 			(
 				{
 					type : "post" ,
-					url : "/mileage/mileGrade.do" ,
+					url : "/bestIfrm/standardMain.do" ,
 					dataType : "html" ,
 					cache : false ,
 					success:function(html){
@@ -174,23 +156,19 @@
 <div id="contentWrap">
 	<form id="searchFrm" name="searchFrm">
 		<!-- <div id="posi"><a href="/main.do"><img src="../images/ico_home.gif" alt="home" /></a>제보자관리 > 시상관리</div> -->
-		<div id="searchDiv">
+		<!-- <div id="searchDiv"> -->
 			<div id="contents">
 				<h1 class='content-title' style="margin-top:50px;">최고 통신원</h1>
 				<!-- board_list -->
 				<div class="board_list">
 					<!-- 서브메뉴 탭영역 시작 -->
-					<!-- <div class="gnb_tab">
+					<div class="gnb_tab">
 						<ul class="lst_tab">
-							<li class="on"><a href="javascript:changePage('paymentMile')">마일리지 반영</a></li>
+							<li class="on">최고통신원 조회</li>
 							<li class="ns"></li>
-							<li><a href="javascript:changePage('allMile')">총 마일리지 조회</a></li>
-							<li class="ns"></li>
-							<li><a href="javascript:changePage('grade')">등급 조회</a></li>
-							<li class="ns"></li>
-							<li id="paymentMile">마일리지 산정기준</li>
+							<li><a href="javascript:changePage('guideLine')">선정기준</a></li>
 						</ul>
-					</div> -->
+					</div>
 					<%-- <div style="position: absolute;right: 0px;top: 52px;">
 				       <select id="areaOptSel" name="AREA_CODE">
                            <c:forEach var="informerRegion" items="${informerRegionList}" varStatus="idx">
@@ -200,7 +178,7 @@
 					</div> --%>
 					
 					<!-- 검색조건 영역 시작 -->
-					<div class="rounding_wrap mgt10">
+					<!-- <div class="rounding_wrap mgt10">
 						<div class="wrap_top"></div>
 						<div class="wrap_center">
 							<fieldset style="display: flex; align-items: center; justify-content: center;">
@@ -224,7 +202,7 @@
 							</fieldset>
 						</div>
 						<div class="wrap_bottom"></div>
-					</div>
+					</div> -->
 				<input type="hidden" name="PAYMENT_DATE" id="PAYMENT_DATE">
 				<!-- list -->
 				<div id="listDiv"></div>

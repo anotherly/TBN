@@ -47,6 +47,7 @@
 		, RECEPTION_EVA
 		, FLAG_WEB
 		, FLAG_DMB_SEND
+		, DLS_TEXT
 		)
 		VALUES(
 		#{RECEIPT_ID}
@@ -89,17 +90,22 @@
 					#{MEMO} like '%긴급%' then 'Y' else 'N' 
 		 		END
 		 	END
+		<!--  재난재보  -->
 		, #{FLAG_DISASTOR}
 		, REPLACE(#{R_TEL},'-', '')
 		, #{X_COORDINATE}
 		, #{Y_COORDINATE}
 		, #{REPORT_TYPE2}
 		, #{REPORT_TYPE3}
-
 		, #{AREA_ID}
+		<!-- 차선 -->
 		, #{LANE}
+		<!-- TBN 공식홈페이지 문자돌발정보 db 전송여부 -->
 		, #{FLAG_WEB}
+		<!-- 사진/영상 제보 -->
 		, #{FLAG_DMB_SEND}
+		<!-- 문자 제보 -->
+		, #{DLS_TEXT}
 		)
 	</insert>
 
@@ -1107,6 +1113,12 @@
 		,ARTERY_ID
 		,F_LINK_ID
 		,T_LINK_ID
+		
+		,FLAG_DMB_SEND
+		,FLAG_KNEX
+		,FLAG_WEB
+		,DLS_TEXT
+		
 		)
 		VALUES(
 		to_char(sysdate,'yyyy-mm-dd hh24:mi:ss')
@@ -1159,6 +1171,11 @@
 		,#{ARTERY_ID}
 		,#{F_LINK_ID}
 		,#{T_LINK_ID}
+		
+		,#{FLAG_DMB_SEND}
+		,#{FLAG_KNEX}
+		,#{FLAG_WEB}
+		,#{DLS_TEXT}
 		)
 	</insert>
 

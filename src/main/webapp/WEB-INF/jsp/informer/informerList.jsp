@@ -8,7 +8,7 @@
 	    <caption>
 	       통신원목록
 	    </caption>
-	     <%-- <colgroup>
+	    <%-- <colgroup>
 	        <col width="6%" /> <!-- id -->
 	        <col width="8%" /> <!-- 방송국 -->
 	        <col width="10%" /> <!-- 유형 -->
@@ -22,14 +22,14 @@
 	    <thead>
 	        <tr>
 	        	<th style="width:50px;">선택</th>
-	            <th style="width:90px;">ID<div class='sortDiv' ><button onclick="sortTD ( 0 ,this,event )">▲</button><button onclick="reverseTD ( 0 ,this ,event)">▼</button></div></th>
-	            <th style="width:100px;">방송국<div class='sortDiv' ><button onclick="sortTD ( 1 ,this ,event)">▲</button><button onclick="reverseTD ( 1 ,this ,event)">▼</button></div></th>
-	            <th style="width:80px;">유형<div class='sortDiv' ><button onclick="sortTD ( 2 ,this ,event)">▲</button><button onclick="reverseTD ( 2 ,this ,event)">▼</button></div></th>
-	            <th style="width:130px;">소속기관<div class='sortDiv' ><button onclick="sortTD ( 2 ,this ,event)">▲</button><button onclick="reverseTD ( 2 ,this ,event)">▼</button></div></th>
-	            <th style="width:150px;">이름<div class='sortDiv' ><button onclick="sortTD ( 3 ,this ,event)">▲</button><button onclick="reverseTD ( 3 ,this ,event)">▼</button></div></th>
-	            <th style="width:150px;">전화<div class='sortDiv' ><button onclick="sortTD ( 4 ,this ,event)">▲</button><button onclick="reverseTD ( 4 ,this ,event)">▼</button></div></th>
-	            <th style="width:100px;">활동여부<div class='sortDiv' ><button onclick="sortTD ( 5 ,this ,event)">▲</button><button onclick="reverseTD ( 5 ,this ,event)">▼</button></div></th>
-	            <th style="width:102px;">등록일<div class='sortDiv' ><button onclick="sortTD ( 6 ,this ,event)">▲</button><button onclick="reverseTD ( 6 ,this ,event)">▼</button></div></th>
+	            <th style="width:90px;">ID<div class='sortDiv' ><button onclick="sortTD ( 1 ,this,event )">▲</button><button onclick="reverseTD ( 1 ,this ,event)">▼</button></div></th>
+	            <th style="width:100px;">방송국<div class='sortDiv' ><button onclick="sortTD ( 2 ,this ,event)">▲</button><button onclick="reverseTD ( 2 ,this ,event)">▼</button></div></th>
+	            <th style="width:80px;">유형<div class='sortDiv' ><button onclick="sortTD ( 3 ,this ,event)">▲</button><button onclick="reverseTD ( 3 ,this ,event)">▼</button></div></th>
+	            <th style="width:130px;">소속기관<div class='sortDiv' ><button onclick="sortTD ( 4 ,this ,event)">▲</button><button onclick="reverseTD ( 4 ,this ,event)">▼</button></div></th>
+	            <th style="width:150px;">이름<div class='sortDiv' ><button onclick="sortTD ( 5 ,this ,event)">▲</button><button onclick="reverseTD ( 5 ,this ,event)">▼</button></div></th>
+	            <th style="width:150px;">전화<div class='sortDiv' ><button onclick="sortTD ( 6 ,this ,event)">▲</button><button onclick="reverseTD ( 6 ,this ,event)">▼</button></div></th>
+	            <th style="width:100px;">활동여부<div class='sortDiv' ><button onclick="sortTD ( 7 ,this ,event)">▲</button><button onclick="reverseTD ( 7 ,this ,event)">▼</button></div></th>
+	            <th style="width:102px;">등록일<div class='sortDiv' ><button onclick="sortTD ( 8 ,this ,event)">▲</button><button onclick="reverseTD ( 8 ,this ,event)">▼</button></div></th>
 	            <th style="width:62px;">이력정보</th>
 	        </tr>
 	    </thead>
@@ -291,9 +291,12 @@ $("#informer_table tbody").scroll(function() {
 	var ifmVO = $('#searchFrm').serialize();
     
     if (nowScrollTop > lastScrollTop) {
+		console.log("무한스크롤 진입");
         // 스크롤이 맨 아래에 도달했을 때
         if (nowScrollTop + clientHeight >= scrollHeight) {
-            
+        	console.log("무한스크롤 진입2");
+        	//검색 후에도 검색 폼 정보를 가지고 와야함..
+        	ifmVO = $('#searchFrm').serialize();
             startRnum = startRnum + 20; //다음 목록을 불러오기 위해 숫자 추가
             endRnum = endRnum + 20; //다음 목록을 불러오기 위해 숫자 추가
             

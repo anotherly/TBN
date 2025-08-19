@@ -1,26 +1,23 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
+<%@ page contentType="text/html;charset=UTF-8" %>
 <%@ page import="java.util.*"%>
 <%@ page import="java.text.SimpleDateFormat"%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <!-- DateTimePicker -->
-<script src="<%= request.getContextPath() %>/calender/moment.js"></script>
-<script src="<%= request.getContextPath() %>/calender/mo_ko.js"></script>
-<script src="<%= request.getContextPath() %>/calender/bootstrap-datetimepicker.js"></script>
-<link rel="stylesheet" type="text/css" href="<%= request.getContextPath() %>/calender/no-boot-calendar-custom.css" />
-<link rel="stylesheet" type="text/css" href="<%= request.getContextPath() %>/calender/datetimepickerstyle.css" />
+<script src="<%=request.getContextPath()%>/calender/moment.js"></script>
+<script src="<%=request.getContextPath()%>/calender/mo_ko.js"></script>
+<script src="<%=request.getContextPath()%>/calender/bootstrap-datetimepicker.js"></script>
+<link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/calender/no-boot-calendar-custom.css" />
+<link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/calender/datetimepickerstyle.css" />
 
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
 <script>
  	$(document).ready(function(){
- 		dateFunc("standardDate");
- 		
+ 		//dateFunc("standardDate");
+ 		var stdate=moment().subtract(1, 'months').startOf('month').format('YYYY-MM-DD');
+		var endate=moment().subtract(1, 'days').format('YYYY-MM-DD');
+ 		dateFunc('stdt','edt',stdate,endate);
  		search(); // 첫 진입 시 실행 함수	 */
  	});
 	
@@ -125,7 +122,7 @@
 						<ul class="lst_tab">
 							<li class="on"><a href="javascript:changePage('goodMile')">굿 제보 마일리지 조회</a></li>
 							<li class="ns"></li>
-							<li><a href="javascript:changePage('excellenceIfrm')">우수 통신원</a></li>
+							<li><a href="javascript:changePage('excellenceIfrm')">굿 제보 통신원 선정</a></li>
 							<li class="ns"></li>
 							<li><a href="javascript:changePage('standard')">선정 기준</a></li>
 						</ul>
@@ -145,14 +142,24 @@
 						<div class="wrap_top"></div>
 						<div class="wrap_center">
 							<fieldset style="display: flex; align-items: center; justify-content: center;">
-								<div>
+								<!-- <div>
 									기준 년월 :
 										<input type="text" id="standardDate" name="standardDate" style="margin-right : 15px;" >
 								</div>
+								 -->
+								<div class="form_daterange" style="display: inline-flex;align-items: center;gap: 5px;" id="schDtBody">
+									시작일 : 
+									<div class='input-group date' id='datetimepicker1'>
+										<input type='text' class="form-control dt_search" name="stdt" id="stdt" required/>
+									</div>
+									 종료일 :  
+									<div class='input-group date' id='datetimepicker2'>
+										<input type="text" class="form-control dt_search" id="edt" name="edt" required/>
+									</div>
+								</div> 
 								<div id="awardSdiv">
 									 <img src="../images/btn_search.gif" onclick="search();" style="cursor: pointer;     margin-left: 10px;" alt="검색" /> 
 								</div>
-	
 							</fieldset>
 						</div>
 						<div class="wrap_bottom"></div>

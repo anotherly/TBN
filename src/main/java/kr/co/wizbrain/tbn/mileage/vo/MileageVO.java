@@ -2,6 +2,8 @@ package kr.co.wizbrain.tbn.mileage.vo;
 
 public class MileageVO {
 	private String standardDate;  // 검색 조건 - 년월
+	private String stdt;  // 시작일
+	private String edt;  // 종료일
 	private String searchAreaCode; // 검색 조건 - 지역
 	private String startDate;
 	private String endDate;
@@ -13,6 +15,7 @@ public class MileageVO {
 	private String REG_DATE;
 	private String ORG_NAME;
 	private String AREA_CODE;
+	private String AREA_NAME;
 
 	// 건수 X / 마일리지 적립 점수 O
 	private int BEFORE_POINT;  // 전월 마일리지 점수
@@ -22,6 +25,24 @@ public class MileageVO {
 	private int ALL_POINT; // 총점
 	private int RANKING; // 순위
 	
+	public String getStdt() {
+		return stdt;
+	}
+	public void setStdt(String stdt) {
+		this.stdt = stdt;
+	}
+	public String getEdt() {
+		return edt;
+	}
+	public void setEdt(String edt) {
+		this.edt = edt;
+	}
+	public String getAREA_NAME() {
+		return AREA_NAME;
+	}
+	public void setAREA_NAME(String aREA_NAME) {
+		AREA_NAME = aREA_NAME;
+	}
 	public String getStandardDate() {
 		return standardDate;
 	}

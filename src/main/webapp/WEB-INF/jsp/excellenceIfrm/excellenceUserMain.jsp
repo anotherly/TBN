@@ -92,7 +92,7 @@
 	}
 	
 	//시상자목록  -> 수상자선정 화면 전환
-	function changePage() {
+/* 	function changePage() {
 		$.ajax({
 			type : "post",
 			url : "/informer/excellenceIfrm/excellenceIfrmMain.do",
@@ -108,6 +108,63 @@
 			}
 
 		});
+	} */
+	
+	// 페이지 이동
+	function changePage(url){
+		
+		if(url == 'select') {
+			$.ajax
+			(
+				{
+					type : "post" ,
+					url : "/informer/excellenceIfrm/excellenceIfrmMain.do",
+					dataType : "html" ,
+					cache : false ,
+					success:function(html){
+						$('#contentWrap').html(html);
+					} ,
+		
+					error:function(data,error){
+						alert("시스템에 문제가 생겼습니다." + data);
+					}
+		
+				}
+			);
+		} else if(url == 'list'){
+			$.ajax
+			(
+				{
+					type : "post" ,
+					url : "/excellenceIfrm/excellenceUserMain.do" ,
+					dataType : "html" ,
+					cache : false ,
+					success:function(html){
+						$('#contentWrap').html(html);
+					} ,
+					error:function(data,error){
+						alert("시스템에 문제가 생겼습니다." + data);
+					}
+				}
+			);
+		} else {
+			$.ajax
+			(
+				{
+					type : "post" ,
+					url : "/excellenceIfrm/standardMain.do" ,
+					dataType : "html" ,
+					cache : false ,
+					success:function(html){
+						$('#contentWrap').html(html);
+					} ,
+					error:function(data,error){
+						alert("시스템에 문제가 생겼습니다." + data);
+					}
+		
+				}
+			);
+		}
 	}
 	
 	//엑셀 다운로드 기능 제공
@@ -128,9 +185,11 @@
 					<!-- 서브메뉴 탭영역 시작 -->
 					<div class="gnb_tab">
 						<ul class="lst_tab">
-							<li><a href="javascript:changePage();">수상자선정</a></li>
+							<li><a href="javascript:changePage('select')">우수제보자 조회</a></li>
 							<li class="ns"></li>
-							<li class="on">수상자조회</li>
+							<li class="on">우수제보자 선정</li>
+							<li class="ns"></li>
+							<li><a href="javascript:changePage('standard')">선정 기준</a></li>
 						</ul>
 					</div>
 					<div style="position: absolute;right: 0px;top: 52px;">
@@ -149,9 +208,9 @@
 								종류  <!-- onchange="search();" -->
 								<select class="table_sel1" id="searchType"
 									 name="searchType">
-									<option value="0">교통제보우수자</option>
-									<option value="1">주요정보제공우수자</option>
-									<option value="2">실적증가자</option>
+									<option value="0">우수제보자(시민,애청자,기관)</option>
+									<!-- <option value="1">주요정보제공우수자</option>
+									<option value="2">실적증가자</option> -->
 								</select> 
 									기준시작 : 
 									<input type="hidden" id="SDATE" name="SDATE"

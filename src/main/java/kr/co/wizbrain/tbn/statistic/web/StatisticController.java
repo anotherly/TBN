@@ -827,7 +827,8 @@ public class StatisticController extends BaseController{
 	    ParamsDto params = getParams(true);
 	    System.out.println("resultVO: " + searchVO.toString());
 	    UserVO nlVo = (UserVO)request.getSession().getAttribute("login");
-	    
+	    //검색조건에 맞게 나오도록 조정(스크롤 조건 아니고)
+	    searchVO.setDownFlag("1");
 	    /*if (!nlVo.getAuthCode().equals("999"))*/
 	    searchVO.setAreaCode(nlVo.getRegionId()); 
 	    List<InfrmVO> Data = new ArrayList<>();

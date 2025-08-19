@@ -3,7 +3,7 @@
 
 <script>
 	$(document).ready(function() {
-		console.log("수상자선정");
+		console.log("우수제보자 선정 리스트");
 		/* if($(".admin_result_sc tbody").prop('scrollHeight') - 420 > 0){
 			//스크롤바 생길 시 테이블 밀림 방지
 		    $("#award_table th:last-child").css('padding-right','17px');
@@ -26,7 +26,7 @@
 						<th style="width: 80px;">이름</th>
 						<th style="width: 80px;">소속</th>
 						<th style="width: 100px;">연락처</th>
-						<th style="width: 80px;">전체건수</th>
+						<th style="width: 80px;">당월건수</th>
 						<th style="width: 60px;">/점수</th>
 						<th style="width: 80px;">주요건수</th>
 						<th style="width: 80px;">/점수</th>
@@ -44,11 +44,20 @@
 						<c:if test="${awardInformerListSize != 0 }">
 							<c:forEach var="informer" items="${awardInformerList}"
 								varStatus="idx">
-								<tr id ="${informer.INFORMER_ID}">
+								
+							<c:choose>
+							    <c:when test="${(informer.MON_CNT + informer.ADD_CNT)>=10}">
+							        <tr id ="${informer.INFORMER_ID}" style="background: #daecf9;">
+							    </c:when>
+							    <c:otherwise>
+							        <tr id ="${informer.INFORMER_ID}">
+							    </c:otherwise>
+							</c:choose>
 									<td style="width: 30px;"><input type="checkbox"
 										id="Selection" name="Selection"
 										value="${informer.INFORMER_ID}%%${informer.RPT_GRADE }%%${informer.MAIN_GRADE }%%${informer.ADD_GRADE }%%${informer.ALL_RANK }" /></td>
 									<td style="width: 30px;">${informer.RNUM }</td>
+									<!-- <td style="width: 30px;">${(informer.MON_CNT + informer.ADD_CNT)}</td> -->
 									<td style="width: 60px;">${informer.ACT_ID }</td>
 									<td style="width: 80px;">${informer.INFORMER_NAME }</td>
 									<td style="width: 80px;">${informer.ORG_NAME }</td>

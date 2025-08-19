@@ -4,20 +4,6 @@
 <script>
 	$(document).ready(function(){
 		
-		// 관리자, 지역관리자가 아닌경우 => 마일리지 기능 숨기기 처리
-	    checkAuth();
-	    
-	    function checkAuth() {
-	    	
-	    	if(authCode != 999) {
-	    		
-	    		$('.mileageMenu').hide();
-	    	} else {
-	    		/* console.log(authCode); */
-	    		$('.mileageMenu').show();
-	    	}
-	    }
-	    
 		// 메뉴 항목 클릭 시
 		$(".goUrlMenu").on("click", function() {
 			/* console.log("메뉴항목 클릭 : "+$(this).attr("id")); */
@@ -67,8 +53,8 @@
 		<li><a id="/informer/first.do" class="goUrlMenu">통신원관리</a>
 			<ul class="submenu">
 				<li id="/informer/informerMain.do" class="goUrlMenu"><a>통신원관리</a></li>
-				<li id="/informer/mileage/mileageMain.do" class="goUrlMenu mileageMenu"><a>굿 제보 마일리지</a></li>
-				<li id="/informer/excellenceIfrm/excellenceIfrmMain.do" class="goUrlMenu mileageMenu"><a>우수 제보자</a></li>
+				<li id="/informer/mileage/mileageMain.do" class="goUrlMenu mileageMenu" style="display: flex;justify-content: center;top: 0px;"><a>굿 제보 마일리지<br>(통신원)</a></li>
+				<li id="/informer/excellenceIfrm/excellenceIfrmMain.do" class="goUrlMenu mileageMenu" style="display: flex;justify-content: center;top: 0px;"><a>우수 제보자<br>(시민,애청자,기관)</a></li>
 				<li id="/informer/award/awardMain.do" class="goUrlMenu"><a>시상관리</a></li>
 				<li id="/informer/event/eventMain.do" class="goUrlMenu"><a>행사관리</a></li>
 				<li id="/informer/bestIfrm/bestIfrmMain.do" class="goUrlMenu mileageMenu"><a>최고 통신원</a></li>

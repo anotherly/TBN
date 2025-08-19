@@ -7581,7 +7581,7 @@ public class ExportPoiHssfExcel extends AbstractView {
     	if(mapping.equals("mileageExcel")) {
     		sheet = wb.createSheet("굿 제보 마일리지");
     	} else {
-    		sheet = wb.createSheet("우수 통신원");
+    		sheet = wb.createSheet("굿 제보 통신원");
     	}
     	
     	// title style 변경 

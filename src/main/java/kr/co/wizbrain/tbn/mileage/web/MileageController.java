@@ -7,6 +7,7 @@ import java.util.List;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,14 +52,21 @@ public class MileageController extends BaseController{
 	@Resource(name="awardService")
 	private AwardService awardService;
 	
-	
-	
+	//주소에 맞게 매핑
+	@RequestMapping(value= {"/mileage/*.do","/bestIfrm/*.do","/excellenceIfrm/*.do"})
+	public String ReporterUrlMapping(HttpSession httpSession, HttpServletRequest request,Model model) throws Exception{
+		logger.debug("▶▶▶▶▶▶▶.Reporter 최초 컨트롤러 진입 httpSession : "+httpSession);
+		logger.debug("▶▶▶▶▶▶▶.request.getRequestURL() : "+request.getRequestURL());
+		logger.debug("▶▶▶▶▶▶▶.request.getRequestURI() : "+request.getRequestURI());
+		logger.debug("▶▶▶▶▶▶▶.request.getContextPath() : "+request.getContextPath());
+		url = request.getRequestURI().substring(request.getContextPath().length()).split(".do")[0];
+		logger.debug("▶▶▶▶▶▶▶.보내려는 url : "+url);
+		return url;
+	}
 	
 	////////////////////////////////////////////////////////////////////////////////////
 	/*     < 굿 제보 마일리지 >     */
 	////////////////////////////////////////////////////////////////////////////////////
-	
-	
 	
 	// 1. 굿 제보 마일리지 최초 이동 ( + 검색 옵션 셋팅 등 = 검색 기능 X )
 	@RequestMapping(value= {"/informer/mileage/mileageMain.do"})
@@ -100,7 +108,7 @@ public class MileageController extends BaseController{
 		UserVO nlVo = (UserVO) request.getSession().getAttribute("login");	
 		
 		// 첫 이동일 경우, 현재 날짜의 년월을 기준으로 조회 (현재 날짜의 -1달)
-		if (MileageVO.getStandardDate().equals("")) {
+		/*if (MileageVO.getStandardDate().equals("")) {
 		    LocalDate currentDate = LocalDate.now().minusMonths(1);
 		    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMM");
 		    MileageVO.setStandardDate(currentDate.format(formatter));
@@ -108,7 +116,7 @@ public class MileageController extends BaseController{
 		    String beforeDate = MileageVO.getStandardDate();
 		    beforeDate = beforeDate.replace("-", "");
 		    MileageVO.setStandardDate(beforeDate);
-		}
+		}*/
 
 
 		
@@ -130,9 +138,9 @@ public class MileageController extends BaseController{
 	HttpServletRequest request) throws Exception {
 /*		ParamsDto params = getParams(true);*/
 		
-		String startDate;
+		//String startDate;
 		// 첫 이동일 경우, 현재 날짜의 년월을 기준으로 조회 (현재 날짜의 -1달)
-		if (MileageVO.getStandardDate().equals("")) {
+		/*if (MileageVO.getStandardDate().equals("")) {
 			LocalDate currentDate = LocalDate.now().minusMonths(1);
 			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMM");
 			MileageVO.setStandardDate(currentDate.format(formatter));
@@ -142,15 +150,15 @@ public class MileageController extends BaseController{
 			beforeDate = beforeDate.replace("-", "");
 			MileageVO.setStandardDate(beforeDate);
 			startDate = beforeDate;
-		}
+		}*/
 				
 		List<MileageVO> mileList = null;
 		mileList = mileageService.mileList(MileageVO);
 		
 		
 		model.addAttribute("mapping", "mileageExcel");
-		model.addAttribute("fileName", "굿 제보 마일리지(" + startDate + ").xls");
-		model.addAttribute("titleName", "굿 제보 마일리지(" + startDate + ")" );
+		model.addAttribute("fileName", "굿 제보 마일리지(" + MileageVO.getStdt() +" ~ "+MileageVO.getEdt()+ ").xls");
+		model.addAttribute("titleName", "굿 제보 마일리지" );
 		model.addAttribute("mileData", mileList);
 
 		return "hssfExcel";
@@ -158,7 +166,7 @@ public class MileageController extends BaseController{
 	}
 	
 	
-	// 4. 우수 통신원 화면으로 최초 이동
+	// 4. 굿 제보 통신원 선정 엑셀
 	@RequestMapping(value="/mileage/excellenceIfrmMain.do")
 	public ModelAndView excellenceIfrmMain(HttpServletRequest request) throws Exception {
 		logger.debug("▶▶ 우수 통신원(우수 제보자 X) 기준 탭 클릭");
@@ -184,7 +192,7 @@ public class MileageController extends BaseController{
 	}
 
 	
-	// 5. 우수 통신원 목록 조회
+	// 5. 굿 제보 통신원 선정 
 	@RequestMapping(value="/mileage/excellenceIfrmMainsearch.do") 
 	public ModelAndView excelleneceSearch (@ModelAttribute("MileageVO") MileageVO MileageVO, Model model,
 			HttpServletRequest request) throws Exception {
@@ -197,7 +205,7 @@ public class MileageController extends BaseController{
 		UserVO nlVo = (UserVO) request.getSession().getAttribute("login");	
 		
 		// 날짜 작업
-		String startDate;
+		/*String startDate;
 		String endDate;
 		String standardDate = MileageVO.getStandardDate();
 		
@@ -206,7 +214,7 @@ public class MileageController extends BaseController{
 		endDate = year + "07";  // 해당년도 7월
 		
 		MileageVO.setStartDate(startDate);
-		MileageVO.setEndDate(endDate);
+		MileageVO.setEndDate(endDate);*/
 		
 		// 목록 조회하기
 		List<MileageVO> mileList = mileageService.excellenceList(MileageVO);
@@ -218,7 +226,7 @@ public class MileageController extends BaseController{
 	}
 	
 	
-	// 6. 우수 통신원 엑셀 다운로드
+	// 6. 굿 제보 통신원 엑셀 다운로드
 	@RequestMapping(value="/mileage/excellenceIfrmExcelDown.do")
 	public String excellenceIfrmExcel (@ModelAttribute("MileageVO") MileageVO MileageVO, Model model,
 			HttpServletRequest request) throws Exception {
@@ -227,7 +235,7 @@ public class MileageController extends BaseController{
 		UserVO nlVo = (UserVO) request.getSession().getAttribute("login");	
 				
 		// 날짜 작업
-		String startDate;
+		/*String startDate;
 		String endDate;
 		String standardDate = MileageVO.getStandardDate();
 				
@@ -236,14 +244,14 @@ public class MileageController extends BaseController{
 		endDate = year + "07";  // 해당년도 7월
 				
 		MileageVO.setStartDate(startDate);
-		MileageVO.setEndDate(endDate);
+		MileageVO.setEndDate(endDate);*/
 		
 		// 목록 조회하기
 		List<MileageVO> mileList = mileageService.excellenceList(MileageVO);
 		
 		model.addAttribute("mapping", "excellenceExcel");
-		model.addAttribute("fileName", "우수통신원(" + standardDate + ").xls");
-		model.addAttribute("titleName", "우수통신원(" + standardDate + ")" );
+		model.addAttribute("fileName", "굿 제보 통신원(" + MileageVO.getStandardDate() + ").xls");
+		model.addAttribute("titleName", "굿 제보 통신원(" + MileageVO.getStandardDate() + ")" );
 		model.addAttribute("mileData", mileList);
 
 		return "hssfExcel";
@@ -261,15 +269,6 @@ public class MileageController extends BaseController{
 		
 		return mav;
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
 	
 	////////////////////////////////////////////////////////////////////////////////////
 	/*     < 우수 제보자 >     */
@@ -405,7 +404,7 @@ public class MileageController extends BaseController{
 		@RequestMapping("/excellenceIfrm/excelDownloadInformerList.do")
 		public String exselDownload(Model model,@ModelAttribute("AwardVO") AwardVO paramVO) throws Exception {
 			logger.debug("★★★"+paramVO);
-			List awardInformerList = mileageService.getAwardInformerList2(paramVO);
+			List<AwardVO> awardInformerList = mileageService.getAwardInformerList2(paramVO);
 			
 			model.addAttribute("fileName", "우수 제보자 수상자선정.xls");
 			model.addAttribute("columnTitles", new String[]{

@@ -95,7 +95,7 @@ public class MainController {
 //		this.isClose = tagId;
 //		//refresh
 //	    if ( isClose ) {
-//	    	logger.debug("▶▶▶▶▶▶▶.refresh...");
+//	    	logger.debug("▶▶▶▶▶▶▶.refresh...");             
 //	    	return "redirect:/";
 //	    }
 //

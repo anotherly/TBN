@@ -6,90 +6,97 @@
 
 	<!-- 굿 제보 마일리지 조회 -->
 	<select id="mileList" parameterType="kr.co.wizbrain.tbn.mileage.vo.MileageVO" resultType="java.util.Map">
-    <![CDATA[
+	    
 	    SELECT 
-		    RANK() OVER (ORDER BY ALL_POINT DESC) AS RANKING,
-		    A.ACT_ID,
-		    A.INFORMER_ID,
-		    A.INFORMER_NAME,
-		    A.PHONE_CELL,
-		    A.REG_DATE,
-		    A.ALL_POINT,
-		    A.RECEIPT_POINT,
-		    A.BEFORE_POINT,
-		    A.DISASTOR_POINT,
-		    A.VIDEO_POINT
+		    j1.*,
+		    NVL(bf.before_point, 0) AS before_point,
+		    RECEIPT_POINT + DISASTOR_POINT + VIDEO_POINT + NVL(bf.before_point, 0) - minus_point  AS ALL_POINT,
+		    RANK() OVER (ORDER BY RECEIPT_POINT + DISASTOR_POINT + VIDEO_POINT + NVL(bf.before_point, 0)  - minus_point DESC) AS RANKING
 		FROM (
 		    SELECT 
-		        A.ACT_ID,
-		        A.INFORMER_ID,
-		        A.INFORMER_NAME,
-		        A.PHONE_CELL,
-		        A.REG_DATE,  
-		        NVL(A.RECEIPT_POINT, 0) AS RECEIPT_POINT,
-		        NVL(A.BEFORE_POINT, 0) AS BEFORE_POINT,
-		        NVL(A.DISASTOR_POINT, 0) AS DISASTOR_POINT,
-		        NVL(A.VIDEO_POINT, 0) AS VIDEO_POINT,
-		        (NVL(A.RECEIPT_POINT, 0) + 
-		         NVL(A.BEFORE_POINT, 0) + 
-		         NVL(A.DISASTOR_POINT, 0) + 
-		         NVL(A.VIDEO_POINT, 0)) AS ALL_POINT
-		    FROM 
-		        stat_mileage A
-		    LEFT JOIN INFORMER B ON A.INFORMER_ID = B.INFORMER_ID
-		    WHERE 
-		        A.REG_DATE = TO_CHAR(TO_DATE(#{standardDate}, 'YYMM'), 'YY/MM') 
-		        AND B.AREA_CODE = #{searchAreaCode}
-		) A
-		ORDER BY A.ALL_POINT DESC
-
-	    ]]>
+		        a.INFORMER_ID,
+		        nvl(a.act_id,'없음') as act_id,
+		        a.informer_name,
+		        a.phone_cell,
+		        nw.*
+		    FROM
+		        (SELECT * FROM informer WHERE area_code = #{searchAreaCode}) a
+		        INNER JOIN (
+		            SELECT 
+		                informer_id AS id1,
+		                nvl(2*sum(receipt_score),0) AS RECEIPT_POINT,
+		                nvl(5*sum(disastor_score),0) AS DISASTOR_POINT,
+		                nvl(5*sum(video_score),0) AS VIDEO_POINT,
+                        nvl(5*sum(minus_score),0) as minus_point
+		            FROM mileage_info 
+		            WHERE reg_date between #{stdt} and #{edt} 
+		            GROUP BY informer_id
+		        ) nw
+		        ON a.informer_id = nw.id1
+		) j1
+		LEFT JOIN (
+		    SELECT 
+		        informer_id AS id2,
+		        sum(receipt_score) AS BEFORE_POINT
+		    FROM mileage_info
+		    WHERE reg_date BETWEEN 
+		        TRUNC(TO_DATE(#{stdt}, 'YYYY-MM-DD') - INTERVAL '1' MONTH, 'MM') 
+		        AND
+		        LAST_DAY(TO_DATE(#{stdt}, 'YYYY-MM-DD') - INTERVAL '1' MONTH)
+		    GROUP BY informer_id
+		) bf
+		ON j1.informer_id = bf.id2
+	    
 	</select>
 	
 
 	<!-- 우수 통신원 조회 -->
 	<select id="excellenceList" parameterType="kr.co.wizbrain.tbn.mileage.vo.MileageVO" resultType="java.util.Map">
-		<![CDATA[
-			SELECT 
-			    RANK() OVER (ORDER BY ALL_POINT DESC) AS RANKING,
-			    A.INFORMER_ID,
-			    A.ACT_ID,
-			    A.INFORMER_NAME,
-			    A.PHONE_CELL,
-			    A.RECEIPT_POINT,
-			    A.BEFORE_POINT,
-			    A.DISASTOR_POINT,
-			    A.VIDEO_POINT,
-			    A.ALL_POINT
-			FROM (
-			    SELECT 
-			        A.INFORMER_ID,
-			        A.INFORMER_NAME,
-			        A.PHONE_CELL,
-			        A.ACT_ID,
-			        SUM(NVL(A.RECEIPT_POINT, 0)) AS RECEIPT_POINT,
-			        SUM(NVL(A.BEFORE_POINT, 0)) AS BEFORE_POINT,
-			        SUM(NVL(A.DISASTOR_POINT, 0)) AS DISASTOR_POINT,
-			        SUM(NVL(A.VIDEO_POINT, 0)) AS VIDEO_POINT,
-			        SUM(NVL(A.RECEIPT_POINT, 0) + 
-			            NVL(A.BEFORE_POINT, 0) + 
-			            NVL(A.DISASTOR_POINT, 0) + 
-			            NVL(A.VIDEO_POINT, 0)) AS ALL_POINT
-			    FROM 
-			        stat_mileage A
-			    LEFT JOIN INFORMER B ON A.INFORMER_ID = B.INFORMER_ID
-			    WHERE 
-			        A.REG_DATE BETWEEN TO_CHAR(TO_DATE(#{startDate}, 'YYMM'), 'YY/MM') 
-			        AND TO_CHAR(TO_DATE(#{endDate}, 'YYMM'), 'YY/MM') 
-			        AND B.AREA_CODE = #{searchAreaCode}
-			    GROUP BY 
-			        A.INFORMER_ID, 
-			        A.INFORMER_NAME, 
-			        A.ACT_ID,
-			        A.PHONE_CELL
-			) A
-			ORDER BY A.ALL_POINT DESC
-		]]>
+		
+		SELECT 
+		    j1.*,
+		    NVL(bf.before_point, 0) AS before_point,
+		    RECEIPT_POINT + DISASTOR_POINT + VIDEO_POINT + NVL(bf.before_point, 0) - minus_point  AS ALL_POINT,
+		    RANK() OVER (ORDER BY RECEIPT_POINT + DISASTOR_POINT + VIDEO_POINT + NVL(bf.before_point, 0)  - minus_point DESC) AS RANKING
+		FROM (
+		    SELECT 
+		        a.INFORMER_ID,
+		        nvl(a.act_id,'없음') as act_id,
+		        a.informer_name,
+		        a.phone_cell,
+		        nw.*
+		    FROM
+		        (SELECT * FROM informer WHERE area_code = #{searchAreaCode}) a
+		        INNER JOIN (
+		            SELECT 
+		                informer_id AS id1,
+		                nvl(2*sum(receipt_score),0) AS RECEIPT_POINT,
+		                nvl(5*sum(disastor_score),0) AS DISASTOR_POINT,
+		                nvl(5*sum(video_score),0) AS VIDEO_POINT,
+                        nvl(5*sum(minus_score),0) as minus_point
+		            FROM mileage_info 
+		            WHERE reg_date 
+		            between TO_DATE(#{standardDate} || '-01', 'YYYY-MM-DD')
+					AND LAST_DAY(TO_DATE(#{standardDate} || '-01', 'YYYY-MM-DD'))
+		            GROUP BY informer_id
+		        ) nw
+		        ON a.informer_id = nw.id1
+		) j1
+		LEFT JOIN (
+		    SELECT 
+		        informer_id AS id2,
+		        sum(receipt_score) AS BEFORE_POINT
+		    FROM mileage_info
+		    WHERE reg_date 
+		        BETWEEN
+		        TRUNC(TO_DATE(#{standardDate} || '-01', 'YYYY-MM-DD') - INTERVAL '1' MONTH, 'MM') 
+		        AND
+		        LAST_DAY(TO_DATE(#{standardDate} || '-01', 'YYYY-MM-DD') - INTERVAL '1' MONTH)
+		    GROUP BY informer_id
+		) bf
+		ON j1.informer_id = bf.id2
+		
+		
 	</select>
 
 	
@@ -103,12 +110,13 @@
 	<select id="getExcellInformerList" parameterType="awardVo" resultType="awardVo">
 	    with mntb as (
 	        select ind_id, 
+	        	   ind_type as ind_type2,area_code as area_code2,
 	               sum(mon_cnt) as mon_cnt, 
 	               sum(main_cnt) as main_cnt, 
-	               sum(add_cnt) as add_cnt 
+	               sum(add_cnt) as add_cnt
 	        from stat_tbn_monrpt 
 	        where stat_mon between #{SDATE} and #{EDATE} 
-	          and ind_type IN ('1','2','5','6','7')
+	          and ind_type IN ('1','2','5','6','7','999')
 	          and area_code=#{AREA_CODE} 
 	          and ind_id not in (
 	            select informer_id 
@@ -118,7 +126,7 @@
 	              and aw_type=#{searchType} 
 	              and area_code=#{AREA_CODE}
 	        ) 
-	        group by ind_id
+	        group by ind_id,ind_type,area_code
 	    ), agp as (
 	        select * 
 	        from excellence_grade 
@@ -137,13 +145,17 @@
 	                <otherwise> 
 	                    row_number() over(order by to_number(a.ADD_CNT) desc) as rnum 
 	                </otherwise>
-	            </choose>,
-	            b.*, 
-	            a.* 
+	            </choose>
+	           		,a.ind_id as informer_id,nvl(b.act_id,'없음') as act_id,nvl(b.informer_name,'미등록시민') as informer_name
+		            ,a.area_code2 as area_code,b.org_id,b.org_name,a.ind_type2 as ind_type
+                    ,nvl(b.phone_cell,REGEXP_REPLACE(substr(a.ind_id,5,15), '(02|.{3})(.+)(.{4})', '\1-\2-\3')) as phone_cell
+		            ,a.mon_cnt,a.rpt_grade,a.main_cnt,a.main_grade,a.add_cnt,a.add_grade,a.all_rank
 	        from (
 	            select 
 	                ind_id,
 	                mon_cnt,
+	                area_code2,
+	                ind_type2,
 	                TO_CHAR(round((mon_cnt/a1.mx_mon)* agp.ALL_PER,2), 'FM9990.00') as RPT_GRADE,
 	                main_cnt,
 	                TO_CHAR(round((main_cnt/a2.main_mx)* agp.MAIN_PER, 2), 'FM9990.00') as MAIN_GRADE,
@@ -172,8 +184,9 @@
 	            </if>
 	        ) a 
 	        left join (
-	            select t1.*, 
-	                   t2.org_name as org_name 
+	            select t1.*
+	            ,t2.org_name as org_name
+	            ,t2.ind_type as ind_type 
 	            from (
 	                select informer_id, act_id, informer_name, area_code, org_id, 
 	                       REGEXP_REPLACE(phone_cell, '(02|.{3})(.+)(.{4})', '\1-\2-\3') as PHONE_CELL
@@ -181,7 +194,7 @@
 	                WHERE area_code=#{AREA_CODE}
 	            ) t1 
 	            left join (
-	                select org_id, org_name 
+	                select org_id, org_name,ind_type
 	                from organization 
 	                WHERE area_code=#{AREA_CODE}
 	            ) t2 
@@ -190,6 +203,17 @@
 	        on(a.ind_id = b.informer_id)
 	    ) C 
 	    where C.RNUM BETWEEN 1 AND #{searchNum}
+		<!-- 기관(6)일 경우 가스 국토 우체국만 -->
+		AND (
+		        (ind_type = 6 AND (
+		            org_name LIKE '%가스기술%' OR
+		            org_name LIKE '%국토정보%' OR
+		            org_name LIKE '%우체국물류%'
+		        ))
+			OR
+			(C.ind_type IN ('1','2','5','6','7','999'))
+		)
+		order by rnum asc
 	</select>
 	
 	
@@ -197,110 +221,111 @@
 	<!-- 엑셀 다운로드용 시상선정기준 조회 -->
 	<select id="getAwardInformerList2" parameterType="awardVo" resultType="record">
 	    with mntb as (
-	        select 
-	            ind_id,
-	            sum(mon_cnt) as mon_cnt,
-	            sum(main_cnt) as main_cnt,
-	            sum(add_cnt) as add_cnt
-	        from stat_tbn_monrpt
-	        where stat_mon between #{SDATE} and #{EDATE}
-	            and ind_type in ('1','2','5','6','7')
-	            and area_code = #{AREA_CODE}
-	            and ind_id not in (
-	                select informer_id
-	                from excellence_info
-	                where sdate = #{SDATE}
-	                    and edate = #{EDATE}
-	                    and aw_type = #{searchType}
-	                    and area_code = #{AREA_CODE}
-	            )
-	        group by ind_id
-	    ),
-	    agp as (
-	        select * from excellence_grade where area_code = #{AREA_CODE}
+	        select ind_id, 
+	        	   ind_type as ind_type2,area_code as area_code2,
+	               sum(mon_cnt) as mon_cnt, 
+	               sum(main_cnt) as main_cnt, 
+	               sum(add_cnt) as add_cnt
+	        from stat_tbn_monrpt 
+	        where stat_mon between #{SDATE} and #{EDATE} 
+	          and ind_type IN ('1','2','5','6','7','999')
+	          and area_code=#{AREA_CODE} 
+	          and ind_id not in (
+	            select informer_id 
+	            from excellence_info 
+	            where sdate=#{SDATE} 
+	              and edate=#{EDATE} 
+	              and aw_type=#{searchType} 
+	              and area_code=#{AREA_CODE}
+	        ) 
+	        group by ind_id,ind_type,area_code
+	    ), agp as (
+	        select * 
+	        from excellence_grade 
+	        where area_code=#{AREA_CODE}
 	    )
-	    SELECT C.*
+	    SELECT C.* 
 	    FROM (
 	        select
-	            <!-- 상 종류에 따라 정렬방식 변경 -->
 	            <choose>
-	                <when test="searchType == 0">
-	                    row_number() over(order by to_number(a.ALL_RANK) desc) as rnum
+	                <when test="searchType == 0"> 
+	                    row_number() over(order by to_number(a.ALL_RANK) desc) as rnum 
 	                </when>
-	                <when test="searchType == 1">
-	                    row_number() over(order by to_number(a.MAIN_CNT) desc) as rnum
+	                <when test="searchType == 1"> 
+	                    row_number() over(order by to_number(a.MAIN_CNT) desc) as rnum 
 	                </when>
-	                <otherwise>
-	                    row_number() over(order by to_number(a.ADD_CNT) desc) as rnum
+	                <otherwise> 
+	                    row_number() over(order by to_number(a.ADD_CNT) desc) as rnum 
 	                </otherwise>
-	            </choose>,
-	            b.*, a.*
+	            </choose>
+	           		,a.ind_id as informer_id,nvl(b.act_id,'없음') as act_id,nvl(b.informer_name,'미등록시민') as informer_name
+		            ,a.area_code2 as area_code,b.org_id,b.org_name,a.ind_type2 as ind_type
+                    ,nvl(b.phone_cell,REGEXP_REPLACE(substr(a.ind_id,5,15), '(02|.{3})(.+)(.{4})', '\1-\2-\3')) as phone_cell
+		            ,a.mon_cnt,a.rpt_grade,a.main_cnt,a.main_grade,a.add_cnt,a.add_grade,a.all_rank
 	        from (
-	            select
+	            select 
 	                ind_id,
 	                mon_cnt,
-	                TO_CHAR(round((mon_cnt / a1.mx_mon) * agp.ALL_PER, 2), 'FM9990.00') as RPT_GRADE,
-	                <!-- 전체제보 -->
+	                area_code2,
+	                ind_type2,
+	                TO_CHAR(round((mon_cnt/a1.mx_mon)* agp.ALL_PER,2), 'FM9990.00') as RPT_GRADE,
 	                main_cnt,
-	                TO_CHAR(round((main_cnt / a2.main_mx) * agp.MAIN_PER, 2), 'FM9990.00') as MAIN_GRADE,
-	                <!-- 주요제보 -->
+	                TO_CHAR(round((main_cnt/a2.main_mx)* agp.MAIN_PER, 2), 'FM9990.00') as MAIN_GRADE,
 	                add_cnt,
-	                <!-- 음수일 경우 0점 처리 -->
-	                TO_CHAR(round((GREATEST(add_cnt, 0) / a3.add_mx) * agp.ADD_PER, 2), 'FM9990.00') as ADD_GRADE,
-	                <!-- 증감 -->
-	                <!-- 총점 -->
+	                TO_CHAR(round((GREATEST(add_cnt, 0)/a3.add_mx)* agp.ADD_PER, 2), 'FM9990.00') as ADD_GRADE,
 	                TO_CHAR(
-	                    round((mon_cnt / a1.mx_mon) * agp.ALL_PER, 2) + 
-	                    round((main_cnt / a2.main_mx) * agp.MAIN_PER, 2) + 
-	                    round((GREATEST(add_cnt, 0) / a3.add_mx) * agp.ADD_PER, 2), 
+	                    round((mon_cnt/a1.mx_mon)* agp.ALL_PER, 2) + 
+	                    round((main_cnt/a2.main_mx)* agp.MAIN_PER, 2) + 
+	                    round((GREATEST(add_cnt, 0)/a3.add_mx)* agp.ADD_PER, 2), 
 	                    'FM9990.00'
 	                ) as ALL_RANK
 	            from mntb, agp
-	            <!-- 항목 별 최대값
-	                 0건일 경우 분모가 1이 될 수 없으므로 1로 변경
-	                 1로 변경해도 최대값이 0이라는 건 0/1 이므로 결국 0으로 환산됨 -->
-	            <!-- 전체제보 -->
-	            ,(select decode(max(mon_cnt), 0, 1, max(mon_cnt)) as mx_mon from mntb) a1
-	            <!-- 주요제보 -->
-	            ,(select decode(max(main_cnt), 0, 1, max(main_cnt)) as main_mx from mntb) a2
-	            <!-- 증감 -->
-	            ,(select decode(max(add_cnt), 0, 1, max(add_cnt)) as add_mx from mntb) a3
-	            WHERE 1 = 1
-	            <!-- 제외기간이 존재할 경우 -->
-	            <if test="XSDATE != null and XSDATE neq ''">
+	            ,(select decode(max(mon_cnt), 0, 1, max(mon_cnt)) as mx_mon from mntb) a1,
+	            (select decode(max(main_cnt), 0, 1, max(main_cnt)) as main_mx from mntb) a2,
+	            (select decode(max(add_cnt), 0, 1, max(add_cnt)) as add_mx from mntb) a3
+	            WHERE 1=1
+	            <if test="XSDATE !=null and XSDATE neq ''">
 	                and ind_id not in (
 	                    select informer_id 
 	                    from excellence_info 
 	                    where sdate <![CDATA[ >= ]]> #{XSDATE} 
-	                    and edate <![CDATA[ <= ]]> #{XEDATE} 
-	                    and aw_type = #{searchType} 
-	                    and area_code = #{AREA_CODE}
+	                      and edate <![CDATA[ <= ]]> #{XEDATE} 
+	                      and aw_type=#{searchType} 
+	                      and area_code=#{AREA_CODE}
 	                )
 	            </if>
-	        ) a
+	        ) a 
 	        left join (
-	            select 
-	                t1.*, 
-	                t2.org_name as org_name 
+	            select t1.*
+	            ,t2.org_name as org_name
+	            ,t2.ind_type as ind_type 
 	            from (
-	                select 
-	                    informer_id,
-	                    act_id,
-	                    informer_name,
-	                    area_code,
-	                    org_id,
-	                    REGEXP_REPLACE(phone_cell, '(02|.{3})(.+)(.{4})', '\1-\2-\3') as PHONE_CELL 
+	                select informer_id, act_id, informer_name, area_code, org_id, 
+	                       REGEXP_REPLACE(phone_cell, '(02|.{3})(.+)(.{4})', '\1-\2-\3') as PHONE_CELL
 	                from informer 
-	                WHERE area_code = #{AREA_CODE}
+	                WHERE area_code=#{AREA_CODE}
 	            ) t1 
 	            left join (
-	                select org_id, org_name 
+	                select org_id, org_name,ind_type
 	                from organization 
-	                WHERE area_code = #{AREA_CODE}
-	            ) t2 on(t1.org_id = t2.org_id)
-	        ) b on(a.ind_id = b.informer_id)
+	                WHERE area_code=#{AREA_CODE}
+	            ) t2 
+	            on(t1.org_id = t2.org_id)
+	        ) b 
+	        on(a.ind_id = b.informer_id)
 	    ) C 
 	    where C.RNUM BETWEEN 1 AND #{searchNum}
+		<!-- 기관(6)일 경우 가스 국토 우체국만 -->
+		AND (
+		        (ind_type = 6 AND (
+		            org_name LIKE '%가스기술%' OR
+		            org_name LIKE '%국토정보%' OR
+		            org_name LIKE '%우체국물류%'
+		        ))
+			OR
+			(C.ind_type IN ('1','2','5','6','7','999'))
+		)
+		order by rnum asc
 	</select>
 	
 	
@@ -432,17 +457,34 @@
 	
 	<!-- 최고 통신원 기본 정보 조회 -->
 	<select id="bestIfrmList" resultType="java.util.Map" parameterType="kr.co.wizbrain.tbn.mileage.vo.MileageVO">
-		with bestifrm as (
-		    select * from bestinformer
-		)
-		select a.informer_id, a.informer_name, a.org_name, a.reg_date , count(b.individual_id) as all_point
-		from report_receipt b
-		left join bestifrm a
-		on a.informer_id = b.individual_id
-		where a.informer_id is not null and b.individual_id is not null
-		and a.area_code = #{AREA_CODE}
-		group by a.informer_id, a.informer_name, a.org_name, a.reg_date
-		order by all_point desc
+		SELECT a.*,b.cnt as ALL_POINT
+		FROM 
+		(
+		    select t1.*,t2.city as AREA_NAME from 
+		    (
+		        SELECT informer_id,informer_name,area_code,org_name,reg_date
+		        FROM informer
+		        WHERE reg_date IS NOT NULL
+		        and informer_type=0
+		          AND REGEXP_LIKE(reg_date, '^\d{4}-\d{2}-\d{2}$')
+		          and reg_date <![CDATA[ <= ]]> to_char(ADD_MONTHS(SYSDATE, -240),'YYYY-MM-DD')
+		    )t1 
+		    inner join (select * from code_areacode)t2
+		    on t1.area_code=t2.area_code
+		) a
+		INNER JOIN (
+		    SELECT individual_id,cnt
+		    FROM (
+		        SELECT individual_id, COUNT(*) AS cnt
+		        FROM report_receipt
+		        WHERE receipt_day <![CDATA[ >= ]]> ADD_MONTHS(SYSDATE, -60)
+		          AND individual_id IS NOT NULL
+		        GROUP BY individual_id
+		    ) t
+		    WHERE t.cnt <![CDATA[ >= ]]> 5000
+		) b
+		ON a.informer_id = b.individual_id
+		order by b.cnt desc
 	</select>
 	
 	

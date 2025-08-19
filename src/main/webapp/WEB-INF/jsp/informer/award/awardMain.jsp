@@ -174,7 +174,7 @@ function search(){
 	}
 
 	//수상자선정 -> 시상자목록 화면 전환
-	function changePage(){
+	/* function changePage(){
 		$.ajax
 		(
 			{
@@ -193,7 +193,68 @@ function search(){
 	
 			}
 		);
+	} */
+	
+	// 페이지 이동
+	function changePage(url){
+		
+		if(url == 'select') {
+			$.ajax
+			(
+				{
+					type : "post" ,
+					url : "/informer/award/awardMain.do" ,
+					dataType : "html" ,
+					cache : false ,
+					success:function(html){
+						$('#contentWrap').html(html);
+					} ,
+		
+					error:function(data,error){
+						alert("시스템에 문제가 생겼습니다." + data);
+					}
+		
+				}
+			);
+		} else if(url == 'list'){
+			$.ajax
+			(
+				{
+					type : "post" ,
+					url : "/informer/award/awardUserMain.do" ,
+					dataType : "html" ,
+					cache : false ,
+					success:function(html){
+						$('#contentWrap').html(html);
+					} ,
+		
+					error:function(data,error){
+						alert("시스템에 문제가 생겼습니다." + data);
+					}
+		
+				}
+			);
+		} else {
+			$.ajax
+			(
+				{
+					type : "post" ,
+					url : "/informer/award/guideLine.do" ,
+					dataType : "html" ,
+					cache : false ,
+					success:function(html){
+						$('#contentWrap').html(html);
+					} ,
+		
+					error:function(data,error){
+						alert("시스템에 문제가 생겼습니다." + data);
+					}
+		
+				}
+			);
+		}
 	}
+	
 	
 	//엑셀 다운로드 기능 제공c
 	function excelDownload(){
@@ -217,7 +278,9 @@ function search(){
 						<ul class="lst_tab">
 							<li class="on">수상자선정</li>
 							<li class="ns"></li>
-							<li><a href="javascript:changePage()">수상자조회</a></li>
+							<li><a href="javascript:changePage('list')">수상자조회</a></li>
+							<li class="ns"></li>
+							<li><a href="javascript:changePage('use')">시상관리 활용</a></li>
 						</ul>
 					</div>
 					<div style="position: absolute;right: 0px;top: 52px;">
@@ -237,9 +300,9 @@ function search(){
 									시상종류 :  
 									<select class="table_sel1" id="searchType"
 										onchange="search();" name="searchType">
-										<option value="0">교통제보우수자</option>
-										<option value="1">주요정보제공우수자</option>
-										<option value="2">실적증가자</option>
+										<option value="0">시상관리1</option>
+										<option value="1">시상관리2</option>
+										<option value="2">시상관리3</option>
 									</select> 
 									<select class="table_sel1" id="searchNum" name="searchNum">
 										<option value="10000">전체 출력</option>

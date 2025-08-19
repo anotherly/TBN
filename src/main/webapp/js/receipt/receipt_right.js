@@ -280,12 +280,12 @@ function tempSavePush(time,rcptId){
 	//반 영 시 작
 	document.getElementsByName("RECEPTION_ID")[0].value=tsvo.RECEPTION_ID;//접수자 id
 	document.getElementsByName("RECEPTION_NAME")[0].value=tsvo.RECEPTION_NAME;//접수자이름
-	if(tsvo.FLAG_IMPORTANT=='Y'){//중요제보
+	if(tsvo.FLAG_IMPORTANT=='Y'){//긴급접수
 		$("#FLAG_EMERGENCY").prop("checked",true);
 	}else{
 		$("#FLAG_EMERGENCY").prop("checked",false);
 	}
-	if(tsvo.FLAG_DISASTOR=='Y'){//중요제보
+	if(tsvo.FLAG_DISASTOR=='Y'){//재난제보
 		$("#FLAG_DISASTOR").prop("checked",true);
 	}else{
 		$("#FLAG_DISASTOR").prop("checked",false);
@@ -294,6 +294,21 @@ function tempSavePush(time,rcptId){
 		$("#FLAG_REQUEST").prop("checked",true);
 	}else{
 		$("#FLAG_REQUEST").prop("checked",false);
+	}
+	if(tsvo.DLS_TEXT=='Y'){//문자제보
+		$("#DLS_TEXT").prop("checked",true);
+	}else{
+		$("#DLS_TEXT").prop("checked",false);
+	}
+	if(tsvo.FLAG_DMB_SEND !=null && tsvo.FLAG_DMB_SEND.includes('Y')){//사진/영상
+		$("#FLAG_DMB_SEND").prop("checked",true);
+	}else{
+		$("#FLAG_DMB_SEND").prop("checked",false);
+	}
+	if(tsvo.FLAG_WEB !=null && tsvo.FLAG_WEB.includes('Y')){//홈페이지
+		$("#FLAG_WEB").prop("checked",true);
+	}else{
+		$("#FLAG_WEB").prop("checked",false);
 	}
 	
 	document.getElementsByName("MEMO")[0].value=tsvo.MEMO;

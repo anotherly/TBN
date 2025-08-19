@@ -48,40 +48,37 @@
 	// 페이지 이동
 	function changePage(url){
 		
-		if(url == 'goodMile') {
+		if(url == 'select') {
 			$.ajax
 			(
 				{
 					type : "post" ,
-					url : "/informer/mileage/mileageMain.do" ,
+					url : "/informer/excellenceIfrm/excellenceIfrmMain.do",
 					dataType : "html" ,
 					cache : false ,
 					success:function(html){
 						$('#contentWrap').html(html);
-					} ,
+					},
 		
 					error:function(data,error){
 						alert("시스템에 문제가 생겼습니다." + data);
 					}
-		
 				}
 			);
-		} else if(url == 'excellenceIfrm'){
+		} else if(url == 'list'){
 			$.ajax
 			(
 				{
 					type : "post" ,
-					url : "/mileage/excellenceIfrmMain.do" ,
+					url : "/excellenceIfrm/excellenceUserMain.do" ,
 					dataType : "html" ,
 					cache : false ,
 					success:function(html){
 						$('#contentWrap').html(html);
 					} ,
-		
 					error:function(data,error){
 						alert("시스템에 문제가 생겼습니다." + data);
 					}
-		
 				}
 			);
 		} else {
@@ -89,13 +86,12 @@
 			(
 				{
 					type : "post" ,
-					url : "/mileage/standard.do" ,
+					url : "/excellenceIfrm/standardMain.do" ,
 					dataType : "html" ,
 					cache : false ,
 					success:function(html){
 						$('#contentWrap').html(html);
 					} ,
-		
 					error:function(data,error){
 						alert("시스템에 문제가 생겼습니다." + data);
 					}
@@ -103,53 +99,47 @@
 				}
 			);
 		}
-	}
-	
+	}	
 	
 </script>
 </head>
 <body>
 <div id="contentWrap">
 	<form id="searchFrm" name="searchFrm">
-		<div id="searchDiv">
 			<div id="contents">
-				<h1 class='content-title'>굿 제보 마일리지</h1>
+				<h1 class='content-title'>선정 기준</h1>
 				<!-- board_list -->
 				<div class="board_list">
 					<!-- 서브메뉴 탭영역 시작 -->
 					<div class="gnb_tab">
 						<ul class="lst_tab">
-							<li ><a href="javascript:changePage('goodMile')">굿 제보 마일리지 조회</a></li>
+							<li><a href="javascript:changePage('select')">우수제보자 조회</a></li>
 							<li class="ns"></li>
-							<li><a href="javascript:changePage('excellenceIfrm')">굿 제보 통신원 선정</a></li>
+							<li><a href="javascript:changePage('list')">우수제보자 선정</a></li>
 							<li class="ns"></li>
-							<li class="on"><a href="javascript:changePage('standard')">선정 기준</a></li>
+							<li class="on">선정 기준</li>
 						</ul>
 					</div>
 					
 					<div id="listDiv">
 						<table>
 							<tr>
-								<th>선정 기준
+								<th>선정 항목
 								</th>
-								<th>적립 마일리지
+								<th>비율
 								</th>
 							</tr>
 							<tr>
-								<td>당월 주요제보(사고, 공사, 행사 등) 건수</td>
-								<td>건 당 2점</td>
+								<td>당월 주요제보건수(사고, 공사, 행사 등) 건수</td>
+								<td>60~80%</td>
 							</tr>
 							<tr>
-								<td>전월 주요제보(사고, 공사, 행사 등) 건수</td>
-								<td>건 당 1점</td>
+								<td>당월 제보건수 전체 건수</td>
+								<td>10~30%</td>
 							</tr>
 							<tr>
-								<td>재난제보 건수</td>
-								<td>건 당 5점</td>
-							</tr>
-							<tr>
-								<td>영상, 사진제보</td>
-								<td>건 당 5점</td>
+								<td>전월 제보건수 전체</td>
+								<td>10~20%</td>
 							</tr>
 						</table>
 					

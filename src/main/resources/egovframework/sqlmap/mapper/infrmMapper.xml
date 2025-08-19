@@ -242,7 +242,9 @@
 			<if test="sDate != null and  eDate != null and !sDate.equals('') and !eDate.equals('')">
 		    	AND T.REG_DATE BETWEEN #{sDate} AND #{eDate}
 			</if>
-			AND ROWNUM <![CDATA[<=]]> 20
+			<if test="downFlag != 1">
+				AND ROWNUM <![CDATA[<=]]> 20
+			</if>
 			ORDER BY T.REG_DATE DESC nulls last
 			
 	</select>

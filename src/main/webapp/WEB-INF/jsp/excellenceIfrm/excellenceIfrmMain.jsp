@@ -173,7 +173,7 @@ function search(){
 	}
 
 	//수상자선정 -> 시상자목록 화면 전환
-	function changePage(){
+/* 	function changePage(){
 		$.ajax
 		(
 			{
@@ -192,7 +192,65 @@ function search(){
 	
 			}
 		);
+	} */
+	
+	// 페이지 이동
+	function changePage(url){
+		
+		if(url == 'select') {
+			$.ajax
+			(
+				{
+					type : "post" ,
+					url : "/informer/excellenceIfrm/excellenceIfrmMain.do",
+					dataType : "html" ,
+					cache : false ,
+					success:function(html){
+						$('#contentWrap').html(html);
+					} ,
+		
+					error:function(data,error){
+						alert("시스템에 문제가 생겼습니다." + data);
+					}
+		
+				}
+			);
+		} else if(url == 'list'){
+			$.ajax
+			(
+				{
+					type : "post" ,
+					url : "/excellenceIfrm/excellenceUserMain.do" ,
+					dataType : "html" ,
+					cache : false ,
+					success:function(html){
+						$('#contentWrap').html(html);
+					} ,
+					error:function(data,error){
+						alert("시스템에 문제가 생겼습니다." + data);
+					}
+				}
+			);
+		} else {
+			$.ajax
+			(
+				{
+					type : "post" ,
+					url : "/excellenceIfrm/standardMain.do" ,
+					dataType : "html" ,
+					cache : false ,
+					success:function(html){
+						$('#contentWrap').html(html);
+					} ,
+					error:function(data,error){
+						alert("시스템에 문제가 생겼습니다." + data);
+					}
+		
+				}
+			);
+		}
 	}
+	
 	
 	//엑셀 다운로드 기능 제공
 	function excelDownload(){
@@ -214,9 +272,11 @@ function search(){
 					<!-- 서브메뉴 탭영역 시작 -->
 					<div class="gnb_tab">
 						<ul class="lst_tab">
-							<li class="on">수상자선정</li>
+							<li class="on">우수제보자 조회</li>
 							<li class="ns"></li>
-							<li><a href="javascript:changePage()">수상자조회</a></li>
+							<li><a href="javascript:changePage('list')">우수제보자 선정</a></li>
+							<li class="ns"></li>
+							<li><a href="javascript:changePage('standard')">선정 기준</a></li>
 						</ul>
 					</div>
 					<div style="position: absolute;right: 0px;top: 52px;">
@@ -233,10 +293,10 @@ function search(){
 						<div class="wrap_center">
 							<fieldset>
 								<div id="awardSdiv">
-									시상종류 :  
+								
 									<select class="table_sel1" id="searchType"
-										onchange="search();" name="searchType">
-										<option value="0">교통제보우수자</option>
+										onchange="search();" name="searchType" style="display:none;">
+										<option value="0">우수제보자(시민,애청자,기관)</option>
 										<option value="1">주요정보제공우수자</option>
 										<option value="2">실적증가자</option>
 									</select> 
@@ -247,23 +307,33 @@ function search(){
 										<option value="70">70명 출력</option>
 										<option value="100">100명 출력</option>
 									</select> 
-									
-									제보 : 
+								 
+								 <!-- 산출 점수 가중치 % -->
+								 	
+									<span>제보건수 가중치 : </span> 
 									<input type="text" class="input_base" id="ALL_PER" name="ALL_PER" value="${excellGrade.ALL_PER}" style="width:25px;text-align:center;" maxlength="2" onkeydown='return onlyNumber(event)' onkeyup='removeChar(event)' required/>
-									 % 
-									주요 : 
+									<span> % </span> 
+									<span>주요건수 가중치 : </span> 
 									<input type="text" class="input_base" id="MAIN_PER" name="MAIN_PER" value="${excellGrade.MAIN_PER}" style="width:25px;text-align:center;" maxlength="2" onkeydown='return onlyNumber(event)' onkeyup='removeChar(event)'required/>
-									 % 
-									전월 : 
+									<span> % </span>
+									<span>전월건수 가중치 : </span>
 									<input type="text" class="input_base" id="ADD_PER" name="ADD_PER" value="${excellGrade.ADD_PER}" style="width:25px;text-align:center;" maxlength="2" onkeydown='return onlyNumber(event)' onkeyup='removeChar(event)'required/>
-									 % 
-									 <img src="../images/btn_search.gif" onclick="search();" style="cursor: pointer;     margin-left: 10px;" alt="검색" /> 
+									<span> % </span> 
+									
+									  
+									  <!-- 조건 검색 버튼 -->
+									  <img src="../images/btn_search.gif" onclick="search();" style="cursor: pointer;     margin-left: 10px;" alt="검색" />
+									  
 								</div>
 
 								<div id="awardSdiv">
 									<!-- fmt:parseDate : String 형을 받아서 원하는 포맷으로 Date 형태로 변경 
 										fmt:formatDate : Date 형을 받아서 원하는 포맷으로 날짜형태를 변경 -->
-									기준시작 :  
+									
+									 
+									 <!-- 기준일자 범위 -->
+									 
+									 기준시작 :  
 									<input type="hidden" id="SDATE" name="SDATE"
 										maxlength="15" class="input_base" readonly="readonly"
 										alt="시작일" title="" value=""
@@ -419,9 +489,7 @@ function search(){
 												</c:choose>
 											</c:forEach>
 										</select>
-										
 									</div>
-									
 								</div>
 							</fieldset>
 						</div>

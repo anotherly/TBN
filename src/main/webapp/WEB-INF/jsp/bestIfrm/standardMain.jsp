@@ -18,27 +18,10 @@
 <head>
 <meta charset="UTF-8">
 <style>
- 	table, th, td {
-	  border: 1px solid black;
-	  border-collapse: collapse;
+	#listDiv p{
+		font-size: 20px;
+    	margin: 20px;
 	}
-	
-	table {
-		width : 100%;
-		height : auto;
-	}
-	
-	
-	th, td {
-		text-align: center;
-		font-size : 16px;
-		line-height : 40px;
-	}
-	
-	th {
-		background-color : #dededf;
-	}
-	
 </style>
 <script>
 /*  	$(document).ready(function(){
@@ -46,32 +29,15 @@
  	}); */
 	 
 	// 페이지 이동
+// 페이지 이동
 	function changePage(url){
 		
-		if(url == 'goodMile') {
+		if(url == 'bestInformerList') {
 			$.ajax
 			(
 				{
 					type : "post" ,
-					url : "/informer/mileage/mileageMain.do" ,
-					dataType : "html" ,
-					cache : false ,
-					success:function(html){
-						$('#contentWrap').html(html);
-					} ,
-		
-					error:function(data,error){
-						alert("시스템에 문제가 생겼습니다." + data);
-					}
-		
-				}
-			);
-		} else if(url == 'excellenceIfrm'){
-			$.ajax
-			(
-				{
-					type : "post" ,
-					url : "/mileage/excellenceIfrmMain.do" ,
+					url : "/informer/bestIfrm/bestIfrmMain.do" ,
 					dataType : "html" ,
 					cache : false ,
 					success:function(html){
@@ -89,7 +55,7 @@
 			(
 				{
 					type : "post" ,
-					url : "/mileage/standard.do" ,
+					url : "/bestIfrm/standardMain.do" ,
 					dataType : "html" ,
 					cache : false ,
 					success:function(html){
@@ -111,47 +77,23 @@
 <body>
 <div id="contentWrap">
 	<form id="searchFrm" name="searchFrm">
-		<div id="searchDiv">
 			<div id="contents">
-				<h1 class='content-title'>굿 제보 마일리지</h1>
+				<h1 class='content-title'>최고 통신원</h1>
 				<!-- board_list -->
 				<div class="board_list">
 					<!-- 서브메뉴 탭영역 시작 -->
-					<div class="gnb_tab">
+					<div class="gnb_tab" style="margin-bottom:50px;">
 						<ul class="lst_tab">
-							<li ><a href="javascript:changePage('goodMile')">굿 제보 마일리지 조회</a></li>
+							<li><a href="javascript:changePage('bestInformerList')">최고통신원 조회</a></li>
 							<li class="ns"></li>
-							<li><a href="javascript:changePage('excellenceIfrm')">굿 제보 통신원 선정</a></li>
-							<li class="ns"></li>
-							<li class="on"><a href="javascript:changePage('standard')">선정 기준</a></li>
+							<li class="on">선정기준</li>
 						</ul>
 					</div>
 					
 					<div id="listDiv">
-						<table>
-							<tr>
-								<th>선정 기준
-								</th>
-								<th>적립 마일리지
-								</th>
-							</tr>
-							<tr>
-								<td>당월 주요제보(사고, 공사, 행사 등) 건수</td>
-								<td>건 당 2점</td>
-							</tr>
-							<tr>
-								<td>전월 주요제보(사고, 공사, 행사 등) 건수</td>
-								<td>건 당 1점</td>
-							</tr>
-							<tr>
-								<td>재난제보 건수</td>
-								<td>건 당 5점</td>
-							</tr>
-							<tr>
-								<td>영상, 사진제보</td>
-								<td>건 당 5점</td>
-							</tr>
-						</table>
+						<p> - 통신원 가입 20년 이상</p>							
+						<p> - 최근 5년 제보건수 5,000건 이상</p>							
+						<p> - 제보종류는 원활, 정체를 포함한 전부(연간 전체 수집건수 비중 고려)</p>							
 					
 					</div>
 			</div>

@@ -26,7 +26,7 @@
 						<th style="width: 80px;">이름</th>
 						<th style="width: 80px;">소속</th>
 						<th style="width: 100px;">연락처</th>
-						<th style="width: 80px;">전체건수</th>
+						<th style="width: 80px;">당월건수</th>
 						<th style="width: 60px;">/점수</th>
 						<th style="width: 80px;">주요건수</th>
 						<th style="width: 80px;">/점수</th>

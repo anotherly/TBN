@@ -3,12 +3,17 @@
 
 <script>
 	$(document).ready(function() {
-		console.log("굿 제보 마일리지 조회 List 진입");
+		console.log("최고통신원 조회 List 진입");
 	})
 	
 
 </script>
-
+	<div style="float:left;">
+		<p id="resultListTotal" style="width: 300px;">
+			<img src="../images/ico_result.gif" />
+			검색결과 <span style="font-weight:700;">${bestIfrmList.size()}</span>건
+		</p>
+	</div>
 	<div class="board_list">
 		<div class="admin_result_sc">
 			<table summary="검색 결과" border="0" cellpadding="0" cellspacing="0"
@@ -16,6 +21,7 @@
 				<thead>
 					<tr>
 						<th style="width: 80px;">이름</th>
+						<th style="width: 80px;">방송국</th>
 						<th style="width: 100px;">소속</th>
 						<th style="width: 80px;">가입일자</th>
 						<th style="width: 60px;">제보 건수</th>
@@ -33,6 +39,7 @@
 								varStatus="idx">
 								<tr id ="${informer.INFORMER_ID}">
 									<td style="width: 80px;">${informer.INFORMER_NAME }</td>
+									<td style="width: 80px;">${informer.AREA_NAME }</td>
 									<td style="width: 100px;">${informer.ORG_NAME }</td>
 									<td style="width: 80px;">${informer.REG_DATE }</td>
 									<td style="width: 60px;">${informer.ALL_POINT }</td>

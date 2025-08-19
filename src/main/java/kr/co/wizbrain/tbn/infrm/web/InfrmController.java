@@ -229,7 +229,9 @@ public class InfrmController implements ApplicationContextAware {
 		
 		try {
 			thvo=ifmVO;
-			thvo.setAreaCode(nlVo.getRegionId());
+			if(thvo.getAreaCode()==null || thvo.getAreaCode().equals("")) {
+				thvo.setAreaCode(nlVo.getRegionId());
+			}
 			
 			infrmList = infrmService.selectInfrmList2(thvo,startRnum,endRnum); // service 수정
 			

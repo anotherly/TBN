@@ -62,11 +62,14 @@ public class ReceiptVO {
 	private int STAT1;
 	private int STAT2;
 	private int STAT3;
-	
+	//문자돌발 db에 저보데이터 전송여부
 	private String FLAG_WEB;
-	
+	//사진 영상제보
 	private String FLAG_DMB_SEND;
+	//현재는 미사용이나 향후 용도 고려필요
 	private String FLAG_KNEX;
+	//문자제보 여부
+	private String DLS_TEXT;
 	
 	public ReceiptVO() {}
 	
@@ -153,18 +156,21 @@ public class ReceiptVO {
 		FLAG_BLACKLIST = fLAG_BLACKLIST;
 	}
 	
-	
+	public String getDLS_TEXT() {
+		return DLS_TEXT;
+	}
+
+	public void setDLS_TEXT(String dLS_TEXT) {
+		DLS_TEXT = dLS_TEXT;
+	}
+
 	public String getFLAG_KNEX() {
 		return FLAG_KNEX;
 	}
 
-
-
 	public void setFLAG_KNEX(String fLAG_KNEX) {
 		FLAG_KNEX = fLAG_KNEX;
 	}
-
-
 
 	public String getFLAG_DISASTOR() {
 		return FLAG_DISASTOR;

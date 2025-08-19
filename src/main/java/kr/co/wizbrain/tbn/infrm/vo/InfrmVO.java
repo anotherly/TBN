@@ -120,8 +120,15 @@ public class InfrmVO {
 	// 통신원 상세용
 	private String MONTH;
 	private String ROW_COUNT;
+	//통신원관리 화면에서 다운시 분기 플래그
+	private String downFlag;
 	
-	
+	public String getDownFlag() {
+		return downFlag;
+	}
+	public void setDownFlag(String downFlag) {
+		this.downFlag = downFlag;
+	}
 	public String getInformerId() {
 		return informerId;
 	}

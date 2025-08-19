@@ -131,14 +131,16 @@
 							    	<input type="hidden" id="RECEPTION_ID" name="RECEPTION_ID" value="${login.userId}" readonly/>
 							    	<input type="hidden" id="RECEPTION_NAME" name="RECEPTION_NAME" value="${login.userName}" readonly/>
 							    </td>
-								<td id="chk_top" class="txt_leftb" style="width: 352px;" colspan="2">
+								<td id="chk_top" class="txt_leftb" style="width: 400px;padding-left: 56px;" colspan="2">
 									<input type="checkbox" name="FLAG_STT" id="FLAG_STT" value="Y" style="display:none;"/>
 									<input type="hidden" id="MISSED_CALL_ID" name="MISSED_CALL_ID" />
 				                	<input type="checkbox" name="FLAG_DISASTOR" id="FLAG_DISASTOR" value="Y" /> 재난제보
 				                	<input type="checkbox" name="FLAG_IMPORTANT" id="FLAG_EMERGENCY" value="Y" /> 긴급접수
 									<input type="checkbox" name="FLAG_SEND" id="FLAG_REQUEST" value="Y" checked/> 방송요청
+									<br>
+									<input type="checkbox" name="DLS_TEXT" id="DLS_TEXT" value="Y"/> 문자제보
+									<input type="checkbox" name="FLAG_DMB_SEND" id="FLAG_DMB_SEND" value="Y"/> 사진/영상
 									<input type="checkbox" name="FLAG_WEB" id="FLAG_WEB" value="Y" checked/> 홈페이지 게시
-									<input type="checkbox" name="FLAG_DMB_SEND" id="FLAG_DMB_SEND" value="Y"/> 사진/영상 제보
 								</td>
 							</tr>
 							<tr>
