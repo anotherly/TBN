@@ -1,6 +1,8 @@
 package kr.co.wizbrain.tbn.infrm.vo;
 
-public class InfrmVO {
+import kr.co.wizbrain.tbn.comm.BaseVO;
+
+public class InfrmVO extends BaseVO{
 
 	//PK용ID 
 	 public String informerId;
@@ -93,15 +95,6 @@ public class InfrmVO {
 	//위/해촉여부(Y:위촉/N:해촉) 
 	public String flagAct;
 	
-	// 검색타입
-	public String searchType;
-	// 검색값
-	public String searchValue;
-	// 검색 시작 시간
-	public String sDate;
-	// 검색 종료 시간
-	public String eDate;
-	
 	//업데이트 코드
 	public String updateCode;
 	//업데이트 텍스트
@@ -115,7 +108,6 @@ public class InfrmVO {
 	public String localFilePath;
 	//pagediv
 	public String pageDiv;
-	
 	
 	// 통신원 상세용
 	private String MONTH;
@@ -399,30 +391,6 @@ public class InfrmVO {
 	public void setFlagAct(String flagAct) {
 		this.flagAct = flagAct;
 	}
-	public String getSearchType() {
-		return searchType;
-	}
-	public void setSearchType(String searchType) {
-		this.searchType = searchType;
-	}
-	public String getSearchValue() {
-		return searchValue;
-	}
-	public void setSearchValue(String searchValue) {
-		this.searchValue = searchValue;
-	}
-	public String getsDate() {
-		return sDate;
-	}
-	public void setsDate(String sDate) {
-		this.sDate = sDate;
-	}
-	public String geteDate() {
-		return eDate;
-	}
-	public void seteDate(String eDate) {
-		this.eDate = eDate;
-	}
 	public String getUpdateCode() {
 		return updateCode;
 	}
@@ -471,28 +439,6 @@ public class InfrmVO {
 	public void setROW_COUNT(String rOW_COUNT) {
 		ROW_COUNT = rOW_COUNT;
 	}
-	@Override
-	public String toString() {
-		return "InfrmVO [informerId=" + informerId + ", actId=" + actId + ", informerName=" + informerName + ", orgId="
-				+ orgId + ", orgName=" + orgName + ", phoneCell=" + phoneCell + ", orgSubId=" + orgSubId
-				+ ", orgSubName=" + orgSubName + ", phoneHome=" + phoneHome + ", phoneOffice=" + phoneOffice
-				+ ", informerType=" + informerType + ", informerTypeName=" + informerTypeName + ", memo1=" + memo1
-				+ ", memo=" + memo + ", zipcode=" + zipcode + ", addressHome=" + addressHome + ", address=" + address
-				+ ", zipcode2=" + zipcode2 + ", addressOffice=" + addressOffice + ", residentNum=" + residentNum
-				+ ", birthday=" + birthday + ", carNum=" + carNum + ", comments=" + comments + ", regDate=" + regDate
-				+ ", delDate=" + delDate + ", updDate=" + updDate + ", photoFile=" + photoFile
-				+ ", individualNameChina=" + individualNameChina + ", carType=" + carType + ", trsNo=" + trsNo
-				+ ", lastSchool=" + lastSchool + ", areaCode=" + areaCode + ", areaName=" + areaName + ", honor="
-				+ honor + ", agree=" + agree + ", flagBlacklist=" + flagBlacklist + ", memo2=" + memo2
-				+ ", identifiDate=" + identifiDate + ", flagService=" + flagService + ", startDate=" + startDate
-				+ ", stopDate=" + stopDate + ", birthdayDiv=" + birthdayDiv + ", informerJob=" + informerJob
-				+ ", flagBroad=" + flagBroad + ", flagAct=" + flagAct + ", searchType=" + searchType + ", searchValue="
-				+ searchValue + ", sDate=" + sDate + ", eDate=" + eDate + ", updateCode=" + updateCode + ", updateText="
-				+ updateText + ", updateDate=" + updateDate + ", histCode=" + histCode + ", localFilePath="
-				+ localFilePath + ", pageDiv=" + pageDiv + ", MONTH=" + MONTH + ", ROW_COUNT=" + ROW_COUNT + "]";
-	}
-	
-	
 	
 	
 }

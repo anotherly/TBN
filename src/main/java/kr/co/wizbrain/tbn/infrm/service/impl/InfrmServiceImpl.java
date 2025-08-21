@@ -5,6 +5,7 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Service;
 
 import kr.co.wizbrain.tbn.infrm.mapper.InfrmMapper;
@@ -132,6 +133,21 @@ public class InfrmServiceImpl implements InfrmService{
 		String selectYear2 = selectYear + "-12-31";
 		
 		return infrmMapper.monthReport(selectYear1,selectYear2, informerId);
+	}
+
+	@Override
+	public long countAll(InfrmVO thvo) {
+		return infrmMapper.countAll(thvo);
+	}
+
+	@Override
+	public long countFiltered(InfrmVO thvo){
+		return infrmMapper.countFiltered(thvo);
+	}
+
+	@Override
+	public List<InfrmVO> findSlice(InfrmVO thvo, int startRnum, int endRnum, String orderBy){
+		return infrmMapper.findSlice(thvo,startRnum,endRnum,orderBy);
 	}
 
 }

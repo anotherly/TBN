@@ -58,5 +58,12 @@ public interface InfrmMapper{
 
 	// 24-11-21 : 통신원 월별 제보건수
 	public List<InfrmVO> monthReport(@Param("selectYear1") String selectYear1,@Param("selectYear2") String selectYear2,@Param("informerId") String informerId);
+
+	public long countAll(InfrmVO thvo);
+
+	public long countFiltered (InfrmVO vo);
+
+	public List<InfrmVO> findSlice
+	(@Param("vo") InfrmVO vo, @Param("startRnum") int startRnum, @Param("endRnum") int endRnum, @Param("orderBy") String orderBy);
 	
 }

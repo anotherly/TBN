@@ -5,7 +5,9 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -19,6 +21,7 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -45,7 +48,7 @@ import kr.co.wizbrain.tbn.statistic.service.StatisticService;
 import kr.co.wizbrain.tbn.statistic.vo.StatisticVO;
 import kr.co.wizbrain.tbn.user.service.UserService;
 import kr.co.wizbrain.tbn.user.vo.UserVO;
-
+import java.util.*;
 /**
  * 사용자 컨트롤러 클래스
  * @author 미래전략사업팀 정다빈
@@ -163,57 +166,52 @@ public class InfrmController implements ApplicationContextAware {
 		mav.addObject("informerAreaList", this.areaOptService.selectAreaOpt1(avo));
 		return mav;
 	}
+
 	
+	@PostMapping("/infrm/datatable.do")
+	public ModelAndView listForDatatable(
+			@ModelAttribute("ifmVO") InfrmVO vo,
+	        @RequestParam(required=false) String sortName,
+            @RequestParam(required=false) String sortDir,
+            HttpServletRequest request
+	) {
+	    ModelAndView mav = new ModelAndView("jsonView");
 
-	//사용자 목록 조회
-	@RequestMapping(value="/informer/informerList.do")
-	public @ResponseBody ModelAndView informerList( @ModelAttribute("ifmVO") InfrmVO ifmVO,HttpServletRequest request) throws Exception{
-		logger.debug("▶▶▶▶▶▶▶.회원정보 조회 목록!!!!!!!!!!!!!!!!");
-		
-		InfrmVO thvo = new InfrmVO();
-		// 현재 세션에 대해 로그인한 사용자 정보를 가져옴
+	    int start  = vo.getStart()  != null ? vo.getStart()  : 0;
+	    int length = vo.getLength() != null ? vo.getLength() : 100;
+	    int startR = start + 1;
+	    int endR   = start + length;
+
+	    // 화이트리스트 (화면별 허용 컬럼만)
+	    Set<String> WL = new HashSet<>(Arrays.asList(
+	        "INFORMER_ID","AREA_NAME","INFORMER_TYPE_NAME","ORG_NAME",
+	        "INFORMER_NAME","PHONE_CELL","FLAG_ACT","REG_DATE"
+	    ));
+	    // 현재 세션에 대해 로그인한 사용자 정보를 가져옴
 		UserVO nlVo = (UserVO) request.getSession().getAttribute("login");
-		//url로 h,g 판별하여 해당하는 값만 조회
-		ModelAndView mav = new ModelAndView("jsonView");
-		List<InfrmVO> infrmList= null;
-		List<InfrmVO> infrmCntList= null;
-		
-		try {
-			thvo=ifmVO;
-			//관리자 제외 지역코드 삽입
-			/*if(!(nlVo.getAuthCode().equals("999"))) {//999 관리자 권한
-				thvo.setAreaCode(nlVo.getRegionId());
-			}*/
-			
-			// 첫 진입이라면
-			if(thvo.getSearchValue() == null) {
-				// 모든 사용자 지역 코드 삽입
-				thvo.setAreaCode(nlVo.getRegionId());
-			} 
+	    // 첫 진입이라면
+		if(vo.getSearchValue() == null) {
+			// 모든 사용자 지역 코드 삽입
+			vo.setAreaCode(nlVo.getRegionId());
+		} 
+	    
+	    // 재사용 헬퍼: BaseVO에서 안전한 ORDER BY 생성
+	    String orderBy ="";
+	    if(sortName.equals("")||sortDir.equals("")) {
+	    	orderBy="REG_DATE DESC";
+	    }else {
+	    	orderBy=sortName+" "+sortDir;
+	    }
 
-			/*if(thvo.getsDate()==null||thvo.getsDate().equals("")) {
-			    SimpleDateFormat date = new SimpleDateFormat("yyyy-MM-dd");
-			    Calendar day = Calendar.getInstance();
-			    day.add(Calendar.MONTH  , -1);
-				thvo.setsDate(date.format(day.getTime()));
-				thvo.seteDate(date.format(new Date()));
-			}*/
-			/*if(thvo.getFlagAct()==null||thvo.getFlagAct().equals("")) {
-				thvo.setFlagAct("Y");
-			}*/
-			
+	    long total    = infrmService.countAll(vo);
+	    long filtered = infrmService.countFiltered(vo); // WHERE만 동일, 페이징 X
+	    List<InfrmVO> rows = infrmService.findSlice(vo, startR, endR, orderBy);
 
-			infrmList = infrmService.selectInfrmList(thvo); // 20건 가져오기
-			infrmCntList = infrmService.countInfrmList(thvo);// 전체 건수 가져오기
-			
-			
-			mav.setViewName("/informer/informerList");
-			mav.addObject("informerList", infrmList);
-			mav.addObject("cnt", infrmCntList.size());
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return mav;
+	    mav.addObject("draw", vo.getDraw());
+	    mav.addObject("recordsTotal", total);
+	    mav.addObject("recordsFiltered", filtered);
+	    mav.addObject("data", rows);
+	    return mav;
 	}
 	
 	// 25-03-28 : 스크롤 시 조회 기능
@@ -581,9 +579,6 @@ public class InfrmController implements ApplicationContextAware {
 		// TODO Auto-generated method stub
 		this.context = (WebApplicationContext) applicationContext;
 	}
-	
-	
-	
 	
 	
 	

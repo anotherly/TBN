@@ -3,6 +3,13 @@
 <%@taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
+<link rel="stylesheet" href="<%= request.getContextPath() %>/DataTables/jquery.dataTables.min.css"/>
+<link rel="stylesheet" href="<%= request.getContextPath() %>/DataTables/scroller.dataTables.min.css"/>
+<script src="<%= request.getContextPath() %>/DataTables/jquery-3.7.1.min.js"></script>
+<script src="<%= request.getContextPath() %>/DataTables/jquery.dataTables.min.js"></script>
+<script src="<%= request.getContextPath() %>/DataTables/dataTables.scroller.min.js"></script>
+
+
 <script type="text/javascript" charset="utf-8" src="<%=request.getContextPath()%>/js/jquery.form.js"></script>
 
 <!-- DateTimePicker -->
@@ -11,6 +18,115 @@
 <script src="<%= request.getContextPath() %>/calender/bootstrap-datetimepicker.js"></script>
 <link rel="stylesheet" type="text/css" href="<%= request.getContextPath() %>/calender/no-boot-calendar-custom.css" />
 <link rel="stylesheet" type="text/css" href="<%= request.getContextPath() %>/calender/datetimepickerstyle.css" />
+
+
+<script>
+$(function () {
+  const $form = $('#searchFrm'); // ← 수정됨
+  const nameMap = { 1:'INFORMER_ID', 2:'AREA_NAME', 3:'INFORMER_TYPE_NAME', 4:'ORG_NAME', 5:'INFORMER_NAME', 6:'PHONE_CELL', 7:'FLAG_ACT', 8:'REG_DATE' };
+
+  // ★ 전역 노출: window.dt
+  window.dt = $('#informerTable').DataTable({
+    serverSide: true,
+    processing: true,
+    deferRender: true,
+    scrollY: '60vh',
+    scrollCollapse: true,
+    scroller: { loadingIndicator: true, displayBuffer: 12 },
+    ordering: true,
+    order: [[8, 'desc']],
+    ajax: {
+      url: '/infrm/datatable.do',
+      type: 'POST',
+      data: function (d) {
+    	  // 정렬 정보 계산
+    	  let sortName = null, sortDir = null;
+    	  if (Array.isArray(d.order) && d.order.length) {
+    	    const od  = d.order[0];
+    	    const idx = od.column;
+    	    sortDir   = od.dir; // 'asc' | 'desc'
+    	    sortName  = (d.columns && d.columns[idx] && d.columns[idx].name)
+    	                  ? d.columns[idx].name
+    	                  : nameMap[idx]; // nameMap은 기존과 동일
+    	  }
+
+    	  // ★ Spring 바인딩 충돌 소스 제거
+    	  delete d.order;
+    	  delete d.columns;
+    	  delete d.search;
+
+    	  const sendData = {
+    			  
+    	    // ★ 정렬 평면 파라미터 추가
+    	    sortName: sortName,
+    	    sortDir:  sortDir,
+
+    	    // 검색 파라미터들
+    	    areaCode:     $('#areaCodeSel').val(),
+    	    informerType: $('#informerTypeSel').val(),
+    	    orgId:        $('#orgIdSel').val(),
+    	    flagAct:      $('#searchActYn').val(),
+    	    searchType:   $('#searchType').val(),
+    	    searchValue:  $('#searchValue').val()
+    	    
+    	  };
+    	  if ($('#dchker').is(':checked')) {
+    	    sendData.sDate = $('#sDate').val();
+    	    sendData.eDate = $('#eDate').val();
+    	  }
+    	  
+    	  console.log("sortName : "+sortName);
+    	  console.log("sortDir : "+sortDir);
+    	  return $.extend({}, d, sendData); // draw/start/length는 d에 그대로 유지
+    	},
+      error: function(xhr, status, err){
+        console.error('DataTables AJAX error:', status, err, xhr.responseText);
+      }
+    },
+    columns: [
+      { data:null, orderable:false, name:'CHK',
+        render: d => '<input type="checkbox" name="Selection" value="'+ d.informerId +'">' },
+      { data:'informerId',       name:'INFORMER_ID' },
+      { data:'areaName',         name:'AREA_NAME' },
+      { data:'informerTypeName', name:'INFORMER_TYPE_NAME' },
+      { data:'orgName',          name:'ORG_NAME' },
+      { data:'informerName',     name:'INFORMER_NAME' },
+      { data:'phoneCell',        name:'PHONE_CELL' },
+      { data:'flagAct',          name:'FLAG_ACT' },
+      { data:'regDate',          name:'REG_DATE' }
+    ],
+    createdRow: function(row, data){
+      $(row).attr('data-informer-id', data.informerId).css('cursor', 'pointer');
+    }
+  });
+
+  // 행 클릭 팝업
+  $('#informerTable tbody').on('click', 'tr', function(e){
+    if ($(e.target).is('input, a, button, label, select')) return;
+    const row = window.dt.row(this).data();
+    if (row) editInformer(row.informerId);
+  });
+
+  // 폼 submit → search()
+  $('#searchFrm').on('submit', function(e){
+    e.preventDefault();
+    search();
+  });
+});
+
+// ★ 전역 search(): inline onclick="search()"에서도 접근 가능
+function search(){
+  if (!window.dt) {
+    console.warn('DataTable not initialized');
+    return;
+  }
+  // 스크롤 맨 위로
+  if (window.dt.scroller && window.dt.scroller()) {
+    try { window.dt.scroller().toPosition(0); } catch(e){}
+  }
+  window.dt.ajax.reload();
+}
+</script>
 
 
 <div id="contentWrap"  style="width:1030px;">
@@ -119,6 +235,24 @@
 <form id="listFrm" name="listFrm">
 <input type="hidden" name="labelType" id="labelT"> 
 <div id="listDiv">
+
+<table id="informerTable" class="display" style="width:100%">
+  <thead>
+  <tr>
+    <th>선택</th>
+    <th>ID</th>
+    <th>방송국</th>
+    <th>유형</th>
+    <th>소속기관</th>
+    <th>이름</th>
+    <th>전화</th>
+    <th>활동여부</th>
+    <th>등록일</th>
+  </tr>
+  </thead>
+  <tbody></tbody>
+</table>
+
 </div>
 </form>
 <div id="pageDiv" style="margin-top:10px">
@@ -132,10 +266,12 @@
 </div>
 
 <script>
+
 $(document).ready(function(){
 	console.log("informerMain.jsp 진입");
 
 	init();
+	
 	
 	var fromDate = new Date(new Date().setMonth(new Date().getMonth() - 1));
 	fromDate = getFormatDate(fromDate);
@@ -166,7 +302,7 @@ $(document).ready(function(){
 	});
 	
 	//$('#listDiv').load('/informer/informerList.do?sDate='+fromDate+'&eDate='+toDate+''+'&eDate='+flagAct='+'Y');
-	$('#listDiv').load('/informer/informerList.do;');
+	//$('#listDiv').load('/informer/informerList.do;');
 	
 	//소속방송국,통신원유형 클릭 시 -> id랑 소속기관 소속기관 세부 갱신
     $("#areaCodeSel , #informerTypeSel").on("change",function(){
@@ -232,7 +368,7 @@ function editInformer(str){
     var url = "/informer/editInformer.do" + param;
     var windowName = "통신원등록";
     var popupW = 800;  // 팝업 넓이
-    var popupH = 720;  // 팝업 높이
+    var popupH = 900;  // 팝업 높이
     var left = Math.ceil((window.screen.width - popupW)/2);
     var top = Math.ceil((window.screen.height - popupH)/2);
     popObj = window.open(url, windowName, 'width=' + popupW +  ', height=' + popupH +  ', left=' + left +  ', top=' + top + ', toolbar=no, location=no, status=no, menubar=no, scrollbars=no, resizable=no');
@@ -255,31 +391,7 @@ function showInformerHistory(str){
     popObj = window.open(url, windowName, 'width=' + popupW +  ', height=' + popupH +  ', left=' + left +  ', top=' + top + ', toolbar=no, location=no, status=no, menubar=no, scrollbars=no, resizable=no');
 }
 
-/**
- * 검색
- */
-function search(){
-    
-	console.log("function search");
-	let queryString = $("#searchFrm").serialize();
-	console.log(queryString);
-	var options = {
-        url:"/informer/informerList.do",
-        type: "POST",
-		//dataType: "json",
-		async : false,
-        data: queryString,
-        target: '#listDiv',
-        success: function(json){
-        	console.log("성공?");
-        	$('#listDiv').html(json);
-        },
-        error: function(res,error){
-            alert("에러가 발생했습니다."+res);
-        }
-    };
-    $.ajax(options);
-}
+
 
 /**
  * 페이징

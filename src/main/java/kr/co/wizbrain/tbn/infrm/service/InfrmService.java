@@ -52,6 +52,12 @@ public interface InfrmService {
 	
 	// 통신원 상세에서 월별 제보 건수
 	public List<InfrmVO> monthReport(String selectYear, String informerId) throws Exception;
+
+	public long countAll(InfrmVO thvo);
+
+	public long countFiltered(InfrmVO thvo);
+
+	public List<InfrmVO> findSlice(InfrmVO thvo, int startRnum, int endRnum, String orderBy);
 	
 	
 
