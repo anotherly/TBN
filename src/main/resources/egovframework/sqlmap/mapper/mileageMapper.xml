@@ -95,7 +95,15 @@
 		    GROUP BY informer_id
 		) bf
 		ON j1.informer_id = bf.id2
-		
+		where INFORMER_ID not in 
+		(
+		select informer_id from award_mileage 
+		where AREA_CODE = #{searchAreaCode}
+		AND key_mon between
+		to_char(trunc(TO_DATE(#{standardDate} || '-01', 'YYYY-MM-DD') - INTERVAL '2' MONTH, 'MM') ,'YYYY-MM')
+		and
+		to_char(trunc(TO_DATE(#{standardDate} || '-01', 'YYYY-MM-DD') - INTERVAL '1' MONTH, 'MM') ,'YYYY-MM')
+		)
 		
 	</select>
 

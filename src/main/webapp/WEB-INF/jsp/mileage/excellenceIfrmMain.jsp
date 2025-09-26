@@ -22,8 +22,16 @@
  		var standardDate=moment().subtract(1, 'months').startOf('month').format('YYYY-MM');
 		//var endate=moment().format('YYYY-MM');
 		//common.js에 생성한 함수 참조(달력생성)
-		dateFunc('standardDate','',standardDate,'','YYYY-MM');
+		//dateFunc('standardDate','',standardDate,'','YYYY-MM');
  		
+		$('#standardDate').datetimepicker({
+		    format: 'YYYY-MM',  
+		    viewMode: 'months',
+		    minDate: '2025-06',
+		    maxDate: moment().subtract(1, 'months').endOf('month') 
+		});
+		
+		
  		search();  // 첫 진입 시 실행 함수
  	});
 	

@@ -1848,8 +1848,9 @@ public class ExportPoiHssfExcel extends AbstractView {
 		for(j = 0; j < data.size(); j++) {
 			RecordDto record = (RecordDto) data.get(j);		
 			int informerType = record.getInt("INFORMER_TYPE"); // 해당 데이터의 통신원 유형 가져오기
-			
-			sumList[informerType] += record.getInt("CNT");
+			if(informerType<sumList.length) {
+				sumList[informerType] += record.getInt("CNT");
+			}
 			sum += record.getInt("CNT");
 		}
 		
@@ -1948,7 +1949,7 @@ public class ExportPoiHssfExcel extends AbstractView {
 			}
 		}*/
 		
-		int sSize = 4 * eSize;
+		int sSize = 4 * (eSize+1);
 		int[] sumList1 = new int[sSize];
 		
 		for(j = 0; j < data.size(); j++) {

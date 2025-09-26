@@ -203,12 +203,12 @@ public class InfrmController implements ApplicationContextAware {
 	    	orderBy=sortName+" "+sortDir;
 	    }
 
-	    long total    = infrmService.countAll(vo);
+	    //long total    = infrmService.countAll(vo);
 	    long filtered = infrmService.countFiltered(vo); // WHERE만 동일, 페이징 X
 	    List<InfrmVO> rows = infrmService.findSlice(vo, startR, endR, orderBy);
 
 	    mav.addObject("draw", vo.getDraw());
-	    mav.addObject("recordsTotal", total);
+	    mav.addObject("recordsTotal", filtered);
 	    mav.addObject("recordsFiltered", filtered);
 	    mav.addObject("data", rows);
 	    return mav;

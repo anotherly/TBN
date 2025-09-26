@@ -8,7 +8,7 @@
 <script src="<%= request.getContextPath() %>/DataTables/jquery-3.7.1.min.js"></script>
 <script src="<%= request.getContextPath() %>/DataTables/jquery.dataTables.min.js"></script>
 <script src="<%= request.getContextPath() %>/DataTables/dataTables.scroller.min.js"></script>
-
+<script src="<%= request.getContextPath() %>/DataTables/commonDatatable.js"></script>
 
 <script type="text/javascript" charset="utf-8" src="<%=request.getContextPath()%>/js/jquery.form.js"></script>
 
@@ -26,80 +26,63 @@ $(function () {
   const nameMap = { 1:'INFORMER_ID', 2:'AREA_NAME', 3:'INFORMER_TYPE_NAME', 4:'ORG_NAME', 5:'INFORMER_NAME', 6:'PHONE_CELL', 7:'FLAG_ACT', 8:'REG_DATE' };
 
   // ★ 전역 노출: window.dt
-  window.dt = $('#informerTable').DataTable({
-    serverSide: true,
-    processing: true,
-    deferRender: true,
-    scrollY: '60vh',
-    scrollCollapse: true,
-    scroller: { loadingIndicator: true, displayBuffer: 12 },
-    ordering: true,
-    order: [[8, 'desc']],
-    ajax: {
-      url: '/infrm/datatable.do',
-      type: 'POST',
-      data: function (d) {
-    	  // 정렬 정보 계산
-    	  let sortName = null, sortDir = null;
-    	  if (Array.isArray(d.order) && d.order.length) {
-    	    const od  = d.order[0];
-    	    const idx = od.column;
-    	    sortDir   = od.dir; // 'asc' | 'desc'
-    	    sortName  = (d.columns && d.columns[idx] && d.columns[idx].name)
-    	                  ? d.columns[idx].name
-    	                  : nameMap[idx]; // nameMap은 기존과 동일
-    	  }
-
-    	  // ★ Spring 바인딩 충돌 소스 제거
-    	  delete d.order;
-    	  delete d.columns;
-    	  delete d.search;
-
-    	  const sendData = {
-    			  
-    	    // ★ 정렬 평면 파라미터 추가
-    	    sortName: sortName,
-    	    sortDir:  sortDir,
-
-    	    // 검색 파라미터들
-    	    areaCode:     $('#areaCodeSel').val(),
-    	    informerType: $('#informerTypeSel').val(),
-    	    orgId:        $('#orgIdSel').val(),
-    	    flagAct:      $('#searchActYn').val(),
-    	    searchType:   $('#searchType').val(),
-    	    searchValue:  $('#searchValue').val()
-    	    
-    	  };
-    	  if ($('#dchker').is(':checked')) {
-    	    sendData.sDate = $('#sDate').val();
-    	    sendData.eDate = $('#eDate').val();
-    	  }
-    	  
-    	  console.log("sortName : "+sortName);
-    	  console.log("sortDir : "+sortDir);
-    	  return $.extend({}, d, sendData); // draw/start/length는 d에 그대로 유지
-    	},
-      error: function(xhr, status, err){
-        console.error('DataTables AJAX error:', status, err, xhr.responseText);
+window.dt = createDataTable('#informerTable', {
+  order: [[8, 'desc']], // 화면 기본 정렬
+  ajax: {
+    url: '/infrm/datatable.do',
+    type: 'POST',
+    data: function (d) {
+      // 정렬 파라미터 평면화(컨트롤러용)
+      let sortName=null, sortDir=null;
+      if (Array.isArray(d.order) && d.order.length) {
+        const od = d.order[0], idx = od.column;
+        sortDir  = od.dir;
+        sortName = (d.columns && d.columns[idx] && d.columns[idx].name)
+                    ? d.columns[idx].name
+                    : nameMap[idx];
       }
-    },
-    columns: [
-      { data:null, orderable:false, name:'CHK',
-        render: d => '<input type="checkbox" name="Selection" value="'+ d.informerId +'">' },
-      { data:'informerId',       name:'INFORMER_ID' },
-      { data:'areaName',         name:'AREA_NAME' },
-      { data:'informerTypeName', name:'INFORMER_TYPE_NAME' },
-      { data:'orgName',          name:'ORG_NAME' },
-      { data:'informerName',     name:'INFORMER_NAME' },
-      { data:'phoneCell',        name:'PHONE_CELL' },
-      { data:'flagAct',          name:'FLAG_ACT' },
-      { data:'regDate',          name:'REG_DATE' }
-    ],
-    createdRow: function(row, data){
-      $(row).attr('data-informer-id', data.informerId).css('cursor', 'pointer');
-    }
-  });
+	  // ★ Spring 바인딩 충돌 소스 제거
+	  delete d.order;
+	  delete d.columns;
+	  delete d.search;
 
+      const send = {
+     	    // ★ 정렬 평면 파라미터 추가
+     	    sortName: sortName,
+     	    sortDir:  sortDir,
+
+     	    // 검색 파라미터들
+     	    areaCode:     $('#areaCodeSel').val(),
+     	    informerType: $('#informerTypeSel').val(),
+     	    orgId:        $('#orgIdSel').val(),
+     	    flagAct:      $('#searchActYn').val(),
+     	    searchType:   $('#searchType').val(),
+     	    searchValue:  $('#searchValue').val()
+     	    
+      };
+      if ($('#dchker').is(':checked')) {
+        send.sDate = $('#sDate').val();
+        send.eDate = $('#eDate').val();
+      }
+      return $.extend({}, d, send);
+    }
+  },
+  columns: [
+    { data:null, orderable:false, name:'CHK',
+      render: d => '<input type="checkbox" name="Selection" value="'+ (d.informerId||'') +'">' },
+    { data:'informerId',       name:'INFORMER_ID' },
+    { data:'areaName',         name:'AREA_NAME' },
+    { data:'informerTypeName', name:'INFORMER_TYPE_NAME' },
+    { data:'orgName',          name:'ORG_NAME' },
+    { data:'informerName',     name:'INFORMER_NAME' },
+    { data:'phoneCell',        name:'PHONE_CELL' },
+    { data:'flagAct',          name:'FLAG_ACT' },
+    { data:'regDate',          name:'REG_DATE' }
+  ],
+  createdRow: function(row, data){
+    $(row).attr('data-informer-id', data.informerId).css('cursor','pointer');
+  }
+});
   // 행 클릭 팝업
   $('#informerTable tbody').on('click', 'tr', function(e){
     if ($(e.target).is('input, a, button, label, select')) return;
@@ -131,7 +114,7 @@ function search(){
 
 <div id="contentWrap"  style="width:1030px;">
 <!-- <div id="posi"><a href="/main.do"><img src="../images/ico_home.gif" alt="home" /></a>제보자관리 > 제보자관리</div> -->
-<div id="searchDiv">
+<div id="searchDiv" style="height: 100px;">
     <div id="contents">
         <h1 class='content-title'>통신원관리</h1>
     </div>
@@ -213,12 +196,12 @@ function search(){
     <!-- 검색조건 영역 끝 -->
     <div style="display:flex;align-items: center;justify-content: space-between;">
 		<div>
-			<p id="resultListTotal" style="width: 300px;">
+			<!-- <p id="resultListTotal" style="width: 300px;">
 				<img src="../images/ico_result.gif" />
 				검색결과 <span style="font-weight:700;"></span>건
-			</p>
+			</p> -->
 		</div>
-		<div>
+		<!-- <div>
 			<input type="hidden" value="0" id="showCtn">
 			<select id="addOptionSelect" style="display:none;">
 				<option value="none">-- 선택 --</option>
@@ -229,7 +212,7 @@ function search(){
 			<a href="javascript:goStats('stats/informerDown.ajax');">
 				<img src="../images/btn_excel_down2.gif" alt="엑셀다운로드" style="width: 90px;"/>
 			</a>			
-		</div>
+		</div> -->
 	</div>
 </div>
 <form id="listFrm" name="listFrm">
@@ -259,7 +242,21 @@ function search(){
     <div id="pagingBox">
         <!-- paging Box content -->
     </div>
-    <div class="btnBox" align="right" style="margin-right:15px;margin-top: 50px;">
+    
+    <div>
+		<input type="hidden" value="0" id="showCtn">
+		<select id="addOptionSelect" style="display:none;">
+			<option value="none">-- 선택 --</option>
+			<option value="16">16라벨 출력</option>
+			<option value="24">24라벨 출력</option>
+		</select>
+		<button id="addDown" style="width: 100px; height: 30px; border-radius: 3px; color: white; background-color: #7b7c7d;margin-right: 4px;"><strong>주소 라벨 출력</strong></button>
+		<a href="javascript:goStats('stats/informerDown.ajax');">
+			<img src="../images/btn_excel_down2.gif" alt="엑셀다운로드" style="width: 90px;"/>
+		</a>			
+	</div>
+    <!--style="margin-right:15px;margin-top: 50px;"  -->
+    <div class="btnBox" align="right" >
         <span onclick="editInformer();" class="editUser"><button type="button" style="border: none;"><img src="../images/btn_save1.png" alt="" style="cursor: pointer;width: 92px;height: 30px;background-size: cover; "></button></span>
     </div>
 </div>
