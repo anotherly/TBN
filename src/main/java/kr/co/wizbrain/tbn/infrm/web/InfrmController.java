@@ -185,7 +185,7 @@ public class InfrmController implements ApplicationContextAware {
 	    // 화이트리스트 (화면별 허용 컬럼만)
 	    Set<String> WL = new HashSet<>(Arrays.asList(
 	        "INFORMER_ID","AREA_NAME","INFORMER_TYPE_NAME","ORG_NAME",
-	        "INFORMER_NAME","PHONE_CELL","FLAG_ACT","REG_DATE"
+	        "INFORMER_NAME","PHONE_CELL","ZIPCODE","FLAG_ACT","REG_ORDER"
 	    ));
 	    // 현재 세션에 대해 로그인한 사용자 정보를 가져옴
 		UserVO nlVo = (UserVO) request.getSession().getAttribute("login");
@@ -198,7 +198,7 @@ public class InfrmController implements ApplicationContextAware {
 	    // 재사용 헬퍼: BaseVO에서 안전한 ORDER BY 생성
 	    String orderBy ="";
 	    if(sortName.equals("")||sortDir.equals("")) {
-	    	orderBy="REG_DATE DESC";
+	    	orderBy="REG_ORDER DESC";
 	    }else {
 	    	orderBy=sortName+" "+sortDir;
 	    }

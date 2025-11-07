@@ -7,21 +7,22 @@
 
 <script>
 $(function () {
+  console.log("datatable start");
   const $form = $('#searchForm');
   const nameMap = { // 헤더 인덱스 → DB 컬럼명 (정렬용)
     1:'INFORMER_ID', 2:'AREA_NAME', 3:'INFORMER_TYPE_NAME', 4:'ORG_NAME',
-    5:'INFORMER_NAME', 6:'PHONE_CELL', 7:'FLAG_ACT', 8:'REG_DATE'
+    5:'INFORMER_NAME', 6:'PHONE_CELL', 7:'ZIPCODE', 8:'FLAG_ACT', 9:'REG_ORDER'
   };
 
   dt = $('#informerTable').DataTable({
     serverSide: true,
     processing: true,
     deferRender: true,
-    scrollY: '60vh',
+    scrollY: '100vh',
     scrollCollapse: true,
     scroller: { loadingIndicator: true, displayBuffer: 12 }, // ★ 누락 보완
     ordering: true,
-    order: [[8, 'desc']],
+    order: [[9, 'desc']],
     ajax: {
       url: '/infrm/datatable.do',
       type: 'POST',
@@ -70,8 +71,14 @@ $(function () {
       { data:'orgName',          name:'ORG_NAME' },
       { data:'informerName',     name:'INFORMER_NAME' },
       { data:'phoneCell',        name:'PHONE_CELL' },
+      { data:'zipcode',          name:'ZIPCODE', 
+    	render: function(d,t,r){
+    		    console.log("zipcode:", d, r);
+    		    return d || '-';}
+    	  
+      },
       { data:'flagAct',          name:'FLAG_ACT' },
-      { data:'regDate',          name:'REG_DATE' }
+      { data:'regDate',          name:'REG_ORDER' }
     ],
     createdRow: function(row, data){
       $(row).attr('data-informer-id', data.informerId)
@@ -101,6 +108,7 @@ $(function () {
     <th>소속기관</th>
     <th>이름</th>
     <th>전화</th>
+    <th>우편번호</th>
     <th>활동여부</th>
     <th>등록일</th>
   </tr>

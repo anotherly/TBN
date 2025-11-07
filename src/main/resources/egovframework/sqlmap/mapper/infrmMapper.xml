@@ -10,53 +10,50 @@
 -->
 
 	<!-- 전체 사용자 조회 -->
-	<resultMap type="infrmVO" id="selectInfrmList">
-		<result property="informerId" 		column="INFORMER_ID"/>
-		<result property="actId" 			column="ACT_ID"/>
-		<result property="areaCode" 		column="AREA_CODE"/>
-		<result property="areaName" 		column="AREA_NAME"/>
-		<result property="informerName" 	column="INFORMER_NAME"/>
-		<result property="phoneCell" 		column="PHONE_CELL"/>
-		<result property="informerType" 	column="INFORMER_TYPE"/>
+	<resultMap type="infrmVO" id="informerMap">
+		<result property="informerId" column="INFORMER_ID"/>
+		<result property="actId" column="ACT_ID"/>
+		<result property="informerName" column="INFORMER_NAME"/>
+		<result property="orgId" column="ORG_ID"/>
+		<result property="phoneCell" column="PHONE_CELL"/>
+		<result property="orgSubId" column="ORG_SUB_ID"/>
+		<result property="phoneHome" column="PHONE_HOME"/>
+		<result property="phoneOffice" column="PHONE_OFFICE"/>
+		<result property="informerType" column="INFORMER_TYPE"/>
 		<result property="informerTypeName" column="INFORMER_TYPE_NAME"/>
-		<result property="orgId" 			column="ORG_ID"/>
-		<result property="orgName" 			column="ORG_NAME"/>
-		<result property="regDate" 			column="REG_DATE"/>
-		<result property="flagAct" 			column="FLAG_ACT"/>
-		<result property="addressHome" 			column="ADDRESS_HOME"/>
-	</resultMap>
-	
-	<resultMap type="infrmVO" id="countInfrmList">
-		<result property="informerId" 		column="INFORMER_ID"/>
-		<result property="actId" 			column="ACT_ID"/>
-		<result property="areaCode" 		column="AREA_CODE"/>
-		<result property="areaName" 		column="AREA_NAME"/>
-		<result property="informerName" 	column="INFORMER_NAME"/>
-		<result property="phoneCell" 		column="PHONE_CELL"/>
-		<result property="informerType" 	column="INFORMER_TYPE"/>
-		<result property="informerTypeName" column="INFORMER_TYPE_NAME"/>
-		<result property="orgId" 			column="ORG_ID"/>
-		<result property="orgName" 			column="ORG_NAME"/>
-		<result property="regDate" 			column="REG_DATE"/>
-		<result property="flagAct" 			column="FLAG_ACT"/>
-		<result property="addressHome" 			column="ADDRESS_HOME"/>
-	</resultMap>
-	
-	<!-- 전체 사용자 조회(스크롤) -->
-	<resultMap type="infrmVO" id="selectInfrmList2">
-		<result property="informerId" 		column="INFORMER_ID"/>
-		<result property="actId" 			column="ACT_ID"/>
-		<result property="areaCode" 		column="AREA_CODE"/>
-		<result property="areaName" 		column="AREA_NAME"/>
-		<result property="informerName" 	column="INFORMER_NAME"/>
-		<result property="phoneCell" 		column="PHONE_CELL"/>
-		<result property="informerType" 	column="INFORMER_TYPE"/>
-		<result property="informerTypeName" column="INFORMER_TYPE_NAME"/>
-		<result property="orgId" 			column="ORG_ID"/>
-		<result property="orgName" 			column="ORG_NAME"/>
-		<result property="regDate" 			column="REG_DATE"/>
-		<result property="flagAct" 			column="FLAG_ACT"/>
-		<result property="addressHome" 			column="ADDRESS_HOME"/>
+		<result property="memo1" column="MEMO1"/>
+		<result property="memo" column="MEMO"/>
+		<result property="zipcode" column="ZIPCODE"/>
+		<result property="addressHome" column="ADDRESS_HOME"/>
+		<result property="address" column="ADDRESS"/>
+		<result property="zipcode2" column="ZIPCODE2"/>
+		<result property="addressOffice" column="ADDRESS_OFFICE"/>
+		<result property="residentNum" column="RESIDENT_NUM"/>
+		<result property="birthday" column="BIRTHDAY"/>
+		<result property="carNum" column="CAR_NUM"/>
+		<result property="comments" column="COMMENTS"/>
+		<result property="regDate" column="REG_DATE"/>
+		<result property="delDate" column="DEL_DATE"/>
+		<result property="updDate" column="UPD_DATE"/>
+		<result property="localFilePath" column="PHOTO_FILE"/>
+		<result property="individualNameChina" column="INDIVIDUAL_NAME_CHINA"/>
+		<result property="carType" column="CAR_TYPE"/>
+		<result property="trsNo" column="TRS_NO"/>
+		<result property="lastSchool" column="LAST_SCHOOL"/>
+		<result property="areaCode" column="AREA_CODE"/>
+		<result property="honor" column="HONOR"/>
+		<result property="agree" column="AGREE"/>
+		<result property="flagBlacklist" column="FLAG_BLACKLIST"/>
+		<result property="memo2" column="MEMO2"/>
+		<result property="identifiDate" column="IDENTIFI_DATE"/>
+		<result property="flagService" column="FLAG_SERVICE"/>
+		<result property="startDate" column="START_DATE"/>
+		<result property="stopDate" column="STOP_DATE"/>
+		<result property="birthdayDiv" column="BIRTHDAY_DIV"/>
+		<result property="informerJob" column="INFORMER_JOB"/>
+		<result property="flagBroad" column="FLAG_BROAD"/>
+		<result property="flagAct" column="FLAG_ACT"/>
+		<result property="areaName" column="AREA_NAME"/>
 	</resultMap>
 	
 	<!--  24-11-21 : 통신원 월별 제보건수 -->
@@ -79,7 +76,7 @@
 	</select>
 
 	<!-- 무한 스크롤 적용 전 / 전체 건수 가져오기 : 변경 전 id = selectInfrmList -->
-	<select id="countInfrmList" parameterType="infrmVO" resultMap="countInfrmList">
+	<select id="countInfrmList" parameterType="infrmVO" resultMap="informerMap">
     SELECT T.* FROM
     (
         SELECT J2.*
@@ -163,8 +160,13 @@
 	</select>
 	
 	<!-- 통신원 목록 최초 진입 시 20개 뿌리기 -->
-	<select id="selectInfrmList" parameterType="infrmVO" resultMap="selectInfrmList">
-    SELECT T.* FROM
+	<select id="selectInfrmList" parameterType="infrmVO" resultMap="informerMap">
+    SELECT T.*
+			, CASE 
+		        WHEN T.FLAG_ACT_SUB = 'Y' THEN '위촉'
+		        ELSE '해촉'
+		    END AS FLAG_ACT
+ 	FROM
     (
         SELECT J2.*
         ,NVL(D.ORG_NAME,'무소속') AS ORG_NAME
@@ -191,10 +193,10 @@
 				END AS phone_cell 
 				
                 <!--,REGEXP_REPLACE(phone_cell, '(02|.{3})(.+)(.{4})', '\1-\2-\3') as phone_cell2-->
-				
+				,A.ZIPCODE
                 ,A.INFORMER_TYPE 	
                 ,A.ORG_ID
-                ,NVL(A.FLAG_ACT, '정보없음') as FLAG_ACT		
+                ,A.FLAG_ACT as FLAG_ACT_SUB		
                 ,NVL(A.REG_DATE, '정보없음') as REG_DATE		
                 ,NVL(A.ADDRESS_HOME,'미입력') as ADDRESS_HOME
                 FROM INFORMER A
@@ -224,7 +226,7 @@
 				AND T.ORG_ID=#{orgId}
 			</if>
 			<if test="flagAct != null and !flagAct.equals('')">
-				AND T.FLAG_ACT=#{flagAct}
+				AND T.FLAG_ACT_SUB=#{flagAct}
 			</if>
 			<if test="searchValue != null and !searchValue.equals('')">
 			    <choose>
@@ -250,7 +252,7 @@
 	</select>
 	
 	<!-- 통신원 목록 (스크롤 / 쿼리 변경 필요) -->
-	<select id="selectInfrmList2" parameterType="infrmVO" resultMap="selectInfrmList">
+	<select id="selectInfrmList2" parameterType="infrmVO" resultMap="informerMap">
     SELECT T.*
 	FROM (
 	    SELECT T.*, ROWNUM AS RN
@@ -331,56 +333,8 @@
 
 </select>
 
-
-
-	
 	<!--  특정 사용자 조회 -->
-	<resultMap type="infrmVO" id="detailInformer">
-		<result property="informerId" column="INFORMER_ID"/>
-		<result property="actId" column="ACT_ID"/>
-		<result property="informerName" column="INFORMER_NAME"/>
-		<result property="orgId" column="ORG_ID"/>
-		<result property="phoneCell" column="PHONE_CELL"/>
-		<result property="orgSubId" column="ORG_SUB_ID"/>
-		<result property="phoneHome" column="PHONE_HOME"/>
-		<result property="phoneOffice" column="PHONE_OFFICE"/>
-		<result property="informerType" column="INFORMER_TYPE"/>
-		<result property="informerTypeName" column="INFORMER_TYPE_NAME"/>
-		<result property="memo1" column="MEMO1"/>
-		<result property="memo" column="MEMO"/>
-		<result property="zipcode" column="ZIPCODE"/>
-		<result property="addressHome" column="ADDRESS_HOME"/>
-		<result property="address" column="ADDRESS"/>
-		<result property="zipcode2" column="ZIPCODE2"/>
-		<result property="addressOffice" column="ADDRESS_OFFICE"/>
-		<result property="residentNum" column="RESIDENT_NUM"/>
-		<result property="birthday" column="BIRTHDAY"/>
-		<result property="carNum" column="CAR_NUM"/>
-		<result property="comments" column="COMMENTS"/>
-		<result property="regDate" column="REG_DATE"/>
-		<result property="delDate" column="DEL_DATE"/>
-		<result property="updDate" column="UPD_DATE"/>
-		<result property="localFilePath" column="PHOTO_FILE"/>
-		<result property="individualNameChina" column="INDIVIDUAL_NAME_CHINA"/>
-		<result property="carType" column="CAR_TYPE"/>
-		<result property="trsNo" column="TRS_NO"/>
-		<result property="lastSchool" column="LAST_SCHOOL"/>
-		<result property="areaCode" column="AREA_CODE"/>
-		<result property="honor" column="HONOR"/>
-		<result property="agree" column="AGREE"/>
-		<result property="flagBlacklist" column="FLAG_BLACKLIST"/>
-		<result property="memo2" column="MEMO2"/>
-		<result property="identifiDate" column="IDENTIFI_DATE"/>
-		<result property="flagService" column="FLAG_SERVICE"/>
-		<result property="startDate" column="START_DATE"/>
-		<result property="stopDate" column="STOP_DATE"/>
-		<result property="birthdayDiv" column="BIRTHDAY_DIV"/>
-		<result property="informerJob" column="INFORMER_JOB"/>
-		<result property="flagBroad" column="FLAG_BROAD"/>
-		<result property="flagAct" column="FLAG_ACT"/>
-		<result property="areaName" column="AREA_NAME"/>
-	</resultMap>
-	<select id="detailInformer" parameterType="infrmVO" resultMap="detailInformer">
+	<select id="detailInformer" parameterType="infrmVO" resultMap="informerMap">
 		SELECT
 			A.INFORMER_ID	
 			,A.ACT_ID	
@@ -703,12 +657,16 @@
          ORDER BY INFORMER_HIST_ID DESC
     </select>
     
-    <select id="findSlice" parameterType="map" resultMap="selectInfrmList">
+    <select id="findSlice" parameterType="map" resultMap="informerMap">
 <![CDATA[
 SELECT * FROM (
   SELECT T.*, ROWNUM AS RN
   FROM (
     SELECT J2.*
+    	 , CASE 
+		        WHEN J2.FLAG_ACT_SUB = 'Y' THEN '위촉'
+		        ELSE '해촉'
+		    END AS FLAG_ACT
          , NVL(D.ORG_NAME, '무소속') AS ORG_NAME
     FROM (
       SELECT J1.*
@@ -718,6 +676,7 @@ SELECT * FROM (
              , NVL(A.ACT_ID,'정보없음') AS ACT_ID
              , NVL(A.INFORMER_NAME,'정보없음') AS INFORMER_NAME
              , A.AREA_CODE
+             , A.ORG_ID
              , REPLACE(B.AREA_NAME,'교통방송','') AS AREA_NAME
              , CASE WHEN A.PHONE_CELL IS NULL OR A.PHONE_CELL = ''
                     THEN CASE WHEN A.PHONE_HOME IS NULL OR A.PHONE_HOME = ''
@@ -726,10 +685,11 @@ SELECT * FROM (
                     ELSE REGEXP_REPLACE(A.PHONE_CELL ,'(02|.{3})(.+)(.{4})','\1-\2-\3')
                END AS PHONE_CELL
              , A.INFORMER_TYPE
-             , A.ORG_ID
-             , NVL(A.FLAG_ACT,'정보없음') AS FLAG_ACT
+             , A.FLAG_ACT AS FLAG_ACT_SUB
              , NVL(A.REG_DATE,'정보없음') AS REG_DATE
              , NVL(A.ADDRESS_HOME,'미입력') AS ADDRESS_HOME
+             , NVL(A.ZIPCODE,'정보없음') AS ZIPCODE
+             ,A.REG_DATE AS REG_ORDER
         FROM INFORMER A
         LEFT JOIN CODE_AREACODE B ON A.AREA_CODE = B.AREA_CODE
       ) J1
@@ -754,7 +714,7 @@ SELECT * FROM (
       AND J2.ORG_ID = #{vo.orgId}
     </if>
     <if test="vo.flagAct != null and vo.flagAct != ''">
-      AND J2.FLAG_ACT = #{vo.flagAct}
+      AND J2.FLAG_ACT_SUB = #{vo.flagAct}
     </if>
     <if test="vo.searchValue != null and vo.searchValue != ''">
       <choose>
@@ -777,7 +737,7 @@ SELECT * FROM (
   WHERE ROWNUM < #{endRnum}
 )
 WHERE RN >= #{startRnum}
-ORDER BY ${orderBy}
+ORDER BY ${orderBy} nulls last
 ]]>
 </select>
 
@@ -792,6 +752,10 @@ ORDER BY ${orderBy}
 		  SELECT T.*, ROWNUM AS RN
 		  FROM (
 		    SELECT J2.*
+		    , CASE 
+		        WHEN J2.FLAG_ACT_SUB = 'Y' THEN '위촉'
+		        ELSE '해촉'
+		    END AS FLAG_ACT
 		         , NVL(D.ORG_NAME, '무소속') AS ORG_NAME
 		    FROM (
 		      SELECT J1.*
@@ -801,6 +765,7 @@ ORDER BY ${orderBy}
 		             , NVL(A.ACT_ID,'정보없음') AS ACT_ID
 		             , NVL(A.INFORMER_NAME,'정보없음') AS INFORMER_NAME
 		             , A.AREA_CODE
+		             , A.ORG_ID
 		             , REPLACE(B.AREA_NAME,'교통방송','') AS AREA_NAME
 		             , CASE WHEN A.PHONE_CELL IS NULL OR A.PHONE_CELL = ''
 		                    THEN CASE WHEN A.PHONE_HOME IS NULL OR A.PHONE_HOME = ''
@@ -809,11 +774,12 @@ ORDER BY ${orderBy}
 		                    ELSE REGEXP_REPLACE(A.PHONE_CELL ,'(02|.{3})(.+)(.{4})','\1-\2-\3')
 		               END AS PHONE_CELL
 		             , A.INFORMER_TYPE
-		             , A.ORG_ID
-		             , NVL(A.FLAG_ACT,'정보없음') AS FLAG_ACT
+		             , A.FLAG_ACT AS FLAG_ACT_SUB
 		             , NVL(A.REG_DATE,'정보없음') AS REG_DATE
 		             , NVL(A.ADDRESS_HOME,'미입력') AS ADDRESS_HOME
-		        FROM INFORMER A
+		             , NVL(A.ZIPCODE,'정보없음') AS ZIPCODE
+		             ,A.REG_DATE AS REG_ORDER
+		        FROM INFORMER A	
 		        LEFT JOIN CODE_AREACODE B ON A.AREA_CODE = B.AREA_CODE
 		      ) J1
 		      LEFT JOIN CODE_INFORMER_TYPE C ON J1.INFORMER_TYPE = C.TYPE_ID
@@ -837,7 +803,7 @@ ORDER BY ${orderBy}
 		      AND J2.ORG_ID = #{orgId}
 		    </if>
 		    <if test="flagAct != null and flagAct != ''">
-		      AND J2.FLAG_ACT = #{flagAct}
+		      AND J2.FLAG_ACT_SUB = #{flagAct}
 		    </if>
 		    <if test="searchValue != null and searchValue != ''">
 		      <choose>

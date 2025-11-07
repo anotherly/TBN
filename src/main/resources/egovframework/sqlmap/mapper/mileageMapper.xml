@@ -343,14 +343,39 @@
 	<select id="selectUserAwardList2" parameterType="awardVo" resultType="record">
 	    SELECT 
 	        ROW_NUMBER() OVER(ORDER BY B.REG_DATE DESC) RNUM, 
-	        c.informer_id, 
-	        E.CITY as REGION_NM, 
+	        B.AW_ID, 
+	         
+	        
+			<!-- 미등록시민  AW ID 에서 년월일시분초 14자리 짤라야 함-->
+	        
+	        <!-- INFORMER_ID -->
+	        CASE 
+			    WHEN c.informer_id IS NULL AND INSTR(B.AW_ID, '_') > 0 
+			    THEN SUBSTR(B.AW_ID, 1, LENGTH(B.AW_ID) - 14)
+			    ELSE c.informer_id
+			END AS informer_id,
+	        
+	        E.CITY as REGION_NM,
 	        D.ORG_NAME, 
 	        C.ACT_ID, 
-	        C.INFORMER_NAME, 
+	        
+	        CASE 
+			    WHEN c.informer_id IS NULL AND INSTR(B.AW_ID, '_') > 0 
+			    THEN '미등록시민'
+			    ELSE C.INFORMER_NAME
+			END AS INFORMER_NAME,
+	        <!-- 전화번호 -->
+	        CASE 
+			    WHEN c.informer_id IS NULL AND INSTR(B.AW_ID, '_') > 0 
+			    THEN  REGEXP_REPLACE(
+	        			SUBSTR(SUBSTR(B.AW_ID, INSTR(B.AW_ID, '_') + 1), 1, LENGTH(SUBSTR(B.AW_ID, INSTR(B.AW_ID, '_') + 1)) - 14)
+	        			, '(02|.{3})(.+)(.{4})', '\1-\2-\3')
+			    ELSE REGEXP_REPLACE(C.PHONE_CELL, '(02|.{3})(.+)(.{4})', '\1-\2-\3')
+			END as PHONE_CELL,
+	        <!-- 미등록시민 끝-->
+	         
 	        DECODE(B.AW_TYPE, '0', '교통제보우수자', '1', '주요정보제공우수자', '2', '실적증가자') AS AW_TYPE, 
 	        B.AW_NAME, 
-	        REGEXP_REPLACE(C.PHONE_CELL, '(02|.{3})(.+)(.{4})', '\1-\2-\3') as PHONE_CELL, 
 	        TO_CHAR(TO_DATE(B.REG_DATE, 'YYYYMMDD'), 'YYYY-MM-DD') AS REG_DATE, 
 	        B.RPT_GRADE, 
 	        B.MAIN_GRADE, 
@@ -398,14 +423,38 @@
 	    SELECT 
 	        ROW_NUMBER() OVER(ORDER BY B.REG_DATE DESC) RNUM, 
 	        B.AW_ID, 
-	        c.informer_id, 
-	        E.CITY as REGION_NM, 
+	         
+	        
+			<!-- 미등록시민  AW ID 에서 년월일시분초 14자리 짤라야 함-->
+	        
+	        <!-- INFORMER_ID -->
+	        CASE 
+			    WHEN c.informer_id IS NULL AND INSTR(B.AW_ID, '_') > 0 
+			    THEN SUBSTR(B.AW_ID, 1, LENGTH(B.AW_ID) - 14)
+			    ELSE c.informer_id
+			END AS informer_id,
+	        
+	        E.CITY as REGION_NM,
 	        D.ORG_NAME, 
 	        C.ACT_ID, 
-	        C.INFORMER_NAME, 
+	        
+	        CASE 
+			    WHEN c.informer_id IS NULL AND INSTR(B.AW_ID, '_') > 0 
+			    THEN '미등록시민'
+			    ELSE C.INFORMER_NAME
+			END AS INFORMER_NAME,
+	        <!-- 전화번호 -->
+	        CASE 
+			    WHEN c.informer_id IS NULL AND INSTR(B.AW_ID, '_') > 0 
+			    THEN  REGEXP_REPLACE(
+	        			SUBSTR(SUBSTR(B.AW_ID, INSTR(B.AW_ID, '_') + 1), 1, LENGTH(SUBSTR(B.AW_ID, INSTR(B.AW_ID, '_') + 1)) - 14)
+	        			, '(02|.{3})(.+)(.{4})', '\1-\2-\3')
+			    ELSE REGEXP_REPLACE(C.PHONE_CELL, '(02|.{3})(.+)(.{4})', '\1-\2-\3')
+			END as PHONE_CELL,
+	        <!-- 미등록시민 끝-->
+	         
 	        DECODE(B.AW_TYPE, '0', '교통제보우수자', '1', '주요정보제공우수자', '2', '실적증가자') AS AW_TYPE, 
 	        B.AW_NAME, 
-	        REGEXP_REPLACE(C.PHONE_CELL, '(02|.{3})(.+)(.{4})', '\1-\2-\3') as PHONE_CELL, 
 	        TO_CHAR(TO_DATE(B.REG_DATE, 'YYYYMMDD'), 'YYYY-MM-DD') AS REG_DATE, 
 	        B.RPT_GRADE, 
 	        B.MAIN_GRADE, 
@@ -439,16 +488,34 @@
 	        ADD_GRADE, ALL_RANK
 	    )
 	    <foreach collection="chkArr" item="item" index="i" separator="union">
-	        SELECT (
-	            SELECT INFORMER_ID || TO_CHAR(SYSDATE, 'YYYYMMDDHH24MISS') 
-	            FROM DUAL
-	        ), 
-	        INFORMER_ID, ACT_ID, #{thvo.searchType}, AREA_CODE, #{thvo.AW_NAME}, 
-	        TO_CHAR(SYSDATE, 'YYYYMM'), TO_CHAR(SYSDATE, 'YYYYMMDD'), 
-	        #{thvo.SDATE}, #{thvo.EDATE}, #{item.RPT_GRADE}, 
-	        #{item.MAIN_GRADE}, #{item.ADD_GRADE}, #{item.ALL_RANK}
-	        FROM INFORMER 
-	        WHERE INFORMER_ID = #{item.INFORMER_ID}
+	        <choose>
+	            <!-- 미등록시민 -->
+				<when test="item.INFORMER_ID.indexOf('_') != -1">
+					SELECT 
+					#{item.INFORMER_ID} || TO_CHAR(SYSDATE, 'YYYYMMDDHH24MISS')
+					,#{item.INFORMER_ID}
+					,'소속없음'
+					,#{thvo.searchType}
+					,SUBSTR(#{item.INFORMER_ID}, 1, INSTR(#{item.INFORMER_ID}, '_') - 1)
+					,#{thvo.AW_NAME}
+					,TO_CHAR(SYSDATE, 'YYYYMM'), TO_CHAR(SYSDATE, 'YYYYMMDD'), 
+		        	#{thvo.SDATE}, #{thvo.EDATE}, #{item.RPT_GRADE}, 
+		        	#{item.MAIN_GRADE}, #{item.ADD_GRADE}, #{item.ALL_RANK}
+					FROM DUAL				    
+				</when>
+		        <otherwise>
+					SELECT (
+			            SELECT INFORMER_ID || TO_CHAR(SYSDATE, 'YYYYMMDDHH24MISS') 
+			            FROM DUAL
+			        ), 
+			        INFORMER_ID, ACT_ID, #{thvo.searchType}, AREA_CODE, #{thvo.AW_NAME}, 
+			        TO_CHAR(SYSDATE, 'YYYYMM'), TO_CHAR(SYSDATE, 'YYYYMMDD'), 
+			        #{thvo.SDATE}, #{thvo.EDATE}, #{item.RPT_GRADE}, 
+			        #{item.MAIN_GRADE}, #{item.ADD_GRADE}, #{item.ALL_RANK}
+			        FROM INFORMER 
+			        WHERE INFORMER_ID = #{item.INFORMER_ID}	            
+		        </otherwise>
+			</choose>
 	    </foreach>
 	</update>
 	

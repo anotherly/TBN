@@ -163,7 +163,7 @@
 			                    </td>
 			                    <td rowspan="2">
 			                    <img src="../images/btn_sentence.png" alt="제보내용으로삽입" onclick="appendToReceiptContent()" 
-			                    style="position:absolute; right:35px; top:130px; height:89px; width:50px; cursor:pointer;"/>
+			                    style="position:absolute;right: 48px;top: 145px;height:89px;width:50px;cursor:pointer;"/>
 			                    </td>
 		                    </tr>
 		                    <tr>
