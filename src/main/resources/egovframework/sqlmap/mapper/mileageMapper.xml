@@ -530,7 +530,13 @@
 	</update>
 	
 	
-	<!-- 최고 통신원 기본 정보 조회 -->
+	<!-- 최고 통신원 기본 정보 조회 (변경 후) -->
+	<select id="bestIfrmList" resultType="java.util.Map" parameterType="kr.co.wizbrain.tbn.mileage.vo.MileageVO">
+		select * from bestinformer
+		order by all_point desc
+	</select>
+	
+	<!-- 기존 쿼리로 조회 시 사용 쿼리문
 	<select id="bestIfrmList" resultType="java.util.Map" parameterType="kr.co.wizbrain.tbn.mileage.vo.MileageVO">
 		SELECT a.*,b.cnt as ALL_POINT
 		FROM 
@@ -560,7 +566,7 @@
 		) b
 		ON a.informer_id = b.individual_id
 		order by b.cnt desc
-	</select>
+	</select> -->
 	
 	
 	<!-- 최고 통신원 전체 제보건수 조회 -->

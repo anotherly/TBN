@@ -11,6 +11,7 @@ public class BroadcastVO {
 	private String CONTENTS;
 	private String RECEIPT_DAY;
 	private String BROAD_TIME;
+	private String UPDATE_TABLE;
 	
 	public BroadcastVO() {}
 
@@ -44,6 +45,14 @@ public class BroadcastVO {
 	public String getRECEIPT_TIME() {
 		return RECEIPT_TIME;
 	}
+	public String getUPDATE_TABLE() {
+		return UPDATE_TABLE;
+	}
+
+	public void setUPDATE_TABLE(String uPDATE_TABLE) {
+		UPDATE_TABLE = uPDATE_TABLE;
+	}
+
 	public void setRECEIPT_TIME(String rECEIPT_TIME) {
 		RECEIPT_TIME = rECEIPT_TIME;
 	}

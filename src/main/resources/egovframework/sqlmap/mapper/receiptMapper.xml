@@ -6,108 +6,104 @@
 	namespace="kr.co.wizbrain.tbn.receipt.mapper.ReceiptMapper">
 
 	<insert id="insertReceipt" parameterType="receiptVO">
-		<selectKey keyProperty="RECEIPT_ID" resultType="string"
-			order="BEFORE">
-			SELECT (TO_CHAR(SYSDATE , 'YYYYMMDD') || TO_CHAR(SEQ_RECEIPT_TODAY.NEXTVAL,
-			'FM0000009')) FROM DUAL
-		</selectKey>
-		INSERT INTO REPORT_RECEIPT_TODAY(
-		RECEIPT_ID
-		, RECEIPT_DAY
-		, RECEIPT_TIME
-		, INDIVIDUAL_ID
-		, INDIVIDUAL_NAME
-		, INDIVIDUAL_TYPE
-		, ORG_ID
-		, ORG_NAME
-		, RECEPTION_ID
-		, RECEPTION_NAME
-		, MEMO
-		, ARTERY_ID
-		, F_LINK_ID
-		, T_LINK_ID
-		, F_NODE_NAME
-		, T_NODE_NAME
-		, REGION_ID
-		, START_DAY
-		, START_TIME
-		, END_DAY
-		, END_TIME
-		, REPORT_TYPE
-		, REPORTER_TYPE
-		, FLAG_SEND
-		, FLAG_IMPORTANT
-		, FLAG_DISASTOR
-		, R_TEL
-		, X_COORDINATE
-		, Y_COORDINATE
-		, REPORT_TYPE2
-		, REPORT_TYPE3
-		, AREA_ID
-		, RECEPTION_EVA
-		, FLAG_WEB
-		, FLAG_DMB_SEND
-		, DLS_TEXT
-		)
-		VALUES(
-		#{RECEIPT_ID}
-		, TO_CHAR(SYSDATE,'YYYYMMDD')
-		, TO_CHAR(SYSDATE,'HH24MI')
-		, #{INDIVIDUAL_ID}
-		, #{INDIVIDUAL_NAME}
-		, #{INDIVIDUAL_TYPE}
-		, #{ORG_ID}
-
-		, #{ORG_NAME}
-		, #{RECEPTION_ID}
-		, #{RECEPTION_NAME}
-		, #{MEMO}
-		, #{ARTERY_ID}
-
-		, #{F_LINK_ID}
-		, #{T_LINK_ID}
-		, #{F_NODE_NAME}
-		, #{T_NODE_NAME}
-		, #{REGION_ID}
-
-		, REPLACE(#{START_DAY}, '-', '')
-		, #{STARTTIMEHH} || #{STARTTIMEMI}
-		, REPLACE(#{END_DAY}, '-', '')
-		, #{ENDTIMEHH} || #{ENDTIMEMI}
-
-		, #{REPORT_TYPE}
-		, #{REPORTER_TYPE}
-		, #{FLAG_SEND}
-		<!-- , #{FLAG_IMPORTANT} -->
-		<!-- 220905 제보내용에 '긴급'문구가 포함된 경우 긴급으로 처리하도록 -->
-		, CASE 
-			WHEN 
-				<!-- 긴급제보 체크됬을땐 제보내용에 상관없이 Y -->
-    			#{FLAG_IMPORTANT} like '%Y%' then 'Y'
-    			<!-- 긴급이 N일경우 제보내용에 긴급 포함되면 Y --> 
-    			ELSE 
-					CASE WHEN 
-					#{MEMO} like '%긴급%' then 'Y' else 'N' 
-		 		END
-		 	END
-		<!--  재난재보  -->
-		, #{FLAG_DISASTOR}
-		, REPLACE(#{R_TEL},'-', '')
-		, #{X_COORDINATE}
-		, #{Y_COORDINATE}
-		, #{REPORT_TYPE2}
-		, #{REPORT_TYPE3}
-		, #{AREA_ID}
-		<!-- 차선 -->
-		, #{LANE}
-		<!-- TBN 공식홈페이지 문자돌발정보 db 전송여부 -->
-		, #{FLAG_WEB}
-		<!-- 사진/영상 제보 -->
-		, #{FLAG_DMB_SEND}
-		<!-- 문자 제보 -->
-		, #{DLS_TEXT}
-		)
+	    <selectKey keyProperty="RECEIPT_ID" resultType="string" order="BEFORE">
+	        SELECT (TO_CHAR(SYSDATE , 'YYYYMMDD') || TO_CHAR(SEQ_RECEIPT_TODAY.NEXTVAL, 'FM0000009'))
+	        FROM DUAL
+	    </selectKey>
+	
+	    INSERT INTO REPORT_RECEIPT_TODAY(
+	        RECEIPT_ID,
+	        RECEIPT_DAY,
+	        RECEIPT_TIME,
+	        INDIVIDUAL_ID,
+	        INDIVIDUAL_NAME,
+	        INDIVIDUAL_TYPE,
+	        ORG_ID,
+	        ORG_NAME,
+	        RECEPTION_ID,
+	        RECEPTION_NAME,
+	        MEMO,
+	        ARTERY_ID,
+	        F_LINK_ID,
+	        T_LINK_ID,
+	        F_NODE_NAME,
+	        T_NODE_NAME,
+	        REGION_ID,
+	        START_DAY,
+	        START_TIME,
+	        END_DAY,
+	        END_TIME,
+	        REPORT_TYPE,
+	        REPORTER_TYPE,
+	        FLAG_SEND,
+	        FLAG_IMPORTANT,
+	        FLAG_DISASTOR,
+	        R_TEL,
+	        X_COORDINATE,
+	        Y_COORDINATE,
+	        REPORT_TYPE2,
+	        REPORT_TYPE3,
+	        AREA_ID,
+	        RECEPTION_EVA,
+	        FLAG_WEB,
+	        FLAG_DMB_SEND,
+	        DLS_TEXT
+	    )
+	    VALUES (
+	        #{RECEIPT_ID},
+	        TO_CHAR(SYSDATE,'YYYYMMDD'),
+	        TO_CHAR(SYSDATE,'HH24MI'),
+	        #{INDIVIDUAL_ID},
+	        #{INDIVIDUAL_NAME},
+	        #{INDIVIDUAL_TYPE},
+	        #{ORG_ID},
+	        #{ORG_NAME},
+	        #{RECEPTION_ID},
+	        #{RECEPTION_NAME},
+	        #{MEMO},
+	        #{ARTERY_ID},
+	        #{F_LINK_ID},
+	        #{T_LINK_ID},
+	        #{F_NODE_NAME},
+	        #{T_NODE_NAME},
+	        #{REGION_ID},
+	        REPLACE(#{START_DAY}, '-', ''),
+	        #{STARTTIMEHH} || #{STARTTIMEMI},
+	        REPLACE(#{END_DAY}, '-', ''),
+	        #{ENDTIMEHH} || #{ENDTIMEMI},
+	        #{REPORT_TYPE},
+	        #{REPORTER_TYPE},
+	        #{FLAG_SEND},
+	        CASE 
+	            WHEN NVL(#{FLAG_IMPORTANT}, 'N') = 'Y' THEN 'Y'
+	            WHEN #{MEMO} LIKE '%긴급%' THEN 'Y'
+	            ELSE 'N'
+	        END,
+	        #{FLAG_DISASTOR},
+	        REPLACE(#{R_TEL}, '-', ''),
+	        #{X_COORDINATE},
+	        #{Y_COORDINATE},
+	        #{REPORT_TYPE2},
+	        #{REPORT_TYPE3},
+	        #{AREA_ID},
+	        #{LANE},
+	        #{FLAG_WEB},
+	        #{FLAG_DMB_SEND},
+	        #{DLS_TEXT}
+	    )
 	</insert>
+
+	
+	<select id="selectBestIfrm" resultType="receiptVO">
+		SELECT 
+		  CASE 
+		    WHEN COUNT(*) > 0 
+		    THEN '최고통신원 ' || MAX(INFORMER_NAME)
+		    ELSE '통신원'
+		  END AS INDIVIDUAL_NAME
+		FROM BESTINFORMER
+		WHERE INFORMER_ID = #{INDIVIDUAL_ID}
+	</select>
 
 	<select id="getMissedCallInfoById" resultType="missedCallVO">
 		SELECT * FROM MISSED_CALL WHERE MISSED_CALL_ID = #{MISSED_CALL_ID}
@@ -602,16 +598,40 @@
 		)
 	</insert>
 
-	<select id="countReceivedStatusList" resultType="int">
+	<!-- <select id="countReceivedStatusList" resultType="int">
 		SELECT COUNT(RECEIPT_ID) FROM REPORT_RECEIPT_TODAY
 		WHERE RECEIPT_DAY = #{RECEIPT_DAY}
          	<if test="!AREA_CODE.equals('080')">
          		AND REGION_ID = #{AREA_CODE}
          	</if>
+	</select> -->
+	
+	
+	<select id="countReceivedStatusList" resultType="int">
+		SELECT
+		    (SELECT COUNT(*) 
+		       FROM REPORT_RECEIPT_TODAY 
+		      WHERE RECEIPT_DAY = #{RECEIPT_DAY}
+		      <if test="!AREA_CODE.equals('080')">
+		          AND REGION_ID = #{AREA_CODE}
+		      </if>
+		    )
+		  + (SELECT COUNT(*) 
+		       FROM RECEIPT_APP 
+		      WHERE RECEIPT_DAY = #{RECEIPT_DAY}
+		      <if test="!AREA_CODE.equals('080')">
+		          AND AREA_CODE = #{AREA_CODE}
+		      </if>
+		    )
+		  AS TOTAL_COUNT
+		FROM DUAL
 	</select>
 
+
+
 	<!-- 금일 접수 현황 쿼리 -->
-	<select id="receivedStatusList" resultType="receivedStatusVO">
+	<!-- 기존 쿼리문 -->
+	<!-- <select id="receivedStatusList" resultType="receivedStatusVO">
      
         SELECT * 
 		FROM(
@@ -664,12 +684,99 @@
 		<![CDATA[
 		WHERE  SEQ > #{startRow} AND SEQ <= (#{startRow} + #{size})
         ]]>
+	</select> -->
+	
+	
+	
+	
+	
+	<select id="receivedStatusList" resultType="receivedStatusVO">
+		SELECT *
+		FROM (
+			SELECT ROWNUM AS SEQ, H.*
+			FROM (
+				SELECT ROW_NUMBER() OVER(ORDER BY RECEIPT_DT ASC) AS RNUM, G.*
+				FROM (
+					SELECT 
+						A.RECEIPT_ID,
+						TO_CHAR(A.RECEIPT_DAY,'YYYY-MM-DD') AS RECEIPT_DAY,
+						A.RECEIPT_DAY || A.RECEIPT_TIME AS RECEIPT_DT,
+						A.FLAG_SEND,
+						A.FLAG_BROD,
+						DECODE(A.X_COORDINATE, '', 'N', 'Y') AS FLAG_MAP,
+						TO_CHAR(TO_DATE(A.RECEIPT_TIME , 'HH24MI'), 'HH24:MI') AS RECEIPT_TIME,
+						C.BAS_NAME AS REPORT_TYPE,
+						C.F_COLOR,
+						C.B_COLOR,
+						D.BAS_NAME AS REPORT_TYPE2,
+						A.INDIVIDUAL_ID,
+						A.INDIVIDUAL_NAME,
+						B.TYPE_NAME,
+						A.RECEPTION_ID,
+						A.RECEPTION_NAME,
+						A.MEMO,
+						E.NAME AS REPORTER_TYPE,
+						F.AREA_NAME AS REGION_NAME,
+						A.FLAG_IMPORTANT,
+						A.FLAG_DISASTOR,
+						TO_CHAR(TO_DATE(A.BROAD_TIME,'YYYYMMDDHH24MISS'),'HH24:MI') AS BROAD_TIME
+					FROM REPORT_RECEIPT_TODAY A
+					LEFT OUTER JOIN CODE_INFORMER_TYPE B ON A.INDIVIDUAL_TYPE = B.TYPE_ID
+					LEFT OUTER JOIN (SELECT * FROM CODE_REPORT_TYPE WHERE BAS_LCOD = '100') C ON A.REPORT_TYPE = C.BAS_SCOD
+					LEFT OUTER JOIN CODE_REPORT_TYPE D ON D.BAS_SCOD = A.REPORT_TYPE2 AND D.BAS_LCOD = A.REPORT_TYPE
+					LEFT OUTER JOIN CODE_REPORTMEAN_TYPE E ON A.REPORTER_TYPE = E.ID
+					LEFT OUTER JOIN CODE_AREACODE F ON A.REGION_ID = F.AREA_CODE
+					WHERE A.RECEIPT_DAY = #{RECEIPT_DAY}
+					<if test="!AREA_CODE.equals('080')">
+						AND A.REGION_ID = #{AREA_CODE}
+					</if>
+	
+					UNION ALL
+	
+					SELECT 
+						B.RECEIPT_ID,
+						TO_CHAR(B.RECEIPT_DAY,'YYYY-MM-DD') AS RECEIPT_DAY,
+						B.RECEIPT_DAY || B.RECEIPT_TIME AS RECEIPT_DT,
+						B.FLAG_SEND,
+						B.FLAG_BROD,
+						DECODE(B.X_COORDINATE, '', 'N', 'Y') AS FLAG_MAP,
+						TO_CHAR(TO_DATE(B.RECEIPT_TIME , 'HH24MI'), 'HH24:MI') AS RECEIPT_TIME,
+						C2.BAS_NAME AS REPORT_TYPE,
+						' ' as F_COLOR,
+                        ' ' as B_COLOR,
+						' ' as REPORT_TYPE2,
+						B.INFORMER_ID,
+						B.INFORMER_NAME,
+						' ' as TYPE_NAME,
+						' ' as RECEPTION_ID,
+						' ' as RECEPTION_NAME,
+						B.COMMENT_TXT,
+						E2.NAME AS REPORTER_TYPE,
+						F2.AREA_NAME AS REGION_NAME,
+						B.FLAG_IMPORTANT,
+						B.FLAG_DISASTOR,
+						TO_CHAR(TO_DATE(B.BROAD_TIME,'YYYYMMDDHH24MISS'),'HH24:MI') AS BROAD_TIME
+					FROM RECEIPT_APP B
+					LEFT OUTER JOIN CODE_AREACODE F2 ON B.AREA_CODE = F2.AREA_CODE
+					LEFT OUTER JOIN (SELECT * FROM CODE_REPORT_TYPE WHERE BAS_LCOD = '100') C2 ON B.REPORT_TYPE = C2.BAS_SCOD
+					LEFT OUTER JOIN CODE_REPORTMEAN_TYPE E2 ON B.REPORTER_TYPE = E2.ID
+					WHERE B.RECEIPT_DAY = #{RECEIPT_DAY}
+					<if test="!AREA_CODE.equals('080')">
+						AND B.AREA_CODE = #{AREA_CODE}
+					</if>
+				) G
+				ORDER BY RNUM DESC
+			) H
+		)
+		<![CDATA[
+		WHERE SEQ > #{startRow} AND SEQ <= (#{startRow} + #{size})
+		]]>
 	</select>
 
 	<select id="countSearchStatusList" resultType="int">
         SELECT COUNT(*) FROM 
         	(
-        	SELECT * FROM REPORT_RECEIPT_TODAY WHERE 1 = 1
+        	SELECT INDIVIDUAL_ID FROM REPORT_RECEIPT_TODAY WHERE 1 = 1
 				<if test="!REPORT_TYPE.equals('') and REPORT_TYPE != null">
 						AND REPORT_TYPE = #{REPORT_TYPE}
 				</if>
@@ -757,10 +864,103 @@
 					</otherwise>    
 				</choose>
 				
+				UNION ALL
+				
+				SELECT INFORMER_ID FROM RECEIPT_APP WHERE 1 = 1
+				<if test="!REPORT_TYPE.equals('') and REPORT_TYPE != null">
+						AND REPORT_TYPE = #{REPORT_TYPE}
+				</if>
+				<if test="!REPORT_TYPE2.equals('') and REPORT_TYPE2 != null">
+					AND REPORT_TYPE2 = #{REPORT_TYPE2}
+				</if>
+				<if test="!REPORTMEAN_TYPE.equals('') and REPORTMEAN_TYPE != null">
+					AND REPORTER_TYPE = #{REPORTMEAN_TYPE}
+				</if>
+				<if test="!FLAG_SEND.equals('') and FLAG_SEND != null">
+					AND FLAG_SEND = #{FLAG_SEND}
+				</if>
+				<if test="!FLAG_BROD.equals('') and FLAG_BROD != null">
+					AND FLAG_BROD = #{FLAG_BROD}
+				</if>
+				<if test="!AREA_CODE.equals('') and AREA_CODE != null">
+					AND AREA_CODE = #{AREA_CODE}
+				</if>
+				<if test="!START_DAY.equals('') and START_DAY != null and !END_DAY.equals('') and END_DAY != null">
+					AND RECEIPT_DAY BETWEEN TO_CHAR(TO_DATE(#{START_DAY}, 'YYYY-MM-DD'), 'YYYYMMDD')
+					AND TO_CHAR(TO_DATE(#{END_DAY}, 'YYYY-MM-DD'), 'YYYYMMDD')
+				</if>
+				<if test="!FLAG_IMPORTANT.equals('') and FLAG_IMPORTANT != null">
+					<if test='FLAG_IMPORTANT.equals("N")'>
+		                <![CDATA[AND FLAG_IMPORTANT = 'N']]>
+		            </if>
+		           	<if test='FLAG_IMPORTANT.equals("Y")'>
+		           	    <![CDATA[AND FLAG_IMPORTANT <> 'N']]>
+		           	</if>
+				</if>
+				<if test="FLAG_DISASTOR != null and !FLAG_DISASTOR.equals('')">
+					<if test='FLAG_DISASTOR.equals("N")'>
+		                <![CDATA[AND FLAG_DISASTOR = 'N']]>
+		            </if>
+		           	<if test='FLAG_DISASTOR.equals("Y")'>
+		           	    <![CDATA[AND FLAG_DISASTOR <> 'N']]>
+		           	</if>
+				</if>
+				<!-- 시간대별 검색 -->
+				<if test="!RECEIPT_TIME.equals('') and RECEIPT_TIME != null">
+					AND RECEIPT_TIME LIKE #{RECEIPT_TIME}||'%'
+				</if>
+				<if test="!RECEPTION_NAME.equals('') and RECEPTION_NAME != null">
+					AND RECEPTION_NAME LIKE '%'||#{RECEPTION_NAME}||'%'
+				</if>
+				<if test="!INDIVIDUAL_NAME.equals('') and INDIVIDUAL_NAME != null">
+					AND INFORMER_NAME LIKE '%'||#{INDIVIDUAL_NAME}||'%'
+				</if>
+				
+				<choose>
+					<when test="rcptAndOr.equals('AND')">
+					    <choose>
+					        <when test="!CONTENT1.equals('') and CONTENT1 != null and !CONTENT2.equals('') and CONTENT2 != null">
+						   		AND COMMENT_TXT LIKE '%'||#{CONTENT1}||'%' AND COMMENT_TXT LIKE '%'||#{CONTENT2}||'%'
+							</when>
+							<otherwise>
+							    <if test="!CONTENT1.equals('') and CONTENT1 != null">
+									AND COMMENT_TXT LIKE '%'||#{CONTENT1}||'%'
+								</if>
+							    <if test="!CONTENT2.equals('') and CONTENT2 != null">
+									AND COMMENT_TXT LIKE '%'||#{CONTENT2}||'%'
+								</if>
+							</otherwise>
+					    </choose>
+					</when>
+					<otherwise>
+					    <choose>
+					        <when test="!CONTENT1.equals('') and CONTENT1 != null and !CONTENT2.equals('') and CONTENT2 != null">
+							    and 
+							    (
+									COMMENT_TXT LIKE '%'||#{CONTENT1}||'%'
+							    	or
+									COMMENT_TXT LIKE '%'||#{CONTENT2}||'%'
+								)
+							</when>
+							<otherwise>
+							    <if test="!CONTENT1.equals('') and CONTENT1 != null">
+									AND COMMENT_TXT LIKE '%'||#{CONTENT1}||'%'
+								</if>
+							    <if test="!CONTENT2.equals('') and CONTENT2 != null">
+									AND COMMENT_TXT LIKE '%'||#{CONTENT2}||'%'
+								</if>
+							</otherwise>
+					    </choose>
+					</otherwise>    
+				</choose>
 			 )
 	</select>
 
-	<select id="searchStatusList" resultType="receivedStatusVO">
+
+
+
+	<!-- 금일접수 검색 -->
+	<!-- <select id="searchStatusList" resultType="receivedStatusVO">
        
         SELECT *
 		FROM(SELECT ROWNUM AS SEQ, H.*
@@ -829,7 +1029,7 @@
 	                    	    <![CDATA[AND FLAG_DISASTOR <> 'N']]>
 	                    	</if>
 						</if>
-				<!-- 시간대별 검색 -->
+				시간대별 검색
 				<if test="!RECEIPT_TIME.equals('') and RECEIPT_TIME != null">
 					AND RECEIPT_TIME LIKE #{RECEIPT_TIME}||'%'
 				</if>
@@ -897,7 +1097,272 @@
 		<![CDATA[
 		WHERE  SEQ > #{startRow} AND SEQ <= (#{startRow} + #{size})
 		]]>
+	</select> -->
+	
+	<select id="searchStatusList" resultType="receivedStatusVO">
+	    SELECT *
+	    FROM(
+	        SELECT ROWNUM AS SEQ, H.*
+	        FROM(
+	            SELECT ROW_NUMBER() OVER(ORDER BY RECEIPT_DT ASC) AS RNUM, G.*
+	            FROM(
+	
+	                SELECT 
+	                       A.RECEIPT_ID
+	                     , TO_CHAR(A.RECEIPT_DAY,'YYYY-MM-DD') AS RECEIPT_DAY
+	                     , A.RECEIPT_DAY||A.RECEIPT_TIME AS RECEIPT_DT
+	                     , A.FLAG_SEND 
+	                     , A.FLAG_BROD 
+	                     , DECODE(A.X_COORDINATE, '' , 'N' , 'Y') AS FLAG_MAP  
+	                     , TO_CHAR(TO_DATE(A.RECEIPT_TIME,'HH24MI'),'HH24:MI') AS RECEIPT_TIME
+	                     , C.BAS_NAME AS REPORT_TYPE
+	                     , C.F_COLOR
+	                     , C.B_COLOR
+	                     , D.BAS_NAME AS REPORT_TYPE2
+	                     , A.INDIVIDUAL_ID
+	                     , A.INDIVIDUAL_NAME
+	                     , B.TYPE_NAME
+	                     , A.RECEPTION_ID
+	                     , A.RECEPTION_NAME
+	                     , A.MEMO
+	                     , E.NAME AS REPORTER_TYPE
+	                     , F.AREA_NAME AS REGION_NAME
+	                     , A.FLAG_IMPORTANT
+	                     , TO_CHAR(TO_DATE(A.BROAD_TIME,'YYYYMMDDHH24MISS'),'HH24:MI') AS BROAD_TIME
+	                FROM (
+	                    SELECT * 
+	                    FROM REPORT_RECEIPT_TODAY
+	                    WHERE 1 = 1
+	                        <if test="REPORT_TYPE != null and REPORT_TYPE != ''">
+	                            AND REPORT_TYPE = #{REPORT_TYPE}
+	                        </if>
+	                        <if test="REPORT_TYPE2 != null and REPORT_TYPE2 != ''">
+	                            AND REPORT_TYPE2 = #{REPORT_TYPE2}
+	                        </if>
+	                        <if test="REPORTMEAN_TYPE != null and REPORTMEAN_TYPE != ''">
+	                            AND REPORTER_TYPE = #{REPORTMEAN_TYPE}
+	                        </if>
+	                        <if test="FLAG_SEND != null and FLAG_SEND != ''">
+	                            AND FLAG_SEND = #{FLAG_SEND}
+	                        </if>
+	                        <if test="FLAG_BROD != null and FLAG_BROD != ''">
+	                            AND FLAG_BROD = #{FLAG_BROD}
+	                        </if>
+	                        <if test="AREA_CODE != null and AREA_CODE != ''">
+	                            AND REGION_ID = #{AREA_CODE}
+	                        </if>
+	                        <if test="START_DAY != null and START_DAY != '' and END_DAY != null and END_DAY != ''">
+	                            AND RECEIPT_DAY BETWEEN TO_CHAR(TO_DATE(#{START_DAY}, 'YYYY-MM-DD'),'YYYYMMDD')
+	                                               AND TO_CHAR(TO_DATE(#{END_DAY}, 'YYYY-MM-DD'),'YYYYMMDD')
+	                        </if>
+	
+	                        <if test="FLAG_IMPORTANT != null and FLAG_IMPORTANT != ''">
+	                            <if test='FLAG_IMPORTANT == "N"'>
+	                                <![CDATA[ AND FLAG_IMPORTANT = 'N' ]]>
+	                            </if>
+	                            <if test='FLAG_IMPORTANT == "Y"'>
+	                                <![CDATA[ AND FLAG_IMPORTANT <> 'N' ]]>
+	                            </if>
+	                        </if>
+	
+	                        <if test="FLAG_DISASTOR != null and FLAG_DISASTOR != ''">
+	                            <if test='FLAG_DISASTOR == "N"'>
+	                                <![CDATA[ AND FLAG_DISASTOR = 'N' ]]>
+	                            </if>
+	                            <if test='FLAG_DISASTOR == "Y"'>
+	                                <![CDATA[ AND FLAG_DISASTOR <> 'N' ]]>
+	                            </if>
+	                        </if>
+	
+	                        <if test="RECEIPT_TIME != null and RECEIPT_TIME != ''">
+	                            AND RECEIPT_TIME LIKE #{RECEIPT_TIME}||'%'
+	                        </if>
+	                        <if test="RECEPTION_NAME != null and RECEPTION_NAME != ''">
+	                            AND RECEPTION_NAME LIKE '%'||#{RECEPTION_NAME}||'%'
+	                        </if>
+	                        <if test="INDIVIDUAL_NAME != null and INDIVIDUAL_NAME != ''">
+	                            AND INDIVIDUAL_NAME LIKE '%'||#{INDIVIDUAL_NAME}||'%'
+	                        </if>
+	
+	                        <choose>
+	                            <when test="rcptAndOr == 'AND'">
+	                                <choose>
+	                                    <when test="CONTENT1 != null and CONTENT1 != '' and CONTENT2 != null and CONTENT2 != ''">
+	                                        AND MEMO LIKE '%'||#{CONTENT1}||'%' 
+	                                        AND MEMO LIKE '%'||#{CONTENT2}||'%'
+	                                    </when>
+	                                    <otherwise>
+	                                        <if test="CONTENT1 != null and CONTENT1 != ''">
+	                                            AND MEMO LIKE '%'||#{CONTENT1}||'%'
+	                                        </if>
+	                                        <if test="CONTENT2 != null and CONTENT2 != ''">
+	                                            AND MEMO LIKE '%'||#{CONTENT2}||'%'
+	                                        </if>
+	                                    </otherwise>
+	                                </choose>
+	                            </when>
+	
+	                            <otherwise>
+	                                <choose>
+	                                    <when test="CONTENT1 != null and CONTENT1 != '' and CONTENT2 != null and CONTENT2 != ''">
+	                                        AND (
+	                                            MEMO LIKE '%'||#{CONTENT1}||'%'
+	                                            OR MEMO LIKE '%'||#{CONTENT2}||'%'
+	                                        )
+	                                    </when>
+	                                    <otherwise>
+	                                        <if test="CONTENT1 != null and CONTENT1 != ''">
+	                                            AND MEMO LIKE '%'||#{CONTENT1}||'%'
+	                                        </if>
+	                                        <if test="CONTENT2 != null and CONTENT2 != ''">
+	                                            AND MEMO LIKE '%'||#{CONTENT2}||'%'
+	                                        </if>
+	                                    </otherwise>
+	                                </choose>
+	                            </otherwise>    
+	                        </choose>
+	
+	                ) A
+	                LEFT JOIN CODE_INFORMER_TYPE B ON A.INDIVIDUAL_TYPE = B.TYPE_ID
+	                LEFT JOIN (SELECT * FROM CODE_REPORT_TYPE WHERE BAS_LCOD='100') C 
+	                    ON A.REPORT_TYPE = C.BAS_SCOD
+	                LEFT JOIN CODE_REPORT_TYPE D 
+	                    ON D.BAS_SCOD = A.REPORT_TYPE2 AND D.BAS_LCOD = A.REPORT_TYPE
+	                LEFT JOIN CODE_REPORTMEAN_TYPE E ON A.REPORTER_TYPE = E.ID
+	                LEFT JOIN CODE_AREACODE F ON A.REGION_ID = F.AREA_CODE
+	
+	                UNION ALL
+	
+	                SELECT 
+	                       A.RECEIPT_ID
+	                     , TO_CHAR(A.RECEIPT_DAY,'YYYY-MM-DD') AS RECEIPT_DAY
+	                     , A.RECEIPT_DAY||A.RECEIPT_TIME AS RECEIPT_DT
+	                     , A.FLAG_SEND
+	                     , A.FLAG_BROD
+	                     , DECODE(A.X_COORDINATE,'' , 'N','Y') AS FLAG_MAP
+	                     , TO_CHAR(TO_DATE(A.RECEIPT_TIME,'HH24MI'),'HH24:MI') AS RECEIPT_TIME
+	                     , C.BAS_NAME AS REPORT_TYPE
+	                     , '' as F_COLOR
+	                     , '' as B_COLOR
+	                     , '' as REPORT_TYPE2
+	                     , A.INFORMER_ID
+	                     , A.INFORMER_NAME 
+	                     , '' as TYPE_NAME
+	                     , A.RECEPTION_ID
+	                     , A.RECEPTION_NAME
+	                     , A.COMMENT_TXT 
+	                     , E.NAME AS REPORTER_TYPE
+	                     , F.AREA_NAME 
+	                     , A.FLAG_IMPORTANT
+	                     , TO_CHAR(TO_DATE(A.BROAD_TIME,'YYYYMMDDHH24MISS'),'HH24:MI') AS BROAD_TIME
+	                FROM (
+	                    SELECT * 
+	                    FROM RECEIPT_APP
+	                    WHERE 1 = 1
+	                        <if test="REPORT_TYPE != null and REPORT_TYPE != ''">
+	                            AND REPORT_TYPE = #{REPORT_TYPE}
+	                        </if>
+	                        <if test="REPORT_TYPE2 != null and REPORT_TYPE2 != ''">
+	                            AND REPORT_TYPE2 = #{REPORT_TYPE2}
+	                        </if>
+	                        <if test="REPORTMEAN_TYPE != null and REPORTMEAN_TYPE != ''">
+	                            AND REPORTER_TYPE = #{REPORTMEAN_TYPE}
+	                        </if>
+	                        <if test="FLAG_SEND != null and FLAG_SEND != ''">
+	                            AND FLAG_SEND = #{FLAG_SEND}
+	                        </if>
+	                        <if test="FLAG_BROD != null and FLAG_BROD != ''">
+	                            AND FLAG_BROD = #{FLAG_BROD}
+	                        </if>
+	                        <if test="AREA_CODE != null and AREA_CODE != ''">
+	                            AND AREA_CODE = #{AREA_CODE}
+	                        </if>
+	                        <if test="START_DAY != null and START_DAY != '' and END_DAY != null and END_DAY != ''">
+	                            AND RECEIPT_DAY BETWEEN 
+	                               TO_CHAR(TO_DATE(#{START_DAY}, 'YYYY-MM-DD'),'YYYYMMDD')
+	                               AND TO_CHAR(TO_DATE(#{END_DAY}, 'YYYY-MM-DD'),'YYYYMMDD')
+	                        </if>
+	
+	                        <if test="FLAG_IMPORTANT != null and FLAG_IMPORTANT != ''">
+	                            <if test='FLAG_IMPORTANT == "N"'>
+	                                <![CDATA[ AND FLAG_IMPORTANT = 'N' ]]>
+	                            </if>
+	                            <if test='FLAG_IMPORTANT == "Y"'>
+	                                <![CDATA[ AND FLAG_IMPORTANT <> 'N' ]]>
+	                            </if>
+	                        </if>
+	
+	                        <if test="FLAG_DISASTOR != null and !FLAG_DISASTOR.equals('')">
+	                            <if test='FLAG_DISASTOR == "N"'>
+	                                <![CDATA[ AND FLAG_DISASTOR = 'N' ]]>
+	                            </if>
+	                            <if test='FLAG_DISASTOR == "Y"'>
+	                                <![CDATA[ AND FLAG_DISASTOR <> 'N' ]]>
+	                            </if>
+	                        </if>
+	
+	                        <if test="RECEIPT_TIME != null and RECEIPT_TIME != ''">
+	                            AND RECEIPT_TIME LIKE #{RECEIPT_TIME}||'%'
+	                        </if>
+	                        <if test="RECEPTION_NAME != null and RECEPTION_NAME != ''">
+	                            AND RECEPTION_NAME LIKE '%'||#{RECEPTION_NAME}||'%'
+	                        </if>
+	                        <if test="INDIVIDUAL_NAME != null and INDIVIDUAL_NAME != ''">
+	                            AND INFORMER_NAME LIKE '%'||#{INDIVIDUAL_NAME}||'%'
+	                        </if>
+	
+	                        <choose>
+	                            <when test="rcptAndOr == 'AND'">
+	                                <choose>
+	                                    <when test="CONTENT1 != null and CONTENT1 != '' and CONTENT2 != null and CONTENT2 != ''">
+	                                        AND COMMENT_TXT LIKE '%'||#{CONTENT1}||'%'
+	                                        AND COMMENT_TXT LIKE '%'||#{CONTENT2}||'%'
+	                                    </when>
+	                                    <otherwise>
+	                                        <if test="CONTENT1 != null and CONTENT1 != ''">
+	                                            AND COMMENT_TXT LIKE '%'||#{CONTENT1}||'%'
+	                                        </if>
+	                                        <if test="CONTENT2 != null and CONTENT2 != ''">
+	                                            AND COMMENT_TXT LIKE '%'||#{CONTENT2}||'%'
+	                                        </if>
+	                                    </otherwise>
+	                                </choose>
+	                            </when>
+	
+	                            <otherwise>
+	                                <choose>
+	                                    <when test="CONTENT1 != null and CONTENT1 != '' and CONTENT2 != null and CONTENT2 != ''">
+	                                        AND (
+	                                            COMMENT_TXT LIKE '%'||#{CONTENT1}||'%'
+	                                            OR COMMENT_TXT LIKE '%'||#{CONTENT2}||'%'
+	                                        )
+	                                    </when>
+	                                    <otherwise>
+	                                        <if test="CONTENT1 != null and CONTENT1 != ''">
+	                                            AND COMMENT_TXT LIKE '%'||#{CONTENT1}||'%'
+	                                        </if>
+	                                        <if test="CONTENT2 != null and CONTENT2 != ''">
+	                                            AND COMMENT_TXT LIKE '%'||#{CONTENT2}||'%'
+	                                        </if>
+	                                    </otherwise>
+	                                </choose>
+	                            </otherwise>
+	                        </choose>
+	                ) A
+	                LEFT JOIN (SELECT * FROM CODE_REPORT_TYPE WHERE BAS_LCOD='100') C ON A.REPORT_TYPE = C.BAS_SCOD
+	                LEFT JOIN CODE_REPORTMEAN_TYPE E ON A.REPORTER_TYPE = E.ID
+	                LEFT JOIN CODE_AREACODE F ON A.AREA_CODE = F.AREA_CODE	
+	            ) G
+	            ORDER BY RNUM DESC
+	        ) H
+	    )
+	    <![CDATA[
+	    WHERE SEQ > #{startRow} AND SEQ <= (#{startRow} + #{size})
+	    ]]>
 	</select>
+
+	
+	
 
 	<select id="selectEditVO" resultType="editVO">
 		SELECT A.RECEIPT_ID
@@ -1219,7 +1684,7 @@
 	<!-- ################# 전체접수용 테이블 분할 관련 230118 ################ -->
 	
 	<!--최초 전체접수 진입 시 / 전체접수 행 갯수 파악 -->
-	<select id="countSearchStatusListFR" resultType="int">
+	<!-- <select id="countSearchStatusListFR" resultType="int">
         SELECT COUNT(RECEIPT_ID) FROM 
         	(
         	SELECT * FROM REPORT_RECEIPT WHERE 1 = 1
@@ -1256,7 +1721,7 @@
 				<if test="FLAG_DISASTOR != null and !FLAG_DISASTOR.equals('')">
 					AND FLAG_DISASTOR = #{FLAG_DISASTOR}
 				</if>
-				<!-- 시간대별 검색 -->
+				시간대별 검색
 				<if test="!RECEIPT_TIME.equals('') and RECEIPT_TIME != null">
 					AND RECEIPT_TIME LIKE #{RECEIPT_TIME}||'%'
 				</if>
@@ -1306,10 +1771,179 @@
 				</choose>
 				
 			 )
+	</select> -->
+	
+	
+	<select id="countSearchStatusListFR" resultType="int">
+        SELECT COUNT(RECEIPT_ID)
+FROM (
+    SELECT RECEIPT_ID
+    FROM REPORT_RECEIPT
+    WHERE 1 = 1
+        <if test="!AREA_CODE.equals('') and AREA_CODE != null">
+            AND REGION_ID = #{AREA_CODE}
+        </if>
+        <if test="!START_DAY.equals('') and START_DAY != null and !END_DAY.equals('') and END_DAY != null">
+            AND RECEIPT_DAY BETWEEN TO_DATE(#{START_DAY}, 'YYYY-MM-DD')
+                                AND TO_DATE(#{END_DAY}, 'YYYY-MM-DD')
+        </if>
+        <if test="!REPORT_TYPE.equals('') and REPORT_TYPE != null">
+            AND REPORT_TYPE = #{REPORT_TYPE}
+        </if>
+        <if test="!REPORT_TYPE2.equals('') and REPORT_TYPE2 != null">
+            AND REPORT_TYPE2 = #{REPORT_TYPE2}
+        </if>
+        <if test="!REPORTMEAN_TYPE.equals('') and REPORTMEAN_TYPE != null">
+            AND REPORTER_TYPE = #{REPORTMEAN_TYPE}
+        </if>
+        <if test="!FLAG_SEND.equals('') and FLAG_SEND != null">
+            AND FLAG_SEND = #{FLAG_SEND}
+        </if>
+        <if test="!FLAG_BROD.equals('') and FLAG_BROD != null">
+            AND FLAG_BROD = #{FLAG_BROD}
+        </if>
+        <if test="!FLAG_IMPORTANT.equals('') and FLAG_IMPORTANT != null">
+            <if test='FLAG_IMPORTANT.equals("N")'>
+                <![CDATA[AND FLAG_IMPORTANT = 'N']]>
+            </if>
+            <if test='FLAG_IMPORTANT.equals("Y")'>
+                <![CDATA[AND FLAG_IMPORTANT <> 'N']]>
+            </if>
+        </if>
+        <if test="FLAG_DISASTOR != null and !FLAG_DISASTOR.equals('')">
+            AND FLAG_DISASTOR = #{FLAG_DISASTOR}
+        </if>
+        <if test="!RECEIPT_TIME.equals('') and RECEIPT_TIME != null">
+            AND RECEIPT_TIME LIKE #{RECEIPT_TIME}||'%'
+        </if>
+        <if test="!RECEPTION_NAME.equals('') and RECEPTION_NAME != null">
+            AND RECEPTION_NAME LIKE '%'||#{RECEPTION_NAME}||'%'
+        </if>
+        <if test="!INDIVIDUAL_NAME.equals('') and INDIVIDUAL_NAME != null">
+            AND INDIVIDUAL_NAME LIKE '%'||#{INDIVIDUAL_NAME}||'%'
+        </if>
+        <choose>
+            <when test="rcptAndOr.equals('AND')">
+                <choose>
+                    <when test="!CONTENT1.equals('') and CONTENT1 != null and !CONTENT2.equals('') and CONTENT2 != null">
+                        AND MEMO LIKE '%'||#{CONTENT1}||'%' 
+                        AND MEMO LIKE '%'||#{CONTENT2}||'%'
+                    </when>
+                    <otherwise>
+                        <if test="!CONTENT1.equals('') and CONTENT1 != null">
+                            AND MEMO LIKE '%'||#{CONTENT1}||'%'
+                        </if>
+                        <if test="!CONTENT2.equals('') and CONTENT2 != null">
+                            AND MEMO LIKE '%'||#{CONTENT2}||'%'
+                        </if>
+                    </otherwise>
+                </choose>
+            </when>
+            <otherwise>
+                <choose>
+                    <when test="!CONTENT1.equals('') and CONTENT1 != null and !CONTENT2.equals('') and CONTENT2 != null">
+                        AND (
+                                MEMO LIKE '%'||#{CONTENT1}||'%'
+                             OR MEMO LIKE '%'||#{CONTENT2}||'%'
+                            )
+                    </when>
+                    <otherwise>
+                        <if test="!CONTENT1.equals('') and CONTENT1 != null">
+                            AND MEMO LIKE '%'||#{CONTENT1}||'%'
+                        </if>
+                        <if test="!CONTENT2.equals('') and CONTENT2 != null">
+                            AND MEMO LIKE '%'||#{CONTENT2}||'%'
+                        </if>
+                    </otherwise>
+                </choose>
+            </otherwise>
+        </choose>
+
+    UNION ALL
+
+    SELECT RECEIPT_ID
+    FROM RECEIPT_APP
+    WHERE 1 = 1
+        <if test="!AREA_CODE.equals('') and AREA_CODE != null">
+            AND AREA_CODE = #{AREA_CODE}
+        </if>
+        <if test="!START_DAY.equals('') and START_DAY != null and !END_DAY.equals('') and END_DAY != null">
+            AND RECEIPT_DAY BETWEEN TO_CHAR(TO_DATE(#{START_DAY}, 'YYYY-MM-DD'),'YYYYMMDD')
+                                AND TO_CHAR(TO_DATE(#{END_DAY}, 'YYYY-MM-DD'),'YYYYMMDD')
+        </if>
+        <if test="!REPORT_TYPE.equals('') and REPORT_TYPE != null">
+            AND REPORT_TYPE = #{REPORT_TYPE}
+        </if>
+        <if test="!REPORTMEAN_TYPE.equals('') and REPORTMEAN_TYPE != null">
+            AND REPORTER_TYPE = #{REPORTMEAN_TYPE}
+        </if>
+        <if test="!FLAG_SEND.equals('') and FLAG_SEND != null">
+            AND FLAG_SEND = #{FLAG_SEND}
+        </if>
+        <if test="!FLAG_BROD.equals('') and FLAG_BROD != null">
+            AND FLAG_BROD = #{FLAG_BROD}
+        </if>
+        <if test="!FLAG_IMPORTANT.equals('') and FLAG_IMPORTANT != null">
+            <if test='FLAG_IMPORTANT.equals("N")'>
+                <![CDATA[AND FLAG_IMPORTANT = 'N']]>
+            </if>
+            <if test='FLAG_IMPORTANT.equals("Y")'>
+                <![CDATA[AND FLAG_IMPORTANT <> 'N']]>
+            </if>
+        </if>
+        <if test="!RECEIPT_TIME.equals('') and RECEIPT_TIME != null">
+            AND RECEIPT_TIME LIKE #{RECEIPT_TIME}||'%'
+        </if>
+        <if test="!RECEPTION_NAME.equals('') and RECEPTION_NAME != null">
+            AND RECEPTION_NAME LIKE '%'||#{RECEPTION_NAME}||'%'
+        </if>
+        <if test="!INDIVIDUAL_NAME.equals('') and INDIVIDUAL_NAME != null">
+            AND INFORMER_NAME LIKE '%'||#{INDIVIDUAL_NAME}||'%'
+        </if>
+
+        <choose>
+            <when test="rcptAndOr.equals('AND')">
+                <choose>
+                    <when test="!CONTENT1.equals('') and CONTENT1 != null and !CONTENT2.equals('') and CONTENT2 != null">
+                        AND COMMENT_TXT LIKE '%'||#{CONTENT1}||'%'
+                        AND COMMENT_TXT LIKE '%'||#{CONTENT2}||'%'
+                    </when>
+                    <otherwise>
+                        <if test="!CONTENT1.equals('') and CONTENT1 != null">
+                            AND COMMENT_TXT LIKE '%'||#{CONTENT1}||'%'
+                        </if>
+                        <if test="!CONTENT2.equals('') and CONTENT2 != null">
+                            AND COMMENT_TXT LIKE '%'||#{CONTENT2}||'%'
+                        </if>
+                    </otherwise>
+                </choose>
+            </when>
+            <otherwise>
+                <choose>
+                    <when test="!CONTENT1.equals('') and CONTENT1 != null and !CONTENT2.equals('') and CONTENT2 != null">
+                        AND (
+                                COMMENT_TXT LIKE '%'||#{CONTENT1}||'%'
+                             OR COMMENT_TXT LIKE '%'||#{CONTENT2}||'%'
+                            )
+                    </when>
+                    <otherwise>
+                        <if test="!CONTENT1.equals('') and CONTENT1 != null">
+                            AND COMMENT_TXT LIKE '%'||#{CONTENT1}||'%'
+                        </if>
+                        <if test="!CONTENT2.equals('') and CONTENT2 != null">
+                            AND COMMENT_TXT LIKE '%'||#{CONTENT2}||'%'
+                        </if>
+                    </otherwise>
+                </choose>
+            </otherwise>
+        </choose>
+)
+
 	</select>
+	
 
 	<!-- 전체접수현황 최초/검색 -->
-	<select id="searchStatusListFR" resultType="receivedStatusVO" fetchSize="10000">
+	<!-- <select id="searchStatusListFR" resultType="receivedStatusVO" fetchSize="10000">
         SELECT * 
 		FROM(
 			SELECT ROWNUM AS SEQ, H.*
@@ -1349,7 +1983,7 @@
 							AND RECEIPT_DAY BETWEEN TO_DATE(#{START_DAY}, 'YYYY-MM-DD')
 											    AND TO_DATE(#{END_DAY}, 'YYYY-MM-DD')
 						</if>
-						<!-- 시간대별 검색 -->
+						시간대별 검색
 						<if test="!RECEIPT_TIME.equals('') and RECEIPT_TIME != null">
 							AND RECEIPT_TIME LIKE #{RECEIPT_TIME}||'%'
 						</if>
@@ -1448,7 +2082,261 @@
 		<![CDATA[
 		WHERE  SEQ > #{startRow} AND SEQ <= (#{startRow} + #{size})
 		]]>
-	</select>
+	</select> -->
+	
+	<select id="searchStatusListFR" resultType="receivedStatusVO" fetchSize="10000">
+    SELECT *
+    FROM(
+        SELECT ROWNUM AS SEQ, H.*
+        FROM(
+            SELECT ROW_NUMBER() OVER(ORDER BY RECEIPT_DT ASC) AS RNUM, G.*
+            FROM(
+
+                SELECT 
+                      A.RECEIPT_ID
+                    , TO_CHAR(A.RECEIPT_DAY,'YYYY-MM-DD') AS RECEIPT_DAY
+                    , A.RECEIPT_DAY||' '||A.RECEIPT_TIME AS RECEIPT_DT
+                    , A.FLAG_SEND 
+                    , A.FLAG_BROD 
+                    , DECODE(A.X_COORDINATE,'' , 'N','Y') AS FLAG_MAP  
+                    , TO_CHAR(TO_DATE(A.RECEIPT_TIME,'HH24MI'),'HH24:MI') AS RECEIPT_TIME
+                    , C.BAS_NAME AS REPORT_TYPE
+                    , C.F_COLOR
+                    , C.B_COLOR
+                    , D.BAS_NAME AS REPORT_TYPE2
+                    , A.INDIVIDUAL_ID
+                    , A.INDIVIDUAL_NAME
+                    , B.TYPE_NAME
+                    , A.RECEPTION_ID
+                    , A.RECEPTION_NAME
+                    , A.MEMO
+                    , E.NAME AS REPORTER_TYPE
+                    , F.AREA_NAME AS REGION_NAME
+                    , A.FLAG_IMPORTANT
+                    , A.FLAG_DISASTOR
+                    , TO_CHAR(TO_DATE(A.BROAD_TIME,'YYYYMMDDHH24MISS'),'HH24:MI') AS BROAD_TIME
+                FROM (
+                    SELECT *
+                    FROM REPORT_RECEIPT
+                    WHERE 1 = 1
+                        <if test="!AREA_CODE.equals('') and AREA_CODE != null">
+                            AND REGION_ID = #{AREA_CODE}
+                        </if>
+                        <if test="!START_DAY.equals('') and START_DAY != null and !END_DAY.equals('') and END_DAY != null">
+                            AND RECEIPT_DAY BETWEEN TO_DATE(#{START_DAY}, 'YYYY-MM-DD')
+                                               AND TO_DATE(#{END_DAY}, 'YYYY-MM-DD')
+                        </if>
+                        <if test="!RECEIPT_TIME.equals('') and RECEIPT_TIME != null">
+                            AND RECEIPT_TIME LIKE #{RECEIPT_TIME}||'%'
+                        </if>
+                        <if test="!REPORT_TYPE.equals('') and REPORT_TYPE != null">
+                            AND REPORT_TYPE = #{REPORT_TYPE}
+                        </if>
+                        <if test="!REPORT_TYPE2.equals('') and REPORT_TYPE2 != null">
+                            AND REPORT_TYPE2 = #{REPORT_TYPE2}
+                        </if>
+                        <if test="!REPORTMEAN_TYPE.equals('') and REPORTMEAN_TYPE != null">
+                            AND REPORTER_TYPE = #{REPORTMEAN_TYPE}
+                        </if>
+                        <if test="!FLAG_SEND.equals('') and FLAG_SEND != null">
+                            AND FLAG_SEND = #{FLAG_SEND}
+                        </if>
+                        <if test="!FLAG_BROD.equals('') and FLAG_BROD != null">
+                            AND FLAG_BROD = #{FLAG_BROD}
+                        </if>
+                        <if test="!FLAG_IMPORTANT.equals('') and FLAG_IMPORTANT != null">
+                            <if test='FLAG_IMPORTANT.equals("N")'>
+                                <![CDATA[AND FLAG_IMPORTANT = 'N']]>
+                            </if>
+                            <if test='FLAG_IMPORTANT.equals("Y")'>
+                                <![CDATA[AND FLAG_IMPORTANT <> 'N']]>
+                            </if>
+                        </if>
+                        <if test="FLAG_DISASTOR != null and !FLAG_DISASTOR.equals('')">
+                            <if test='FLAG_DISASTOR.equals("N")'>
+                                <![CDATA[AND FLAG_IMPORTANT = 'N']]>
+                            </if>
+                            <if test='FLAG_DISASTOR.equals("Y")'>
+                                <![CDATA[AND FLAG_IMPORTANT <> 'N']]>
+                            </if>
+                        </if>
+                        <if test="!RECEPTION_NAME.equals('') and RECEPTION_NAME != null">
+                            AND RECEPTION_NAME LIKE '%'||#{RECEPTION_NAME}||'%'
+                        </if>
+                        <if test="!INDIVIDUAL_NAME.equals('') and INDIVIDUAL_NAME != null">
+                            AND INDIVIDUAL_NAME LIKE '%'||#{INDIVIDUAL_NAME}||'%'
+                        </if>
+                        <choose>
+                            <when test="rcptAndOr.equals('AND')">
+                                <choose>
+                                    <when test="!CONTENT1.equals('') and CONTENT1 != null and !CONTENT2.equals('') and CONTENT2 != null">
+                                        AND MEMO LIKE '%'||#{CONTENT1}||'%'
+                                        AND MEMO LIKE '%'||#{CONTENT2}||'%'
+                                    </when>
+                                    <otherwise>
+                                        <if test="!CONTENT1.equals('') and CONTENT1 != null">
+                                            AND MEMO LIKE '%'||#{CONTENT1}||'%'
+                                        </if>
+                                        <if test="!CONTENT2.equals('') and CONTENT2 != null">
+                                            AND MEMO LIKE '%'||#{CONTENT2}||'%'
+                                        </if>
+                                    </otherwise>
+                                </choose>
+                            </when>
+                            <otherwise>
+                                <choose>
+                                    <when test="!CONTENT1.equals('') and CONTENT1 != null and !CONTENT2.equals('') and CONTENT2 != null">
+                                        AND (
+                                                MEMO LIKE '%'||#{CONTENT1}||'%'
+                                             OR MEMO LIKE '%'||#{CONTENT2}||'%'
+                                            )
+                                    </when>
+                                    <otherwise>
+                                        <if test="!CONTENT1.equals('') and CONTENT1 != null">
+                                            AND MEMO LIKE '%'||#{CONTENT1}||'%'
+                                        </if>
+                                        <if test="!CONTENT2.equals('') and CONTENT2 != null">
+                                            AND MEMO LIKE '%'||#{CONTENT2}||'%'
+                                        </if>
+                                    </otherwise>
+                                </choose>
+                            </otherwise>
+                        </choose>
+                ) A
+                LEFT JOIN CODE_INFORMER_TYPE B ON A.INDIVIDUAL_TYPE = B.TYPE_ID
+                LEFT JOIN (SELECT * FROM CODE_REPORT_TYPE WHERE BAS_LCOD='100') C ON A.REPORT_TYPE = C.BAS_SCOD
+                LEFT JOIN CODE_REPORT_TYPE D ON D.BAS_SCOD = A.REPORT_TYPE2 AND D.BAS_LCOD = A.REPORT_TYPE
+                LEFT JOIN CODE_REPORTMEAN_TYPE E ON A.REPORTER_TYPE = E.ID
+                LEFT JOIN CODE_AREACODE F ON A.REGION_ID = F.AREA_CODE
+
+                UNION ALL
+
+                SELECT
+                      A.RECEIPT_ID
+                    , TO_CHAR(A.RECEIPT_DAY,'YYYY-MM-DD') AS RECEIPT_DAY
+                    , A.RECEIPT_DAY||' '||A.RECEIPT_TIME AS RECEIPT_DT
+                    , A.FLAG_SEND
+                    , A.FLAG_BROD
+                    , DECODE(A.X_COORDINATE,'' , 'N','Y') AS FLAG_MAP
+                    , TO_CHAR(TO_DATE(A.RECEIPT_TIME,'HH24MI'),'HH24:MI') AS RECEIPT_TIME
+                    , C.BAS_NAME AS REPORT_TYPE
+                    , '' AS F_COLOR
+                    , '' AS B_COLOR
+                    , '' AS REPORT_TYPE2
+                    , A.INFORMER_ID AS INDIVIDUAL_ID
+                    , A.INFORMER_NAME AS INDIVIDUAL_NAME
+                    , '' AS TYPE_NAME
+                    , A.RECEPTION_ID
+                    , A.RECEPTION_NAME
+                    , A.COMMENT_TXT AS MEMO
+                    , E.NAME AS REPORTER_TYPE
+                    , F.AREA_NAME AS REGION_NAME
+                    , A.FLAG_IMPORTANT
+                    , A.FLAG_DISASTOR
+                    , TO_CHAR(TO_DATE(A.BROAD_TIME,'YYYYMMDDHH24MISS'),'HH24:MI') AS BROAD_TIME
+                FROM (
+                    SELECT *
+                    FROM RECEIPT_APP
+                    WHERE 1 = 1
+                        <if test="!AREA_CODE.equals('') and AREA_CODE != null">
+                            AND AREA_CODE = #{AREA_CODE}
+                        </if>
+                        <if test="!START_DAY.equals('') and START_DAY != null and !END_DAY.equals('') and END_DAY != null">
+                            AND RECEIPT_DAY BETWEEN 
+                                   TO_CHAR(TO_DATE(#{START_DAY},'YYYY-MM-DD'),'YYYYMMDD')
+                               AND TO_CHAR(TO_DATE(#{END_DAY},'YYYY-MM-DD'),'YYYYMMDD')
+                        </if>
+                        <if test="!RECEIPT_TIME.equals('') and RECEIPT_TIME != null">
+                            AND RECEIPT_TIME LIKE #{RECEIPT_TIME}||'%'
+                        </if>
+                        <if test="!REPORT_TYPE.equals('') and REPORT_TYPE != null">
+                            AND REPORT_TYPE = #{REPORT_TYPE}
+                        </if>
+                        <if test="!REPORT_TYPE2.equals('') and REPORT_TYPE2 != null">
+                            AND REPORT_TYPE2 = #{REPORT_TYPE2}
+                        </if>
+                        <if test="!REPORTMEAN_TYPE.equals('') and REPORTMEAN_TYPE != null">
+                            AND REPORTER_TYPE = #{REPORTMEAN_TYPE}
+                        </if>
+                        <if test="!FLAG_SEND.equals('') and FLAG_SEND != null">
+                            AND FLAG_SEND = #{FLAG_SEND}
+                        </if>
+                        <if test="!FLAG_BROD.equals('') and FLAG_BROD != null">
+                            AND FLAG_BROD = #{FLAG_BROD}
+                        </if>
+                        <if test="!FLAG_IMPORTANT.equals('') and FLAG_IMPORTANT != null">
+                            <if test='FLAG_IMPORTANT.equals("N")'>
+                                <![CDATA[AND FLAG_IMPORTANT = 'N']]>
+                            </if>
+                            <if test='FLAG_IMPORTANT.equals("Y")'>
+                                <![CDATA[AND FLAG_IMPORTANT <> 'N']]>
+                            </if>
+                        </if>
+                        <if test="FLAG_DISASTOR != null and !FLAG_DISASTOR.equals('')">
+                            <if test='FLAG_DISASTOR.equals("N")'>
+                                <![CDATA[AND FLAG_IMPORTANT = 'N']]>
+                            </if>
+                            <if test='FLAG_DISASTOR.equals("Y")'>
+                                <![CDATA[AND FLAG_IMPORTANT <> 'N']]>
+                            </if>
+                        </if>
+                        <if test="!RECEPTION_NAME.equals('') and RECEPTION_NAME != null">
+                            AND RECEPTION_NAME LIKE '%'||#{RECEPTION_NAME}||'%'
+                        </if>
+                        <if test="!INDIVIDUAL_NAME.equals('') and INDIVIDUAL_NAME != null">
+                            AND INFORMER_NAME LIKE '%'||#{INDIVIDUAL_NAME}||'%'
+                        </if>
+                        <choose>
+                            <when test="rcptAndOr.equals('AND')">
+                                <choose>
+                                    <when test="!CONTENT1.equals('') and CONTENT1 != null and !CONTENT2.equals('') and CONTENT2 != null">
+                                        AND COMMENT_TXT LIKE '%'||#{CONTENT1}||'%'
+                                        AND COMMENT_TXT LIKE '%'||#{CONTENT2}||'%'
+                                    </when>
+                                    <otherwise>
+                                        <if test="!CONTENT1.equals('') and CONTENT1 != null">
+                                            AND COMMENT_TXT LIKE '%'||#{CONTENT1}||'%'
+                                        </if>
+                                        <if test="!CONTENT2.equals('') and CONTENT2 != null">
+                                            AND COMMENT_TXT LIKE '%'||#{CONTENT2}||'%'
+                                        </if>
+                                    </otherwise>
+                                </choose>
+                            </when>
+                            <otherwise>
+                                <choose>
+                                    <when test="!CONTENT1.equals('') and CONTENT1 != null and !CONTENT2.equals('') and CONTENT2 != null">
+                                        AND (
+                                                COMMENT_TXT LIKE '%'||#{CONTENT1}||'%'
+                                             OR COMMENT_TXT LIKE '%'||#{CONTENT2}||'%'
+                                            )
+                                    </when>
+                                    <otherwise>
+                                        <if test="!CONTENT1.equals('') and CONTENT1 != null">
+                                            AND COMMENT_TXT LIKE '%'||#{CONTENT1}||'%'
+                                        </if>
+                                        <if test="!CONTENT2.equals('') and CONTENT2 != null">
+                                            AND COMMENT_TXT LIKE '%'||#{CONTENT2}||'%'
+                                        </if>
+                                    </otherwise>
+                                </choose>
+                            </otherwise>
+                        </choose>
+                ) A
+                LEFT JOIN (SELECT * FROM CODE_REPORT_TYPE WHERE BAS_LCOD='100') C ON A.REPORT_TYPE = C.BAS_SCOD
+                LEFT JOIN CODE_REPORTMEAN_TYPE E ON A.REPORTER_TYPE = E.ID
+                LEFT JOIN CODE_AREACODE F ON A.AREA_CODE = F.AREA_CODE
+
+            ) G
+            ORDER BY RNUM DESC
+        ) H
+    )
+    <![CDATA[
+        WHERE SEQ > #{startRow} AND SEQ <= (#{startRow} + #{size})
+    ]]>
+</select>
+	
+	
 	
 	<!-- 전체접수현황 관련 쿼리 끝 -->
 	

@@ -251,6 +251,13 @@ public class BroadcastController {
 		for(int i=0; i<idList.length; i++) {
 			BroadcastVO broadCastVO = new BroadcastVO();
 			broadCastVO.setRECEIPT_ID(idList[i]);
+			
+			if(idList[i] != null && idList[i].startsWith("APP")) {
+		        broadCastVO.setUPDATE_TABLE("RECEIPT_APP");
+		    } else {
+		    	broadCastVO.setUPDATE_TABLE("REPORT_RECEIPT_TODAY");
+		    }
+			
 			blist.add(broadCastVO);
 		}
 		int result = broadcastService.updateBroadTime(blist);
@@ -266,12 +273,27 @@ public class BroadcastController {
 		List<BroadcastVO> blist = new ArrayList<BroadcastVO>();
 		int resultTotal = 0;
 		
-		for(int i=0; i<idList.length; i++) {
+		/*for(int i=0; i<idList.length; i++) {
 			BroadcastVO broadCastVO = new BroadcastVO();
 			broadCastVO.setRECEIPT_ID(idList[i]);
 			broadCastVO.setFLAG_BROAD(FLAG_BROD);
 			blist.add(broadCastVO);
+		}*/
+		
+		for(int i = 0; i < idList.length; i++) {
+		    BroadcastVO broadCastVO = new BroadcastVO();
+		    broadCastVO.setRECEIPT_ID(idList[i]);
+		    broadCastVO.setFLAG_BROAD(FLAG_BROD);
+
+		    if(idList[i] != null && idList[i].startsWith("APP")) {
+		        broadCastVO.setUPDATE_TABLE("RECEIPT_APP");
+		    } else {
+		    	broadCastVO.setUPDATE_TABLE("REPORT_RECEIPT_TODAY");
+		    }
+
+		    blist.add(broadCastVO);
 		}
+		
 		int result = broadcastService.updateBroadFlagTo(blist);
 		if(result == 1) resultTotal++;
 		

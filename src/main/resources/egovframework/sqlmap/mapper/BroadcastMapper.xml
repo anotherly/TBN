@@ -4,7 +4,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="kr.co.wizbrain.tbn.broadcast.mapper.BroadcastMapper">
     
-    <select id="countBroadcastList" resultType="int">
+    <!-- <select id="countBroadcastList" resultType="int">
         SELECT COUNT(*) 
         	FROM (SELECT A.RECEIPT_ID
 				        , A.R_TEL
@@ -31,9 +31,33 @@
 	            		AND REGION_ID = #{AREA_CODE}
 	            	</if>
 				    AND FLAG_SEND = 'Y')
-    </select>
+    </select> -->
     
-    <select id="selectTodaysList" resultType="broadCastListVO">
+    
+    <select id="countBroadcastList" resultType="int">
+	    SELECT
+			    (SELECT COUNT(*) 
+			       FROM REPORT_RECEIPT_TODAY 
+			      WHERE RECEIPT_DAY= to_char(sysdate,'YYYYMMDD')
+			      <if test="!AREA_CODE.equals('080')">
+			          AND REGION_ID = #{AREA_CODE}
+			      </if>
+			      AND FLAG_SEND = 'Y'
+			    )
+			  + (SELECT COUNT(*) 
+			       FROM RECEIPT_APP 
+			      WHERE RECEIPT_DAY= to_char(sysdate,'YYYYMMDD')
+			      <if test="!AREA_CODE.equals('080')">
+			          AND AREA_CODE = #{AREA_CODE}
+			      </if>
+			      AND FLAG_SEND = 'Y'
+			    )
+			  AS TOTAL_COUNT
+			FROM DUAL
+	</select>
+
+    
+    <!-- <select id="selectTodaysList" resultType="broadCastListVO">
         SELECT * 
 		FROM(
 		    SELECT ROWNUM AS SEQ, H.* 
@@ -77,9 +101,96 @@
 		<![CDATA[
 		WHERE  SEQ > #{startRow} AND SEQ <= (#{startRow} + #{size})
         ]]>
-    </select>
+    </select> -->
     
-    <select id="searchBroadcastList" resultType="broadCastListVO">
+    
+    
+    <select id="selectTodaysList" resultType="broadCastListVO">
+	    SELECT * 
+	    FROM(
+	        SELECT ROWNUM AS SEQ, H.* 
+	        FROM(
+	            SELECT ROW_NUMBER() OVER(ORDER BY RECEIPT_DT ASC) AS RNUM, G.* 
+	            FROM(
+	                SELECT 
+	                       A.RECEIPT_ID
+	                     , REGEXP_REPLACE(A.R_TEL ,'([[:digit:]]{'||
+	                       DECODE(SUBSTR(A.R_TEL,0,2),'02',2,3)||'})([[:digit:]]{3,4})([[:digit:]]{4})','\1-\2-\3') AS R_TEL
+	                     , A.FLAG_BROD
+	                     , TO_CHAR(TO_DATE(A.RECEIPT_TIME , 'HH24MI') , 'HH24:MI') AS RECEIPT_TIME
+	                     , TO_CHAR(TO_DATE(A.BROAD_TIME , 'YYYYMMDDHH24MISS'),'HH24:MI') AS BROAD_TIME 
+	                     , A.RECEIPT_DAY||A.RECEIPT_TIME AS RECEIPT_DT
+	                     , A.REPORT_TYPE
+	                     , B.BAS_NAME
+	                     , A.INDIVIDUAL_NAME
+	                     , C.TYPE_NAME
+	                     , A.MEMO
+	                     , A.RECEIPT_DAY
+	                     , D.CITY AS AREA_NAME
+	                     , A.FLAG_IMPORTANT
+	                     , B.F_COLOR
+	                     , B.B_COLOR
+	                     , A.FLAG_KNEX
+	                FROM REPORT_RECEIPT_TODAY A
+	                LEFT JOIN CODE_REPORT_TYPE B
+	                    ON A.REPORT_TYPE = B.BAS_SCOD
+	                LEFT JOIN CODE_INFORMER_TYPE C
+	                    ON A.INDIVIDUAL_TYPE = C.TYPE_ID
+	                LEFT JOIN CODE_AREACODE D
+	                    ON A.REGION_ID = D.AREA_CODE
+	                WHERE B.BAS_LCOD = '100'
+	                  AND A.RECEIPT_DAY = TO_CHAR(SYSDATE,'YYYYMMDD')
+	                  <if test="!AREA_CODE.equals('080')">
+	                    AND A.REGION_ID = #{AREA_CODE}
+	                  </if>
+	                  AND A.FLAG_SEND = 'Y'
+	
+	                UNION ALL
+	
+	                SELECT 
+	                       A.RECEIPT_ID
+	                     , REGEXP_REPLACE(
+							    A.PHONE_CELL,
+							    '([[:digit:]]{' || DECODE(SUBSTR(A.PHONE_CELL,0,2),'02',2,3) || '})([[:digit:]]{3,4})([[:digit:]]{4})',
+							    '\1-\2-\3'
+							) AS R_TEL
+	                     , A.FLAG_BROD
+	                     , TO_CHAR(TO_DATE(A.RECEIPT_TIME , 'HH24MI') , 'HH24:MI') AS RECEIPT_TIME
+	                     , TO_CHAR(TO_DATE(A.BROAD_TIME , 'YYYYMMDDHH24MISS'),'HH24:MI') AS BROAD_TIME 
+	                     , A.RECEIPT_DAY||A.RECEIPT_TIME AS RECEIPT_DT
+	                     , A.REPORT_TYPE
+	                     , B.BAS_NAME
+	                     , A.INFORMER_NAME
+	                     , ' ' AS TYPE_NAME
+	                     , A.COMMENT_TXT
+	                     , A.RECEIPT_DAY
+	                     , D.CITY AS AREA_NAME
+	                     , A.FLAG_IMPORTANT
+	                     , ' ' AS F_COLOR
+	                     , ' ' AS B_COLOR
+	                     , ' ' AS FLAG_KNEX
+	                FROM RECEIPT_APP A
+	                LEFT JOIN CODE_REPORT_TYPE B
+	                    ON A.REPORT_TYPE = B.BAS_SCOD
+	                LEFT JOIN CODE_AREACODE D
+	                    ON A.AREA_CODE = D.AREA_CODE
+	                WHERE B.BAS_LCOD = '100'
+	                  AND A.RECEIPT_DAY = TO_CHAR(SYSDATE,'YYYYMMDD')
+	                  <if test="!AREA_CODE.equals('080')">
+	                    AND A.AREA_CODE = #{AREA_CODE}
+	                  </if>
+	                  AND A.FLAG_SEND = 'Y'
+	            ) G
+	            ORDER BY RNUM DESC
+	        ) H
+	    )
+	    <![CDATA[
+	    WHERE SEQ > #{startRow} AND SEQ <= (#{startRow} + #{size})
+	    ]]>
+	</select>
+
+    
+    <!-- <select id="searchBroadcastList" resultType="broadCastListVO">
       
         SELECT *
 		FROM(SELECT ROWNUM AS SEQ, H.*
@@ -156,9 +267,157 @@
 		<![CDATA[
 		WHERE  SEQ > #{startRow} AND SEQ <= (#{startRow} + #{size})
 		]]>
-    </select>
+    </select> -->
     
-    <select id="countSearchBroadcastList" resultType="int">
+    
+    
+    <select id="searchBroadcastList" resultType="broadCastListVO">
+    SELECT *
+    FROM(
+        SELECT ROWNUM AS SEQ, H.*
+        FROM(
+            SELECT ROW_NUMBER() OVER(ORDER BY RECEIPT_DT ASC) AS RNUM, G.*
+            FROM(
+
+                SELECT 
+                       A.RECEIPT_ID
+                     , REGEXP_REPLACE(A.R_TEL ,'([[:digit:]]{'||
+                       DECODE(SUBSTR(A.R_TEL,0,2),'02',2,3)||'})([[:digit:]]{3,4})([[:digit:]]{4})','\1-\2-\3') AS R_TEL
+                     , A.FLAG_BROD
+                     , TO_CHAR(TO_DATE(A.RECEIPT_TIME,'HH24MI'),'HH24:MI') AS RECEIPT_TIME
+                     , A.RECEIPT_DAY||A.RECEIPT_TIME AS RECEIPT_DT
+                     , TO_CHAR(TO_DATE(A.BROAD_TIME,'YYYYMMDDHH24MISS'),'HH24:MI') AS BROAD_TIME
+                     , A.REPORT_TYPE
+                     , B.BAS_NAME
+                     , A.INDIVIDUAL_NAME
+                     , C.TYPE_NAME
+                     , A.MEMO
+                     , A.RECEIPT_DAY
+                     , A.FLAG_IMPORTANT
+                     , B.F_COLOR
+                     , B.B_COLOR
+                     , D.CITY AS AREA_NAME
+                FROM (
+                    SELECT * FROM REPORT_RECEIPT_TODAY
+                    WHERE 1 = 1
+                        <if test="REPORT_TYPE != null and REPORT_TYPE != ''">
+                            AND REPORT_TYPE = #{REPORT_TYPE}
+                        </if>
+                        <if test="REPORT_TYPE2 != null and REPORT_TYPE2 != '' and REPORT_TYPE2 != 'null'">
+                            AND REPORT_TYPE2 = #{REPORT_TYPE2}
+                        </if>
+                        <if test="AREA_CODE != null and AREA_CODE != ''">
+                            AND REGION_ID = #{AREA_CODE}
+                        </if>
+                        <if test="INDIVIDUAL_TYPE != null and INDIVIDUAL_TYPE != ''">
+                            AND INDIVIDUAL_TYPE = #{INDIVIDUAL_TYPE}
+                        </if>
+                        <if test="FLAG_BROD != null and FLAG_BROD != ''">
+                            <if test="FLAG_BROD == 'N'">
+                                AND FLAG_BROD = 'N'
+                            </if>
+                            <if test="FLAG_BROD == 'Y'">
+                                <![CDATA[ AND FLAG_BROD <> 'N' ]]>
+                            </if>
+                        </if>
+                        <if test="FLAG_IMPORTANT != null and FLAG_IMPORTANT != ''">
+                            <if test="FLAG_IMPORTANT == 'N'">
+                                AND FLAG_IMPORTANT = 'N'
+                            </if>
+                            <if test="FLAG_IMPORTANT == 'Y'">
+                                <![CDATA[ AND FLAG_IMPORTANT <> 'N' ]]>
+                            </if>
+                        </if>
+                        <if test="CONTENT != null and CONTENT != ''">
+                            AND MEMO LIKE '%'||#{CONTENT}||'%'
+                        </if>
+                ) A
+                LEFT JOIN CODE_REPORT_TYPE B ON A.REPORT_TYPE = B.BAS_SCOD
+                LEFT JOIN CODE_INFORMER_TYPE C ON A.INDIVIDUAL_TYPE = C.TYPE_ID
+                LEFT JOIN CODE_AREACODE D ON A.REGION_ID = D.AREA_CODE
+                WHERE A.RECEIPT_DAY = TO_CHAR(SYSDATE,'YYYYMMDD')
+                  AND B.BAS_LCOD = '100'
+                  AND A.FLAG_SEND = 'Y'
+
+                UNION ALL
+
+                SELECT 
+                       A.RECEIPT_ID
+                     , REGEXP_REPLACE(
+                           A.PHONE_CELL,
+                           '([[:digit:]]{'||DECODE(SUBSTR(A.PHONE_CELL,0,2),'02',2,3)||'})([[:digit:]]{3,4})([[:digit:]]{4})',
+                           '\1-\2-\3'
+                       ) AS R_TEL
+                     , A.FLAG_BROD
+                     , TO_CHAR(TO_DATE(A.RECEIPT_TIME,'HH24MI'),'HH24:MI') AS RECEIPT_TIME
+                     , A.RECEIPT_DAY||A.RECEIPT_TIME AS RECEIPT_DT
+                     , TO_CHAR(TO_DATE(A.BROAD_TIME,'YYYYMMDDHH24MISS'),'HH24:MI') AS BROAD_TIME
+                     , A.REPORT_TYPE
+                     , B.BAS_NAME
+                     , A.INFORMER_NAME AS INDIVIDUAL_NAME
+                     , ' ' AS TYPE_NAME
+                     , A.COMMENT_TXT AS MEMO
+                     , A.RECEIPT_DAY
+                     , A.FLAG_IMPORTANT
+                     , ' ' AS F_COLOR
+                     , ' ' AS B_COLOR
+                     , D.CITY AS AREA_NAME
+                FROM (
+                    SELECT * FROM RECEIPT_APP
+                    WHERE 1 = 1
+                        <if test="REPORT_TYPE != null and REPORT_TYPE != ''">
+                            AND REPORT_TYPE = #{REPORT_TYPE}
+                        </if>
+                        <if test="REPORT_TYPE2 != null and REPORT_TYPE2 != '' and REPORT_TYPE2 != 'null'">
+                            AND REPORT_TYPE2 = #{REPORT_TYPE2}
+                        </if>
+                        <if test="AREA_CODE != null and AREA_CODE != ''">
+                            AND AREA_CODE = #{AREA_CODE}
+                        </if>
+                        <if test="INDIVIDUAL_TYPE != null and INDIVIDUAL_TYPE != ''">
+                            AND INFORMER_TYPE = #{INDIVIDUAL_TYPE}
+                        </if>
+                        <if test="FLAG_BROD != null and FLAG_BROD != ''">
+                            <if test="FLAG_BROD == 'N'">
+                                AND FLAG_BROD = 'N'
+                            </if>
+                            <if test="FLAG_BROD == 'Y'">
+                                <![CDATA[ AND FLAG_BROD <> 'N' ]]>
+                            </if>
+                        </if>
+                        <if test="FLAG_IMPORTANT != null and FLAG_IMPORTANT != ''">
+                            <if test="FLAG_IMPORTANT == 'N'">
+                                AND FLAG_IMPORTANT = 'N'
+                            </if>
+                            <if test="FLAG_IMPORTANT == 'Y'">
+                                <![CDATA[ AND FLAG_IMPORTANT <> 'N' ]]>
+                            </if>
+                        </if>
+                        <if test="CONTENT != null and CONTENT != ''">
+                            AND COMMENT_TXT LIKE '%'||#{CONTENT}||'%'
+                        </if>
+                ) A
+                LEFT JOIN CODE_REPORT_TYPE B ON A.REPORT_TYPE = B.BAS_SCOD
+                LEFT JOIN CODE_AREACODE D ON A.AREA_CODE = D.AREA_CODE
+                WHERE A.RECEIPT_DAY = TO_CHAR(SYSDATE,'YYYYMMDD')
+                  AND B.BAS_LCOD = '100'
+                  AND A.FLAG_SEND = 'Y'
+
+            ) G
+            ORDER BY RNUM DESC
+        ) H
+    )
+    <![CDATA[
+    WHERE SEQ > #{startRow} AND SEQ <= (#{startRow} + #{size})
+    ]]>
+</select>
+    
+    
+    
+    
+    
+    
+    <!-- <select id="countSearchBroadcastList" resultType="int">
 
         SELECT COUNT(*) FROM 
         	(
@@ -204,7 +463,100 @@
 
             	)
 
-    </select>
+    </select> -->
+    
+    
+	<select id="countSearchBroadcastList" resultType="int">
+
+	    SELECT COUNT(*)
+	    FROM (
+	        SELECT RECEIPT_ID
+	        FROM REPORT_RECEIPT_TODAY
+	        WHERE 1 = 1
+	          AND FLAG_SEND = 'Y'
+	          AND RECEIPT_DAY = TO_CHAR(SYSDATE,'YYYYMMDD')
+	
+	            <if test="REPORT_TYPE != null and REPORT_TYPE != ''">
+	                AND REPORT_TYPE = #{REPORT_TYPE}
+	            </if>
+	            <if test="REPORT_TYPE2 != null and REPORT_TYPE2 != ''">
+	                AND REPORT_TYPE2 = #{REPORT_TYPE2}
+	            </if>
+	            <if test="AREA_CODE != null and AREA_CODE != ''">
+	                AND REGION_ID = #{AREA_CODE}
+	            </if>
+	            <if test="!INDIVIDUAL_TYPE.equals('') and INDIVIDUAL_TYPE != null">
+	                AND INDIVIDUAL_TYPE = #{INDIVIDUAL_TYPE}
+	            </if>
+	
+	            <if test="FLAG_BROD != null and FLAG_BROD != ''">
+	                <if test='FLAG_BROD == "N"'>
+	                    AND FLAG_BROD = 'N'
+	                </if>
+	                <if test='FLAG_BROD == "Y"'>
+	                    <![CDATA[ AND FLAG_BROD <> 'N' ]]>
+	                </if>
+	            </if>
+	
+	            <if test="FLAG_IMPORTANT != null and FLAG_IMPORTANT != ''">
+	                <if test='FLAG_IMPORTANT == "N"'>
+	                    AND FLAG_IMPORTANT = 'N'
+	                </if>
+	                <if test='FLAG_IMPORTANT == "Y"'>
+	                    <![CDATA[ AND FLAG_IMPORTANT <> 'N' ]]>
+	                </if>
+	            </if>
+	
+	            <if test="CONTENT != null and CONTENT != ''">
+	                AND MEMO LIKE '%'||#{CONTENT}||'%'
+	            </if>
+	
+	        UNION ALL
+	
+	        SELECT RECEIPT_ID
+	        FROM RECEIPT_APP
+	        WHERE 1 = 1
+	          AND FLAG_SEND = 'Y'
+	          AND RECEIPT_DAY = TO_CHAR(SYSDATE,'YYYYMMDD')
+	
+	            <if test="REPORT_TYPE != null and REPORT_TYPE != ''">
+	                AND REPORT_TYPE = #{REPORT_TYPE}
+	            </if>
+	            <if test="REPORT_TYPE2 != null and REPORT_TYPE2 != ''">
+	                AND REPORT_TYPE2 = #{REPORT_TYPE2}
+	            </if>
+	            <if test="AREA_CODE != null and AREA_CODE != ''">
+	                AND AREA_CODE = #{AREA_CODE}
+	            </if>
+	            <if test="INDIVIDUAL_TYPE != null and INDIVIDUAL_TYPE != ''">
+	                AND INFORMER_TYPE = #{INDIVIDUAL_TYPE}
+	            </if>
+	
+	            <if test="FLAG_BROD != null and FLAG_BROD != ''">
+	                <if test='FLAG_BROD == "N"'>
+	                    AND FLAG_BROD = 'N'
+	                </if>
+	                <if test='FLAG_BROD == "Y"'>
+	                    <![CDATA[ AND FLAG_BROD <> 'N' ]]>
+	                </if>
+	            </if>
+	
+	            <if test="FLAG_IMPORTANT != null and FLAG_IMPORTANT != ''">
+	                <if test='FLAG_IMPORTANT == "N"'>
+	                    AND FLAG_IMPORTANT = 'N'
+	                </if>
+	                <if test='FLAG_IMPORTANT == "Y"'>
+	                    <![CDATA[ AND FLAG_IMPORTANT <> 'N' ]]>
+	                </if>
+	            </if>
+	
+	            <if test="CONTENT != null and CONTENT != ''">
+	                AND COMMENT_TXT LIKE '%'||#{CONTENT}||'%'
+	            </if>
+	    )
+	
+	</select>
+
     
     <select id="checkBroadTime" resultType="String">
         SELECT BROAD_TIME 
@@ -215,14 +567,28 @@
     <update id="updateBroadTime"  parameterType="java.util.List">
 	    DECLARE BEGIN
         <foreach collection="list" item="item" separator=";">
-	        UPDATE REPORT_RECEIPT_TODAY
+	        <choose>
+	            <when test="item.UPDATE_TABLE == 'RECEIPT_APP'">
+	                UPDATE RECEIPT_APP
+	            </when>
+	            <otherwise>
+	                UPDATE REPORT_RECEIPT_TODAY
+	            </otherwise>
+	        </choose>
 	        SET BROAD_TIME = TO_CHAR(SYSDATE,'YYYYMMDDHH24MISS')
 	        WHERE RECEIPT_ID =
 	        <!-- 220905 수정 신지형 대리 :
 	        	긴급제보의 경우 최초방송시간 유지 
 	        	일괄적으로 최초방송시간 존재시 방송시간 업데이트 X--> 
 	        (
-	        	SELECT RECEIPT_ID FROM REPORT_RECEIPT_TODAY 
+	        	<choose>
+		            <when test="item.UPDATE_TABLE == 'RECEIPT_APP'">
+		                SELECT RECEIPT_ID FROM RECEIPT_APP
+		            </when>
+		            <otherwise>
+		                SELECT RECEIPT_ID FROM REPORT_RECEIPT_TODAY
+		            </otherwise>
+		        </choose>
 	       		WHERE 
 	       		RECEIPT_ID = #{item.RECEIPT_ID}
 	       		AND 
@@ -235,7 +601,14 @@
     <update id="updateBroadFlagTo" parameterType="java.util.List">
         DECLARE BEGIN
         <foreach collection="list" item="item" separator=";">
-	        UPDATE REPORT_RECEIPT_TODAY
+	        <choose>
+	            <when test="item.UPDATE_TABLE == 'RECEIPT_APP'">
+	                UPDATE RECEIPT_APP
+	            </when>
+	            <otherwise>
+	                UPDATE REPORT_RECEIPT_TODAY
+	            </otherwise>
+	        </choose>
 	        SET FLAG_BROD = #{item.FLAG_BROAD}
 	        WHERE RECEIPT_ID = #{item.RECEIPT_ID}
         </foreach>   

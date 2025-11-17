@@ -362,6 +362,13 @@ public class ReceiptController {
 			}
 		}*/
 		
+		ReceiptVO bestIfrmVo = receiptService.selectBestIfrm(vo);
+		String infrmName = bestIfrmVo.getINDIVIDUAL_NAME();
+		
+		if(!infrmName.equals("통신원")) {
+			vo.setINDIVIDUAL_NAME(infrmName);
+		}		
+		
 		int result = receiptService.insertReceipt(vo);
 		System.out.println("vo: " + vo.toString());
 		System.out.println("insertRecipt result: "+result);

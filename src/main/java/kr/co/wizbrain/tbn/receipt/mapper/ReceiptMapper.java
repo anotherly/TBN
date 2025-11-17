@@ -32,6 +32,7 @@ public interface ReceiptMapper{
 	//public List<ReceiptVO> selectReceipt(ReceiptVO ReceiptVO) throws Exception;
 	
 	//제보접수 등록
+	public ReceiptVO selectBestIfrm(ReceiptVO ReceiptVO) throws Exception;
 	public int insertReceipt(ReceiptVO ReceiptVO) throws Exception;
 	public int updateMonthlyStat(ReceiptVO vo) throws Exception;
 

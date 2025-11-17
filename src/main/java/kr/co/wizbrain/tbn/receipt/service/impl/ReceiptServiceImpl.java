@@ -37,6 +37,10 @@ public class ReceiptServiceImpl implements ReceiptService{
 	private ReceiptMapper receiptMapper;
 	
 	//제보접수 등록
+	public ReceiptVO selectBestIfrm(ReceiptVO ReceiptVO) throws Exception {
+		return receiptMapper.selectBestIfrm(ReceiptVO);
+	}
+	
 	public int insertReceipt(ReceiptVO ReceiptVO) throws Exception {
 		return receiptMapper.insertReceipt(ReceiptVO);
 	}
