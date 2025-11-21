@@ -1,38 +1,71 @@
+############################################
+# 기본 Git Ignore - eGovFramework 3.9 / Eclipse / Maven
+############################################
 
-# Eclipse / STS 환경 관련 파일 무시
+# ----------------------------
+# Maven 빌드 산출물
+# ----------------------------
+/target/
+/*/target/
+**/target/
+
+# WAR 파일 등 산출물 제외
+*.war
+*.ear
+*.jar
+
+# ----------------------------
+# Eclipse / WTP / eGovFramework
+# ----------------------------
 .classpath
 .project
 .settings/
-.apt_generated/
+.metadata/
+.recommenders/
+loadtest/
+Servers/
+wtpwebapps/
+
+# Web Tools Platform (WTP) 임시 리소스
+.myeclipse/
 .factorypath
 
-# Maven 관련
-target/
-**/target/
+# eGovFramework temp
+.egovframework.temp/
+.egov-temp/
+.egovcache/
 
-# 로그 및 백업 파일
+# ----------------------------
+# IntelliJ 생성 파일 (혹시 IDE 혼용 시)
+# ----------------------------
+.idea/
+*.iml
+*.ipr
+
+# ----------------------------
+# 로그 / 백업 / OS 파일
+# ----------------------------
 *.log
 *.bak
 *.tmp
-
-# OS 관련
+*.old
 .DS_Store
 Thumbs.db
 
-# IDE 설정 무시 (IntelliJ 등도 포함)
-.idea/
-*.iml
+# ----------------------------
+# STS / Gradle 흔적 (혹시 포함될 경우 대비)
+# ----------------------------
+.gradle/
+build/
 
-# eGovFrame 기본 제외 대상
-.egovProps/
-egovframework/com/cmm/config/EgovComExcepHndlr.java
-egovframework/com/cmm/config/EgovComOthersExcepHndlr.java
+# ----------------------------
+# Maven Wrapper(필요한 파일만 유지)
+# ----------------------------
+.mvn/
+!.mvn/wrapper/maven-wrapper.jar
+!mvnw
+!mvnw.cmd
 
-# 빌드 결과물 무시
-*.class
-*.war
-*.jar
-*.zip
-
-# 업로드 테스트 파일 등
-upload/
+############################################
+# 끝
+############################################
