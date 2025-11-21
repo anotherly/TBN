@@ -4,6 +4,7 @@
 <script type="text/javascript" charset="utf-8" src="<%=request.getContextPath()%>/js/jquery.form.js"></script>
 <script>
 	$(function(){
+
 		console.log("제보접수 화면");
 		clickMenu('tabs');
 		firstInformerVO = null;
@@ -88,11 +89,19 @@
 		/* $(" li span").on("click",function(){
 			
 		}); */
-		
-		
-		
 
-		
+		if(authCode == 999) {
+			openPopup(); // 팝업창 띄우는 함수 호출
+		}
+	
+		// 모바일 제보접수 팝업창 열기
+		function openPopup() {
+		    window.open(
+		        "/receipt/appStatus.do",  
+		        "popupWindow",      
+		        "width=1500,height=845,toolbar=no,menubar=no,scrollbars=yes,resizable=no"
+		    );
+		}
 	});
 	
 </script>

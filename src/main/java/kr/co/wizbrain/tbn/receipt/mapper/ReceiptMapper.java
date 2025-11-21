@@ -31,8 +31,9 @@ public interface ReceiptMapper{
 	//전체 회원정보 조회
 	//public List<ReceiptVO> selectReceipt(ReceiptVO ReceiptVO) throws Exception;
 	
+	public int selectBestIfrm(ReceiptVO ReceiptVO) throws Exception;
+	
 	//제보접수 등록
-	public ReceiptVO selectBestIfrm(ReceiptVO ReceiptVO) throws Exception;
 	public int insertReceipt(ReceiptVO ReceiptVO) throws Exception;
 	public int updateMonthlyStat(ReceiptVO vo) throws Exception;
 
@@ -112,14 +113,27 @@ public interface ReceiptMapper{
 		
 	//팝업 - receivedStatus
 	//public List<ReceivedStatusVO> receivedStatusList(String RECEIPT_DAY) throws Exception;
-	public List<ReceivedStatusVO> receivedStatusList(CriteriaVO cri) throws Exception;
+	public List<ReceivedStatusVO> receivedStatusList(CriteriaVO cri) throws Exception;	
 	
+	// 팝업 - 모바일 앱 제보
+	public List<ReceivedStatusVO> appStatusList(CriteriaVO cri) throws Exception;
+	
+	// 팝업 - 모바일 제보 => 금일 제보 테이블로 insert
+	public void insertAppStatus(List<ReceivedStatusVO> list) throws Exception;
+	
+	// 팝업 - 모바일 제보 검증 flag update
+	public void updateAppStatus(List<ReceivedStatusVO> list) throws Exception;
+	  
 	//팝업 - 검색
 	public List<ReceivedStatusVO> searchStatusList(ReceiptSearchVO vo) throws Exception;
 	//public List<ReceivedStatusVO> searchStatusList(CriteriaVO cri) throws Exception;
 	
 	//팝업 - COUNT
 	public int countReceivedStatusList(CriteriaVO vo) throws Exception;
+	
+	
+	// 모바일 app - count
+	public int countAppStatusList(CriteriaVO cri) throws Exception;
 	
 	//팝업(검색) - COUNT
 	public int countSearchStatusList(ReceiptSearchVO vo) throws Exception;
@@ -168,21 +182,3 @@ public interface ReceiptMapper{
 	
 	public void tempSaveDelete(HashMap<String, Object> map);
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

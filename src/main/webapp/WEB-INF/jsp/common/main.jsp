@@ -97,6 +97,8 @@
 	    userId = '${login.userId}';
 	    authCode = '${login.authCode}';
 	    
+	    
+	    
 	    // 22.10.15 수정전
 	    // center = initXYByRegionID(lgnArea);
 

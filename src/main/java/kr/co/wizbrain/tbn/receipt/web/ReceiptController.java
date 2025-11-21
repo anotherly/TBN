@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URLDecoder;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -24,7 +25,6 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import kr.co.wizbrain.tbn.cid.TcpAndWebClient;
-import kr.co.wizbrain.tbn.mileage.vo.MileageVO;
 import kr.co.wizbrain.tbn.notice.vo.NoticeVO;
 import kr.co.wizbrain.tbn.receipt.service.ReceiptService;
 import kr.co.wizbrain.tbn.receipt.vo.AreaCodeVO;
@@ -362,14 +362,19 @@ public class ReceiptController {
 			}
 		}*/
 		
-		ReceiptVO bestIfrmVo = receiptService.selectBestIfrm(vo);
-		String infrmName = bestIfrmVo.getINDIVIDUAL_NAME();
+		// 등록 전 최고 통신원 판별 후 문자열 수정 작업 진행
+		String ifrmName = vo.getINDIVIDUAL_NAME();
 		
-		if(!infrmName.equals("통신원")) {
-			vo.setINDIVIDUAL_NAME(infrmName);
+		int bestIfrm = receiptService.selectBestIfrm(vo);
+		
+		if(bestIfrm > 0) {
+			String setName = "최고통신원 " + ifrmName;
+			vo.setINDIVIDUAL_NAME(setName);
 		}		
 		
+		// 제보 접수 등록
 		int result = receiptService.insertReceipt(vo);
+		
 		System.out.println("vo: " + vo.toString());
 		System.out.println("insertRecipt result: "+result);
 		mv.addObject("result", result);
@@ -549,6 +554,9 @@ public class ReceiptController {
 		return mv;
 	}
 	
+	
+	
+	// 금일 제보 접수 첫 진입 및 조회
 	@RequestMapping("/receipt/receivedStatusList.do")
 	public ModelAndView receivedStatusList(CriteriaVO cri) throws Exception{
 		logger.info("------------------receivedStatusList진입------------------");
@@ -571,6 +579,63 @@ public class ReceiptController {
 		return mv;
 	}
 	
+	// 모바일 앱 조회 화면 진입
+	@RequestMapping("/receipt/appStatus.do")
+	public ModelAndView appStatus(HttpServletRequest request) throws Exception {
+		ModelAndView mv = new ModelAndView();
+		
+		mv.setViewName("/receipt/appStatus");
+		return mv;
+	}
+	
+	// 25-11-18 : 모바일 앱 제보 조회
+	@RequestMapping("/receipt/appStatusList.do")
+	public ModelAndView appStatusList(CriteriaVO cri) throws Exception{
+		logger.info("------------------receivedStatusList진입------------------");
+
+		ModelAndView mv = new ModelAndView();
+		System.out.println("RECEIPT_DAY " + cri.getRECEIPT_DAY());
+		System.out.println("startRow: " + cri.getStartRow());
+		System.out.println("AREA_CODE: " + cri.getAREA_CODE());
+		
+		int size = 300;
+		cri.setSize(size);
+		cri.setStartRow((cri.getStartRow()-1) * size);
+		
+		List<ReceivedStatusVO> appList = receiptService.appStatusList(cri);
+		
+		mv.addObject("appStatusList", appList);
+		mv.setViewName("/receipt/appStatusList");
+
+		return mv;
+	}
+	
+	
+	@RequestMapping("/receipt/appToToday.do")
+	  public ModelAndView addDownload(Model model, HttpServletRequest request, @RequestParam(value="ids") List<String> ids) throws Exception {
+		  ModelAndView mv = new ModelAndView("jsonView");  
+		  
+		  List<ReceivedStatusVO> alist = new ArrayList<>();
+		  
+		  for (int i = 0; i < ids.size(); i++) { //ID 값 나누기
+			  ReceivedStatusVO awvo = new ReceivedStatusVO();
+			  awvo.setRECEIPT_ID(ids.get(i));
+			  alist.add(awvo);
+		  }
+		  
+		  // today에 등록 시키기
+		  receiptService.insertAppStatus(alist);
+		  
+		  // chk flag 업데이트 시키기 => Y
+		  receiptService.updateAppStatus(alist);
+		  
+		  // 등록 성공 시 메시지 보내기 (if로 조건 태우기)
+		  mv.addObject("msg", "success");
+		  
+		  return mv;
+
+	  }
+	
 	@RequestMapping("/receipt/getTotalPage.ajax")
 	public ModelAndView getTotalPage(CriteriaVO cri) throws Exception {
 		logger.info("------------------getTotalPage진입------------------");
@@ -590,6 +655,28 @@ public class ReceiptController {
 		mv.addObject("totalSize", total);
 		return mv;
 	}
+	
+	
+	@RequestMapping("/receipt/appGetTotalPage.ajax")
+	public ModelAndView appGetTotalPage(CriteriaVO cri) throws Exception {
+		logger.info("------------------getTotalPage진입------------------");
+		ModelAndView mv = new ModelAndView("jsonView");
+		System.out.println("cri: " + cri.toString());
+		int total = receiptService.countAppStatusList(cri);
+		System.out.println("total: " + total);
+		
+		int size = 300;
+		int totalPages = total/size;
+		if(total % size > 0) {
+			totalPages++;
+		}
+		System.out.println("totalPage: " + totalPages);
+		
+		mv.addObject("totalPage", totalPages);
+		mv.addObject("totalSize", total);
+ 		return mv;
+	}
+	
 	
 	@RequestMapping("/receipt/getSearchTotalPage.ajax")
 	public ModelAndView getSearchTotalPage(ReceiptSearchVO vo) throws Exception {

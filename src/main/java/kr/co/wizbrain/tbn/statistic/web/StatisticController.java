@@ -1,9 +1,7 @@
 package kr.co.wizbrain.tbn.statistic.web;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -855,7 +853,7 @@ public class StatisticController extends BaseController{
 			  	InfrmVO awvo = new InfrmVO();
 				awvo.setInformerId(Selection[i]);
 				alist.add(awvo);
-		  }
+		  }                      
 		  
 		  // ID 값 나눈 배열로 데이터 가져오기
 		  List<InfrmVO> dataList = statisticService.addRabel(alist);

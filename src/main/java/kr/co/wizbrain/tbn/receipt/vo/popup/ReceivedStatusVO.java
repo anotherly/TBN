@@ -6,6 +6,7 @@ public class ReceivedStatusVO {
 	private String RECEIPT_DAY; //
 	private String FLAG_SEND; //
 	private String FLAG_BROD; //
+	private String FLAG_CHK;
 	
 	private String FLAG_MAP; //
 	private String RECEIPT_TIME; //
@@ -16,6 +17,14 @@ public class ReceivedStatusVO {
 	private String INDIVIDUAL_NAME; //
 	private String TYPE_NAME; //TEXT
 	private String RECEPTION_ID;
+	public String getFLAG_CHK() {
+		return FLAG_CHK;
+	}
+
+	public void setFLAG_CHK(String fLAG_CHK) {
+		FLAG_CHK = fLAG_CHK;
+	}
+
 	private String RECEPTION_NAME; //
 	private String MEMO; //
 	

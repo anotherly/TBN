@@ -37,10 +37,6 @@ public class ReceiptServiceImpl implements ReceiptService{
 	private ReceiptMapper receiptMapper;
 	
 	//제보접수 등록
-	public ReceiptVO selectBestIfrm(ReceiptVO ReceiptVO) throws Exception {
-		return receiptMapper.selectBestIfrm(ReceiptVO);
-	}
-	
 	public int insertReceipt(ReceiptVO ReceiptVO) throws Exception {
 		return receiptMapper.insertReceipt(ReceiptVO);
 	}
@@ -48,6 +44,10 @@ public class ReceiptServiceImpl implements ReceiptService{
 	// 25-05-15 : 최고 통신원, 우수 통신원 조회
 	public List<MileageVO> selectIfrm(ReceiptVO vo) throws Exception {
 		return receiptMapper.selectIfrm(vo);
+	}
+	
+	public int selectBestIfrm(ReceiptVO ReceiptVO) throws Exception {
+		return receiptMapper.selectBestIfrm(ReceiptVO);
 	}
 	
 	
@@ -172,9 +172,30 @@ public class ReceiptServiceImpl implements ReceiptService{
 	}
 
 	@Override
+	public int countAppStatusList(CriteriaVO cri) throws Exception {
+		return receiptMapper.countAppStatusList(cri);
+	}
+	
+	@Override
 	public List<ReceivedStatusVO> receivedStatusList(CriteriaVO cri) throws Exception {
 		return receiptMapper.receivedStatusList(cri);
 	}
+	
+	@Override
+	public List<ReceivedStatusVO> appStatusList(CriteriaVO cri) throws Exception {
+		return receiptMapper.appStatusList(cri);
+	}
+	
+	@Override
+	public void insertAppStatus(List<ReceivedStatusVO> list) throws Exception {
+		receiptMapper.insertAppStatus(list);
+	}
+	
+	@Override
+	public void updateAppStatus(List<ReceivedStatusVO> list) throws Exception {
+		receiptMapper.updateAppStatus(list);
+	}
+	
 
 	@Override
 	public int countSearchStatusList(ReceiptSearchVO vo) throws Exception {
@@ -295,7 +316,3 @@ public class ReceiptServiceImpl implements ReceiptService{
 		receiptMapper.tempSaveDelete(map);
 	}
 }
-
-
-
-
