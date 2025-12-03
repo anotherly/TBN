@@ -741,7 +741,20 @@ function tempsave(){
 
 
 
-
+/*25-12-01 : 모바일 앱 제보접수 팝업창 띄우는 함수*/
+function openAppreceipt() {
+	console.log("팝업창 버튼 클릭 성공");
+	
+	if(authCode == 999) {
+		window.open(
+		        "/receipt/appStatus.do",  
+		        "popupWindow",      
+		        "width=1500,height=845,toolbar=no,menubar=no,scrollbars=yes,resizable=no"
+		    );
+	} else {
+		alert("현재는 관리자만 열람할 수 있습니다.");
+	}
+}
 
 
 

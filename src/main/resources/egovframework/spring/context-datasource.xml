@@ -37,10 +37,10 @@
 		<property name="defaultReadOnly" value="false" />
 		<property name="maxActive" value="20" />
 		<property name="maxIdle" value="20" />
-	</bean>
+	</bean> 
 
 	<!-- 로컬 -->
-<!-- 	<bean id="dataSource_main"
+<!--  	<bean id="dataSource_main"
 		class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
 		<property name="driverClassName"
 			value="oracle.jdbc.driver.OracleDriver" />
@@ -52,7 +52,10 @@
 		<property name="defaultReadOnly" value="false" />
 		<property name="maxActive" value="20" />
 		<property name="maxIdle" value="20" />
-	</bean>  -->
+	</bean> -->
+	
+	
+	  
 	<!-- 쿼리 로그 생성하는 bean 설정 (기존 database 설정을 constructor 로 참조) -->
  	<bean id="dataSource"
 		class="net.sf.log4jdbc.Log4jdbcProxyDataSource">

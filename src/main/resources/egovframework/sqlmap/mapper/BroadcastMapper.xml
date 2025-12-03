@@ -4,7 +4,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="kr.co.wizbrain.tbn.broadcast.mapper.BroadcastMapper">
     
-    <!-- <select id="countBroadcastList" resultType="int">
+    <select id="countBroadcastList" resultType="int">
         SELECT COUNT(*) 
         	FROM (SELECT A.RECEIPT_ID
 				        , A.R_TEL
@@ -31,10 +31,10 @@
 	            		AND REGION_ID = #{AREA_CODE}
 	            	</if>
 				    AND FLAG_SEND = 'Y')
-    </select> -->
+    </select>
     
     
-    <select id="countBroadcastList" resultType="int">
+    <!-- <select id="countBroadcastList" resultType="int">
 	    SELECT
 			    (SELECT COUNT(*) 
 			       FROM REPORT_RECEIPT_TODAY 
@@ -54,10 +54,10 @@
 			    )
 			  AS TOTAL_COUNT
 			FROM DUAL
-	</select>
+	</select> -->
 
     
-    <!-- <select id="selectTodaysList" resultType="broadCastListVO">
+    <select id="selectTodaysList" resultType="broadCastListVO">
         SELECT * 
 		FROM(
 		    SELECT ROWNUM AS SEQ, H.* 
@@ -101,11 +101,11 @@
 		<![CDATA[
 		WHERE  SEQ > #{startRow} AND SEQ <= (#{startRow} + #{size})
         ]]>
-    </select> -->
+    </select> 
     
     
     
-    <select id="selectTodaysList" resultType="broadCastListVO">
+    <!-- <select id="selectTodaysList" resultType="broadCastListVO">
 	    SELECT * 
 	    FROM(
 	        SELECT ROWNUM AS SEQ, H.* 
@@ -187,10 +187,10 @@
 	    <![CDATA[
 	    WHERE SEQ > #{startRow} AND SEQ <= (#{startRow} + #{size})
 	    ]]>
-	</select>
+	</select> -->
 
     
-    <!-- <select id="searchBroadcastList" resultType="broadCastListVO">
+    <select id="searchBroadcastList" resultType="broadCastListVO">
       
         SELECT *
 		FROM(SELECT ROWNUM AS SEQ, H.*
@@ -267,11 +267,11 @@
 		<![CDATA[
 		WHERE  SEQ > #{startRow} AND SEQ <= (#{startRow} + #{size})
 		]]>
-    </select> -->
+    </select>
     
     
     
-    <select id="searchBroadcastList" resultType="broadCastListVO">
+    <!-- <select id="searchBroadcastList" resultType="broadCastListVO">
     SELECT *
     FROM(
         SELECT ROWNUM AS SEQ, H.*
@@ -410,14 +410,14 @@
     <![CDATA[
     WHERE SEQ > #{startRow} AND SEQ <= (#{startRow} + #{size})
     ]]>
-</select>
+</select> -->
     
     
     
     
     
     
-    <!-- <select id="countSearchBroadcastList" resultType="int">
+    <select id="countSearchBroadcastList" resultType="int">
 
         SELECT COUNT(*) FROM 
         	(
@@ -463,10 +463,10 @@
 
             	)
 
-    </select> -->
+    </select>
     
     
-	<select id="countSearchBroadcastList" resultType="int">
+	<!-- <select id="countSearchBroadcastList" resultType="int">
 
 	    SELECT COUNT(*)
 	    FROM (
@@ -555,7 +555,7 @@
 	            </if>
 	    )
 	
-	</select>
+	</select> -->
 
     
     <select id="checkBroadTime" resultType="String">

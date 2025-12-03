@@ -28,6 +28,7 @@
 <script>
 	function chooseInformer(informerId, idx){
 		console.log("통신원 검색");
+		console.log("아이디:" + informerId);
 		var informerObj = ajaxMethod("/receipt/selectInformerByID.ajax", {"INFORMER_ID":informerId
 																				, "month1":currentMonth("")
 																				, "month2":lastMonth("")

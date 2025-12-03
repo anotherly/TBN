@@ -363,6 +363,11 @@
 							class="poin" onclick="clearReceiptForm()" style="cursor: pointer;width: 92px;height: 30px;" />
 						<img src="../images/tempsave_btn.png" alt="임시저장" title="임시저장"
 							class="poin" onclick="tempsave()" style="cursor: pointer;width: 92px;height: 30px;" />
+						<!-- 25-12-01 : 모바일 앱 제보접수 팝업창 띄우는 버튼 -->
+						<button style="cursor: pointer;width: 92px;height: 30px; background-color : #9e9e9e; color:white; font-weight:bold; border:1px solid #585858;
+						" title="모바일 앱 제보접수 팝업창 " onclick="openAppreceipt()">
+							앱 제보 팝업
+						</button>
 					</div> 
 					<!-- 등록버튼 끝-->
 				</div> 

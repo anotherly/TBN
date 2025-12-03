@@ -37,6 +37,8 @@ $(document).ready(function() {
 	onSearch = false;
 	editOpenTotal = 0;
 	console.log("receivedStatus");
+	var nowCnt = 0;
+	var beforeCnt = 0;
 	/* changeAutoLoadingFlag(); */
 	
 	//서울교통방송의 경우 교통방송 전체로
@@ -53,6 +55,9 @@ $(document).ready(function() {
 	$("#END_DAY").val(currentDate("-"));
 	
 	var totalAjax = ajaxMethod("/receipt/appGetTotalPage.ajax", {"RECEIPT_DAY" : todaysDate, "startRow" : currentPage, "AREA_CODE":opener.lgnArea});
+	
+	nowCnt = totalAjax.totalPage;
+	beforeCnt = totalAjax.totalPage;
 	
 	totalPage = totalAjax.totalPage;	
 	$("#resultListTotal span").text(totalAjax.totalSize);
@@ -136,7 +141,23 @@ $(document).ready(function() {
 		if($('input[name="Selection"]:checked').length > 0) {
 			return false;
 		} else {
-			location.reload();
+			console.log("새로고침");
+			/* location.reload(); */
+ 
+		 	var totalAjax = ajaxMethod("/receipt/appGetTotalPage.ajax", {"RECEIPT_DAY" : todaysDate, "startRow" : currentPage, "AREA_CODE":opener.lgnArea});
+			
+			nowCnt = totalAjax.totalPage;
+			beforeCnt = totalAjax.totalPage;
+			
+			totalPage = totalAjax.totalPage;	
+			$("#resultListTotal span").text(totalAjax.totalSize);
+			
+			if(totalAjax.totalSize == 0){
+				$("#broadcastList").load("/receipt/noResult.do");
+			} else{
+				$("#broadcastList").load("/receipt/appStatusList.do", {"RECEIPT_DAY" : todaysDate, "startRow" : currentPage, "AREA_CODE":opener.lgnArea});
+			} 
+
 		}
 	}
 	
