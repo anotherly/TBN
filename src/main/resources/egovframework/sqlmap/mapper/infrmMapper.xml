@@ -516,8 +516,9 @@
 		,ACT_ID = #{actId}
 		,INFORMER_NAME = #{informerName}
 		<if test='orgId!=null'>
-		,ORG_ID = #{orgId}
-		,ORG_NAME = (SELECT ORG_NAME FROM ORGANIZATION WHERE ORG_ID = #{orgId} AND AREA_CODE = #{areaCode})
+		,ORG_ID = #{orgId}   
+		<!-- 25-12-04 : 현재 최고통신원이 추가되면서 ORGANIZATION 테이블을 참조하여 ORG_NAME을 가져올 경우 AND 조건에 IND_TYPE을 추가해야 함 -->
+		,ORG_NAME = (SELECT ORG_NAME FROM ORGANIZATION WHERE ORG_ID = #{orgId} AND AREA_CODE = #{areaCode} AND IND_TYPE = #{informerType})
 		</if>
 		<if test='orgSubId != null'>
 		,ORG_SUB_ID = #{orgSubId}

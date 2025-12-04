@@ -828,10 +828,11 @@ public class StatisticController extends BaseController{
 	    //검색조건에 맞게 나오도록 조정(스크롤 조건 아니고)
 	    searchVO.setDownFlag("1");
 	    /*if (!nlVo.getAuthCode().equals("999"))*/
-	    searchVO.setAreaCode(nlVo.getRegionId()); 
+	    /*searchVO.setAreaCode(nlVo.getRegionId());*/
+	    
 	    List<InfrmVO> Data = new ArrayList<>();
-	    Data = this.infrmService.selectInfrmList(searchVO);
 	    model.addAttribute("mapping", "informerDown");
+	    Data = this.infrmService.selectInfrmList(searchVO);
 	    model.addAttribute("fileName", "통신원 목록.xls");
 	    model.addAttribute("titleName", "통신원 목록");
 	    model.addAttribute("sheetNames1", "통신원 목록");

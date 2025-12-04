@@ -62,12 +62,17 @@
                 USER_ID
                 ,TO_CHAR(MAX(ST_TIME), 'YYYY-MM-DD HH24:MI:SS') ST 
                 ,TO_CHAR(MAX(FN_TIME), 'YYYY-MM-DD HH24:MI:SS') FN 
-                ,SIGN(ROUND((
-                TO_DATE(MAX(FN_TIME), 'YYYY-MM-DD HH24:MI:SS')
-                - TO_DATE(MAX(ST_TIME), 'YYYY-MM-DD HH24:MI:SS')
-                )* 24 * 60 *60)) df
+				
+                <!--,SIGN(ROUND((
+                MAX(FN_TIME) - MAX(ST_TIME)
+                )* 24 * 60 *60)) df-->
+				
+				,SIGN(ROUND((
+					CAST(MAX(FN_TIME) AS DATE) - CAST(MAX(ST_TIME) AS DATE)
+				) * 24 * 60 * 60)) df
+				
                 FROM LOGIN_HISTORY
-                where ST_time >to_char(sysdate-2,'YYYY-MM-DD')
+                where ST_time >sysdate-2
                 GROUP BY USER_ID
             ) T1) D
             ON  A.USER_ID = D.USER_ID
@@ -180,7 +185,7 @@
 		(
 			select ST_TIME from login_history 
 			where user_id =#{userId} 
-			and ST_time >to_char(sysdate-2,'YYYY-MM-DD')
+			and ST_time >sysdate-2
 			and fn_time IS NULL		
 		)
 	</update>
@@ -235,10 +240,10 @@
 		</if>
 		<choose>
 			<when test="sDate !=null and eDate !=null">
-		    	AND A.ST_TIME BETWEEN #{sDate} AND TO_DATE(#{eDate}, 'YYYY-MM-DD')+1
+		    	AND A.ST_TIME BETWEEN #{sDate} AND #{eDate}+1
 			</when>
 			<otherwise>
-			    AND A.ST_TIME > to_char(sysdate-1,'YYYY-MM-DD')
+			    AND A.ST_TIME > sysdate-1
 			</otherwise>    
 		</choose>
 		ORDER BY A.ST_TIME DESC
