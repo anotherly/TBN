@@ -363,14 +363,14 @@ public class ReceiptController {
 		}*/
 		
 		// 등록 전 최고 통신원 판별 후 문자열 수정 작업 진행
-		String ifrmName = vo.getINDIVIDUAL_NAME();
+/*		String ifrmName = vo.getINDIVIDUAL_NAME();
 		
 		int bestIfrm = receiptService.selectBestIfrm(vo);
 		
 		if(bestIfrm > 0) {
 			String setName = "최고통신원 " + ifrmName;
 			vo.setINDIVIDUAL_NAME(setName);
-		}		
+		}		*/
 		
 		// 제보 접수 등록
 		int result = receiptService.insertReceipt(vo);

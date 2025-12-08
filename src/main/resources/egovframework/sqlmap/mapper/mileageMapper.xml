@@ -532,8 +532,23 @@
 	
 	<!-- 최고 통신원 기본 정보 조회 (변경 후) -->
 	<select id="bestIfrmList" resultType="java.util.Map" parameterType="kr.co.wizbrain.tbn.mileage.vo.MileageVO">
-		select * from bestinformer
-		order by all_point desc
+		WITH ALL_CNT AS (
+		    SELECT IND_ID, SUM(MON_CNT) AS ALL_POINT
+		    FROM STAT_TBN_MONRPT
+		    GROUP BY IND_ID
+		)
+		SELECT A.INFORMER_ID, A.INFORMER_NAME , B.CITY AS AREA_NAME , A.AREA_CODE, C.ORG_NAME , A.REG_DATE , D.ALL_POINT
+		FROM INFORMER A
+		LEFT JOIN CODE_AREACODE B
+		ON A.AREA_CODE = B.AREA_CODE
+		LEFT JOIN ORGANIZATION C
+		ON A.ORG_ID = C.ORG_ID 
+		AND A.AREA_CODE = C.AREA_CODE 
+		AND A.INFORMER_TYPE = C.IND_TYPE
+		LEFT JOIN ALL_CNT D
+		ON A.INFORMER_ID = D.IND_ID
+		WHERE A.INFORMER_TYPE='8'
+		ORDER BY ALL_POINT DESC
 	</select>
 	
 	<!-- 기존 쿼리로 조회 시 사용 쿼리문
