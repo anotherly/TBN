@@ -9,9 +9,14 @@
 </script>
 <c:forEach var="toadysListVO" items="${appStatusList}" varStatus="num">
 	<li id="resultList${toadysListVO.RECEIPT_ID}"
-	    <c:if test="${toadysListVO.FLAG_CHK eq 'Y'}">
-	        style="background-color: aliceblue;"
-	    </c:if>>
+    <c:choose>
+        <c:when test="${toadysListVO.FLAG_SITU_ED eq '2'}">
+            style="background-color: #efefef;"
+        </c:when>
+        <c:when test="${toadysListVO.FLAG_CHK eq 'Y'}">
+            style="background-color: aliceblue;"
+        </c:when>
+    </c:choose>>
 		<span style="width : 60px;">
 			<c:choose>
 		        <c:when test="${toadysListVO.FLAG_CHK eq 'N'}">

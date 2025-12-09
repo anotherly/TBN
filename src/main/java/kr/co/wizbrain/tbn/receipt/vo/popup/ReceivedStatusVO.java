@@ -17,6 +17,17 @@ public class ReceivedStatusVO {
 	private String INDIVIDUAL_NAME; //
 	private String TYPE_NAME; //TEXT
 	private String RECEPTION_ID;
+
+	private String FLAG_SITU_ED;
+	
+	public String getFLAG_SITU_ED() {
+		return FLAG_SITU_ED;
+	}
+
+	public void setFLAG_SITU_ED(String fLAG_SITU_ED) {
+		FLAG_SITU_ED = fLAG_SITU_ED;
+	}
+
 	public String getFLAG_CHK() {
 		return FLAG_CHK;
 	}

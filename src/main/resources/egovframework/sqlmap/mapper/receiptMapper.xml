@@ -729,6 +729,7 @@
 	                    , E.NAME AS REPORTER_TYPE
 	                    , F.AREA_NAME AS REGION_NAME
 	                    , A.FLAG_CHK
+	                    , A.FLAG_SITU_ED
 		            FROM RECEIPT_APP A
 		            LEFT OUTER JOIN (SELECT * FROM CODE_REPORT_TYPE
 		                        WHERE BAS_LCOD='100') C

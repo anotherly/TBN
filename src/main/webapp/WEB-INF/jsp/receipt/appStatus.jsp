@@ -208,6 +208,7 @@ $(document).ready(function() {
 		<!-- 옵션 + 자동검색 영역 끝 -->
 		<!-- 검색조건 영역 시작 -->
 		<div style="width : 100%; height : 80px; margin-bottom : 15px;">
+			<h1 style="font-size : 24px; padding-top:25px;">모바일 앱 제보 내역</h1>
 		</div>
 		<!-- 검색조건 영역 끝 -->
 		<div style="display:flex;align-items: center;justify-content: space-between;">
