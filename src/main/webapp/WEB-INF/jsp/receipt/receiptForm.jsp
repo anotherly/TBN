@@ -57,7 +57,12 @@
 	$(function(){
 		console.log("제보접수 폼 jsp");
 		initReceipt();
-
+		
+		//임시 : 관리자만 로그인 했을때 제보접수 팝업이 보이도록
+		if(authCode=='999'){
+			$('#mApp').show();
+		}
+		
 		/* 22.03.15 충북요청사항 */
 		$("#fsSlt").on("change",function(){
 			console.log("폰트사이즈 체인지");
@@ -364,8 +369,8 @@
 						<img src="../images/tempsave_btn.png" alt="임시저장" title="임시저장"
 							class="poin" onclick="tempsave()" style="cursor: pointer;width: 92px;height: 30px;" />
 						<!-- 25-12-01 : 모바일 앱 제보접수 팝업창 띄우는 버튼 -->
-						<button style="cursor: pointer;width: 92px;height: 30px; background-color : #9e9e9e; color:white; font-weight:bold; border:1px solid #585858;
-						" title="모바일 앱 제보접수 팝업창 " onclick="openAppreceipt()">
+						<button id="mApp" style="cursor: pointer;width: 92px;height: 30px; background-color : #9e9e9e; color:white; font-weight:bold; border:1px solid #585858;display:none;" 
+						title="모바일 앱 제보접수 팝업창 " onclick="openAppreceipt()">
 							앱 제보 팝업
 						</button>
 					</div> 

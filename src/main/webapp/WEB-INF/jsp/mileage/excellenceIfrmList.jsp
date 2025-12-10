@@ -38,7 +38,7 @@
 								varStatus="idx">
 								
 								<c:choose>
-							        <c:when test="${idx.index < 10 && mileage.ALL_POINT >= 30}">
+							        <c:when test="${idx.index < 10}">
 							            <tr id ="${mileage.INFORMER_ID}" style="background: #daecf9;">
 							        </c:when>
 							        <c:otherwise>

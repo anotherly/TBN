@@ -38,9 +38,10 @@
 							<c:forEach var="mileage" items="${mileageList}"
 								varStatus="idx">
 								<c:choose>
-								    <c:when test="${mileage.ALL_POINT >=30 }">
-								        <tr id ="${mileage.INFORMER_ID}">
-								    </c:when>
+								    <c:when test="${idx.index < 10 && mileage.ALL_POINT >= 30}">
+							            <tr id ="${mileage.INFORMER_ID}">
+							        </c:when>
+								    
 								    <c:otherwise>
 								        <tr id ="${mileage.INFORMER_ID}">
 								    </c:otherwise>
