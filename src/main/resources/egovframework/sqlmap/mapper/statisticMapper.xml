@@ -411,7 +411,8 @@
 		        AND A.ORG_SUB_ID = C.ORG_SID
 		    WHERE 
 		        A.area_code = #{REGION_ID}
-		        AND A.INFORMER_TYPE = '0'
+		        <!-- 통신원 및 최고통신원 -->
+		        AND A.INFORMER_TYPE IN ('0','8')
 		        AND A.FLAG_ACT = 'Y'
 		) IFM
 		LEFT JOIN
@@ -821,9 +822,9 @@
 	    with infrm as(
 		select a.*,b.org_name from
 		(select act_id,informer_id,informer_name,org_id,PHONE_CELL,reg_date from informer 
-		where area_code =#{REGION_ID} and informer_type='0' and flag_act='Y') a
+		where area_code =#{REGION_ID} and informer_type in ('0','8') and flag_act='Y') a
 		left join
-		(select org_id,org_name from organization where ind_type='0' and area_code=#{REGION_ID})b
+		(select org_id,org_name from organization where ind_type in ('0','8') and area_code=#{REGION_ID})b
 		on(a.org_id=b.org_id)
 		),
 		<!-- 방송국별 월별 제보건수 -->
@@ -840,9 +841,9 @@
 	    with infrm as(
 		select a.*,b.org_name from
 		(select act_id,informer_id,informer_name,org_id,reg_date from informer 
-		where area_code =#{REGION_ID} and informer_type='0' and flag_act='Y') a
+		where area_code =#{REGION_ID} and informer_type in ('0','8') and flag_act='Y') a
 		left join
-		(select org_id,org_name from organization where ind_type='0' and area_code=#{REGION_ID})b
+		(select org_id,org_name from organization where ind_type in ('0','8') and area_code=#{REGION_ID})b
 		on(a.org_id=b.org_id)
 		),
 		<!-- 방송국별 월별 제보건수 -->
@@ -868,10 +869,10 @@
             select a.*,b.org_name from
             (
                 select act_id,informer_id,informer_name,org_id,PHONE_CELL,reg_date from informer 
-                where area_code =#{REGION_ID} and informer_type='0'and flag_act='Y'
+                where area_code =#{REGION_ID} and informer_type in ('0','8') and flag_act='Y'
             ) a
             left join
-            (select org_id,org_name from organization where ind_type='0' and area_code=#{REGION_ID})b
+            (select org_id,org_name from organization where ind_type in ('0','8') and area_code=#{REGION_ID})b
             on(a.org_id=b.org_id)
 		)T
         WHERE T.INFORMER_ID IN
@@ -2772,7 +2773,7 @@
 		            AND A.AREA_CODE = B.AREA_CODE
 		        WHERE 
 		            A.area_code = #{REGION_ID}
-		            AND A.INFORMER_TYPE = '0'
+		            AND A.INFORMER_TYPE in ('0','8')
 		            AND A.FLAG_ACT = 'Y'
 		    ) IFM
 		LEFT JOIN
@@ -2852,7 +2853,7 @@
 		                AND A.AREA_CODE = B.AREA_CODE
 		            WHERE 
 		                A.area_code = #{REGION_ID}
-		                AND A.INFORMER_TYPE = '0'
+		                AND A.INFORMER_TYPE in ('0','8')
 		                AND A.FLAG_ACT = 'Y'
 		        ) IFM
 		    LEFT JOIN
@@ -2921,7 +2922,7 @@
 		    a.region_id = #{REGION_ID}
 		    AND a.RECEIPT_DAY BETWEEN TO_DATE(#{start_date}, 'YY/MM/DD') AND TO_DATE(#{end_date}, 'YY/MM/DD')
 		    AND b.area_code = #{REGION_ID}
-		    AND a.individual_type = '0'
+		    AND a.individual_type in ('0','8')
 		GROUP BY 
 		    b.org_id, b.ORG_NAME
 	</select>
@@ -2953,7 +2954,7 @@
 		        a.region_id = #{REGION_ID}
 		        AND a.RECEIPT_DAY BETWEEN TO_DATE(#{start_date}, 'YY/MM/DD') AND TO_DATE(#{end_date}, 'YY/MM/DD')
 		        AND b.area_code = #{REGION_ID}
-		        AND a.individual_type = '0'
+		        AND a.individual_type in ('0','8')
 		    GROUP BY 
 		        b.org_id, b.ORG_NAME
 		    ORDER BY total DESC  
