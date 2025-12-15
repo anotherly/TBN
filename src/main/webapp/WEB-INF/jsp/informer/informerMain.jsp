@@ -70,14 +70,23 @@ window.dt = createDataTable('#informerTable', {
   columns: [
     { data:null, orderable:false, name:'CHK',
       render: d => '<input type="checkbox" name="Selection" value="'+ (d.informerId||'') +'">' },
-    { data:'informerId',       name:'INFORMER_ID' },
+    { data:'actId',       name:'ACT_ID' },
     { data:'areaName',         name:'AREA_NAME' },
     { data:'informerTypeName', name:'INFORMER_TYPE_NAME' },
     { data:'orgName',          name:'ORG_NAME' },
     { data:'informerName',     name:'INFORMER_NAME' },
     { data:'phoneCell',        name:'PHONE_CELL' },
     { data:'flagAct',          name:'FLAG_ACT' },
-    { data:'regDate',          name:'REG_DATE' }
+    {
+    	  data: 'regDate',
+    	  name: 'REG_DATE',
+    	  render: function (d, t, r) {
+    	      if (d === null || d === '' || d === undefined) {
+    	          return '정보 없음';
+    	      }
+    	      return d;
+    	  }
+    	}
   ],
   createdRow: function(row, data){
     $(row).attr('data-informer-id', data.informerId).css('cursor','pointer');

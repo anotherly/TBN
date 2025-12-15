@@ -43,7 +43,7 @@
                          </tr>
                          <tr>
                              <td class="strong">이름</td>
-                             <td><input class="input_base" type="text" id="userName" name="userName" maxlength="10" onkeyup="spaceChk(this);" onkeydown="spaceChk(this);" required/></td>
+                             <td><input class="input_base" type="text" id="userName" name="userName" maxlength="8" onkeyup="spaceChk(this);" onkeydown="spaceChk(this);" required/></td>
                          </tr>
                          <tr>
                              <td class="strong">권한</td>
@@ -116,6 +116,7 @@ $(document).ready(function(){
  * 사용자 저장
  */
 function saveUser(that){
+	
 	if(boardWriteCheck(that) && telChk()){
 		var options = {
 	            url:"/user/insertUser.ajax",

@@ -113,17 +113,30 @@ function boardWriteCheck(form) {
 			}
 		}
 		//pw : (영문 특수문자 포함  15자 이상)
-		if(form[i].name =='userPw'){
-			console.log("비번 : "+form[i]);
-			if(form[i].value.length > 15 || form[i].value.length < 8
-					|| !(regExp.test(form[i].value))
-					|| !(dfExp.test(form[i].value))
-			){
-				alert("비밀번호 형식이 올바르지 않습니다. (영문+숫자+특수 8~15자 이내)");
-				form[i].focus();
-				return false;
-			}
+		var complexExp = /^(?=.*[A-Za-z])(?=.*[0-9])(?=.*[~!@#$%^&*()_+|\[\]])[A-Za-z0-9~!@#$%^&*()_+|\[\]]+$/;
+		
+		if (form[i].name === 'userPw') {
+
+		    var value = form[i].value.trim();
+
+		    console.log("비밀번호 진입");
+		    
+		    if (value.length < 8 || value.length > 15) {
+		    	console.log("비밀번호 길이 체크");
+		        alert("비밀번호의 길이가 유효하지 않습니다. (8~15자)");
+		        form[i].focus();
+		        return false;
+		    }
+
+		    if (!complexExp.test(value)) {
+		    	console.log("비밀번호 정규식 체크");
+		        alert("비밀번호 형식이 올바르지 않습니다. (영문+숫자+특수문자 포함)");
+		        form[i].focus();
+		        return false;
+		    }
 		}
+		
+		
 	}
 	//확인 비밀번호와 비밀번호가 다를 때
 	if($("#userPw").val()!=$("#userPw2").val()){

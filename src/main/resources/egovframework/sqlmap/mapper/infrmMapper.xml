@@ -688,7 +688,7 @@ SELECT * FROM (
                END AS PHONE_CELL
              , A.INFORMER_TYPE
              , A.FLAG_ACT AS FLAG_ACT_SUB
-             , NVL(A.REG_DATE,'정보없음') AS REG_DATE
+             , A.REG_DATE
              , NVL(A.ADDRESS_HOME,'미입력') AS ADDRESS_HOME
              , NVL(A.ZIPCODE,'정보없음') AS ZIPCODE
              ,A.REG_DATE AS REG_ORDER

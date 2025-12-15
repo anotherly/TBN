@@ -188,7 +188,7 @@
 </head>
 <body >
 <div id="container">
-    <div id="topWrap">
+    <div id="topWrap"> 
         <!-- bodyWrap -->
         <div id="bodyWrap" class="clfix">
             <!-- contentWrap -->
@@ -200,7 +200,7 @@
                     <c:if test="${informerInfo.informerId ne null }">
                         <h1 class="pabt8 admin_tit"><img src="<c:url value='/images/ico_tab01.gif' />" alt="" />통신원상세정보<span class="rem-phone"> * 전화번호는 숫자만 기입</span></h1>
                     </c:if>
-                </div>
+                </div>     
                 <!-- 통신원정보 개별상세정보 시작 -->
                 <div class="board_list">
                     <!-- 통신원 상제정보 시작 -->
@@ -323,12 +323,12 @@
 	                                            <input type="radio" class="input_base" name="flagBroad" id="flagBroad1" value="1" <c:if test="${informerInfo.flagBroad eq '1'}">checked</c:if> />
 	                                            <label for="radio-choice-2">방송통신원</label>
 	                                        </td>
-	                                        <td class="b" style="width: 170px;">
+	                                        <td class="b" style="width: 170px;">84602218
 	                                            <input type="checkbox" name="honor" id="honor" value="Y" <c:if test="${informerInfo.honor eq 'Y'}">checked</c:if>/>
 	                                            <label for="radio-choice-3">명예통신원</label>
 	                                            <input type="checkbox" name="flagService" id="flagService" value="Y" <c:if test="${informerInfo.flagService eq 'Y'}">checked</c:if>/>
 	                                            <label for="radio-choice-3">자원봉사</label>
-	                                         </td>
+	                                         </td>  
 	                                    </tr>
 	                                    <tr>
 	                                    	<td class="strong">소속방송국</td>

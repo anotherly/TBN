@@ -78,7 +78,16 @@ $(function () {
     	  
       },
       { data:'flagAct',          name:'FLAG_ACT' },
-      { data:'regDate',          name:'REG_ORDER' }
+      {
+    	  data: 'regDate',
+    	  name: 'REG_ORDER',
+    	  render: function (d, t, r) {
+    	      if (d === null || d === '' || d === undefined) {
+    	          return '정보 없음';
+    	      }
+    	      return d;
+    	  }
+    	}
     ],
     createdRow: function(row, data){
       $(row).attr('data-informer-id', data.informerId)
