@@ -1476,16 +1476,27 @@ public class ExportPoiHssfExcel extends AbstractView {
 	        }
 	    }
 
+		
+		
+		
+	// 교통정보 수집건수 및 활용실적 엑셀 다운로드
 	protected void standartdReceiptUse(Map model, HSSFWorkbook wb) {
 		int rowCnt = 0;
 		
+		// 통신원 유형 갯수 데이터
 		int eSize = (int)model.get("eSize");
 		
+		// 시작일 데이터
 		String thDateTime = (String) model.get("start_date");
+		
+		// model에서 엑셀 시트명 가져오고, 시트 생성
 		HSSFSheet sheet1 = wb.createSheet(model.get("sheetNames1").toString());
+		
+		// 대제목 넣을 행 생성
 		HSSFRow titlerow = sheet1.createRow(rowCnt);
 		
 		
+		// 대제목 엑셀 스타일 설정
 		CellStyle titleStyle = wb.createCellStyle();
         titleStyle.setAlignment(HSSFCellStyle.ALIGN_CENTER); // 가운데 정렬 (가로 기준)
         titleStyle.setVerticalAlignment(CellStyle.VERTICAL_CENTER); // 중앙 정렬 (세로 기준)
@@ -1494,12 +1505,17 @@ public class ExportPoiHssfExcel extends AbstractView {
  	    font.setFontHeightInPoints((short) 24); // 폰트 크기 설정
  	    titleStyle.setFont(font); // 폰트 스타일을 셀 스타일에 적용
  	    
+ 	    
+ 	    // 대제목 설정 및 스타일 적용
  	    HSSFCell titleCell = titlerow.createCell(rowCnt);
  	    titleCell.setCellValue("교통정보 수집건수 및 활용실적");
  	    titleCell.setCellStyle(titleStyle);
  	    
+ 	    
+ 	    
+ 	    // 통신원 유형 데이터 가져오기
  	    List headData = (List) model.get("headList");
- 	   
+ 	     
  	    int titleSize = (headData.size() * 2) + 2;
  	    sheet1.addMergedRegion(new CellRangeAddress(0, 0, 0, titleSize));
  	   
@@ -1549,6 +1565,8 @@ public class ExportPoiHssfExcel extends AbstractView {
 		sumCell2.setCellStyle(headStyle);
 
 		int j;
+		
+		// 통신원 유형 갯수만큼 돌림
 		for (j = 0; j < headData.size(); ++j) {
 			RecordDto record = (RecordDto) headData.get(j);
 			
@@ -1715,8 +1733,19 @@ public class ExportPoiHssfExcel extends AbstractView {
 		int dataSize = data.size();
 		
     	for (int k = 0; k < maxMon; k++) {
-    		/*logger.debug(dateList.get(k));*/
 
+    		// 통신원 별로 없는 날짜를 위한 기본 데이터 및 스타일 셋팅 작업
+    		for (j = 0; j < headData.size(); ++j) {
+    	        HSSFCell cellOur = dataRow[k].createCell(j * 2 + 3);
+    	        cellOur.setCellValue(0);
+    	        cellOur.setCellStyle(dataStyle);
+
+    	        HSSFCell cellOther = dataRow[k].createCell(j * 2 + 4);
+    	        cellOther.setCellValue(0);
+    	        cellOther.setCellStyle(dataStyle);
+    	    }
+    		
+    		
     		for (i = 0; i < data.size(); ++i) {
 				RecordDto record = (RecordDto) data.get(i);
 				statDate = Integer.parseInt(record.getString("STAT_DATE").substring(6, 8));
@@ -1727,7 +1756,11 @@ public class ExportPoiHssfExcel extends AbstractView {
 				
 				int size = maxMon;
 				int mSize = size;
+				
+				
 				for (j = 0; j < headData.size(); ++j) {
+
+					
 					if(getStatDate.equals(dateList.get(k))){
 						RecordDto record2 = (RecordDto) headData.get(j);
 						if (informerType.equals(record2.getString("CODE"))) {
@@ -1746,9 +1779,10 @@ public class ExportPoiHssfExcel extends AbstractView {
 								
 								sumOurArr[k] += record.getInt("CNT");
 							}
-							//break;
-						}
-					}
+							
+							break;
+						} 
+					} 
 				}
 			}
 		}
@@ -1972,8 +2006,11 @@ public class ExportPoiHssfExcel extends AbstractView {
  			}
 		}
 		
-		for(int z = 0; z < sSize ; z++) {
+		int sumCnt = (headData.size()) * 4;
+		
+		for(int z = 0; z < sumCnt ; z++) {
 			HSSFCell dataCell = headrow1.createCell(z + 5);
+			/*dataCell.setCellValue(sumList1[z]);*/
 			dataCell.setCellValue(sumList1[z]);
 			dataCell.setCellStyle(dataStyle);
 		}
@@ -2065,7 +2102,7 @@ public class ExportPoiHssfExcel extends AbstractView {
 						} else {
 							if (dataRow1[k].getCell(j * 4 + 5) == null) {
 								HSSFCell dataCell = dataRow1[k].createCell(j * 4 + 5);
-								dataCell.setCellValue(0.0);
+								dataCell.setCellValue(0);
 								dataCell.setCellStyle(dataStyle);
 								
 								sumSendYArr[k] += 0;
@@ -2074,7 +2111,7 @@ public class ExportPoiHssfExcel extends AbstractView {
 							if (dataRow1[k].getCell(j * 4 + 6) == null) {
 								
 								HSSFCell dataCell = dataRow1[k].createCell(j * 4 + 6);
-								dataCell.setCellValue(0.0);
+								dataCell.setCellValue(0);
 								dataCell.setCellStyle(dataStyle);
 
 								sumSendYArr[k] += 0;
@@ -2082,7 +2119,7 @@ public class ExportPoiHssfExcel extends AbstractView {
 
 							if (dataRow1[k].getCell(j * 4 + 7) == null) {
 								HSSFCell dataCell = dataRow1[k].createCell(j * 4 + 7);
-								dataCell.setCellValue(0.0);
+								dataCell.setCellValue(0);
 								dataCell.setCellStyle(dataStyle);
 
 								sumSendYArr[k] += 0;
@@ -2090,7 +2127,7 @@ public class ExportPoiHssfExcel extends AbstractView {
 
 							if (dataRow1[k].getCell(j * 4 + 8) == null) {
 								HSSFCell dataCell = dataRow1[k].createCell(j * 4 + 8);
-								dataCell.setCellValue(0.0);
+								dataCell.setCellValue(0);
 								dataCell.setCellStyle(dataStyle);
 
 								sumSendYArr[k] += 0;

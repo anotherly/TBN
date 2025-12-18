@@ -411,7 +411,6 @@
 		        AND A.ORG_SUB_ID = C.ORG_SID
 		    WHERE 
 		        A.area_code = #{REGION_ID}
-		        <!-- 통신원 및 최고통신원 -->
 		        AND A.INFORMER_TYPE IN ('0','8')
 		        AND A.FLAG_ACT = 'Y'
 		) IFM
