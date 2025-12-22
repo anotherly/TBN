@@ -19,6 +19,7 @@
 						<th style="width: 55px;">ID</th>
 						<th style="width: 70px;">이름</th>
 						<th style="width: 80px;">연락처</th>
+						<th style="width: 80px;">통신원 중분류</th>
 						<th style="width: 80px;">마일리지 점수 합계</th>
 						<th style="width: 80px;">당월 주요제보 점수</th>
 						<th style="width: 80px;">전월 주요제보 점수</th>
@@ -50,11 +51,12 @@
 									<td style="width: 55px;">${mileage.ACT_ID }</td>
 									<td style="width: 70px;">${mileage.INFORMER_NAME }</td>
 									<td style="width: 80px;">${mileage.PHONE_CELL }</td>
+									<td style="width: 80px;">${mileage.ORG_NAME}</td>
 									<td style="width: 80px;">${mileage.ALL_POINT }</td>
 									<td style="width: 80px;">${mileage.RECEIPT_POINT }</td>
 									<td style="width: 80px;">${mileage.BEFORE_POINT }</td>
 									<td style="width: 80px;">${mileage.DISASTOR_POINT }</td>
-									<td style="width: 71px;">${mileage.VIDEO_POINT }</td>
+									<td style="width: 82px;">${mileage.VIDEO_POINT }</td>
 								</tr>
 							</c:forEach>
 						</c:if>

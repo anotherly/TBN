@@ -183,8 +183,8 @@ function search(){
 				                    </td>
 				                    <td>
 				                        <select class="table_sel" id="searchType" name="searchType">
+				                        	<option value="informerName" ><c:out value="이름"/></option>
 				                            <option value="actId" ><c:out value="제보자ID"/></option>
-				                            <option value="informerName" ><c:out value="이름"/></option>
 				                            <option value="phoneCell" ><c:out value="전화번호"/></option>
 				                        </select>
 				                    </td>
