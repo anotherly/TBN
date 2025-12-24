@@ -4,7 +4,7 @@
 <script>
 	$(document).ready(function() {
 		console.log("굿 제보 마일리지 조회 List 진입");
-	})
+	});
 	
 
 </script>
@@ -53,13 +53,14 @@
 									<td style="width: 80px;">${mileage.PHONE_CELL }</td>
 									<td style="width: 80px;">${mileage.ORG_NAME}</td>
 									<td style="width: 80px;">${mileage.ALL_POINT }</td>
+					
 									<td style="width: 80px;">${mileage.RECEIPT_POINT }</td>
 									<td style="width: 80px;">${mileage.BEFORE_POINT }</td>
 									<td style="width: 80px;">${mileage.DISASTOR_POINT }</td>
 									<td style="width: 82px;">${mileage.VIDEO_POINT }</td>
-								</tr>
+								</tr>   
 							</c:forEach>
-						</c:if>
+						</c:if> 
 						<c:if test="${ mileageListcnt == 0 }">
 							<tr>
 								<td style="width: 880px">해당하는 데이터를 조회하지 못했습니다.</td>

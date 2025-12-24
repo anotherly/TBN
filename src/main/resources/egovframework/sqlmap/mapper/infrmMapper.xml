@@ -16,6 +16,7 @@
 		<result property="actId" column="ACT_ID"/>
 		<result property="informerName" column="INFORMER_NAME"/>
 		<result property="orgId" column="ORG_ID"/>
+		<result property="orgName" column="ORG_NAME"/>
 		<result property="phoneCell" column="PHONE_CELL"/>
 		<result property="orgSubId" column="ORG_SUB_ID"/>
 		<result property="phoneHome" column="PHONE_HOME"/>

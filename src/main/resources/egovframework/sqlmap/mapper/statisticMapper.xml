@@ -171,7 +171,7 @@
 		union all
 	    select tt.* from(
 		select '중요제보_STUDIO' as type, region_id,code,SUM(CNT) CNT
-		from(
+		from(  
 		select b.region_id,a.type_id as code,nvl(b.impbro_p,0) as cnt from code_informer_type a 
 		left join INFRM b on a.type_id=b.informer_type
 		union all

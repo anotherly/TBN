@@ -196,6 +196,8 @@ function initXYByRegionID(lgnArea){
 			break;
 		case "064" : center = new kakao.maps.LatLng(33.47840940896314, 126.55001390197313);	//제주
 			break;
+		case "041" : center = new kakao.maps.LatLng(36.6430715635016, 126.67423394621738);	//충남
+			break; 
 		default: center = new kakao.maps.LatLng(37.530863782983054, 126.971274718117);
 			break;
 	}
