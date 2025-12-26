@@ -55,6 +55,7 @@
 		<result property="informerJob" column="INFORMER_JOB"/>
 		<result property="flagBroad" column="FLAG_BROAD"/>
 		<result property="flagAct" column="FLAG_ACT"/>
+		<result property="flagBest" column="FLAG_BEST"/>
 		<result property="areaName" column="AREA_NAME"/>
 	</resultMap>
 	
@@ -380,6 +381,7 @@
 			,A.MEMO2
 			,A.IDENTIFI_DATE
 			,A.FLAG_SERVICE
+			,A.FLAG_BEST
 			,A.START_DATE
 			,A.STOP_DATE
 			,A.BIRTHDAY_DIV
@@ -460,6 +462,9 @@
 				<if test='stopDate !=null and stopDate neq ""'>
 				,STOP_DATE
 				</if>
+				<if test='flagBest !=null and flagBest neq ""'>
+				,FLAG_BEST
+				</if>
 				,BIRTHDAY_DIV
 				,FLAG_BROAD
 				,ZIPCODE
@@ -503,6 +508,9 @@
 			</if>
 			<if test='stopDate !=null and stopDate neq ""'>
 			,#{stopDate}
+			</if>
+			<if test='flagBest !=null and flagBest neq ""'>
+			,#{flagBest}
 			</if>
 			,#{birthdayDiv}
 			,#{flagBroad}
@@ -604,9 +612,12 @@
 		<if test='flagService != null'>
 		,FLAG_SERVICE = #{flagService}
 		</if>
+		<if test="flagBest != null and flagBest != ''">
+		,FLAG_BEST = #{flagBest}
+		</if>
         ,STOP_DATE = TO_CHAR(SYSDATE, 'YYYY-MM-DD')
         ,UPD_DATE = TO_CHAR(SYSDATE, 'YYYY-MM-DD')
-         WHERE INFORMER_ID =  #{informerId}
+         WHERE INFORMER_ID =  #{informerId}  
     </update>
     
     <!-- 통신원 삭제 -->

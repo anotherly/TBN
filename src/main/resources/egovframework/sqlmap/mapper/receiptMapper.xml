@@ -655,7 +655,9 @@
 	</select>
 
 	<!-- 금일 접수 현황 쿼리 -->
-	<select id="receivedStatusList" resultType="receivedStatusVO">
+	
+	<!-- 수정 전 -->
+	<!-- <select id="receivedStatusList" resultType="receivedStatusVO">
      
         SELECT * 
 		FROM(
@@ -708,7 +710,74 @@
 		<![CDATA[
 		WHERE  SEQ > #{startRow} AND SEQ <= (#{startRow} + #{size})
         ]]>
-	</select>
+	</select> -->
+	
+	
+	<select id="receivedStatusList" resultType="receivedStatusVO">
+
+		SELECT *
+		FROM (
+		    SELECT ROWNUM AS SEQ, H.*
+		    FROM (
+		        SELECT ROW_NUMBER() OVER (ORDER BY RECEIPT_DT ASC) AS RNUM, G.*
+		        FROM (
+		            SELECT A.RECEIPT_ID
+		                 , TO_CHAR(A.RECEIPT_DAY,'YYYY-MM-DD') AS RECEIPT_DAY
+		                 , A.RECEIPT_DAY || A.RECEIPT_TIME AS RECEIPT_DT
+		                 , A.FLAG_SEND
+		                 , A.FLAG_BROD
+		                 , DECODE(A.X_COORDINATE, '', 'N', 'Y') AS FLAG_MAP
+		                 , TO_CHAR(TO_DATE(A.RECEIPT_TIME, 'HH24MI'), 'HH24:MI') AS RECEIPT_TIME
+		                 , C.BAS_NAME AS REPORT_TYPE
+		                 , C.F_COLOR
+		                 , C.B_COLOR
+		                 , D.BAS_NAME AS REPORT_TYPE2
+		                 , A.INDIVIDUAL_ID
+		                 , A.INDIVIDUAL_NAME
+		                 , CASE 
+		                     WHEN I.FLAG_BEST = 'Y' THEN '최고통신원'
+		                     ELSE B.TYPE_NAME
+		                   END AS TYPE_NAME
+		                 , A.RECEPTION_ID
+		                 , A.RECEPTION_NAME
+		                 , A.MEMO
+		                 , E.NAME AS REPORTER_TYPE
+		                 , F.AREA_NAME AS REGION_NAME
+		                 , A.FLAG_IMPORTANT
+		                 , A.FLAG_DISASTOR
+		                 , TO_CHAR(TO_DATE(A.BROAD_TIME,'YYYYMMDDHH24MISS'),'HH24:MI') AS BROAD_TIME
+		            FROM REPORT_RECEIPT_TODAY A
+		            LEFT OUTER JOIN CODE_INFORMER_TYPE B
+		                ON A.INDIVIDUAL_TYPE = B.TYPE_ID
+		            LEFT OUTER JOIN INFORMER I
+		                ON A.INDIVIDUAL_ID = I.INFORMER_ID
+		            LEFT OUTER JOIN (
+		                SELECT * FROM CODE_REPORT_TYPE
+		                WHERE BAS_LCOD = '100'
+		            ) C
+		                ON A.REPORT_TYPE = C.BAS_SCOD
+		            LEFT OUTER JOIN CODE_REPORT_TYPE D
+		                ON D.BAS_SCOD = A.REPORT_TYPE2
+		               AND D.BAS_LCOD = A.REPORT_TYPE
+		            LEFT OUTER JOIN CODE_REPORTMEAN_TYPE E
+		                ON A.REPORTER_TYPE = E.ID
+		            LEFT OUTER JOIN CODE_AREACODE F
+		                ON A.REGION_ID = F.AREA_CODE
+		            WHERE A.RECEIPT_DAY = #{RECEIPT_DAY}
+		            <if test="!AREA_CODE.equals('080')">
+		                AND A.REGION_ID = #{AREA_CODE}
+		            </if>
+		        ) G
+		        ORDER BY RNUM DESC
+		    ) H
+		)
+		<![CDATA[
+		WHERE SEQ > #{startRow}
+		  AND SEQ <= (#{startRow} + #{size})
+		]]>
+		
+		</select>
+	
 	
 	
 	<!-- 모바일 앱 제보 금일 조회 -->

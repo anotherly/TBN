@@ -224,6 +224,8 @@
                                                 <label for="radio-choice-2">방송통신원</label>
                                              </td>
                                              <td colspan="3" class="b">
+                                             	<input type="checkbox" name="flagBest" id="flagBest" value="Y" />
+	                                            <label for="radio-choice-3">최고통신원</label>
                                                 <input type="checkbox" name="honor" id="honor" value="Y" />
                                                 <label for="radio-choice-3">명예통신원</label>
                                                 <input type="checkbox" name="flagService" id="flagService" value="Y" />
@@ -317,13 +319,15 @@
 	                                            </div>
 	                                        </td>
 	                                        <td class="strong">통신원종류</td>
-	                                        <td colspan="2" class="b">
+	                                        <td colspan="1" class="b">
 	                                            <input type="radio" class="input_base" name="flagBroad" id="flagBroad0" value="0" <c:if test="${informerInfo.flagBroad eq '0'}">checked</c:if> />
 	                                            <label for="radio-choice-1">일반통신원</label>
 	                                            <input type="radio" class="input_base" name="flagBroad" id="flagBroad1" value="1" <c:if test="${informerInfo.flagBroad eq '1'}">checked</c:if> />
 	                                            <label for="radio-choice-2">방송통신원</label>
 	                                        </td>
-	                                        <td class="b" style="width: 170px;">84602218
+	                                        <td colspan="2" class="b" style="width: 170px;">
+	                                         	<input type="checkbox" name="flagBest" id="flagBest" value="Y" <c:if test="${informerInfo.flagBest eq 'Y'}">checked</c:if>/>
+	                                            <label for="radio-choice-3">최고통신원 </label>
 	                                            <input type="checkbox" name="honor" id="honor" value="Y" <c:if test="${informerInfo.honor eq 'Y'}">checked</c:if>/>
 	                                            <label for="radio-choice-3">명예통신원</label>
 	                                            <input type="checkbox" name="flagService" id="flagService" value="Y" <c:if test="${informerInfo.flagService eq 'Y'}">checked</c:if>/>
@@ -416,7 +420,7 @@
                                     
                                         <tr>
                                             <td class="strong"><span style="color:red">*</span>핸드폰번호</td>
-                                            <td><input type="text" class="input_base" id="phoneCell" name="phoneCell" value="${informerInfo.phoneCell}" style="width:120px;font-weight: bold;" maxlength="13" onkeydown='return onlyNumber(event)' onkeyup='removeChar(event)'/></td>
+                                            <td><input type="text" class="input_base" id="phoneCell" name="phoneCell" value="${informerInfo.phoneCell}" style="width:120px;font-weight: bold;" maxlength="11" onkeydown='return onlyNumber(event)' onkeyup='removeChar(event)'/></td>
                                             <td class="strong">집전화번호</td>
                                            	<td><input type="text" class="input_base" id="phoneHome" name="phoneHome" value="${informerInfo.phoneHome}" style="width:150px;" maxlength="13" onkeydown='return onlyNumber(event)' onkeyup='removeChar(event)'/></td>
                                             <td class="strong">회사전화번호</td>
@@ -926,7 +930,11 @@ function saveInformer(){
     }else{
     	$('#flagService').val('N');
     }
-    
+    if($('#flagBest').is(':checked')){
+    	$('#flagBest').val('Y');
+    }else{
+    	$('#flagBest').val('N');
+    }
     
     var fileChg = false;
     if('${informerInfo.localFilePath}' != $('#localFilePath').val()){
@@ -943,7 +951,7 @@ function saveInformer(){
     $('#identifiDate').val(date);
     
     let queryString = $("#informerEditFrm").serialize();
-    let addStr ="&histCode="+histCode+"&fileChg="+fileChg+"&flagBroad="+$('input[name="flagBroad"]:checked').val()+"&honor="+$('#honor').val()+"&flagService="+$('#flagService').val();
+    let addStr ="&histCode="+histCode+"&fileChg="+fileChg+"&flagBroad="+$('input[name="flagBroad"]:checked').val()+"&honor="+$('#honor').val()+"&flagService="+$('#flagService').val()+"&flagBest="+$('#flagBest').val();
     queryString+=addStr;
    	console.log(queryString);
     var options = {

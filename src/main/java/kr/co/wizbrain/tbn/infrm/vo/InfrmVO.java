@@ -82,6 +82,8 @@ public class InfrmVO extends BaseVO{
 	 public String identifiDate;
 	//자원봉사여부 
 	 public String flagService;
+	// 최고통신원 플래그
+	 public String flagBest;
 	//위촉일 
 	 public String startDate;
 	//해촉일 
@@ -150,6 +152,12 @@ public class InfrmVO extends BaseVO{
 	}
 	public void setOrgName(String orgName) {
 		this.orgName = orgName;
+	}
+	public String getFlagBest() {
+		return flagBest;
+	}
+	public void setFlagBest(String flagBest) {
+		this.flagBest = flagBest;
 	}
 	public String getPhoneCell() {
 		return phoneCell;
