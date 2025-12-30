@@ -24,6 +24,7 @@ import kr.co.wizbrain.tbn.option.vo.AuthVo;
 import kr.co.wizbrain.tbn.option.vo.OptAreaVo;
 import kr.co.wizbrain.tbn.user.service.UserService;
 import kr.co.wizbrain.tbn.user.vo.UserVO;
+import kr.co.wizbrain.tbn.comm.util.PasswordPolicy;
 
 /**
  * 사용자 컨트롤러 클래스
@@ -187,28 +188,45 @@ public class UserController {
 	}
 	
 	
-	//사용자 등록
 	@RequestMapping(value="/user/insertUser.ajax", method=RequestMethod.POST)
-	public ModelAndView insertUser(HttpServletRequest request, @ModelAttribute UserVO userVO, RedirectAttributes redirectAttributes) throws Exception{
-		logger.debug("▶▶▶▶▶▶▶.request.getRequestURL() : "+request.getRequestURL());
-		logger.debug("▶▶▶▶▶▶▶.request.getRequestURI() : "+request.getRequestURI());
-		logger.debug("▶▶▶▶▶▶▶.request.getContextPath() : "+request.getContextPath());
-		ModelAndView mav = new ModelAndView("jsonView");
-		int cnt = 0;
-		try {
-			String authUrl = request.getRequestURI().substring(request.getContextPath().length()).split(".do")[0];
-			//패스워드 암호화 처리
-			logger.debug("변환전 uservo: "+userVO.toString());
-			String hashedPw = BCrypt.hashpw(userVO.getUserPw(), BCrypt.gensalt());
-			userVO.setUserPw(hashedPw);
-			logger.debug("변환후 uservo: "+userVO.toString());
-			userService.insertUser(userVO);
-			cnt=1;
-		} catch (Exception e) {
-			logger.debug("에러메시지 : "+e.toString());
-		}
-		mav.addObject("cnt", cnt);
-		return mav;
+	public ModelAndView insertUser(HttpServletRequest request, @ModelAttribute UserVO userVO,
+	                               RedirectAttributes redirectAttributes) throws Exception {
+
+	    ModelAndView mav = new ModelAndView("jsonView");
+
+	    try {
+	        // 1) 비번/확인 값
+	        String pw  = userVO.getUserPw();
+	        String pw2 = request.getParameter("userPw2"); // 폼에 있음(VO에 없어도 request로 받으면 됨)
+
+	        // 2) 일치 체크
+	        if (pw == null || pw.isEmpty() || pw2 == null || pw2.isEmpty() || !pw.equals(pw2)) {
+	            mav.addObject("cnt", 0);
+	            mav.addObject("msg", "비밀번호/비밀번호 확인이 일치하지 않습니다.");
+	            return mav;
+	        }
+
+	        // 3) 정책 체크(핵심)
+	        if (!PasswordPolicy.isStrong(pw)) {
+	            mav.addObject("cnt", 0);
+	            mav.addObject("msg", PasswordPolicy.failMessage());
+	            return mav;
+	        }
+
+	        // 4) 해시 후 저장
+	        String hashedPw = BCrypt.hashpw(pw, BCrypt.gensalt());
+	        userVO.setUserPw(hashedPw);
+
+	        userService.insertUser(userVO);
+	        mav.addObject("cnt", 1);
+	        return mav;
+
+	    } catch (Exception e) {
+	        logger.debug("에러메시지 : " + e.toString());
+	        mav.addObject("cnt", 0);
+	        mav.addObject("msg", "저장 중 오류가 발생했습니다.");
+	        return mav;
+	    }
 	}
 
 	//검색한 id 조회
@@ -252,47 +270,55 @@ public class UserController {
 		return mav;
 	}
 	
-	//사용자 수정 반영
-	@RequestMapping(value="/user/userUpdate.ajax")
-	public @ResponseBody ModelAndView userUpdateForm( @ModelAttribute("userVO") UserVO userVO,HttpServletRequest request) throws Exception{
-		logger.debug("▶▶▶▶▶▶▶.회원정보 수정!!!!!!!!!!!!!!!!");
-		
-		url = request.getRequestURI().substring(request.getContextPath().length()).split(".do")[0];
-		//비밀번호 암호화
-		if(!(userVO.getUserPw().equals(""))&&!(userVO.getUserPw()==null)) {
-			String hashedPw = BCrypt.hashpw(userVO.getUserPw(), BCrypt.gensalt());
-			userVO.setUserPw(hashedPw);
-		}
-		
-		ModelAndView mav = new ModelAndView("jsonView");
-		try {
-			userService.updateUser(userVO);
-			
-		} catch (Exception e) {
-			logger.debug("에러메시지 : "+e.toString());
-			mav.addObject("msg","에러가 발생하였습니다");
-		}
-		return mav;
-	}
+	@RequestMapping(value="/user/userUpdate.ajax", method=RequestMethod.POST) // 가능하면 POST로 고정 권장
+	public @ResponseBody ModelAndView userUpdateForm(@ModelAttribute("userVO") UserVO userVO,
+	                                                HttpServletRequest request) throws Exception {
 
-	//사용자 삭제
-	@RequestMapping(value="/user/userDelete.ajax")
-	public @ResponseBody ModelAndView userDelete(  @ModelAttribute("userVO") UserVO userVO,HttpServletRequest request) throws Exception{
-		logger.debug("▶▶▶▶▶▶▶.회원정보 삭제!!!!!!!!!!!!!!!!");
-		int cnt = 0;
-		url = request.getRequestURI().substring(request.getContextPath().length()).split(".do")[0];
-		
-		ModelAndView mav = new ModelAndView("jsonView");
-		try {
-			userService.deleteUser(userVO);
-			cnt=1;
-		} catch (Exception e) {
-			logger.debug("에러메시지 : "+e.toString());
-			mav.addObject("msg","에러가 발생했습니다.");
-		}
-		mav.addObject("msg","현재 접속중인 사용자는 삭제할 수 없습니다!");
-		mav.addObject("cnt", cnt);
-		return mav;
+	    ModelAndView mav = new ModelAndView("jsonView");
+
+	    try {
+	        String pw  = userVO.getUserPw();               // 변경 시에만 입력
+	        String pw2 = request.getParameter("userPw2");  // 확인값
+
+	        // 비번 변경을 시도한 경우에만 정책 강제
+	        if (pw != null && !pw.isEmpty()) {
+
+	            // 확인값 일치 체크(화면에서 “변경시에만 입력”이라도 Burp로는 들어옴)
+	            if (pw2 == null || pw2.isEmpty() || !pw.equals(pw2)) {
+	                mav.addObject("cnt", 0);
+	                mav.addObject("msg", "비밀번호/비밀번호 확인이 일치하지 않습니다.");
+	                return mav;
+	            }
+
+	            // 정책 체크(핵심)
+	            if (!PasswordPolicy.isStrong(pw)) {
+	                mav.addObject("cnt", 0);
+	                mav.addObject("msg", PasswordPolicy.failMessage());
+	                return mav;
+	            }
+
+	            // 해시 처리
+	            String hashedPw = BCrypt.hashpw(pw, BCrypt.gensalt());
+	            userVO.setUserPw(hashedPw);
+
+	        } else {
+	            // 비번 변경 의도 없음 → 업데이트 쿼리에서 비번 컬럼이 건드려지지 않게 해야 함
+	            // (MyBatis 쪽에서 <if test="userPw != null and userPw != ''"> 로 update 하도록 되어 있어야 안전)
+	            userVO.setUserPw(null);
+	        }
+
+	        userService.updateUser(userVO);
+
+	        mav.addObject("cnt", 1);
+	        mav.addObject("msg", "OK");
+	        return mav;
+
+	    } catch (Exception e) {
+	        logger.debug("에러메시지 : " + e.toString());
+	        mav.addObject("cnt", 0);
+	        mav.addObject("msg", "수정 중 오류가 발생했습니다.");
+	        return mav;
+	    }
 	}
 	
 	/**

@@ -136,9 +136,13 @@ function saveUser(that){
 	            async : false,
 	            dataType: 'json',
 	            success: function(res){
-                	alert("저장되었습니다.");
-                	opener.search();
-                	self.close();
+	            	 if(res.cnt > 0){
+	                 	alert("저장되었습니다.");
+	                 	opener.search();
+	                 	self.close();
+	                 } else {
+	                 	alert("저장에 실패하였습니다.");
+	                 }
 	            } ,
 	            error: function(res,error){
 	            	alert("에러가 발생했습니다."+error);
