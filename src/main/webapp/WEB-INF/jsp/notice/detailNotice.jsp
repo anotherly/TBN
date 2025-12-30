@@ -165,7 +165,7 @@
 	
 	function fileDownload(url) {
 		rkFlag = true;
-		frmFile.action = '/'+url;
+		frmFile.action = url;
 		frmFile.submit();
 		rkFlag = true;
 		
@@ -205,7 +205,7 @@
 			                	<td>
 			                		<form id="frmFile" name="frmFile" method="post">
 					            		<c:forEach var="file" items="${fileInfo}" varStatus="status">
-										    <a style="margin-left: 15px;" href="javascript:fileDownload('noticefileDownload.do?fileId=${file.FILE_ID}');">${file.FILE_NAME}</a>
+										    <a style="margin-left: 15px;" href="javascript:fileDownload('/common/noticefileDownload.do?fileId=${file.FILE_ID}');">${file.FILE_NAME}</a>
 											<br>
 										</c:forEach>
 									</form>

@@ -120,8 +120,8 @@ function boardWriteCheck(form) {
 		    var value = form[i].value.trim();
 
 		    console.log("비밀번호 진입");
-		    
-		    if (value.length < 8 || value.length > 15) {
+		    //해당부분은 background에서 체크
+		    /*if (value.length < 8 || value.length > 15) {
 		    	console.log("비밀번호 길이 체크");
 		        alert("비밀번호의 길이가 유효하지 않습니다. (8~15자)");
 		        form[i].focus();
@@ -133,7 +133,7 @@ function boardWriteCheck(form) {
 		        alert("비밀번호 형식이 올바르지 않습니다. (영문+숫자+특수문자 포함)");
 		        form[i].focus();
 		        return false;
-		    }
+		    }*/
 		}
 		
 		

@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import kong.unirest.HttpRequest;
 import kr.co.wizbrain.tbn.cid.TcpAndWebClient;
 import kr.co.wizbrain.tbn.notice.vo.NoticeVO;
 import kr.co.wizbrain.tbn.receipt.service.ReceiptService;
@@ -83,67 +84,8 @@ public class ReceiptController {
 		return mv;
 	}
 	
-//	@RequestMapping("/receipt/imsFromUtic.do")
-//	public ModelAndView imsFromUtic() throws Exception {
-//		logger.debug("---------------------imsFromUtic---------------------");
-//		ModelAndView mv = new ModelAndView("/receipt/imsFromUtic");
-//		
-//		RSSParser parser = new RSSParser();
-//		List<ImsVO> imsList;
-//		
-//		imsList = parser.imsParser();
-//		mv.addObject("imsListSize", imsList.size());
-//		//mv.addObject("imsList", imsList);
-//		return mv;
-//	}
-	
-//	@RequestMapping("/receipt/imsFromUticList.do")
-//	public ModelAndView imsFromUticList() throws Exception {
-//		logger.debug("---------------------imsFromUticList---------------------");
-//		ModelAndView mv = new ModelAndView("/receipt/imsFromUticList");
-//		
-//		RSSParser parser = new RSSParser();
-//		List<ImsVO> imsList = parserS.imsParser();
-//		mv.addObject("imsList", imsList);
-//		
-//		return mv;
-//	}
-	
-	// 24-11-11 : 제보접수 페이지 이동 시 공지사항 조회
-	@RequestMapping(value="/selectNotice.ajax")
-	public @ResponseBody ModelAndView selectNotice(@RequestParam("today")String today) throws Exception {
-		
-		ModelAndView mav = new ModelAndView("jsonView");
-		List<NoticeVO> NoticeList = receiptService.selectNotice(today);
-		
-		mav.addObject("NoticeList", NoticeList);	
-		return mav;
-	}
-	
-	//24-11-12 : 하루동안 숨김인지 조회
-	@RequestMapping(value="/selectShow.ajax")
-	public @ResponseBody ModelAndView selectShow(@RequestParam("user")String user, @RequestParam("noticeId")String noticeId) throws Exception {
-		
-		ModelAndView mav = new ModelAndView("jsonView");
-		List<NoticeVO> ShowList = receiptService.selectShow(user,noticeId);
-		List<NoticeVO> NoticeList = receiptService.selectOneNotice(noticeId);
-		mav.addObject("showList" , ShowList);
-		mav.addObject("noticeList",NoticeList);
-		return mav;
-	}
-	
-	// 24-11-12 : 하루동안 숨김 없을 때 등록
-	@RequestMapping(value= "/insertShow.ajax")
-	public void insertShow(@RequestParam("today")String today,@RequestParam("user")String user,@RequestParam("noticeId")String noticeId) throws Exception {
-		receiptService.insertShow(today,user,noticeId);
-	}
-	
-	// 24-11-13 : 하루동안 숨김 클릭 시 업데이트 처리
-	@RequestMapping(value="/updateShow.ajax")
-	public void updateShow(@RequestParam("today")String today,@RequestParam("user")String user,@RequestParam("noticeId")String noticeId) throws Exception {
-		receiptService.updateShow(today,user,noticeId);
-	}
-	
+	//pickup call 테이블에 전화온것이 있을경우 조회
+	//실시간 풀링
 	@RequestMapping("/receipt/checkIfPickUpInfoExists.ajax")
 	public ModelAndView checkIfPickUpInfoExists(PickUpCallVO vo) throws Exception {
 		logger.debug("---------------------checkIfPickUpInfoExists---------------------");
@@ -154,24 +96,6 @@ public class ReceiptController {
 		return mv;
 	}
 	
-
-	
-//	@RequestMapping("/receipt/checkIfPickUpInfoExists.ajax")
-//	public ModelAndView checkIfPickUpInfoExists(PickUpCallVO vo) throws Exception {
-//		logger.debug("---------------------checkIfPickUpInfoExists---------------------");
-//		
-//		while(true) {
-//			if(true) {
-//				break;
-//			}
-//		}
-//		
-//		ModelAndView mv = new ModelAndView("jsonView");
-//		List<PickUpCallVO> list = receiptService.checkIfPickUpInfoExists(vo);
-//		
-//		mv.addObject("data", list);
-//		return mv;
-//	}
 	
 	//전화온 테이블에셔 전화 받았을 시  
 	//받은 데이터를 삭제하고(통신원 목록에 해당 데이터를 띄울시) delete
@@ -342,35 +266,19 @@ public class ReceiptController {
 	}
 	
 	@RequestMapping("/receipt/insertReceipt.do")
-	public ModelAndView insertReceipt(ReceiptVO vo) throws Exception {
+	public ModelAndView insertReceipt(HttpServletRequest request, ReceiptVO vo) throws Exception {
 		logger.info("------------------insertReceipt진입------------------");
 		ModelAndView mv = new ModelAndView("jsonView");
+		
+		// 현재 세션에 대해 로그인한 사용자 정보를 가져옴
+		UserVO reqLoginVo = (UserVO) request.getSession().getAttribute("login");
+		if(!reqLoginVo.getAuthCode().equals("2")) {
+			mv.addObject("msg", "제보등록은 접수자만 가능합니다");
+			return mv;
+		}
 		vo.setMEMO(vo.getMEMO().replaceAll("&lt;", "<").replaceAll("&gt;", ">"));
 		
 		String ifrmType = vo.getINDIVIDUAL_TYPE();
-		
-		// 통신원(0)만 진행
-		/*if(ifrmType.equals("0")) {
-			// insert 전에 최고/우수 통신원 판별
-			List<MileageVO> selectIfrm = receiptService.selectIfrm(vo);
-			
-			// 조회 결과가 없다면
-			if(selectIfrm.size() == 0 || selectIfrm == null) {
-				vo.setFLAG_KNEX("N");
-			} else { // 조회 결과가 있다면
-				vo.setFLAG_KNEX("Y");
-			}
-		}*/
-		
-		// 등록 전 최고 통신원 판별 후 문자열 수정 작업 진행
-/*		String ifrmName = vo.getINDIVIDUAL_NAME();
-		
-		int bestIfrm = receiptService.selectBestIfrm(vo);
-		
-		if(bestIfrm > 0) {
-			String setName = "최고통신원 " + ifrmName;
-			vo.setINDIVIDUAL_NAME(setName);
-		}		*/
 		
 		// 제보 접수 등록
 		int result = receiptService.insertReceipt(vo);

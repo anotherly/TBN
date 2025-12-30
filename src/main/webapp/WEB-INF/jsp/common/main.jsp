@@ -129,7 +129,7 @@
 
 		  	
 	        $.ajax({
-	            url: "/notice/selectNotice.ajax",
+	            url: "/common/selectNotice.ajax",
 	            data: { 'today': today },
 	            type: "POST",
 	            success: function(data) {

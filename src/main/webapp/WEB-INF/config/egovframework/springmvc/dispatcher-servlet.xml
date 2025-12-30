@@ -72,7 +72,7 @@
     <mvc:interceptors>
         <!-- authInterceptor -->
         <mvc:interceptor>
-			<mvc:mapping path="/receipt/receipt.do"/>
+			<!-- <mvc:mapping path="/receipt/receipt.do"/>
 			<mvc:mapping path="/producer/producer.do"/>
 			<mvc:mapping path="/caster/caster.do"/>
 			<mvc:mapping path="/stats/standard.do"/>
@@ -81,13 +81,25 @@
 			<mvc:mapping path="/informer/informerMain.do"/>
 			<mvc:mapping path="/informer/award/awardMain.do"/>
 			<mvc:mapping path="/informer/event/eventMain.do"/>
-			<mvc:mapping path="/informer/mileage/mileageMain.do"/> <!--  25-04-25 : 굿 제보 마일리지 추가 -->
-			<mvc:mapping path="/informer/excellenceIfrm/excellenceIfrmMain.do"/> <!-- 25-04-25 : 우수 제보자 추가 -->
-			<mvc:mapping path="/informer/bestIfrm/bestIfrmMain.do"/> <!-- 25-04-25 : 최고 통신원 추가 -->
+			<mvc:mapping path="/informer/mileage/mileageMain.do"/>  25-04-25 : 굿 제보 마일리지 추가
+			<mvc:mapping path="/informer/excellenceIfrm/excellenceIfrmMain.do"/> 25-04-25 : 우수 제보자 추가
+			<mvc:mapping path="/informer/bestIfrm/bestIfrmMain.do"/> 25-04-25 : 최고 통신원 추가
 			<mvc:mapping path="/option/codeMng.do"/>
 			<mvc:mapping path="/option/auth/authList.do"/>
-			<mvc:mapping path="/notice/notice.do"/> <!-- 24-11-13 : 공지사항 추가 -->
-            <mvc:exclude-mapping path="/login/**.do"/>
+			<mvc:mapping path="/notice/notice.do"/> 24-11-13 : 공지사항 추가
+			 -->
+			<mvc:mapping path="/**/*.do"/>
+        	<mvc:mapping path="/**/*.ajax"/>
+			<!-- 권한체크 제외 -->
+            <mvc:exclude-mapping path="/receipt/**"/>
+            <mvc:exclude-mapping path="/common/**"/>
+            <mvc:exclude-mapping path="/login/**"/>
+            <mvc:exclude-mapping path="/map/**"/>
+            <mvc:exclude-mapping path="/broadcast/**"/>
+            
+            <mvc:exclude-mapping path="/notice/notice.do"/>
+            <mvc:exclude-mapping path="/producer/pdPopUp.do"/>
+            <mvc:exclude-mapping path="/notice/detailNotice.do"/>
             <mvc:exclude-mapping path="/user/reloadOrKill.do"/>
             <mvc:exclude-mapping path="redirect:/"/>
             <ref bean="authInterceptor"/>

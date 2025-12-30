@@ -72,7 +72,9 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 			UserVO reqLoginVo = (UserVO) request.getSession().getAttribute("login");
 			AuthVo avo = new AuthVo();
 			avo.setAuthCode(reqLoginVo.getAuthCode());
-			avo.setUrl(nowUrl);
+			//25년 보안취약점 조치
+			//예외 케이스 명기
+			
 			if(//사용자,통신원,코드관리의 경우
 					nowUrl.equals("/user/userMain")||nowUrl.equals("/informer/informerMain")
 					||nowUrl.equals("/option/codeMng")
@@ -81,18 +83,57 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 			}else {
 				avo.setCdFlag("1");
 			}
+			//통신원등록창/등록수정
+			if(nowUrl.contains("/informer/")
+			 ||nowUrl.contains("/infrm/")
+			 ) {
+				nowUrl="/informer/informerMain";
+			}
+			//마일리지
+			if(nowUrl.contains("/mileage/")
+					) {
+				nowUrl="/informer/mileage/mileageMain";
+			}
+			//우수제보자
+			if(nowUrl.contains("/excellenceIfrm/")
+					) {
+				nowUrl="/informer/excellenceIfrm/excellenceIfrmMain";
+			}
+			//최고통신원
+			if(nowUrl.contains("/bestIfrm/")
+					) {
+				nowUrl="/informer/bestIfrm/bestIfrmMain";
+			}
+			//시상
+			if(nowUrl.contains("/award/")
+					) {
+				nowUrl="/informer/award/awardMain";
+			}
+			//행사
+			if(nowUrl.contains("/mileage/")
+					) {
+				nowUrl="/informer/mileage/mileageMain";
+			}
+			//통계관리
+			if(nowUrl.contains("/stats/")
+					) {
+				nowUrl="/stats/standard";
+			}
+			//사용자관리
+			if(nowUrl.contains("/user/")
+					) {
+				nowUrl="/user/userMain";
+			}
+			
+			//권한관리는 관리자만 조회 가능
+			if(nowUrl.contains("/auth/")) {
+				nowUrl="/option/auth/authList";
+			}
+			avo.setUrl(nowUrl);
+			//예외주소 명기 종료
+			
 			List<AuthVo> alist = new ArrayList<>();
 			alist = authService.selectAuthUrl(avo);
-			/*if(ynUrl) { // 권한의 포함된 주소
-				if (alist.size() == 0) {// 현재 선택한 메뉴의 권한여부가 n일 경우
-					rtn =false;
-					return false;
-				}else {
-					rtn = true;
-				}
-			} else {//권한에 포함되지 않은 주소
-				rtn = true;
-			}*/
 			if (alist.size() == 0) {// 현재 선택한 메뉴의 권한여부가 n일 경우
 				rtn =false;
 				return false;

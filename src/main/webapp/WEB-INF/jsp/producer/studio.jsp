@@ -55,7 +55,7 @@
 					<span style="width: 10%;">제보유형</span> 
 					<span style="width: 13%;">제보/방송</span>
 					<span>내용</span> 
-					<span style="width: 15%;">유형 / 이름</span>
+					<span style="width: 19%;">유형/이름</span>
 				</li>	
 			</ul>
 			<div class="studio-div">
@@ -65,7 +65,7 @@
 							<span style="width: 10%;" id="report_type${i}" class="st_boardside"></span>
 							<span style="width: 13%;" id="time${i}" class="st_boardside"></span>
 							<span style="" id="contents${i}" class="st_boardbin"></span>
-							<span style="width: 15%;" id="informer_name${i}" class="st_boardside"></span>
+							<span style="width: 19%;" id="informer_name${i}" class="st_boardside"></span>
 						<!-- <img src="../images/trash-can1.png" alt="지우기" title="지우기" class="poin" style="width: 20px;margin-left: 8px;" /> -->
 						</li>
 					</c:forEach>					

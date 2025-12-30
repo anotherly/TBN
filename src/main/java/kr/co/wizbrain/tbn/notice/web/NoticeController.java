@@ -240,7 +240,7 @@ public class NoticeController implements ApplicationContextAware{
 	}
 	
 	// 24-11-11 : 제보접수 페이지 이동 시 공지사항 조회
-		@RequestMapping(value="/notice/selectNotice.ajax")
+		@RequestMapping(value="/common/selectNotice.ajax")
 		public @ResponseBody ModelAndView selectNotice(@RequestParam("today")String today ,
 				HttpSession httpSession, HttpServletRequest request, Model model) throws Exception {
 			
@@ -263,7 +263,7 @@ public class NoticeController implements ApplicationContextAware{
 		
 		
 		// 파일 다운로드
-		@RequestMapping(value="/noticefileDownload.do")
+		@RequestMapping(value="/common/noticefileDownload.do")
 		public ModelAndView EventfileDownload(@RequestParam("fileId")String fileId ,ModelAndView mView
 				,HttpServletRequest request, HttpServletResponse response) throws Exception {
 			NoticeVO fvo = new NoticeVO();

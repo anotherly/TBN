@@ -193,8 +193,20 @@ public class UserController {
 	                               RedirectAttributes redirectAttributes) throws Exception {
 
 	    ModelAndView mav = new ModelAndView("jsonView");
-
+	    
 	    try {
+	    	//0)보안취약점 authCode 변조 불가
+	    	String atcd = request.getParameter("authCode");
+	    	//현재 사용자가 관리자가 아닐 경우 관리자 권한 임명 불가
+	    	UserVO reqLoginVo = (UserVO) request.getSession().getAttribute("login");
+		    if(
+		    	!(reqLoginVo.getAuthCode().equals("999"))
+		    	&&atcd.equals("999")	
+		    ) {
+		    	mav.addObject("cnt", 0);
+		    	mav.addObject("msg", "허용되지 않은 접근입니다.");
+		    	return mav;
+		    }    	
 	        // 1) 비번/확인 값
 	        String pw  = userVO.getUserPw();
 	        String pw2 = request.getParameter("userPw2"); // 폼에 있음(VO에 없어도 request로 받으면 됨)

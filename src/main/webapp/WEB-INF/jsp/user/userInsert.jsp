@@ -130,7 +130,7 @@ function saveUser(that){
 	                 	opener.search();
 	                 	self.close();
 	                 } else {
-	                 	alert("저장에 실패하였습니다.");
+	                 	alert(res.msg);
 	                 }
 	            } ,
 	            error: function(res,error){

@@ -21,10 +21,12 @@ import org.springframework.web.servlet.ModelAndView;
 import kr.co.wizbrain.tbn.user.vo.UserVO;
 import kr.co.wizbrain.tbn.user.service.UserService;
 import kr.co.wizbrain.tbn.comm.SessionListener;
+import kr.co.wizbrain.tbn.notice.vo.NoticeVO;
 import kr.co.wizbrain.tbn.option.service.AuthService;
 import kr.co.wizbrain.tbn.option.service.IntelService;
 import kr.co.wizbrain.tbn.option.vo.AuthVo;
 import kr.co.wizbrain.tbn.option.vo.IntelVO;
+import kr.co.wizbrain.tbn.receipt.service.ReceiptService;
 
 /**
  * 사용자 컨트롤러 클래스
@@ -45,6 +47,9 @@ public class MainController {
 
 	public static final Logger logger = LoggerFactory.getLogger(MainController.class);
 	
+	/*@Resource(name="receiptService")
+	private ReceiptService receiptService;
+	*/
 	@Resource(name="userService")
 	private UserService userService;
 	
@@ -249,5 +254,30 @@ public class MainController {
 		//String res=urlRedirect(request);
 		return "redirect:/";
 	}
-
+	//권한 불필요한 공통로직 처리
+	
+	//24-11-12 : 하루동안 숨김인지 조회
+	/*@RequestMapping(value="/selectShow.ajax")
+	public @ResponseBody ModelAndView selectShow(@RequestParam("user")String user, @RequestParam("noticeId")String noticeId) throws Exception {
+		
+		ModelAndView mav = new ModelAndView("jsonView");
+		List<NoticeVO> ShowList = receiptService.selectShow(user,noticeId);
+		List<NoticeVO> NoticeList = receiptService.selectOneNotice(noticeId);
+		mav.addObject("showList" , ShowList);
+		mav.addObject("noticeList",NoticeList);
+		return mav;
+	}*/
+	
+	// 24-11-12 : 하루동안 숨김 없을 때 등록
+	/*@RequestMapping(value= "/insertShow.ajax")
+	public void insertShow(@RequestParam("today")String today,@RequestParam("user")String user,@RequestParam("noticeId")String noticeId) throws Exception {
+		receiptService.insertShow(today,user,noticeId);
+	}*/
+	
+	// 24-11-13 : 하루동안 숨김 클릭 시 업데이트 처리
+	/*@RequestMapping(value="/updateShow.ajax")
+	public void updateShow(@RequestParam("today")String today,@RequestParam("user")String user,@RequestParam("noticeId")String noticeId) throws Exception {
+		receiptService.updateShow(today,user,noticeId);
+	}*/
+	
 }

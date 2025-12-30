@@ -266,7 +266,12 @@
 			                , A.report_type
 					        , B.BAS_NAME
 					        , A.INDIVIDUAL_NAME
-					        , C.TYPE_NAME
+					        
+					        , CASE
+	                           WHEN TRIM(I.FLAG_BEST) = 'Y' THEN '최고통신원'
+	                           ELSE C.TYPE_NAME
+	                       	END AS TYPE_NAME
+	                       	
 					        , A.MEMO
 					        , A.RECEIPT_DAY
 					        , A.FLAG_IMPORTANT
@@ -317,6 +322,8 @@
 					        ON A.INDIVIDUAL_TYPE = C.TYPE_ID
 					    LEFT OUTER JOIN CODE_AREACODE D
                             ON A.REGION_ID = D.AREA_CODE
+                        LEFT OUTER JOIN INFORMER I
+	                    	ON A.INDIVIDUAL_ID = I.INFORMER_ID
 					    WHERE RECEIPT_DAY= to_char(sysdate,'YYYYMMDD')
 					   		AND B.BAS_LCOD = '100'
 					   		AND FLAG_SEND = 'Y'
