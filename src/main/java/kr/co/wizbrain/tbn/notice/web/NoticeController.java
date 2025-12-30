@@ -23,6 +23,7 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
+import kr.co.wizbrain.tbn.comm.util.UploadPolicy;
 import kr.co.wizbrain.tbn.notice.service.NoticeService;
 import kr.co.wizbrain.tbn.notice.vo.NoticeVO;
 import kr.co.wizbrain.tbn.notice.vo.nFileVO;
@@ -116,19 +117,21 @@ public class NoticeController implements ApplicationContextAware{
 			String fileDir = context.getServletContext().getRealPath("/")+"noticeFile/"+ nowNoticeId +"/";
 			FileUploadSave fus = new FileUploadSave();
 			List<nFileVO> fileList = fus.fileUploadMultiple(multiFileList,fileDir,vo);
+			
 			if(fileList.size()!=0) {
+				if (multiFileList != null && !multiFileList.isEmpty()) {
+				    for (MultipartFile f : multiFileList) {
+				        UploadPolicy.validate(f); // f가 비었으면(validate 내부에서) 그냥 return
+				    }
+				}
 				noticeService.insertFile(fileList);
 			}
-			
+
 			mav.addObject("msg",1);
 		} catch(Exception e) {
 			logger.debug("에러메시지 : "+e.toString());
 			mav.addObject("msg",0);
 		}
-		
-		
-		
-		
 		return mav;
 	}
 	
@@ -195,6 +198,11 @@ public class NoticeController implements ApplicationContextAware{
 			FileUploadSave fus = new FileUploadSave();
 			List<nFileVO> fileList = fus.fileUploadMultiple(multiFileList,fileDir,vo);
 			if(fileList.size()!=0) {
+				if (multiFileList != null && !multiFileList.isEmpty()) {
+				    for (MultipartFile f : multiFileList) {
+				        UploadPolicy.validate(f); // f가 비었으면(validate 내부에서) 그냥 return
+				    }
+				}
 				noticeService.insertFile(fileList);
 			}
 			
