@@ -35,6 +35,10 @@ public class HTMLTagFilter implements Filter {
 		
 		HttpServletRequest req = (HttpServletRequest) request;
 		
+		boolean bypass = checkUrl(req);
+		System.out.println("[HTMLTagFilter] " + req.getMethod() + " " + req.getRequestURI()
+		    + " bypass=" + bypass + " CT=" + req.getContentType());
+		
 		if (checkUrl(req)) {
 			/// minking/로 시작하는 url은 filter를 하지 않는다.
 			chain.doFilter(request, response);
@@ -53,14 +57,25 @@ public class HTMLTagFilter implements Filter {
 
 	}
 
-	// "/minking/"로 시작하는 url인지 확인하는 method
+	// 25년 보안취약점 조치
+	// 필터 예외 메소드 수정 변경
 	private boolean checkUrl(HttpServletRequest req) {
-		String uri = req.getRequestURI().toString().trim();
-		if (uri.startsWith("/minking/")) {
-			return true;
-		} else {
-			return false;
-		}
+	    String uri = req.getRequestURI();
+	    String ctx = req.getContextPath();   // 예: /TBNWEB
+
+	    // ctx 제거한 “순수 경로”
+	    String path = uri.startsWith(ctx) ? uri.substring(ctx.length()) : uri;
+
+	    // /minking/ 제외
+	    if (path.startsWith("/minking/")) {
+	    	return true;
+	    }
+	    //  /receipt/ 전체 제외 (요구사항)
+	    if (path.startsWith("/receipt/")) {
+	    	return true;
+	    }
+
+	    return false;
 	}
 
 }

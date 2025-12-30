@@ -59,10 +59,11 @@
 		  <property name="maxUploadSize" value="10000000" />  최대 사이즈
 	</bean> -->
 	
+	<!-- context common 으로 이동 
 	<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
-		  <property name="defaultEncoding" value="UTF-8" /> <!-- 인코딩-->
-		  <property name="maxUploadSize" value="10000000" /> <!--  최대 사이즈-->
-	</bean>
+		  <property name="defaultEncoding" value="UTF-8" /> 인코딩
+		  <property name="maxUploadSize" value="10000000" />  최대 사이즈
+	</bean> -->
     
     
 	<!-- jdb : 로그인 인터셉터 관련 기능 추가 -->    

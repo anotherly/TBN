@@ -55,7 +55,8 @@
 									<td style="width: 80px;">${mileage.RECEIPT_POINT }</td>
 									<td style="width: 80px;">${mileage.BEFORE_POINT }</td>
 									<td style="width: 80px;">${mileage.DISASTOR_POINT }</td>
-									<td style="width: 71px;">${mileage.VIDEO_POINT }</td>								</tr>
+									<td style="width: 71px;">${mileage.VIDEO_POINT }</td>								
+								</tr>
 							</c:forEach>
 						</c:if>
 						<c:if test="${ mileageListcnt == 0 }">

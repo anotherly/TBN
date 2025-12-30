@@ -44,6 +44,12 @@
 			</list>
 		</property>
 	</bean>
+	<!-- 25년 보안취약점 조치 -->
+	<bean id="multipartResolver"
+	      class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+	  <property name="defaultEncoding" value="UTF-8"/>
+	  <property name="maxUploadSize" value="10000000"/>
+	</bean>
 	
 	<bean id="antPathMater" class="org.springframework.util.AntPathMatcher" />
 	<bean id="defaultTraceHandler" class="egovframework.rte.fdl.cmmn.trace.handler.DefaultTraceHandler" />

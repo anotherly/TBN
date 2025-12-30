@@ -35,7 +35,7 @@
 	               sum(add_cnt) as add_cnt 
 	        from stat_tbn_monrpt 
 	        where stat_mon between #{SDATE} and #{EDATE} 
-	          and ind_type='0' 
+	          and ind_type in ('0','8')  
 	          and area_code=#{AREA_CODE} 
 	          and ind_id not in (
 	            select informer_id 
@@ -228,7 +228,7 @@
 	            sum(add_cnt) as add_cnt
 	        from stat_tbn_monrpt
 	        where stat_mon between #{SDATE} and #{EDATE}
-	            and ind_type = '0'
+	            and ind_type in ('0','8') 
 	            and area_code = #{AREA_CODE}
 	            and ind_id not in (
 	                select informer_id
