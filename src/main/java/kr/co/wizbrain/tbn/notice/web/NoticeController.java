@@ -109,6 +109,17 @@ public class NoticeController implements ApplicationContextAware{
 			,HttpSession httpSession, HttpServletRequest request, Model model,
 			@ModelAttribute("NoticeVO") NoticeVO vo) throws Exception {
 		ModelAndView mav = new ModelAndView("jsonView");
+		//보안취약점 6번 조치
+		HttpSession session = request.getSession();
+		Long lastTime = (Long) session.getAttribute("NOTICE_LAST_TIME");
+
+		long now = System.currentTimeMillis();
+		if (lastTime != null && (now - lastTime) < 10000) {
+			mav.addObject("msg","시간 내 요청량이 최대치에 도달했습니다. 잠시 후 다시 시도하세요.");
+			mav.addObject("cnt",0);
+			return mav;
+		}
+		session.setAttribute("NOTICE_LAST_TIME", now);
 		
 		noticeService.insertNotice(vo); // 공지사항 등록 -> 행사 등록과 달리 등록 수정이 나뉘어져 있기 때문에 굳이 int를 return하지 않아도 된다.
 		String nowNoticeId = noticeService.selectEventId(); // 등록된 공지사항의 ID 가져오는 쿼리문 실행
@@ -127,10 +138,11 @@ public class NoticeController implements ApplicationContextAware{
 				noticeService.insertFile(fileList);
 			}
 
-			mav.addObject("msg",1);
+			mav.addObject("cnt",1);
 		} catch(Exception e) {
 			logger.debug("에러메시지 : "+e.toString());
-			mav.addObject("msg",0);
+			mav.addObject("cnt",0);
+			mav.addObject("msg","시간 내 요청량이 최대치에 도달했습니다. 잠시 후 다시 시도하세요.");
 		}
 		return mav;
 	}
@@ -189,6 +201,18 @@ public class NoticeController implements ApplicationContextAware{
 			,HttpSession httpSession, HttpServletRequest request, Model model, @ModelAttribute NoticeVO vo) throws Exception {
 		ModelAndView mav = new ModelAndView("jsonView");
 		
+		//보안취약점 6번 조치
+		HttpSession session = request.getSession();
+		Long lastTime = (Long) session.getAttribute("NOTICE_LAST_TIME");
+
+		long now = System.currentTimeMillis();
+		if (lastTime != null && (now - lastTime) < 10000) {
+			mav.addObject("msg","시간 내 요청량이 최대치에 도달했습니다. 잠시 후 다시 시도하세요.");
+			mav.addObject("cnt",0);
+			return mav;
+		}
+		session.setAttribute("NOTICE_LAST_TIME", now);
+		
 		noticeService.updateNotice(vo); // 내용 업데이트
 		
 		String nowNoticeId = vo.getNOTICE_ID();
@@ -206,10 +230,11 @@ public class NoticeController implements ApplicationContextAware{
 				noticeService.insertFile(fileList);
 			}
 			
-			mav.addObject("msg",1);
+			mav.addObject("cnt",1);
 		} catch(Exception e) {
 			logger.debug("에러메시지 : "+e.toString());
-			mav.addObject("msg",0);
+			mav.addObject("msg","저장에 실패했습니다");
+			mav.addObject("cnt",0);
 		}
 		
 		return mav;

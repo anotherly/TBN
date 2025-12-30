@@ -75,16 +75,16 @@
 			        data: frm,
 			        dataType: "json",
 			        success: function(res){	
-			        	if(res.msg > 0) {
+			        	if(res.cnt > 0) {
 			        		console.log("성공");
 			        		opener.search(true);
 			        		self.close();
 			        	} else {
-			        		alert("저장에 실패하였습니다.");
+			        		alert(res.msg);
 			        	}
 			        },
 		            error: function(res,error){
-		                alert("에러가 발생했습니다."+res);
+		                alert("에러가 발생했습니다."+res.msg);
 		            }
 				}
 			
