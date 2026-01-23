@@ -9,10 +9,12 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
@@ -4237,45 +4239,68 @@ public class ExportPoiHssfExcel extends AbstractView {
 		rowCnt++;
 		HSSFRow headrow1 = sheet1.createRow(rowCnt);
 		
-		HSSFCell headCell0 = headrow1.createCell(0);
-		headCell0.setCellValue("ID");
-		headCell0.setCellStyle(headStyle);
+		String[] headers = {
+			    "ID", "방송국", "유형", "소속기관", "이름", "전화", "활동여부", "등록일", "주소",
+			    "TRS", "메모", "명예통신원", "생일", "신분증유효기간", "자원봉사", "전달사항",
+			    "주소(회사)", "집전화번호", "차량번호", "차량종류", "최고통신원", "최종수정일",
+			    "최종학력", "추가메모", "통신원종류", "통신원직업", "회사전화번호"
+			};
 
-		HSSFCell headCell1 = headrow1.createCell(1);
-		headCell1.setCellValue("방송국");
-		headCell1.setCellStyle(headStyle);
-
-		HSSFCell headCell2 = headrow1.createCell(2);
-		headCell2.setCellValue("유형");
-		headCell2.setCellStyle(headStyle);
-
-		HSSFCell headCell3 = headrow1.createCell(3);
-		headCell3.setCellValue("소속기관");
-		headCell3.setCellStyle(headStyle);
-
-		HSSFCell headCell4 = headrow1.createCell(4);
-		headCell4.setCellValue("이름");
-		headCell4.setCellStyle(headStyle);
-
-		HSSFCell headCell5 = headrow1.createCell(5);
-		headCell5.setCellValue("전화");
-		headCell5.setCellStyle(headStyle);
-
-		HSSFCell headCell6 = headrow1.createCell(6);
-		headCell6.setCellValue("활동여부");
-		headCell6.setCellStyle(headStyle);
-
-		HSSFCell headCell7 = headrow1.createCell(7);
-		headCell7.setCellValue("등록일");
-		headCell7.setCellStyle(headStyle);
-
-		HSSFCell headCell8 = headrow1.createCell(8);
-		headCell8.setCellValue("주소");
-		headCell8.setCellStyle(headStyle);
-		
+		for (int i = 0; i < headers.length; i++) {
+		    HSSFCell cell = headrow1.createCell(i);
+		    cell.setCellValue(headers[i]);
+		    cell.setCellStyle(headStyle);
+		}
 		
 		rowCnt++;
 		HSSFRow[] dataRow = new HSSFRow[dataList.size()];
+
+		List<Function<InfrmVO, String>> extractors = Arrays.asList(
+			    InfrmVO::getActId,
+			    InfrmVO::getAreaName,
+			    InfrmVO::getInformerTypeName,
+			    InfrmVO::getOrgName,
+			    InfrmVO::getInformerName,
+			    InfrmVO::getPhoneCell,
+			    r -> "Y".equals(r.getFlagAct()) ? "위촉" : "해촉",
+			    InfrmVO::getRegDate,
+			    InfrmVO::getAddressHome,
+			    //신규추가 항목
+			    InfrmVO::getTrsNo,
+			    InfrmVO::getMemo1,
+			    InfrmVO::getHonor,
+			    InfrmVO::getBirthday,
+			    InfrmVO::getIdentifiDate,
+			    InfrmVO::getFlagService,
+			    InfrmVO::getMemo,
+			    InfrmVO::getAddressOffice,
+			    InfrmVO::getPhoneHome,
+			    InfrmVO::getCarNum,
+			    InfrmVO::getCarType,
+			    InfrmVO::getFlagBest,
+			    InfrmVO::getUpdDate,
+			    InfrmVO::getLastSchool,
+			    InfrmVO::getMemo2,
+			    InfrmVO::getFlagBroad,
+			    InfrmVO::getInformerJob,
+			    InfrmVO::getPhoneOffice
+			);
+		
+		for (int i = 0; i < dataList.size(); ++i) {
+			
+			dataRow[i] = sheet1.createRow(rowCnt + i);
+			InfrmVO record = (InfrmVO) dataList.get(i);
+
+			// 사용부
+			for (int col = 0; col < extractors.size(); col++) {
+			    HSSFCell cell = dataRow[i].createCell(col);
+			    String val = extractors.get(col).apply(record);
+			    cell.setCellValue(val == null ? "" : val);
+			    cell.setCellStyle(dataStyle);
+			}
+		}
+		
+		/*HSSFRow[] dataRow = new HSSFRow[dataList.size()];
 
 		for (int i = 0; i < dataList.size(); ++i) {
 			dataRow[i] = sheet1.createRow(rowCnt + i);
@@ -4322,7 +4347,7 @@ public class ExportPoiHssfExcel extends AbstractView {
 			HSSFCell dataCell8 = dataRow[i].createCell(8);
 			dataCell8.setCellValue(record.getAddressHome());
 			dataCell8.setCellStyle(dataStyle);
-		}
+		}*/
 		
 		sheet1.setColumnWidth(2, 4000);
 		sheet1.setColumnWidth(3, 6000);

@@ -69,8 +69,7 @@
 </style>
 <script>
 	$(document).ready(function(){
-/* 		$("#menu").load("/common/menu.do"); */
-	
+		
 		/* dateFunc('EVENT_DATE'); */
 		dateFunc('endDate');
 		
@@ -127,30 +126,6 @@
 				$('#insertForm').ajaxSubmit(options);
 			}
 				
-				
-				/* $.ajax({
-					url : "/notice/insert.do",
-					data : $('#insertForm').serialize(),
-					type : "post",
-					async : false,
-		            dataType: 'json',
-		            success : function(data) {	
-						console.log("요청 성공"+data);
-						
-						alert('저장되었습니다.');
-						
-						var val = true;
-						opener.search(val);
-						self.close();
-					},
-					error : function(xhr, status, error) {
-						console.log('공지사항 불러오기 ajax 요청에 문제가 있습니다.');
-					}
-				});
-				
-			} else {
-				return false;
-			} */
 		});
 		
 		$('.cancleButton').on('click', function() {

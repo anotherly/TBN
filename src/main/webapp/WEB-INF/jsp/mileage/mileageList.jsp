@@ -3,7 +3,7 @@
 
 <script>
 	$(document).ready(function() {
-		console.log("굿 제보 마일리지 조회 List 진입");
+		//console.log("마일리지 목록 mileageList.jsp");
 	});
 	
 

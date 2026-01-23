@@ -115,7 +115,7 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 				nowUrl="/informer/mileage/mileageMain";
 			}
 			//통계관리
-			if(nowUrl.contains("/stats/")
+			if(nowUrl.contains("/stats/")||nowUrl.contains("/stat/")
 					) {
 				nowUrl="/stats/standard";
 			}
@@ -123,6 +123,11 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 			if(nowUrl.contains("/user/")
 					) {
 				nowUrl="/user/userMain";
+			}
+			//코드관리
+			if(nowUrl.contains("/option/")
+					) {
+				nowUrl="/option/reportType/main";
 			}
 			
 			//권한관리는 관리자만 조회 가능

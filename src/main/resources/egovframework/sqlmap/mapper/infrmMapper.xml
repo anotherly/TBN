@@ -202,6 +202,28 @@
                 ,A.FLAG_ACT as FLAG_ACT_SUB		
                 ,NVL(A.REG_DATE, '정보없음') as REG_DATE		
                 ,NVL(A.ADDRESS_HOME,'미입력') as ADDRESS_HOME
+                
+				<!-- 강원 이경희 차장 요청사항으로 신규항목 추가 260120 -->                
+                ,A.TRS_NO
+				,A.MEMO1
+				,A.HONOR
+				,A.BIRTHDAY
+				,A.IDENTIFI_DATE
+				,A.FLAG_SERVICE
+				,A.MEMO
+				,A.ADDRESS_OFFICE
+				,A.PHONE_HOME
+				,A.CAR_NUM
+				,A.CAR_TYPE
+				,A.FLAG_BEST
+				,A.UPD_DATE
+				,A.LAST_SCHOOL
+				,A.memo2
+				,A.FLAG_BROAD
+				,A.INFORMER_JOB
+				,A.PHONE_OFFICE
+                
+                
                 FROM INFORMER A
                 LEFT JOIN CODE_AREACODE B
                 ON A.AREA_CODE=B.AREA_CODE

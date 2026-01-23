@@ -19,6 +19,9 @@
 <meta charset="UTF-8">
 <script>
  	$(document).ready(function(){
+ 		
+ 		//console.log("마일리지 선정 excellenceIfrmMain.jsp");
+ 		
  		var standardDate=moment().subtract(1, 'months').startOf('month').format('YYYY-MM');
 		//var endate=moment().format('YYYY-MM');
 		//common.js에 생성한 함수 참조(달력생성)
@@ -71,7 +74,6 @@
 					error:function(data,error){
 						alert("시스템에 문제가 생겼습니다." + data);
 					}
-		
 				}
 			);
 		} else if(url == 'excellenceIfrm'){
@@ -89,7 +91,6 @@
 					error:function(data,error){
 						alert("시스템에 문제가 생겼습니다." + data);
 					}
-		
 				}
 			);
 		} else {

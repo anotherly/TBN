@@ -14,7 +14,7 @@
 
 <script>
  	$(document).ready(function(){
- 		//dateFunc("standardDate");
+ 		//console.log("마일리지 관리 mileageMain.jsp");
  		var stdate=moment().subtract(1, 'months').startOf('month').format('YYYY-MM-DD');
 		var endate=moment().subtract(1, 'days').format('YYYY-MM-DD');
  		dateFunc('stdt','edt',stdate,endate);

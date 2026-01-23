@@ -20,6 +20,7 @@
 <script>
 var fcnt=0;
 $(document).ready(function(){
+	//console.log("우수제보자 선정 리스트 excellenceInformerList.jsp");
 	if(authCode=='999'){
 		$("#areaOptSel").show();
 	}else{
@@ -57,18 +58,6 @@ function init(){
 	//setComboBoxDate();
 	search();
 }
-
-/* function setComboBoxDate(){
-	var today = new Date();
-	var yearOption = "";
-	var monthOption = "";
-	
-	for(var i=1;12 >= i;i++  ){
-		monthOption += "<option value='"+ (i>9?i:('0'+i)) +"' >"+(i>9?i:('0'+i))+"</option>";
-	}
-	$("#startMonth").html(monthOption);
-	$("#startMonth").val((today.getMonth()+1)>9? (today.getMonth()+1): '0' +(today.getMonth()+1));
-} */
 
 /**
  * 검색
@@ -172,27 +161,6 @@ function search(){
 		
 	}
 
-	//수상자선정 -> 시상자목록 화면 전환
-/* 	function changePage(){
-		$.ajax
-		(
-			{
-				type : "post" ,
-				url : "/excellenceIfrm/excellenceUserMain.do" ,
-				dataType : "html" ,
-				data : $("#searchFrm").serialize(),
-				cache : false ,
-				success:function(html){
-					$('#contentWrap').html(html);
-				} ,
-	
-				error:function(data,error){
-					alert("시스템에 문제가 생겼습니다." + data);
-				}
-	
-			}
-		);
-	} */
 	
 	// 페이지 이동
 	function changePage(url){

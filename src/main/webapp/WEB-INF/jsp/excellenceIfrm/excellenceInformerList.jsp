@@ -3,7 +3,7 @@
 
 <script>
 	$(document).ready(function() {
-		console.log("우수제보자 선정 리스트");
+		//console.log("우수제보자 선정 리스트 excellenceInformerList.jsp");
 		/* if($(".admin_result_sc tbody").prop('scrollHeight') - 420 > 0){
 			//스크롤바 생길 시 테이블 밀림 방지
 		    $("#award_table th:last-child").css('padding-right','17px');
@@ -44,7 +44,7 @@
 						<c:if test="${awardInformerListSize != 0 }">
 							<c:forEach var="informer" items="${awardInformerList}"
 								varStatus="idx">
-								
+							<!-- 월별건수와 증감건수의 합계가 10 이상인 대상자만 색상표출 -->
 							<c:choose>
 							    <c:when test="${(informer.MON_CNT + informer.ADD_CNT)>=10}">
 							        <tr id ="${informer.INFORMER_ID}" style="background: #daecf9;">

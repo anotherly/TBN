@@ -821,7 +821,6 @@ public class StatisticController extends BaseController{
 		// 통신원 관리에서 엑셀 다운로드
 	  @RequestMapping({"/stats/informerDown.ajax"})
 	  public String informerDown(Model model, HttpServletRequest request, InfrmVO searchVO) throws Exception {
-	    logger.info("------------------searchFullStatus");
 	    ParamsDto params = getParams(true);
 	    System.out.println("resultVO: " + searchVO.toString());
 	    UserVO nlVo = (UserVO)request.getSession().getAttribute("login");
