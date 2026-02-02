@@ -270,7 +270,8 @@ public class InfrmController implements ApplicationContextAware {
 		stvo.setStateDt(sdf.format(date));
 		
 		if(ifmVO.getInformerId() != null && ! (ifmVO.getInformerId().equals(""))){
-			List informerInfo = infrmService.selectInfrmList(ifmVO);
+			List<String> paramList = null;
+			List informerInfo = infrmService.selectInfrmList(ifmVO, paramList);
 			if(informerInfo.size() == 1){
 				mv.addObject("informerInfo", informerInfo.get(0));
 			}

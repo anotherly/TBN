@@ -19,6 +19,114 @@
 <link rel="stylesheet" type="text/css" href="<%= request.getContextPath() %>/calender/no-boot-calendar-custom.css" />
 <link rel="stylesheet" type="text/css" href="<%= request.getContextPath() %>/calender/datetimepickerstyle.css" />
 
+<style>
+	.output-select-area {
+	    position: relative;
+	    display: inline-block;
+	}
+	
+	/* 체크박스 레이어 */
+	.select-wrap {
+	    position: absolute;
+	
+	    bottom: 0;     
+	    left: 100%;      
+	    margin-left: 6px; 
+	
+	    width: 260px;
+	    background: #fff;
+	    border: 1px solid #ccc;
+	    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+	    z-index: 1000;
+	
+	    display: none;
+	}
+	
+	.section {
+	    margin-bottom: 10px;
+	}
+	
+	.section-title {
+	    font-weight: bold;
+	    margin-bottom: 5px;
+	    padding-left: 3px;
+	}
+	
+	.section-body {
+	    border: 1px solid #ddd;
+	    padding: 6px;
+	    background: #fafafa;
+	}
+	
+	.scroll {
+	    max-height: 180px;   /* 스크롤 높이 */
+	    overflow-y: auto;
+	}
+	
+	.section-body label {
+	    display: block;
+	    margin-bottom: 4px;
+	    cursor: pointer;
+	}
+	
+	.section-body input[type="checkbox"] {
+	    margin-right: 6px;
+	}
+	
+	#downDataSelect.on ~ .select-wrap {
+	    display: block;
+	}
+	
+	.confirm-area {
+	    text-align: right;
+	    margin-top: 8px;
+	}
+	
+	.confirm-area button {
+	    padding: 4px 10px;
+	    font-size: 12px;
+	    cursor: pointer;
+	}
+	
+	.section-body input[disabled] {
+	    cursor: default;
+	    opacity: 0.7;
+	}
+	
+	#downDataSelect {
+	    padding: 6px 12px;
+	    font-size: 13px;
+	    border: 1px solid #bbb;
+	    background: #f5f5f5;
+	    color: #333;
+	    cursor: pointer;
+	    border-radius: 3px;
+	    transition: background 0.2s, border-color 0.2s;
+	}
+	
+	/* hover */
+	#downDataSelect:hover {
+	    background: #e9e9e9;
+	}
+	
+	/* 열려있을 때 (on) */
+	#downDataSelect.on {
+	    background: #e0e0e0;
+	    border-color: #999;
+	}
+	
+	/* 아이콘 느낌용 (선택) */
+	#downDataSelect::after {
+	    content: "▼";
+	    font-size: 10px;
+	    margin-left: 6px;
+	}
+	
+	/* 열려있을 때 화살표 회전 */
+	#downDataSelect.on::after {
+	    content: "▲";
+	}
+</style>
 
 <script>
 $(function () {
@@ -118,6 +226,18 @@ function search(){
   }
   window.dt.ajax.reload();
 }
+
+
+
+$('#downDataSelect').on('click', function () {
+    $(this).toggleClass('on off');
+});
+
+
+$('#selectConfirmBtn').on('click', function () {
+    $('#downDataSelect').removeClass('on').addClass('off');
+});
+
 </script>
 
 
@@ -165,7 +285,7 @@ function search(){
                                      	<select class="table_sel" style="width:120px;" id="informerTypeSel" name="informerType">
                                      		 <option value="" selected><c:out value="유형"/></option>
                                              <c:forEach var="informerType" items="${informerTypeList}">
-                                                 <option value="${informerType.ifmId1}" <c:if test="${informerType.ifmId1 eq informerInfo.informerType}">selected</c:if>>${informerType.ifmName}</option>
+                                                  <option value="${informerType.ifmId1}" <c:if test="${informerType.ifmId1 eq informerInfo.informerType}">selected</c:if>>${informerType.ifmName}</option>
                                              </c:forEach>
                                          </select>
                                      </td>
@@ -262,7 +382,63 @@ function search(){
 		<button id="addDown" style="width: 100px; height: 30px; border-radius: 3px; color: white; background-color: #7b7c7d;margin-right: 4px;"><strong>주소 라벨 출력</strong></button>
 		<a href="javascript:goStats('stats/informerDown.ajax');">
 			<img src="../images/btn_excel_down2.gif" alt="엑셀다운로드" style="width: 90px;"/>
-		</a>			
+		</a>	
+		
+		<div class="output-select-area">	
+			<button id="downDataSelect" class="off">
+			출력 데이터 변경
+			</button>
+			<div class="select-wrap">
+	
+			    <!-- 기본 -->
+			    <div class="section">
+			        <div class="section-title">기본</div>
+			        <div class="section-body scroll">
+			            <label><input type="checkbox" checked disabled> 통신원 ID</label>
+			            <label><input type="checkbox" checked disabled> 방송국</label>
+			            <label><input type="checkbox" checked disabled> 유형</label>
+			            <label><input type="checkbox" checked disabled> 소속기관</label>
+			            <label><input type="checkbox" checked disabled> 이름</label>
+			            <label><input type="checkbox" checked disabled> 전화번호</label>
+			            <label><input type="checkbox" checked disabled> 활동여부</label>
+			            <label><input type="checkbox" checked disabled> 등록일</label>
+			            <label><input type="checkbox" checked disabled> 주소</label>
+			        </div>
+			    </div>
+			
+			    <!-- 추가사항 -->
+			    <div class="section">
+			        <div class="section-title">추가사항</div>
+			        <div class="section-body scroll">
+			            <label><input class="datalist" type="checkbox" name="selectedCols" value="TRS_NO"> TRS</label>
+						<label><input class="datalist" type="checkbox" name="selectedCols" value="MEMO1"> 메모</label>
+						<label><input class="datalist" type="checkbox" name="selectedCols" value="HONOR"> 명예 통신원</label>
+						<label><input class="datalist" type="checkbox" name="selectedCols" value="BIRTHDAY"> 생일</label>
+						<label><input class="datalist" type="checkbox" name="selectedCols" value="IDENTIFI_DATE"> 신분증 유효기간</label>
+						<label><input class="datalist" type="checkbox" name="selectedCols" value="FLAG_SERVICE"> 자원 봉사</label>
+						<label><input class="datalist" type="checkbox" name="selectedCols" value="MEMO"> 전달 사항</label>
+						<label><input class="datalist" type="checkbox" name="selectedCols" value="ADDRESS_OFFICE"> 회사 주소</label>
+						<label><input class="datalist" type="checkbox" name="selectedCols" value="PHONE_HOME"> 집 전화번호</label>
+						<label><input class="datalist" type="checkbox" name="selectedCols" value="CAR_NUM"> 차량 번호</label>
+						<label><input class="datalist" type="checkbox" name="selectedCols" value="CAR_TYPE"> 차량 종류</label>
+						<label><input class="datalist" type="checkbox" name="selectedCols" value="FLAG_BEST"> 최고 통신원</label>
+						<label><input class="datalist" type="checkbox" name="selectedCols" value="UPD_DATE"> 최종 수정일</label>
+						<label><input class="datalist" type="checkbox" name="selectedCols" value="LAST_SCHOOL"> 최종 학력</label>
+						<label><input class="datalist" type="checkbox" name="selectedCols" value="MEMO2"> 추가 메모</label>
+						<label><input class="datalist" type="checkbox" name="selectedCols" value="FLAG_BROAD"> 통신원 종류</label>
+						<label><input class="datalist" type="checkbox" name="selectedCols" value="INFORMER_JOB"> 통신원 직업</label>
+						<label><input class="datalist" type="checkbox" name="selectedCols" value="PHONE_OFFICE"> 회사 전화번호</label>
+
+			        </div>
+			    </div>
+			    
+			        <!-- 확인 버튼 -->
+				    <div class="confirm-area">
+				        <button type="button" id="selectConfirmBtn">확인</button>
+				    </div>
+			
+			</div>
+		</div>
 	</div>
     <!--style="margin-right:15px;margin-top: 50px;"  -->
     <div class="btnBox" align="right" >
@@ -275,7 +451,8 @@ function search(){
 
 $(document).ready(function(){
 	console.log("informerMain.jsp 진입");
-
+                                                                          
+	
 	init();
 	
 	
@@ -410,13 +587,35 @@ function pagination(){
     };
     $('#searchFrm').ajaxSubmit(options); */
 }
-function goStats(url){
+/* function goStats(url){
 	console.log("통계 서브밋?");
-	rkFlag = true;
+    
+ 	rkFlag = true;
 	searchFrm.action = '<c:url value="/"/>'+url;
 	searchFrm.submit();
-	rkFlag = true;
+	rkFlag = true; 
+} */
+
+
+function goStats(url){
+    console.log("통계 서브밋?");
+
+    $('#searchFrm input[name="selectedCols"]').remove();
+
+    $('.datalist:checked').each(function () {
+        $('<input>')
+            .attr('type', 'hidden')
+            .attr('name', 'selectedCols')
+            .val(this.value)
+            .appendTo('#searchFrm');
+    });
+
+    rkFlag = true;
+    searchFrm.action = '<c:url value="/"/>' + url;
+    searchFrm.submit();
+    rkFlag = true;
 }
+
 
 // 주소 라벨 출력 버튼 클릭 시 실행 함수
 $('#addDown').on('click', function(){

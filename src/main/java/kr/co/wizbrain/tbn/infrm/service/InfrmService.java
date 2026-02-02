@@ -22,7 +22,7 @@ import kr.co.wizbrain.tbn.infrm.vo.InfrmVO;
 public interface InfrmService {
 
 	//전체 사용자 조회
-	public List<InfrmVO> selectInfrmList(InfrmVO InfrmVO) throws Exception;
+	public List<InfrmVO> selectInfrmList(InfrmVO InfrmVO, List<String> selectedCols) throws Exception;
 	
 	public List<InfrmVO> countInfrmList(InfrmVO InfrmVO) throws Exception;
 	

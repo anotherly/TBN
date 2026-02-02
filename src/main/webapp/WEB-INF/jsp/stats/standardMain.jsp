@@ -116,7 +116,30 @@ System.out.println("%%%%%%%%%%%%%%%% : "+monthAgo);
 				} else if(endDateType < startDateType){					
 					alert("종료일은 시작일 이전일 수 없습니다.");
 					return false;
-				} else {
+				} else if (url=='stats/volunteer.do') {
+					/* 26-01-26 : 사회봉사자 통계를 기간별로 옮기면서 기간 검색 조건식 추가 */
+					
+					var startDate = $('#stdt').val();
+					var endDate = $('#edt').val();
+					var start = new Date($('#stdt').val());
+					var end = new Date($('#edt').val());
+					
+					if (start.getFullYear() !== end.getFullYear() ||start.getMonth()!== end.getMonth()) {
+						alert('사회봉사자 일자별 통계는 같은 년월로만 조회 가능합니다.');
+						return false;
+					} else {
+						$('#start_date').val(startDate.replaceAll("-",""));
+						$('#end_date').val(endDate.replaceAll("-",""));
+						$('#city').val("("+$("#areaOptSel option:selected").text().substr(0,2)+")");
+
+						
+						rkFlag = true;	
+						frmExcel.action = '<c:url value="/"/>'+url;
+						frmExcel.submit();	
+						rkFlag = true;
+					}
+					
+				}else {
 					
 					$('#start_date').val(startDate.replaceAll("-",""));
 					$('#end_date').val(endDate.replaceAll("-",""));
@@ -138,7 +161,7 @@ System.out.println("%%%%%%%%%%%%%%%% : "+monthAgo);
 				if($("#sDate").val().length==1){
 					stDt="0"+stDt;
 				}
-				
+
 				// 통신원 소속별 일자별 통계의 경우, YYYYMMDD 형식으로 보내야 하므로 뒤에 추가적으로 DD를 붙여야함
 				if(url == 'stats/dayReceipt.do' || url == 'stats/volunteer.do') {
 					$('#start_date').val($('#sYear').val()+stDt+'01');
@@ -338,6 +361,12 @@ $('#areaOptSel').on("click", function() {
                                     <tr>
                                         <td class="txt_left"><img src="../images/ico_excel.gif" alt="" class="mglsub03" /><a href="javascript:goStats('range','stats/yearOrgStat.do');">연간 지역(소속)별 실적통계</a></td>
                                         <td><a href="javascript:goStats('range','stats/yearOrgStat.do');"><img src="../images/btn_excel_down.gif" alt="엑셀다운로드" /></a></td>
+                                    </tr>
+                                    <!-- 26-01-26 : 강원 요청으로 사회봉사자 통게 -> 기간별로 이동 -->
+                                    <tr>
+                                        <td class="txt_left"><img src="../images/ico_excel.gif" alt="" class="mglsub03" /><a href="javascript:goStats('range','stats/volunteer.do');">사회봉사자 일자별 통계</a></td>
+                                        <td><a href="javascript:goStats('range','stats/volunteer.do');"><img src="../images/btn_excel_down.gif" alt="엑셀다운로드" /></a></td>
+                                    </tr>
                                 </tbody>
                                 
                                 
@@ -395,10 +424,7 @@ $('#areaOptSel').on("click", function() {
                                         </td>
                                         <td><a href="javascript:goStats('month','stats/dayReceipt.do');"><img src="../images/btn_excel_down.gif" alt="엑셀다운로드" /></a></td>
                                     </tr>
-                                    <tr>
-                                        <td class="txt_left"><img src="../images/ico_excel.gif" alt="" class="mglsub03" /><a href="javascript:goStats('month','stats/volunteer.do');">사회봉사자 일자별 통계</a></td>
-                                        <td><a href="javascript:goStats('month','stats/volunteer.do');"><img src="../images/btn_excel_down.gif" alt="엑셀다운로드" /></a></td>
-                                    </tr>
+                              
       
                                      <!-- 24-11-18 : 연간 제보자별 제보현황  => 기간별로 옮겨야 함 -->
                                    <!--  <tr>

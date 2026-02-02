@@ -195,36 +195,33 @@
             </form>
             <div id="targetDiv">
             </div>
-            
-            <div class="admin_result_sc">
-                <table style="width : 880px; table-layout: fixed;" border="0" cellpadding="0" cellspacing="0" class="list01">
-                	<colgroup>                                
-	                    <col width="*" />
-	                    <col width="200" />
-                    </colgroup>
-					<thead>
-						<tr>
-                        	<th style="font-size : 16px;">제목</th>
-                        	<th style="font-size : 16px;">작성자</th>
-                        	<th style="font-size : 16px;">작성일</th>
-                        </tr>
-					</thead>
-					<tbody>
-					<c:if test="${empty noticeList}">
-						<td style="font-size : 16px;" colspan="3">해당하는 데이터가 없습니다.</td>
-					</c:if>
-						<c:forEach var="list" items="${noticeList}">
-							<tr>
-								<input type="hidden" id="notice_id" value="${list.NOTICE_ID}">
-								<td style="font-size : 16px; overflow: hidden; text-overflow: ellipsis;white-space: nowrap;" >${list.NOTICE_TITLE}</td>
-								<td style="font-size : 16px;">${list.WRITER_NAME}</td>
-								<td style="font-size : 16px;">${list.START_DATE}</td>
-							</tr>
-						</c:forEach>
-					</tbody>
-                </table>
-            </div>
-        </div>
+        
+        <div class="admin_result_sc">
+	    <table class="list01">
+	        <thead>
+	            <tr>
+	                <th style="width : 466px;">제목</th>
+	                <th style="width : 195px;">작성자</th>
+	                <th>작성일</th>
+	            </tr>
+	        </thead>
+	    </table>
+	
+	    <div class="tbody_scroll" style="max-height: 400px; overflow-y: auto;">
+	        <table class="list01">
+	            <tbody>
+	                <c:forEach var="list" items="${noticeList}">
+	                    <tr>
+	                        <td>${list.NOTICE_TITLE}</td>
+	                        <td>${list.WRITER_NAME}</td>
+	                        <td>${list.START_DATE}</td>
+	                    </tr>
+	                </c:forEach>
+	            </tbody>
+	        </table>
+	    </div>
+	</div>
+
         <div id="insertBtn_div" style="margin-top: 15px; width: 880px;">
             	<div style="float: right;">
             		<button class="insertButton">등록</button>

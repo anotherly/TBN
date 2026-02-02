@@ -1489,8 +1489,8 @@
 		(
             SELECT * FROM(
                 select to_number(substr(receipt_day,7,8)) as receipt_day,individual_id from report_receipt
-                        where receipt_day <![CDATA[>=]]> TRUNC(to_date(#{start_date},'YYYYMMDD'), 'MM') 
-                        and receipt_day <![CDATA[<=]]> last_day(to_date(#{start_date},'YYYYMMDD'))
+                        where receipt_day <![CDATA[>=]]> to_date(#{start_date},'YYYYMMDD')
+                        and receipt_day <![CDATA[<=]]> to_date(#{end_date},'YYYYMMDD')
                         and region_id=#{REGION_ID}
                         and individual_id is not null
             )

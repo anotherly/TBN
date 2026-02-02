@@ -9,7 +9,6 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
@@ -35,7 +34,6 @@ import org.apache.poi.ss.util.CellRangeAddress;
 import org.springframework.web.servlet.view.AbstractView;
 
 import kr.co.wizbrain.tbn.award.vo.AwardVO;
-import kr.co.wizbrain.tbn.comm.BaseDto;
 import kr.co.wizbrain.tbn.comm.RecordDto;
 import kr.co.wizbrain.tbn.infrm.vo.InfrmVO;
 /* loaded from: ExportPoiHssfExcel.class */
@@ -3624,7 +3622,7 @@ public class ExportPoiHssfExcel extends AbstractView {
         HSSFCell headCell2 = headrow1.createCell(2);
         HSSFCell headCell3 = headrow1.createCell(3);
         HSSFCell headCell4 = headrow1.createCell(4);
-        HSSFCell headCell5 = headrow1.createCell(5);
+        HSSFCell headCell5 = headrow1.createCell(5); 
         HSSFCell headCell6 = headrow1.createCell(6);
         HSSFCell headCell7 = headrow1.createCell(7);
         HSSFCell headCell8 = headrow1.createCell(8);
@@ -3680,7 +3678,7 @@ public class ExportPoiHssfExcel extends AbstractView {
         headCell18.setCellValue("12");
         headCell19.setCellValue("13");
         headCell20.setCellValue("14");
-        headCell21.setCellValue("15");
+        headCell21.setCellValue("15"); 
         headCell22.setCellValue("16");
         headCell23.setCellValue("17");
         headCell24.setCellValue("18");
@@ -4239,23 +4237,65 @@ public class ExportPoiHssfExcel extends AbstractView {
 		rowCnt++;
 		HSSFRow headrow1 = sheet1.createRow(rowCnt);
 		
-		String[] headers = {
-			    "ID", "방송국", "유형", "소속기관", "이름", "전화", "활동여부", "등록일", "주소",
-			    "TRS", "메모", "명예통신원", "생일", "신분증유효기간", "자원봉사", "전달사항",
-			    "주소(회사)", "집전화번호", "차량번호", "차량종류", "최고통신원", "최종수정일",
-			    "최종학력", "추가메모", "통신원종류", "통신원직업", "회사전화번호"
-			};
+		List<String> headerList = new ArrayList<>();
+		headerList.add("ID");
+		headerList.add("방송국");
+		headerList.add("유형");
+		headerList.add("소속기관");
+		headerList.add("이름");
+		headerList.add("전화");
+		headerList.add("활동여부");
+		headerList.add("등록일");
+		headerList.add("주소");
 
-		for (int i = 0; i < headers.length; i++) {
-		    HSSFCell cell = headrow1.createCell(i);
-		    cell.setCellValue(headers[i]);
-		    cell.setCellStyle(headStyle);
-		}
+		List<String> selectData = (List<String>) model.get("selectData");
 		
-		rowCnt++;
-		HSSFRow[] dataRow = new HSSFRow[dataList.size()];
+		
+		if (selectData != null) {
+			for (String col : selectData) {
+				if ("TRS_NO".equals(col)) {
+					headerList.add("TRS");
+		        } else if ("MEMO1".equals(col)) {
+		        	headerList.add("메모");
+		        } else if ("HONOR".equals(col)) {
+		        	headerList.add("명예 통신원");
+		        } else if ("BIRTHDAY".equals(col)) {
+		        	headerList.add("생일");
+		        } else if ("IDENTIFI_DATE".equals(col)) {
+		        	headerList.add("신분증 유효기간");
+		        } else if ("FLAG_SERVICE".equals(col)) {
+		        	headerList.add("자원봉사");
+		        } else if ("MEMO".equals(col)) {
+		        	headerList.add("전달사항");
+		        } else if ("ADDRESS_OFFICE".equals(col)) {
+		        	headerList.add("주소(회사)");
+		        } else if ("PHONE_HOME".equals(col)) {
+		        	headerList.add("집 전화번호");
+		        } else if ("CAR_NUM".equals(col)) {
+		        	headerList.add("차량번호");
+		        } else if ("CAR_TYPE".equals(col)) {
+		        	headerList.add("차량종류");
+		        } else if ("FLAG_BEST".equals(col)) {
+		        	headerList.add("최고통신원");
+		        } else if ("UPD_DATE".equals(col)) {
+		        	headerList.add("최종수정일");
+		        } else if ("LAST_SCHOOL".equals(col)) {
+		        	headerList.add("최종학력");
+		        } else if ("MEMO2".equals(col)) {
+		        	headerList.add("추가메모");
+		        } else if ("FLAG_BROAD".equals(col)) {
+		        	headerList.add("통신원 종류");
+		        } else if ("INFORMER_JOB".equals(col)) {
+		        	headerList.add("통신원 직업");
+		        } else if ("PHONE_OFFICE".equals(col)) {
+		        	headerList.add("회사 전화번호");
+		        } 
+	
+			}
+		}
 
-		List<Function<InfrmVO, String>> extractors = Arrays.asList(
+		
+		/*List<Function<InfrmVO, String>> extractors = Arrays.asList(
 			    InfrmVO::getActId,
 			    InfrmVO::getAreaName,
 			    InfrmVO::getInformerTypeName,
@@ -4284,7 +4324,58 @@ public class ExportPoiHssfExcel extends AbstractView {
 			    InfrmVO::getFlagBroad,
 			    InfrmVO::getInformerJob,
 			    InfrmVO::getPhoneOffice
-			);
+			);*/
+		
+		List<Function<InfrmVO, String>> extractors = new ArrayList<>();
+		extractors.add(InfrmVO::getActId);
+		extractors.add(InfrmVO::getAreaName);
+		extractors.add(InfrmVO::getInformerTypeName);
+		extractors.add(InfrmVO::getOrgName);
+		extractors.add(InfrmVO::getInformerName);
+		extractors.add(InfrmVO::getPhoneCell);
+		extractors.add(r -> "Y".equals(r.getFlagAct()) ? "위촉" : "해촉");
+		extractors.add(InfrmVO::getRegDate);
+		extractors.add(InfrmVO::getAddressHome);
+		
+		
+		Map<String, Function<InfrmVO, String>> newExtractorMap = new HashMap<>();
+
+		newExtractorMap.put("TRS_NO", InfrmVO::getTrsNo);
+		newExtractorMap.put("MEMO1", InfrmVO::getMemo1);
+		newExtractorMap.put("HONOR", InfrmVO::getHonor);
+		newExtractorMap.put("BIRTHDAY", InfrmVO::getBirthday);
+		newExtractorMap.put("IDENTIFI_DATE", InfrmVO::getIdentifiDate);
+		newExtractorMap.put("FLAG_SERVICE", InfrmVO::getFlagService);
+		newExtractorMap.put("MEMO", InfrmVO::getMemo);
+		newExtractorMap.put("ADDRESS_OFFICE", InfrmVO::getAddressOffice);
+		newExtractorMap.put("PHONE_HOME", InfrmVO::getPhoneHome);
+		newExtractorMap.put("CAR_NUM", InfrmVO::getCarNum);
+		newExtractorMap.put("CAR_TYPE", InfrmVO::getCarType);
+		newExtractorMap.put("FLAG_BEST", InfrmVO::getFlagBest);
+		newExtractorMap.put("UPD_DATE", InfrmVO::getUpdDate);
+		newExtractorMap.put("LAST_SCHOOL", InfrmVO::getLastSchool);
+		newExtractorMap.put("MEMO2", InfrmVO::getMemo2);
+		newExtractorMap.put("FLAG_BROAD", InfrmVO::getFlagBroad);
+		newExtractorMap.put("INFORMER_JOB", InfrmVO::getInformerJob);
+		newExtractorMap.put("PHONE_OFFICE", InfrmVO::getPhoneOffice);
+		
+		if (selectData != null) {
+		    for (String col : selectData) {
+		        Function<InfrmVO, String> extractor = newExtractorMap.get(col);
+		        if (extractor != null) {
+		            extractors.add(extractor);
+		        }
+		    }
+		}
+		
+		for (int i = 0; i < headerList.size(); i++) {
+		    HSSFCell cell = headrow1.createCell(i);
+		    cell.setCellValue(headerList.get(i));
+		    cell.setCellStyle(headStyle);
+		}
+		
+		rowCnt++;
+		HSSFRow[] dataRow = new HSSFRow[dataList.size()];
 		
 		for (int i = 0; i < dataList.size(); ++i) {
 			

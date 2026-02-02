@@ -254,7 +254,7 @@ $(document).ready(function() {
 				<!-- receivedStatusList.jsp -->
 			</div>
 		</form>
-		<!-- <img id="icoRcpExplain" src="../images/img_iconExp.png" /> -->
+		<img id="icoRcpExplain" src="../images/mobile_color.png" style="width : 580px; height : 30px;"/>
 		<span style="position:absolute; right:90px; bottom:-50px;">
 			<button id="appInsBtn" style="background:#3c6dc5;color:white;padding:8px 25px;border:none;border-radius:6px;font-size:15px;cursor:pointer;transition:0.2s;"onmouseover="this.style.background='#336ED4'"onmouseout="this.style.background='#3F82F7'">
 			    등록

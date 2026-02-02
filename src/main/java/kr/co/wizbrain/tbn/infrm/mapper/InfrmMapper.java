@@ -22,9 +22,11 @@ import kr.co.wizbrain.tbn.infrm.vo.InfrmVO;
  */
 
 @Mapper("infrmMapper")
-public interface InfrmMapper{
+public interface InfrmMapper{ 
 	//전체 회원정보 조회
-	public List<InfrmVO> selectInfrmList(InfrmVO InfrmVO) throws Exception;
+	public List<InfrmVO> selectInfrmList(@Param("InfrmVO") InfrmVO InfrmVO , @Param("selectedCols") List<String> selectedCols) throws Exception;
+
+	public List<InfrmVO> selectInfrmList20(InfrmVO InfrmVO) throws Exception;
 	
 	public List<InfrmVO> countInfrmList(InfrmVO InfrmVO) throws Exception;
 	

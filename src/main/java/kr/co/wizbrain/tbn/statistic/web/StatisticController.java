@@ -772,7 +772,9 @@ public class StatisticController extends BaseController{
 		//해당 부분은 위 부분과 대조하여 검토
 		model.addAttribute("vltList", vltList);
 		model.addAttribute("start_date", params.get("start_date"));
+		model.addAttribute("end_date", params.get("end_date"));
 		model.addAttribute("org_id", params.get("org_id"));
+		
 		return "hssfExcel";
 	}
 	
@@ -820,7 +822,7 @@ public class StatisticController extends BaseController{
 	
 		// 통신원 관리에서 엑셀 다운로드
 	  @RequestMapping({"/stats/informerDown.ajax"})
-	  public String informerDown(Model model, HttpServletRequest request, InfrmVO searchVO) throws Exception {
+	  public String informerDown(Model model, HttpServletRequest request, InfrmVO searchVO, @RequestParam(value = "selectedCols", required = false) List<String> selectedCols) throws Exception {
 	    ParamsDto params = getParams(true);
 	    System.out.println("resultVO: " + searchVO.toString());
 	    UserVO nlVo = (UserVO)request.getSession().getAttribute("login");
@@ -831,10 +833,12 @@ public class StatisticController extends BaseController{
 	    
 	    List<InfrmVO> Data = new ArrayList<>();
 	    model.addAttribute("mapping", "informerDown");
-	    Data = this.infrmService.selectInfrmList(searchVO);
+
+	    Data = this.infrmService.selectInfrmList(searchVO,selectedCols);
 	    model.addAttribute("fileName", "통신원 목록.xls");
 	    model.addAttribute("titleName", "통신원 목록");
 	    model.addAttribute("sheetNames1", "통신원 목록");
+	    model.addAttribute("selectData", selectedCols);
 	    model.addAttribute("Data", Data);
 	    return "hssfExcel";
 	  }

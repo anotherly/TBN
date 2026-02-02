@@ -33,9 +33,9 @@ public class InfrmServiceImpl implements InfrmService{
 	private InfrmMapper infrmMapper;
 	
 	//전체 회원정보 조회
-	public List<InfrmVO> selectInfrmList(InfrmVO infrmVO) throws Exception{
+	public List<InfrmVO> selectInfrmList(InfrmVO infrmVO, List<String> selectedCols) throws Exception{
 		System.out.println(infrmVO);
-		List<InfrmVO> tlist = infrmMapper.selectInfrmList(infrmVO);
+		List<InfrmVO> tlist = infrmMapper.selectInfrmList(infrmVO,selectedCols);
 		return tlist;
 	}
 	
@@ -54,7 +54,7 @@ public class InfrmServiceImpl implements InfrmService{
 	
 	//특정 사용자 조회
 	public InfrmVO selectInfrm(InfrmVO infrmVO) throws Exception {
-		InfrmVO rvo = infrmMapper.selectInfrmList(infrmVO).get(0);
+		InfrmVO rvo = infrmMapper.selectInfrmList20(infrmVO).get(0);
 		rvo.setPhoneCell(rvo.getPhoneCell().replace("-", ""));
 		return rvo;
 	}
@@ -66,7 +66,7 @@ public class InfrmServiceImpl implements InfrmService{
 
 	@Override
 	public String getInformerId(InfrmVO infrmVO) throws Exception {
-		InfrmVO rvo = infrmMapper.selectInfrmList(infrmVO).get(0);
+		InfrmVO rvo = infrmMapper.selectInfrmList20(infrmVO).get(0);
 		return rvo.getInformerId();
 	}
 

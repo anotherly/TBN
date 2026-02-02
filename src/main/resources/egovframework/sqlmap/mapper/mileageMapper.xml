@@ -65,6 +65,7 @@
 		        nvl(a.act_id,'없음') as act_id,
 		        a.informer_name,
 		        a.phone_cell,
+		        nvl(a.org_name, '정보 없음') as org_name,
 		        nw.*
 		    FROM
 		        (SELECT * FROM informer WHERE area_code = #{searchAreaCode}) a
