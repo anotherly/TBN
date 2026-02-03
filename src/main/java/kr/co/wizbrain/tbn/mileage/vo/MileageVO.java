@@ -25,8 +25,16 @@ public class MileageVO {
 	private int ALL_POINT; // 총점
 	private int RANKING; // 순위
 	
+	private String FLAG_CHK;
+	
 	public String getStdt() {
 		return stdt;
+	}
+	public String getFLAG_CHK() {
+		return FLAG_CHK;
+	}
+	public void setFLAG_CHK(String fLAG_CHK) {
+		FLAG_CHK = fLAG_CHK;
 	}
 	public void setStdt(String stdt) {
 		this.stdt = stdt;

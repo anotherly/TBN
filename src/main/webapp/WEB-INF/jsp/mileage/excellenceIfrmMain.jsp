@@ -17,6 +17,26 @@
 <html>
 <head>
 <meta charset="UTF-8">
+<style>
+    .gray-btn {
+        background-color: #6c757d; /* 회색 */
+        color: #ffffff;            /* 글자 흰색 */
+        border: none;
+        padding: 8px 16px;
+        margin-right: 6px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 14px;
+    }
+
+    .gray-btn:hover {
+        background-color: #5a6268; /* 살짝 진한 회색 */
+    }
+
+    .gray-btn:active {
+        background-color: #495057;
+    }
+</style>
 <script>
  	$(document).ready(function(){
  		
@@ -114,11 +134,122 @@
 		}
 	}
 	
+	// 엑셀 다운로드
 	function excelDownload(){
 		rkFlag = true;
 		searchFrm.action = "/mileage/excellenceIfrmExcelDown.do";
 		searchFrm.submit();
 		rkFlag = true;
+	}
+	
+	
+	// 굿 제보 통신원 선정
+	function selectIns() {
+	    const $checked = $('#award_table4 input[name="Selection"]:checked');
+	
+	    if ($checked.length === 0) {
+	        alert('선택된 통신원이 없습니다.');
+	        return;
+	    }
+	
+	    let chklist = true;
+	
+	    $checked.each(function () {
+	        const chkvalue = $(this).val();
+	
+	        // 맨 앞 글자가 Y면 이미 선정
+	        if (chkvalue.charAt(0) === 'Y') {
+	            alert('이미 선정된 통신원은 재등록할 수 없습니다.');
+	            chklist = false;
+	            return false; // ⭐ 반복 즉시 중단
+	        }
+	    });
+	
+	    if (!chklist) return;
+	
+	    const chk = confirm('이대로 굿 제보 통신원을 선정하시겠습니까?');
+	
+	    if (!chk) {
+	        alert('취소 되었습니다.');
+	        return;
+	    }
+	
+/* 	    rkFlag = true;
+		searchFrm.action = "/mileage/excellenceIfrmInsert.do";
+		searchFrm.submit();
+		rkFlag = true; */
+		
+		
+	    $.ajax({
+	        url: '/mileage/excellenceIfrmInsert.do',
+	        type: 'POST',
+	        data: $('#searchFrm').serialize(), // form 전체 전송
+	        dataType: 'json', // 컨트롤러 응답 타입
+	        success: function (res) {
+	            if (res.msg === 'success') {
+	                alert('등록이 완료되었습니다.');
+
+	                search();
+	            } else {
+	                alert('등록 중 오류가 발생했습니다.');
+	            }
+	        },
+	        error: function () {
+	            alert('서버 통신 중 오류가 발생했습니다.');
+	        }
+	    });
+	}
+	
+	
+	// 굿 제보 통신원 선정 취소
+	function selectDel() {
+		const $checked = $('#award_table4 input[name="Selection"]:checked');
+		
+	    if ($checked.length === 0) {
+	        alert('선택된 통신원이 없습니다.');
+	        return;
+	    }
+	
+	    let chklist = true;
+	    
+	    $checked.each(function () {
+	        const chkvalue = $(this).val();
+	
+	        // 맨 앞 글자가 Y면 이미 선정
+	        if (chkvalue.charAt(0) === 'N') {
+	            alert('등록되지 않은 통신원은 삭제할 수 없습니다.');
+	            chklist = false;
+	            return false; // ⭐ 반복 즉시 중단
+	        }
+	    });
+	
+	    if (!chklist) return;
+	
+	    const chk = confirm('이대로 굿 제보 통신원을 선정하시겠습니까?');
+	
+	    if (!chk) {
+	        alert('취소 되었습니다.');
+	        return;
+	    }
+	    
+	    $.ajax({
+	        url: '/mileage/excellenceIfrmDelete.do',
+	        type: 'POST',
+	        data: $('#searchFrm').serialize(), // form 전체 전송
+	        dataType: 'json', // 컨트롤러 응답 타입
+	        success: function (res) {
+	            if (res.msg === 'success') {
+	                alert('정상적으로 처리 되었습니다.');
+
+	                search();
+	            } else {
+	                alert('선정 취소 중 오류가 발생했습니다.');
+	            }
+	        },
+	        error: function () {
+	            alert('서버 통신 중 오류가 발생했습니다.');
+	        }
+	    });
 	}
 	
 	

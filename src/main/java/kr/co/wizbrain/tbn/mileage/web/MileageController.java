@@ -1,7 +1,5 @@
 package kr.co.wizbrain.tbn.mileage.web;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,13 +13,13 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import kr.co.wizbrain.tbn.award.service.AwardService;
 import kr.co.wizbrain.tbn.award.vo.AwardVO;
 import kr.co.wizbrain.tbn.award.web.AwardController;
 import kr.co.wizbrain.tbn.comm.BaseController;
-import kr.co.wizbrain.tbn.comm.ParamsDto;
 import kr.co.wizbrain.tbn.infrm.service.InfrmService;
 import kr.co.wizbrain.tbn.mileage.service.MileageService;
 import kr.co.wizbrain.tbn.mileage.vo.MileageVO;
@@ -233,18 +231,6 @@ public class MileageController extends BaseController{
 		
 		// 현재 세션에 대해 로그인한 사용자 정보를 가져옴
 		UserVO nlVo = (UserVO) request.getSession().getAttribute("login");	
-				
-		// 날짜 작업
-		/*String startDate;
-		String endDate;
-		String standardDate = MileageVO.getStandardDate();
-				
-		int year = Integer.parseInt(standardDate);
-		startDate = (year - 1) + "08";  // 전년도 8월
-		endDate = year + "07";  // 해당년도 7월
-				
-		MileageVO.setStartDate(startDate);
-		MileageVO.setEndDate(endDate);*/
 		
 		// 목록 조회하기
 		List<MileageVO> mileList = mileageService.excellenceList(MileageVO);
@@ -256,6 +242,59 @@ public class MileageController extends BaseController{
 
 		return "hssfExcel";
 	}
+	
+	
+	
+	// 굿 제보 통신원 등록
+	@RequestMapping(value="/mileage/excellenceIfrmInsert.do")
+	public ModelAndView excellenceIfrmInsert(
+	        @ModelAttribute MileageVO mvo,
+	        @RequestParam(value = "Selection", required = false) List<String> selectionList,
+	        Model model, HttpServletRequest request) throws Exception {
+		
+		ModelAndView mv = new ModelAndView("jsonView");   
+		
+		// 맨 앞에 N 떼는 사전 작업 진행
+		for (int i = 0; i < selectionList.size(); i++) {
+		    String val = selectionList.get(i);
+		    if (val != null && val.length() > 1) {
+		        selectionList.set(i, val.substring(1));
+		    }
+		}
+
+		
+		mileageService.excellenceIfrmInsert(mvo, selectionList);
+		mv.addObject("msg", "success");
+		return mv;
+			
+	}
+	
+	
+	
+	// 굿 제보 통신원 선정 취소   
+	@RequestMapping(value="/mileage/excellenceIfrmDelete.do")
+	public ModelAndView excellenceIfrmDelete(
+	        @ModelAttribute MileageVO mvo,
+	        @RequestParam(value = "Selection", required = false) List<String> selectionList,
+	        Model model, HttpServletRequest request) throws Exception {
+		
+		ModelAndView mv = new ModelAndView("jsonView");   
+		
+		// 맨 앞에 Y 떼는 사전 작업 진행
+		for (int i = 0; i < selectionList.size(); i++) {
+		    String val = selectionList.get(i);
+		    if (val != null && val.length() > 1) {
+		        selectionList.set(i, val.substring(1));
+		    }
+		}
+
+		
+		mileageService.excellenceIfrmDelete(mvo, selectionList);
+		mv.addObject("msg", "success");
+		return mv;
+			
+	}
+	
 	
 	// 7. 선정 기준 화면으로 최초 이동
 	@RequestMapping(value="/mileage/standard.do")

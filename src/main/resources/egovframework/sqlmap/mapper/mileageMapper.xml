@@ -53,12 +53,117 @@
 
 	<!-- 우수 통신원 조회 -->
 	<select id="excellenceList" parameterType="kr.co.wizbrain.tbn.mileage.vo.MileageVO" resultType="java.util.Map">
+
+	    SELECT 
+	        j1.informer_id,
+	        j1.act_id,
+	        j1.informer_name,
+	        j1.phone_cell,
+	        j1.org_name,
+	        j1.receipt_point,
+	        j1.disastor_point,
+	        j1.video_point,
+	        j1.minus_point,
+	        NVL(bf.before_point, 0) AS before_point,
+	        j1.receipt_point
+	          + j1.disastor_point
+	          + j1.video_point
+	          + NVL(bf.before_point, 0)
+	          - j1.minus_point AS all_point,
+	        RANK() OVER (
+	            ORDER BY
+	                j1.receipt_point
+	              + j1.disastor_point
+	              + j1.video_point
+	              + NVL(bf.before_point, 0)
+	              - j1.minus_point DESC
+	        ) AS ranking,
+	        NVL(am.flag_chk, 'N') AS flag_chk
+	    FROM (
+	        SELECT 
+	            a.informer_id,
+	            NVL(a.act_id,'없음') AS act_id,
+	            a.informer_name,
+	            a.phone_cell,
+	            NVL(a.org_name, '정보 없음') AS org_name,
+	            nw.receipt_point,
+	            nw.disastor_point,
+	            nw.video_point,
+	            nw.minus_point
+	        FROM informer a
+	        INNER JOIN (
+	            SELECT 
+	                informer_id,
+	                NVL(2 * SUM(receipt_score), 0) AS receipt_point,
+	                NVL(5 * SUM(disastor_score), 0) AS disastor_point,
+	                NVL(5 * SUM(video_score), 0) AS video_point,
+	                NVL(5 * SUM(minus_score), 0) AS minus_point
+	            FROM mileage_info
+	            WHERE reg_date 
+	                BETWEEN TO_DATE(#{standardDate} || '-01', 'YYYY-MM-DD')
+	                AND LAST_DAY(TO_DATE(#{standardDate} || '-01', 'YYYY-MM-DD'))
+	            GROUP BY informer_id
+	        ) nw
+	            ON a.informer_id = nw.informer_id
+	        WHERE a.area_code = #{searchAreaCode}
+	    ) j1
+	    LEFT JOIN (
+	        SELECT 
+	            informer_id,
+	            SUM(receipt_score) AS before_point
+	        FROM mileage_info
+	        WHERE reg_date 
+	            BETWEEN TRUNC(TO_DATE(#{standardDate} || '-01', 'YYYY-MM-DD') - INTERVAL '1' MONTH, 'MM')
+	            AND LAST_DAY(TO_DATE(#{standardDate} || '-01', 'YYYY-MM-DD') - INTERVAL '1' MONTH)
+	        GROUP BY informer_id
+	    ) bf
+	        ON j1.informer_id = bf.informer_id
+	    LEFT JOIN award_mileage am
+	        ON j1.informer_id = am.informer_id
+	       AND am.area_code = #{searchAreaCode}
+	       AND am.key_mon = TO_CHAR(
+	            TO_DATE(#{standardDate} || '-01', 'YYYY-MM-DD'),
+	            'YYYY-MM'
+	       )
+	    WHERE j1.informer_id NOT IN (
+	        SELECT am2.informer_id
+	        FROM award_mileage am2
+	        WHERE am2.area_code = #{searchAreaCode}
+	          AND am2.key_mon BETWEEN
+	              TO_CHAR(TRUNC(TO_DATE(#{standardDate} || '-01', 'YYYY-MM-DD') - INTERVAL '2' MONTH, 'MM'), 'YYYY-MM')
+	          AND
+	              TO_CHAR(TRUNC(TO_DATE(#{standardDate} || '-01', 'YYYY-MM-DD') - INTERVAL '1' MONTH, 'MM'), 'YYYY-MM')
+	    )
+	
+	</select>
+	
+	<!-- <select id="excellenceList" parameterType="kr.co.wizbrain.tbn.mileage.vo.MileageVO" resultType="java.util.Map">
 		
 		SELECT 
-		    j1.*,
+		    j1.informer_id,
+		    j1.act_id,
+		    j1.informer_name,
+		    j1.phone_cell,
+		    j1.org_name,
+		    j1.receipt_point,
+		    j1.disastor_point,
+		    j1.video_point,
+		    j1.minus_point,
 		    NVL(bf.before_point, 0) AS before_point,
-		    RECEIPT_POINT + DISASTOR_POINT + VIDEO_POINT + NVL(bf.before_point, 0) - minus_point  AS ALL_POINT,
-		    RANK() OVER (ORDER BY RECEIPT_POINT + DISASTOR_POINT + VIDEO_POINT + NVL(bf.before_point, 0)  - minus_point DESC) AS RANKING
+		    j1.receipt_point
+		      + j1.disastor_point
+		      + j1.video_point
+		      + NVL(bf.before_point, 0)
+		      - j1.minus_point AS all_point,
+		    RANK() OVER (
+		        ORDER BY
+		            j1.receipt_point
+		          + j1.disastor_point
+		          + j1.video_point
+		          + NVL(bf.before_point, 0)
+		          - j1.minus_point DESC
+		    ) AS ranking,
+		    NVL(am.flag_chk, 'N') AS flag_chk
 		FROM (
 		    SELECT 
 		        a.INFORMER_ID,
@@ -71,7 +176,7 @@
 		        (SELECT * FROM informer WHERE area_code = #{searchAreaCode}) a
 		        INNER JOIN (
 		            SELECT 
-		                informer_id AS id1,
+		                informer_id,
 		                nvl(2*sum(receipt_score),0) AS RECEIPT_POINT,
 		                nvl(5*sum(disastor_score),0) AS DISASTOR_POINT,
 		                nvl(5*sum(video_score),0) AS VIDEO_POINT,
@@ -82,7 +187,7 @@
 					AND LAST_DAY(TO_DATE(#{standardDate} || '-01', 'YYYY-MM-DD'))
 		            GROUP BY informer_id
 		        ) nw
-		        ON a.informer_id = nw.id1
+		        ON a.informer_id = nw.informer_id
 		) j1
 		LEFT JOIN (
 		    SELECT 
@@ -95,19 +200,64 @@
 		        AND
 		        LAST_DAY(TO_DATE(#{standardDate} || '-01', 'YYYY-MM-DD') - INTERVAL '1' MONTH)
 		    GROUP BY informer_id
-		) bf
+		) bf		
 		ON j1.informer_id = bf.id2
-		where INFORMER_ID not in 
-		(
-		select informer_id from award_mileage 
-		where AREA_CODE = #{searchAreaCode}
-		AND key_mon between
-		to_char(trunc(TO_DATE(#{standardDate} || '-01', 'YYYY-MM-DD') - INTERVAL '2' MONTH, 'MM') ,'YYYY-MM')
-		and
-		to_char(trunc(TO_DATE(#{standardDate} || '-01', 'YYYY-MM-DD') - INTERVAL '1' MONTH, 'MM') ,'YYYY-MM')
+		LEFT JOIN award_mileage am
+	    ON j1.informer_id = am.informer_id
+	   	AND am.area_code = #{searchAreaCode}
+	   	AND am.key_mon = TO_CHAR(TO_DATE(#{standardDate} || '-01', 'YYYY-MM-DD'), 'YYYY-MM')	
+		WHERE j1.INFORMER_ID NOT IN (
+		    SELECT am2.informer_id
+		    FROM award_mileage am2
+		    WHERE am2.AREA_CODE = #{searchAreaCode}
+		      AND am2.key_mon BETWEEN
+		          TO_CHAR(TRUNC(TO_DATE(#{standardDate} || '-01', 'YYYY-MM-DD') - INTERVAL '2' MONTH, 'MM'), 'YYYY-MM')
+		      AND
+		          TO_CHAR(TRUNC(TO_DATE(#{standardDate} || '-01', 'YYYY-MM-DD') - INTERVAL '1' MONTH, 'MM'), 'YYYY-MM')
 		)
 		
-	</select>
+	</select> -->
+
+
+	<!-- 굿 제보 통신원 등록 -->
+	<insert id="excellenceIfrmInsert">
+	    INSERT ALL
+	    <foreach collection="selection" item="informerId">
+	        INTO AWARD_MILEAGE
+	        (
+	            INFORMER_ID,
+	            KEY_MON,
+	            AREA_CODE,
+	            FLAG_CHK
+	        )
+	        VALUES
+	        (
+	            #{informerId},
+	            #{mvo.standardDate},
+	            #{mvo.searchAreaCode},
+	            'Y'
+	        )
+	    </foreach>
+	    SELECT 1 FROM DUAL
+	</insert>
+
+
+
+	<!-- 굿 제보 통신원 선정 취소 -->
+	<delete id="excellenceIfrmDelete">
+	    DELETE FROM AWARD_MILEAGE
+	    WHERE INFORMER_ID IN
+	    <foreach collection="selection"
+	             item="informerId"
+	             open="("
+	             close=")"
+	             separator=",">
+	        #{informerId}
+	    </foreach>
+	    AND AREA_CODE = #{mvo.searchAreaCode}
+	    AND KEY_MON = #{mvo.standardDate}
+	</delete>
+
 
 	
 	<!--  시상별 배점 갱신  -->

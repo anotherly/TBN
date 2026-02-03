@@ -50,6 +50,18 @@ public class MileageServiceImpl implements MileageService {
 		return mileageMapper.excellGrade(thvo);
 	}
 	
+	// 굿 제보 통신원 등록
+	@Override
+	public void excellenceIfrmInsert(MileageVO mvo, List<String> selection) throws Exception {
+		mileageMapper.excellenceIfrmInsert(mvo, selection);
+	}
+	
+	// 굿 제보 통신원 선정 취소
+	@Override
+	public void excellenceIfrmDelete(MileageVO mvo, List<String> selection) throws Exception {
+		mileageMapper.excellenceIfrmDelete(mvo, selection);
+	}
+	
 	// 우수 제보자 > 수상자 조회 
 	@Override
 	public List<AwardVO> selectUserAwardList(AwardVO thvo) throws Exception {

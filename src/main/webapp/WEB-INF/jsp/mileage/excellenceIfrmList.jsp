@@ -15,6 +15,7 @@
 				class="list01" id="award_table3">
 				<thead>
 					<tr>
+						<th style="width: 30px;">선정</th>
 						<th style="width: 30px;">순위</th>
 						<th style="width: 55px;">ID</th>
 						<th style="width: 70px;">이름</th>
@@ -38,16 +39,16 @@
 							<c:forEach var="mileage" items="${mileageList}"
 								varStatus="idx">
 								
-								<c:choose>
-							        <c:when test="${idx.index < 10}">
+ 								<c:choose>
+							        <c:when test="${mileage.FLAG_CHK eq 'Y'}">
 							            <tr id ="${mileage.INFORMER_ID}" style="background: #daecf9;">
 							        </c:when>
 							        <c:otherwise>
 							            <tr id ="${mileage.INFORMER_ID}">
 							        </c:otherwise>
-							    </c:choose>
+							    </c:choose> 
 								
-								
+									<td style="width: 30px;"><input type="checkbox" name="Selection" value="${mileage.FLAG_CHK}${mileage.INFORMER_ID}"></td>
 									<td style="width: 30px;">${mileage.RANKING }</td>
 									<td style="width: 55px;">${mileage.ACT_ID }</td>
 									<td style="width: 70px;">${mileage.INFORMER_NAME }</td>
@@ -69,12 +70,18 @@
 					</tbody>
 				</table>
 			</div>
-			<p class="mgt15" >
- 				<button type="button" onclick="excelDownload()">
-					<img src="../images/btn_excel_down.gif" alt="엑셀다운로드">
-				</button>
+			<div style="display:flex;align-items: flex-end;justify-content: space-between;">
+				<p class="mgt15" >
+	 				<button type="button" onclick="excelDownload()">
+						<img src="../images/btn_excel_down.gif" alt="엑셀다운로드">
+					</button>
+				</p>
 				
-			</p>
+				<div>
+					<button type="button" class="gray-btn" onclick="selectIns()">선정</button>
+					<button type="button" class="gray-btn" onclick="selectDel()">선정 취소</button>
+				</div>
+			</div>
 		</div>
 	</div>
 <%-- </c:if>  --%>

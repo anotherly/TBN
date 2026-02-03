@@ -23,6 +23,12 @@ public interface MileageService {
 	// 시상별 배점 조회
 	List<AwardVO> excellGrade(OptAreaVo thvo);
 	
+	// 굿 제보 통신원 등록 
+	public void excellenceIfrmInsert(MileageVO mvo, List<String> selection) throws Exception;
+	
+	// 굿 제보 통신원 선정 취소
+	public void excellenceIfrmDelete(MileageVO mvo, List<String> selection) throws Exception;
+	
 	// 우수 제보자 > 수상자 조회 
 	public List<AwardVO> selectUserAwardList(AwardVO thvo) throws Exception;
 	
