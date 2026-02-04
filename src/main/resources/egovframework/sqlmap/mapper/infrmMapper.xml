@@ -211,7 +211,36 @@
 			    <foreach collection="selectedCols"
 			             item="col"
 			             separator=",">
-			        A.${col}
+					<choose>
+					    <when test="col == 'HONOR'">
+					        CASE
+					            WHEN A.HONOR = 'Y' THEN 'O'
+					            WHEN A.HONOR = 'N' THEN 'X'
+					            ELSE ''
+					        END AS HONOR
+					    </when>
+					
+					    <when test="col == 'FLAG_BEST'">
+					        CASE
+					            WHEN A.FLAG_BEST = 'Y' THEN 'O'
+					            WHEN A.FLAG_BEST = 'N' THEN 'X'
+					            ELSE ''
+					        END AS FLAG_BEST
+					    </when>
+					
+					    <when test="col == 'FLAG_BROAD'">
+					        CASE
+					            WHEN A.FLAG_BROAD = 'Y' THEN 'O'
+					            WHEN A.FLAG_BROAD = 'N' THEN 'X'
+					            ELSE ''
+					        END AS FLAG_BROAD
+					    </when>
+					
+					    <otherwise>
+					        A.${col}
+					    </otherwise>
+					</choose>
+
 			    </foreach>
 			</if>
                 
@@ -264,7 +293,7 @@
 			<if test="InfrmVO.downFlag != 1">
 				AND ROWNUM <![CDATA[<=]]> 20
 			</if>
-			ORDER BY T.REG_DATE DESC nulls last
+			ORDER BY T.ACT_ID ASC nulls last
 			
 	</select>
 	
