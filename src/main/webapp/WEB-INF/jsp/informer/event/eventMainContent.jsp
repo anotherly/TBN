@@ -74,7 +74,7 @@ $(document).ready(function(){
 	
 	
 	
-    init();
+	eventInit();
     $("#areaOptSel").on("change",function(){
 		selArea=$("#areaOptSel option:selected").val();
 		$('#listDiv').load("/informer/event/eventList.do?REGION_ID="+selArea);
@@ -88,7 +88,7 @@ $(document).ready(function(){
 	});
 })
 
-function init(){
+function eventInit(){
     $('#listDiv').load("/informer/event/eventList.do");
     //$('#pagingBox').load('<c:url value="/informer/event/eventListPagenation.do"/>');
 }

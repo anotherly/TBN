@@ -459,7 +459,7 @@ $(document).ready(function(){
 	console.log("informerMain.jsp 진입");
                                                                           
 	
-	init();
+	/* init(); */
 	
 	
 	var fromDate = new Date(new Date().setMonth(new Date().getMonth() - 1));

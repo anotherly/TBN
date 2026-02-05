@@ -50,11 +50,11 @@ $(document).ready(function(){
 		}
 	});
     
-    init();
+	excellenceInit();
     fcnt=1;
 })
 
-function init(){
+function excellenceInit(){
 	//setComboBoxDate();
 	search();
 }

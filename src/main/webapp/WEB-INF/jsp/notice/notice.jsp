@@ -212,6 +212,7 @@
 	            <tbody>
 	                <c:forEach var="list" items="${noticeList}">
 	                    <tr>
+	                    	<input type="hidden" id="notice_id" value="${list.NOTICE_ID}"/>
 	                        <td>${list.NOTICE_TITLE}</td>
 	                        <td>${list.WRITER_NAME}</td>
 	                        <td>${list.START_DATE}</td>

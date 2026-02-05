@@ -168,7 +168,7 @@ function deleteUser(){
             success: function(res, html){
                 if(res.cnt > 0){
                 	alert("요청사항이 완료되었습니다.");
-                    opener.init();
+                    opener.userInit();
                     self.close();
                 } else {
                     alert("삭제에 실패하였습니다.");

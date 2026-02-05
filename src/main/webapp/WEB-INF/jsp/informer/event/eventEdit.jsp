@@ -165,7 +165,7 @@ function saveEvent(){
                     if($('#EVENT_ID').val() != null && $('#EVENT_ID').val() != ""){
                     	opener.chgEvent($('#EVENT_ID').val());
                     } else {
-                    	opener.init();
+                    	opener.eventInit();
                     }
                     self.close();
                 } else {

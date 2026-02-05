@@ -70,7 +70,7 @@
 $(document).ready(function(){
 	console.log("userMain.jsp 진입");
 	
-	init();
+	userInit();
 	//datepicker 생성 및 날짜 변경 시 관련함수 
 	//파라미터 :
 	/* 
@@ -98,7 +98,7 @@ $(document).ready(function(){
 	});
 });
 
-function init(){
+function userInit(){
 	console.log("listDiv에 userList 호출");
     $('#listDiv').load("/user/userList.do?MIN=0");
    //console.log("pagingBox에 userListPagenation 호출");

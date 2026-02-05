@@ -16,13 +16,13 @@
  		// 날짜 넣기
  		selectDate();
 		// 리스트 불러오기
-		init();
+		mileageInit();
 		
 		getTodayDate();
 		
  	});
 	
-	function init() {
+	function mileageInit() {
 		search();
 	}
 	
