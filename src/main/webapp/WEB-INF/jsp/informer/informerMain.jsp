@@ -402,11 +402,12 @@ $('#selectConfirmBtn').on('click', function () {
 			            <label><input type="checkbox" checked disabled> 전화번호</label>
 			            <label><input type="checkbox" checked disabled> 활동여부</label>
 			            <label><input type="checkbox" checked disabled> 등록일</label>
+			             <label><input type="checkbox" checked disabled>우편 번호</label>
 			            <label><input type="checkbox" checked disabled> 주소</label>
-			        </div>
+			        </div>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          
 			    </div>
 			
-			    <!-- 추가사항 -->
+			    <!-- 추가사항 --> 
 			    <div class="section">
 			        <div class="section-title">추가사항</div>
 			        <div class="section-body scroll">
@@ -431,12 +432,17 @@ $('#selectConfirmBtn').on('click', function () {
 
 			        </div>
 			    </div>
-			    
+			    <div class="buttonContainer" style="display:flex; justify-content: space-between;">
+			    	<!-- 전체 선택 버튼 -->
+			    	<div class="confirm-area">
+				        <button type="button" id="selectConfirmAllBtn">전체 선택</button>
+				    </div>
+				    
 			        <!-- 확인 버튼 -->
 				    <div class="confirm-area">
 				        <button type="button" id="selectConfirmBtn">확인</button>
 				    </div>
-			
+			    </div>
 			</div>
 		</div>
 	</div>
@@ -483,6 +489,14 @@ $(document).ready(function(){
 			$(".dateText").attr("disabled", true);
 		}
 	});
+	
+	
+	// 출력 데이터 변경 전체 선택 기능
+	$('#selectConfirmAllBtn').on('click', function() {
+		console.log("전체 선택 버튼");
+		$('.section-body.scroll input[type="checkbox"]').prop('checked', true);
+	});
+	
 	
 	//$('#listDiv').load('/informer/informerList.do?sDate='+fromDate+'&eDate='+toDate+''+'&eDate='+flagAct='+'Y');
 	//$('#listDiv').load('/informer/informerList.do;');
@@ -667,5 +681,9 @@ function labelYes() {
  } 
 	
 }
+
+
+
+
 
 </script>

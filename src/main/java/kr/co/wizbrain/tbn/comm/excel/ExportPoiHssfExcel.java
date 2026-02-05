@@ -4246,6 +4246,7 @@ public class ExportPoiHssfExcel extends AbstractView {
 		headerList.add("전화");
 		headerList.add("활동여부");
 		headerList.add("등록일");
+		headerList.add("우편 번호");
 		headerList.add("주소");
 
 		List<String> selectData = (List<String>) model.get("selectData");
@@ -4335,6 +4336,7 @@ public class ExportPoiHssfExcel extends AbstractView {
 		extractors.add(InfrmVO::getPhoneCell);
 		extractors.add(r -> "Y".equals(r.getFlagAct()) ? "위촉" : "해촉");
 		extractors.add(InfrmVO::getRegDate);
+		extractors.add(InfrmVO::getZipcode);
 		extractors.add(InfrmVO::getAddressHome);
 		
 		
@@ -4447,7 +4449,8 @@ public class ExportPoiHssfExcel extends AbstractView {
 		sheet1.setColumnWidth(5, 6000);
 		sheet1.setColumnWidth(6, 4000);
 		sheet1.setColumnWidth(7, 6000);
-		sheet1.setColumnWidth(8, 25000);
+		sheet1.setColumnWidth(8, 6000);
+		sheet1.setColumnWidth(9, 25000);
 
 	}
     
@@ -4465,9 +4468,6 @@ public class ExportPoiHssfExcel extends AbstractView {
 		String allInformerVal = (allInforValget != null) ? allInforValget.toString() : "0";
 		String allInformer = "총 인원 : " + allInformerVal +"명";
 		
-		// 통계 제목 밑 총 건수 텍스트 구하기
-		/*String allReportVal = (String) model.get("allReport");
-		String allReport = "총 건수 : " + allReportVal +"건";*/
 		
 		// 통계 제목 밑 일자 변환
 		String getStartDate = (String) model.get("start_date");

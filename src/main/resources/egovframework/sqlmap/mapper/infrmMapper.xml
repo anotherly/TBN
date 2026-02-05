@@ -198,11 +198,11 @@
 				END AS phone_cell 
 				
                 <!--,REGEXP_REPLACE(phone_cell, '(02|.{3})(.+)(.{4})', '\1-\2-\3') as phone_cell2-->
-				,A.ZIPCODE
                 ,A.INFORMER_TYPE 	
                 ,A.ORG_ID
                 ,A.FLAG_ACT as FLAG_ACT_SUB		
-                ,NVL(A.REG_DATE, '정보없음') as REG_DATE		
+                ,NVL(A.REG_DATE, '정보없음') as REG_DATE	
+                ,NVL(A.ZIPCODE, '정보없음') as ZIPCODE	
                 ,NVL(A.ADDRESS_HOME,'미입력') as ADDRESS_HOME
                 
 				<!-- 강원 이경희 차장 요청사항으로 신규항목 추가 260120 -->                
