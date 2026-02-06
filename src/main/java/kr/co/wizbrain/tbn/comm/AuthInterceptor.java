@@ -124,16 +124,18 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 					) {
 				nowUrl="/user/userMain";
 			}
+			
 			//코드관리
 			if(nowUrl.contains("/option/")
 					) {
-				nowUrl="/option/reportType/main";
+				//권한관리는 관리자만 조회 가능
+				if(nowUrl.contains("/auth/")) {
+					nowUrl="/option/auth/authList";
+				}else {
+					nowUrl="/option/reportType/main";
+				}
 			}
 			
-			//권한관리는 관리자만 조회 가능
-			if(nowUrl.contains("/auth/")) {
-				nowUrl="/option/auth/authList";
-			}
 			avo.setUrl(nowUrl);
 			//예외주소 명기 종료
 			

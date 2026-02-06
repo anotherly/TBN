@@ -4285,7 +4285,7 @@ public class ExportPoiHssfExcel extends AbstractView {
 		        } else if ("MEMO2".equals(col)) {
 		        	headerList.add("추가메모");
 		        } else if ("FLAG_BROAD".equals(col)) {
-		        	headerList.add("통신원 종류");
+		        	headerList.add("방송통신원");
 		        } else if ("INFORMER_JOB".equals(col)) {
 		        	headerList.add("통신원 직업");
 		        } else if ("PHONE_OFFICE".equals(col)) {
@@ -4334,7 +4334,8 @@ public class ExportPoiHssfExcel extends AbstractView {
 		extractors.add(InfrmVO::getOrgName);
 		extractors.add(InfrmVO::getInformerName);
 		extractors.add(InfrmVO::getPhoneCell);
-		extractors.add(r -> "Y".equals(r.getFlagAct()) ? "위촉" : "해촉");
+		//extractors.add(r -> "Y".equals(r.getFlagAct()) ? "위촉" : "해촉");
+		extractors.add(InfrmVO::getFlagAct);
 		extractors.add(InfrmVO::getRegDate);
 		extractors.add(InfrmVO::getZipcode);
 		extractors.add(InfrmVO::getAddressHome);
@@ -4374,6 +4375,7 @@ public class ExportPoiHssfExcel extends AbstractView {
 		    HSSFCell cell = headrow1.createCell(i);
 		    cell.setCellValue(headerList.get(i));
 		    cell.setCellStyle(headStyle);
+		    sheet1.setColumnWidth(i, 6000);
 		}
 		
 		rowCnt++;

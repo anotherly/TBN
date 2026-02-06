@@ -166,134 +166,136 @@
 	
 	<!-- 엑셀 다운로드 -->
 	<select id="selectInfrmList" parameterType="infrmVO" resultMap="informerMap">
-    SELECT T.*
+    	SELECT T.*
 			, CASE 
 		        WHEN T.FLAG_ACT_SUB = 'Y' THEN '위촉'
 		        ELSE '해촉'
 		    END AS FLAG_ACT
- 	FROM
-    (
-        SELECT J2.*
-        ,NVL(D.ORG_NAME,'무소속') AS ORG_NAME
-        FROM
-        (
-			SELECT J1.*
-            ,C.TYPE_NAME AS INFORMER_TYPE_NAME
-            FROM
-            (
-                SELECT
-                A.INFORMER_ID	
-                ,NVL(A.ACT_ID , '정보없음') as ACT_ID	 
-                ,NVL(A.INFORMER_NAME, '정보없음') as INFORMER_NAME	
-                ,A.AREA_CODE		
-                ,REPLACE(B.AREA_NAME,'교통방송','') AS AREA_NAME
-				
-				,CASE WHEN PHONE_CELL IS NULL OR PHONE_CELL = '' 
-                    THEN 
-                        CASE WHEN PHONE_HOME IS NULL OR PHONE_HOME = '' 
-                             THEN REGEXP_REPLACE(PHONE_OFFICE, '(02|.{3})(.+)(.{4})', '\1-\2-\3') 
-                        ELSE REGEXP_REPLACE(PHONE_HOME, '(02|.{3})(.+)(.{4})', '\1-\2-\3')  
-                        END
-                     ELSE REGEXP_REPLACE(phone_cell, '(02|.{3})(.+)(.{4})', '\1-\2-\3')
-				END AS phone_cell 
-				
-                <!--,REGEXP_REPLACE(phone_cell, '(02|.{3})(.+)(.{4})', '\1-\2-\3') as phone_cell2-->
-                ,A.INFORMER_TYPE 	
-                ,A.ORG_ID
-                ,A.FLAG_ACT as FLAG_ACT_SUB		
-                ,NVL(A.REG_DATE, '정보없음') as REG_DATE	
-                ,NVL(A.ZIPCODE, '정보없음') as ZIPCODE	
-                ,NVL(A.ADDRESS_HOME,'미입력') as ADDRESS_HOME
-                
-				<!-- 강원 이경희 차장 요청사항으로 신규항목 추가 260120 -->                
-                <if test="selectedCols != null and selectedCols.size() > 0">
-                ,
-			    <foreach collection="selectedCols"
-			             item="col"
-			             separator=",">
-					<choose>
-					    <when test="col == 'HONOR'">
-					        CASE
-					            WHEN A.HONOR = 'Y' THEN 'O'
-					            WHEN A.HONOR = 'N' THEN 'X'
-					            ELSE ''
-					        END AS HONOR
-					    </when>
+	 	FROM
+	    (
+	        SELECT J2.*
+	        ,NVL(D.ORG_NAME,'무소속') AS ORG_NAME
+	        FROM
+	        (
+				SELECT J1.*
+	            ,C.TYPE_NAME AS INFORMER_TYPE_NAME
+	            FROM
+	            (
+	                SELECT
+	                A.INFORMER_ID	
+	                ,NVL(A.ACT_ID , '정보없음') as ACT_ID	 
+	                ,NVL(A.INFORMER_NAME, '정보없음') as INFORMER_NAME	
+	                ,A.AREA_CODE		
+	                ,REPLACE(B.AREA_NAME,'교통방송','') AS AREA_NAME
 					
-					    <when test="col == 'FLAG_BEST'">
-					        CASE
-					            WHEN A.FLAG_BEST = 'Y' THEN 'O'
-					            WHEN A.FLAG_BEST = 'N' THEN 'X'
-					            ELSE ''
-					        END AS FLAG_BEST
-					    </when>
+					,CASE WHEN PHONE_CELL IS NULL OR PHONE_CELL = '' 
+	                    THEN 
+	                        CASE WHEN PHONE_HOME IS NULL OR PHONE_HOME = '' 
+	                             THEN REGEXP_REPLACE(PHONE_OFFICE, '(02|.{3})(.+)(.{4})', '\1-\2-\3') 
+	                        ELSE REGEXP_REPLACE(PHONE_HOME, '(02|.{3})(.+)(.{4})', '\1-\2-\3')  
+	                        END
+	                     ELSE REGEXP_REPLACE(phone_cell, '(02|.{3})(.+)(.{4})', '\1-\2-\3')
+					END AS phone_cell 
 					
-					    <when test="col == 'FLAG_BROAD'">
-					        CASE
-					            WHEN A.FLAG_BROAD = 'Y' THEN 'O'
-					            WHEN A.FLAG_BROAD = 'N' THEN 'X'
-					            ELSE ''
-					        END AS FLAG_BROAD
-					    </when>
-					
-					    <otherwise>
-					        A.${col}
-					    </otherwise>
-					</choose>
-
-			    </foreach>
-			</if>
-                
-                
-                FROM INFORMER A
-                LEFT JOIN CODE_AREACODE B
-                ON A.AREA_CODE=B.AREA_CODE
-            )J1
-            LEFT JOIN CODE_INFORMER_TYPE C
-            ON J1.informer_type=C.TYPE_ID
-        )J2
-        LEFT JOIN ORGANIZATION D
-        ON  J2.AREA_CODE=D.AREA_CODE
-		AND J2.ORG_ID=D.ORG_ID
-        AND J2.INFORMER_TYPE=D.IND_TYPE
-    )T
-			WHERE 1=1
-			<if test="InfrmVO.informerId != null and !InfrmVO.informerId.equals('')">
-				AND T.INFORMER_ID=#{InfrmVO.informerId}
-			</if>
-			<if test="InfrmVO.areaCode != null  and !InfrmVO.areaCode.equals('')">
-				AND T.AREA_CODE=#{InfrmVO.areaCode}
-			</if>
-			<if test="InfrmVO.informerType != null and !InfrmVO.informerType.equals('')">
-				AND T.informer_type=#{InfrmVO.informerType}
-			</if>
-			<!-- 무소속 대문에 아래와 같이 해야함... -->
-			<if test="InfrmVO.orgId != null and !InfrmVO.orgId.equals('')">
-				AND T.ORG_ID=#{InfrmVO.orgId}
-			</if>
-			<if test="InfrmVO.flagAct != null and !InfrmVO.flagAct.equals('')">
-				AND T.FLAG_ACT_SUB=#{InfrmVO.flagAct}
-			</if>
-			<if test="InfrmVO.searchValue != null and !InfrmVO.searchValue.equals('')">
-			    <choose>
-					<when test="InfrmVO.searchType.equals('actId')">
-						AND T.ACT_ID LIKE '%'||#{InfrmVO.searchValue}||'%'
-					</when>
-					<when test="InfrmVO.searchType.equals('informerName')">
-						AND T.INFORMER_NAME LIKE '%'||#{InfrmVO.searchValue}||'%'
-					</when>
-					<otherwise>
-						AND T.phone_cell LIKE '%'||#{InfrmVO.searchValue}||'%'
-					</otherwise>					        
-			    </choose>
-			</if>
-			<if test="InfrmVO.sDate != null and  InfrmVO.eDate != null and !InfrmVO.sDate.equals('') and !InfrmVO.eDate.equals('')">
-		    	AND T.REG_DATE BETWEEN #{InfrmVO.sDate} AND #{InfrmVO.eDate}
-			</if>
-			<if test="InfrmVO.downFlag != 1">
-				AND ROWNUM <![CDATA[<=]]> 20
-			</if>
-			ORDER BY T.ACT_ID ASC nulls last
+	                <!--,REGEXP_REPLACE(phone_cell, '(02|.{3})(.+)(.{4})', '\1-\2-\3') as phone_cell2-->
+	                ,A.INFORMER_TYPE 	
+	                ,A.ORG_ID
+	                ,A.FLAG_ACT as FLAG_ACT_SUB		
+	                ,NVL(A.REG_DATE, '정보없음') as REG_DATE	
+	                ,NVL(A.ZIPCODE, '정보없음') as ZIPCODE	
+	                ,NVL(A.ADDRESS_HOME,'미입력') as ADDRESS_HOME
+	                
+					<!-- 강원 이경희 차장 요청사항으로 신규항목 추가 260120 -->                
+	                <if test="selectedCols != null and selectedCols.size() > 0">
+	                ,
+					<foreach collection="selectedCols" item="col" separator=",">
+						<choose>
+						    <when test="col == 'HONOR'">
+						        CASE
+						            WHEN A.HONOR = 'Y' THEN 'O'
+						            ELSE ''
+						        END AS HONOR
+						    </when>
+						
+						    <when test="col == 'FLAG_BEST'">
+						        CASE
+						            WHEN A.FLAG_BEST = 'Y' THEN 'O'
+						            ELSE ''
+						        END AS FLAG_BEST
+						    </when>
+						
+						    <when test="col == 'FLAG_BROAD'">
+						        CASE
+						            WHEN A.FLAG_BROAD = '1' THEN 'O'
+						            ELSE ''
+						        END AS FLAG_BROAD
+						    </when>
+						
+						    <when test="col == 'FLAG_SERVICE'">
+						        CASE
+						            WHEN A.FLAG_SERVICE = 'Y' THEN 'O'
+						            ELSE ''
+						        END AS FLAG_SERVICE
+						    </when>
+						
+						    <otherwise>
+						        A.${col}
+						    </otherwise>
+						</choose>
+	
+				    </foreach>
+				</if>
+	                
+	                
+	                FROM INFORMER A
+	                LEFT JOIN CODE_AREACODE B
+	                ON A.AREA_CODE=B.AREA_CODE
+	            )J1
+	            LEFT JOIN CODE_INFORMER_TYPE C
+	            ON J1.informer_type=C.TYPE_ID
+	        )J2
+	        LEFT JOIN ORGANIZATION D
+	        ON  J2.AREA_CODE=D.AREA_CODE
+			AND J2.ORG_ID=D.ORG_ID
+	        AND J2.INFORMER_TYPE=D.IND_TYPE
+	    )T
+		WHERE 1=1
+		<if test="InfrmVO.informerId != null and !InfrmVO.informerId.equals('')">
+			AND T.INFORMER_ID=#{InfrmVO.informerId}
+		</if>
+		<if test="InfrmVO.areaCode != null  and !InfrmVO.areaCode.equals('')">
+			AND T.AREA_CODE=#{InfrmVO.areaCode}
+		</if>
+		<if test="InfrmVO.informerType != null and !InfrmVO.informerType.equals('')">
+			AND T.informer_type=#{InfrmVO.informerType}
+		</if>
+		<!-- 무소속 대문에 아래와 같이 해야함... -->
+		<if test="InfrmVO.orgId != null and !InfrmVO.orgId.equals('')">
+			AND T.ORG_ID=#{InfrmVO.orgId}
+		</if>
+		<if test="InfrmVO.flagAct != null and !InfrmVO.flagAct.equals('')">
+			AND T.FLAG_ACT_SUB=#{InfrmVO.flagAct}
+		</if>
+		<if test="InfrmVO.searchValue != null and !InfrmVO.searchValue.equals('')">
+		    <choose>
+				<when test="InfrmVO.searchType.equals('actId')">
+					AND T.ACT_ID LIKE '%'||#{InfrmVO.searchValue}||'%'
+				</when>
+				<when test="InfrmVO.searchType.equals('informerName')">
+					AND T.INFORMER_NAME LIKE '%'||#{InfrmVO.searchValue}||'%'
+				</when>
+				<otherwise>
+					AND T.phone_cell LIKE '%'||#{InfrmVO.searchValue}||'%'
+				</otherwise>					        
+		    </choose>
+		</if>
+		<if test="InfrmVO.sDate != null and  InfrmVO.eDate != null and !InfrmVO.sDate.equals('') and !InfrmVO.eDate.equals('')">
+	    	AND T.REG_DATE BETWEEN #{InfrmVO.sDate} AND #{InfrmVO.eDate}
+		</if>
+		<if test="InfrmVO.downFlag != 1">
+			AND ROWNUM <![CDATA[<=]]> 20
+		</if>
+		ORDER BY T.ACT_ID ASC nulls last
 			
 	</select>
 	

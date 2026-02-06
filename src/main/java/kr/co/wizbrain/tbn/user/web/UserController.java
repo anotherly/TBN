@@ -293,16 +293,18 @@ public class UserController {
 	        String pw2 = request.getParameter("userPw2");  // 확인값
 
 	        //260114 변경사항
-	        // 정책 체크(핵심)
-            if (!PasswordPolicy.isStrong(pw)) {
-                mav.addObject("cnt", 0);
-                mav.addObject("msg", PasswordPolicy.failMessage());
-                return mav;
-            }
+	        
 	        
 	        // 비번 변경을 시도한 경우에만 정책 강제
 	        if (pw != null && !pw.isEmpty()) {
 
+	        	// 정책 체크(핵심)
+	            if (!PasswordPolicy.isStrong(pw)) {
+	                mav.addObject("cnt", 0);
+	                mav.addObject("msg", PasswordPolicy.failMessage());
+	                return mav;
+	            }
+	        	
 	            // 확인값 일치 체크(화면에서 “변경시에만 입력”이라도 Burp로는 들어옴)
 	            if (pw2 == null || pw2.isEmpty() || !pw.equals(pw2)) {
 	                mav.addObject("cnt", 0);

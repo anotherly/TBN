@@ -410,7 +410,7 @@ $('#selectConfirmBtn').on('click', function () {
 			    <!-- 추가사항 --> 
 			    <div class="section">
 			        <div class="section-title">추가사항</div>
-			        <div class="section-body scroll">
+			        <div class="section-body scroll2">
 			            <label><input class="datalist" type="checkbox" name="selectedCols" value="TRS_NO"> TRS</label>
 						<label><input class="datalist" type="checkbox" name="selectedCols" value="MEMO1"> 메모</label>
 						<label><input class="datalist" type="checkbox" name="selectedCols" value="HONOR"> 명예 통신원</label>
@@ -426,7 +426,7 @@ $('#selectConfirmBtn').on('click', function () {
 						<label><input class="datalist" type="checkbox" name="selectedCols" value="UPD_DATE"> 최종 수정일</label>
 						<label><input class="datalist" type="checkbox" name="selectedCols" value="LAST_SCHOOL"> 최종 학력</label>
 						<label><input class="datalist" type="checkbox" name="selectedCols" value="MEMO2"> 추가 메모</label>
-						<label><input class="datalist" type="checkbox" name="selectedCols" value="FLAG_BROAD"> 통신원 종류</label>
+						<label><input class="datalist" type="checkbox" name="selectedCols" value="FLAG_BROAD"> 방송통신원</label>
 						<label><input class="datalist" type="checkbox" name="selectedCols" value="INFORMER_JOB"> 통신원 직업</label>
 						<label><input class="datalist" type="checkbox" name="selectedCols" value="PHONE_OFFICE"> 회사 전화번호</label>
 
@@ -436,6 +436,10 @@ $('#selectConfirmBtn').on('click', function () {
 			    	<!-- 전체 선택 버튼 -->
 			    	<div class="confirm-area">
 				        <button type="button" id="selectConfirmAllBtn">전체 선택</button>
+				    </div>
+			    	<!-- 전체 해제 버튼 -->
+			    	<div class="confirm-area">
+				        <button type="button" id="unChkConfirmAllBtn">전체 해제</button>
 				    </div>
 				    
 			        <!-- 확인 버튼 -->
@@ -493,8 +497,11 @@ $(document).ready(function(){
 	
 	// 출력 데이터 변경 전체 선택 기능
 	$('#selectConfirmAllBtn').on('click', function() {
-		console.log("전체 선택 버튼");
-		$('.section-body.scroll input[type="checkbox"]').prop('checked', true);
+		$('.section-body.scroll2 input[type="checkbox"]').prop('checked', true);
+	});
+	
+	$('#unChkConfirmAllBtn').on('click', function() {
+		$('.section-body.scroll2 input[type="checkbox"]').prop('checked', false);
 	});
 	
 	

@@ -146,7 +146,7 @@
 	<update id="updateUser" parameterType="userVO">
 		UPDATE SYS_USER
 		SET
-			<if test="userPw !='' ">
+			<if test="userPw !=null">
 				USER_PW=#{userPw},
 			</if>
 			 USER_NAME    = #{userName}
