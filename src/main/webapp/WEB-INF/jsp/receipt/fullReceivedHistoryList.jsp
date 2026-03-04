@@ -14,9 +14,12 @@
 		    <li style="background-color: aliceblue;">
 		  </c:when>
 		  <c:otherwise>
-		    <li>
+		    	<li id="resultList${toadysListVO.RECEIPT_ID}"
+		        ondblclick="getEditPage('${toadysListVO.RECEIPT_ID}','${toadysListVO.RNUM}')">
 		  </c:otherwise>
 		</c:choose>
+		
+		
 		<span style="width:50px;">${toadysListVO.RNUM }</span>
 		<span style="width:85px;">${toadysListVO.RECEIPT_DAY }</span>
 		<span style="width:30px;">

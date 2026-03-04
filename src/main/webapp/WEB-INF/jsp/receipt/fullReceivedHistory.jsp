@@ -36,6 +36,7 @@
 <script>
 	$(document).ready(function() {
 		tabMenu = "fullReceivedHistory";
+		editOpenTotal = 0;
 		console.log("전체접수");
 		//autoLoading = false;
 		//changeAutoLoadingFlag();

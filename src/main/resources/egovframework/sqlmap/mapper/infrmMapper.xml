@@ -19,6 +19,7 @@
 		<result property="orgName" column="ORG_NAME"/>
 		<result property="phoneCell" column="PHONE_CELL"/>
 		<result property="orgSubId" column="ORG_SUB_ID"/>
+		<result property="orgSubName" column="ORG_SNAME"/>
 		<result property="phoneHome" column="PHONE_HOME"/>
 		<result property="phoneOffice" column="PHONE_OFFICE"/>
 		<result property="informerType" column="INFORMER_TYPE"/>
@@ -498,64 +499,68 @@
 	<!--  특정 사용자 조회 -->
 	<select id="detailInformer" parameterType="infrmVO" resultMap="informerMap">
 		SELECT
-			A.INFORMER_ID	
-			,A.ACT_ID	
-			,A.ORG_ID
-			,A.ORG_SUB_ID	
-			,A.INFORMER_NAME	
-			,A.AREA_CODE		
-			,B.AREA_NAME		
-			,A.PHONE_CELL
-			,A.PHONE_HOME
-			,A.PHONE_OFFICE
-			,A.INFORMER_TYPE 	
-			,C.TYPE_NAME INFORMER_TYPE_NAME
-			,A.FLAG_ACT		
-			,A.REG_DATE		
-			,A.START_DATE	
-			,A.STOP_DATE
-			,A.MEMO1
-			,A.MEMO
-			,A.ZIPCODE
-			,A.ADDRESS_HOME
-			,A.ADDRESS
-			,A.ZIPCODE2
-			,A.ADDRESS_OFFICE
-			,A.RESIDENT_NUM
-			,A.BIRTHDAY
-			,A.CAR_NUM
-			,A.COMMENTS
-			,A.REG_DATE
-			,A.DEL_DATE
-			,A.UPD_DATE
-			,A.PHOTO_FILE
-			,A.INDIVIDUAL_NAME_CHINA
-			,A.CAR_TYPE
-			,A.TRS_NO
-			,A.LAST_SCHOOL
-			,A.AREA_CODE
-			,A.HONOR
-			,A.AGREE
-			,A.FLAG_BLACKLIST
-			,A.MEMO2
-			,A.IDENTIFI_DATE
-			,A.FLAG_SERVICE
-			,A.FLAG_BEST
-			,A.START_DATE
-			,A.STOP_DATE
-			,A.BIRTHDAY_DIV
-			,A.INFORMER_JOB
-			,A.FLAG_BROAD
-			,A.FLAG_ACT		
-			FROM INFORMER A
-			LEFT JOIN CODE_AREACODE B
-			ON A.AREA_CODE=B.AREA_CODE
-			LEFT JOIN CODE_INFORMER_TYPE C
-			ON a.informer_type=C.TYPE_ID
-			WHERE 1=1
-			<if test='informerId !=null and informerId neq ""'>
-				AND A.INFORMER_ID=#{informerId}
-			</if>
+		    A.INFORMER_ID,
+		    A.ACT_ID,
+		    A.ORG_ID,
+		    D.ORG_NAME,
+		    A.ORG_SUB_ID,
+		    E.ORG_SNAME,
+		    A.INFORMER_NAME,
+		    A.AREA_CODE,
+		    B.AREA_NAME,
+		    A.PHONE_CELL,
+		    A.PHONE_HOME,
+		    A.PHONE_OFFICE,
+		    A.INFORMER_TYPE,
+		    C.TYPE_NAME INFORMER_TYPE_NAME,
+		    A.FLAG_ACT,
+		    TO_CHAR(TO_DATE(A.REG_DATE, 'YY/MM/DD'), 'YYYY.MM.DD') AS REG_DATE,
+		    A.START_DATE,
+		    A.STOP_DATE,
+		    A.MEMO1,
+		    A.MEMO,
+		    A.ZIPCODE,
+		    A.ADDRESS_HOME,
+		    A.ADDRESS,
+		    A.ZIPCODE2,
+		    A.ADDRESS_OFFICE,
+		    A.RESIDENT_NUM,
+		    TO_CHAR(TO_DATE(A.BIRTHDAY,'YY/MM/DD'), 'YYYY.MM.DD') AS BIRTHDAY,
+		    A.CAR_NUM,
+		    A.COMMENTS,
+		    A.DEL_DATE,
+		    A.UPD_DATE,
+		    A.PHOTO_FILE,
+		    A.INDIVIDUAL_NAME_CHINA,
+		    A.CAR_TYPE,
+		    A.TRS_NO,
+		    A.LAST_SCHOOL,
+		    A.HONOR,
+		    A.AGREE,
+		    A.FLAG_BLACKLIST,
+		    A.MEMO2,
+		    TO_CHAR(TO_DATE(A.IDENTIFI_DATE, 'YY/MM/DD'), 'YYYY.MM.DD') AS IDENTIFI_DATE,
+		    A.FLAG_SERVICE,
+		    A.FLAG_BEST,
+		    A.BIRTHDAY_DIV,
+		    A.INFORMER_JOB,
+		    A.FLAG_BROAD
+		FROM INFORMER A
+		LEFT JOIN CODE_AREACODE B
+		    ON A.AREA_CODE = B.AREA_CODE
+		LEFT JOIN CODE_INFORMER_TYPE C
+		    ON A.INFORMER_TYPE = C.TYPE_ID
+		LEFT JOIN ORGANIZATION D
+			ON A.ORG_ID = D.ORG_ID
+			AND A.AREA_CODE = D.AREA_CODE
+		LEFT JOIN ORG_SUB E
+            ON A.ORG_ID = E.ORG_ID
+            AND A.ORG_SUB_ID = E.ORG_SID
+            AND A.AREA_CODE = E.AREA_CODE
+		WHERE 1=1
+		<if test='informerId != null and informerId != ""'>
+		    AND A.INFORMER_ID = #{informerId}
+		</if>
 	</select>
 	
 	<!-- 신규ID -->

@@ -32,8 +32,8 @@
 		<span style="width:100px;">${toadysListVO.RECEIPT_TIME }</span>
 		<span style="width:100px;">${toadysListVO.REPORT_TYPE}</span>
 		<span style="width:150px;">${toadysListVO.INDIVIDUAL_NAME }</span>
-		<span style="width:500px;">${toadysListVO.MEMO }</span>		
-		<span style="width:60px;">${toadysListVO.REPORTER_TYPE }</span>
+		<span style="width:516px;">${toadysListVO.MEMO }</span>		
+		<span style="width:80px;">${toadysListVO.REPORTER_TYPE }</span>
 		<span>${toadysListVO.REGION_NAME }</span>
 	</li>
 </c:forEach>

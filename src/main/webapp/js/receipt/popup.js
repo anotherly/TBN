@@ -1,12 +1,20 @@
 function getEditPage(resultId, rnum){
 	console.log("편집페이지");
-	if(tabMenu == 'receivedStatus' || tabMenu == "receivedStatusSearch"){
-		if(autoLoading){
-			pauseFlagTo(true);
-		}
+	if(tabMenu == 'receivedStatus' || tabMenu == "receivedStatusSearch" || tabMenu == "fullReceivedHistory" || tabMenu == "fullReceivedHistorySearch"){
+			
+			if(tabMenu == "fullReceivedHistory" || tabMenu == "fullReceivedHistorySearch" ) {
+				updateFlag = 'ALL';
+			}
+			else {
+				updateFlag = 'TODAY';
+				if(autoLoading){
+					pauseFlagTo(true);
+				}
+			}
 		var li = $("#resultList"+resultId);
 		li.empty();
-		li.load("/receipt/selectEditVO.do", {"RECEIPT_ID":resultId, "RNUM":rnum});
+		
+		li.load("/receipt/selectEditVO.do", {"RECEIPT_ID":resultId, "RNUM":rnum , "UPDATE_FLAG" : updateFlag });
 		editOpenTotal++;
 	} else{
 		return;
@@ -63,11 +71,12 @@ function updateReceipt(receiptID, rnum){
 					,"INDIVIDUAL_NAME":INDIVIDUAL_NAME
 					,"TYPE_NAME":TYPE_NAME
 					,"TYPE_ID":TYPE_ID
+					,"UPDATE_FLAG" : updateFlag
 				}
 	
 	var result = ajaxMethod("/receipt/updateReceipt.ajax", editVO).result;
 	if(result >= 1){
-		$("#resultList"+receiptID).load("/receipt/showEditResult.do", {"RECEIPT_ID":receiptID, "RNUM":rnum});
+		$("#resultList"+receiptID).load("/receipt/showEditResult.do", {"RECEIPT_ID":receiptID, "RNUM":rnum , "UPDATE_FLAG" : updateFlag});
 		editOpenTotal--;
 		if(isPause && editOpenTotal==0 && !onSearch){
 			pauseFlagTo(false);
@@ -79,12 +88,20 @@ function updateReceipt(receiptID, rnum){
 
 function undoUpdate(receiptID, rnum){
 	var undo = confirm("정말 취소 하시겠습니까?");
+	
 	if(undo){
-		$("#resultList"+receiptID).load("/receipt/cancleEditVO.do", {"RECEIPT_ID":receiptID, "RNUM":rnum});
-		editOpenTotal--;
-		if(isPause && editOpenTotal==0 && !onSearch){
-			pauseFlagTo(false);
+		
+		if(updateFlag == 'ALL') {
+			$("#resultList"+receiptID).load("/receipt/cancleEditVO.do", {"RECEIPT_ID":receiptID, "RNUM":rnum , "UPDATE_FLAG" : updateFlag});
+			editOpenTotal--;
+		} else {
+			$("#resultList"+receiptID).load("/receipt/cancleEditVO.do", {"RECEIPT_ID":receiptID, "RNUM":rnum , "UPDATE_FLAG" : updateFlag});
+			editOpenTotal--;
+			if(isPause && editOpenTotal==0 && !onSearch){
+				pauseFlagTo(false);
+			}
 		}
+		
 	} else{
 		return;
 	}

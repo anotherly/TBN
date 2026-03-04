@@ -135,13 +135,13 @@ public interface ReceiptService {
 	public int countSearchStatusList(ReceiptSearchVO vo) throws Exception;
 	
 	//팝업 - 수정
-	public EditVO selectEditVO(String RECEIPT_ID) throws Exception;
+	public EditVO selectEditVO(String RECEIPT_ID, String UPDATE_FLAG) throws Exception;
 	
 	//팝업 - 수정등록
 	public int updateReceipt(EditVO vo) throws Exception;
 	
 	//팝업 - 수정결과
-	public ReceivedStatusVO showEditResult(String RECEIPT_ID) throws Exception;
+	public ReceivedStatusVO showEditResult(String RECEIPT_ID, String UPDATE_FLAG) throws Exception;
 	
 	//STT Flag update
 	public int updateFlagSTT(String MISSED_CALL_ID) throws Exception; 

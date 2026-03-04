@@ -203,8 +203,8 @@ public class ReceiptServiceImpl implements ReceiptService{
 	}
 
 	@Override
-	public EditVO selectEditVO(String RECEIPT_ID) throws Exception {
-		return receiptMapper.selectEditVO(RECEIPT_ID);
+	public EditVO selectEditVO(String RECEIPT_ID, String UPDATE_FLAG) throws Exception {
+		return receiptMapper.selectEditVO(RECEIPT_ID, UPDATE_FLAG);
 	}
 
 	@Override
@@ -213,8 +213,8 @@ public class ReceiptServiceImpl implements ReceiptService{
 	}
 
 	@Override
-	public ReceivedStatusVO showEditResult(String RECEIPT_ID) throws Exception {
-		return receiptMapper.showEditResult(RECEIPT_ID);
+	public ReceivedStatusVO showEditResult(String RECEIPT_ID, String UPDATE_FLAG) throws Exception {
+		return receiptMapper.showEditResult(RECEIPT_ID,UPDATE_FLAG);
 	}
 
 	@Override

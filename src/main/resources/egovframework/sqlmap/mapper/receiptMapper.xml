@@ -1080,14 +1080,29 @@
 		, A.MEMO
 		, A.REPORTER_TYPE
 		, A.REGION_ID
-		FROM REPORT_RECEIPT_TODAY A
+		<choose>
+	        <when test="UPDATE_FLAG == 'ALL'">
+	            FROM REPORT_RECEIPT A
+	        </when>
+	        <otherwise>
+	            FROM REPORT_RECEIPT_TODAY A
+	        </otherwise>
+	    </choose>
 		LEFT OUTER JOIN CODE_INFORMER_TYPE B
 		ON A.INDIVIDUAL_TYPE = B.TYPE_ID
 		WHERE RECEIPT_ID = #{RECEIPT_ID}
 	</select>
 
 	<update id="updateReceipt" parameterType="editVO">
-		UPDATE REPORT_RECEIPT_TODAY
+		UPDATE 
+		<choose>
+	        <when test="UPDATE_FLAG == 'ALL'">
+	            REPORT_RECEIPT
+	        </when>
+	        <otherwise>
+	            REPORT_RECEIPT_TODAY
+	        </otherwise>
+	    </choose>
 		<trim prefix="SET" suffixOverrides=",">
 		    FLAG_IMPORTANT = 
 		    <!-- 220905 제보내용에 '긴급'문구가 포함된 경우 긴급으로 처리하도록 -->
@@ -1144,6 +1159,7 @@
 		, A.FLAG_DISASTOR
 		, DECODE(A.X_COORDINATE , '' , 'N' , 'Y') AS FLAG_MAP
 		, TO_CHAR(TO_DATE(A.RECEIPT_TIME , 'HH24MI') , 'HH24:MI') AS RECEIPT_TIME
+		, TO_CHAR(TO_DATE(A.BROAD_TIME,'YYYYMMDDHH24MISS'),'HH24:MI') AS BROAD_TIME
 		, C.BAS_NAME AS REPORT_TYPE
 		, C.F_COLOR
 		, C.B_COLOR
@@ -1161,7 +1177,14 @@
 		, A.MEMO
 		, E.NAME AS REPORTER_TYPE
 		, F.AREA_NAME AS REGION_NAME
-		FROM REPORT_RECEIPT_TODAY A
+		<choose>
+	        <when test="UPDATE_FLAG == 'ALL'">
+	            FROM REPORT_RECEIPT A
+	        </when>
+	        <otherwise>
+	            FROM REPORT_RECEIPT_TODAY A
+	        </otherwise>
+	    </choose>
 		LEFT OUTER JOIN CODE_INFORMER_TYPE B
 		ON A.INDIVIDUAL_TYPE = B.TYPE_ID
 		

@@ -20,6 +20,7 @@ public class ReceivedStatusVO {
 
 	private String FLAG_SITU_ED;
 	
+	
 	public String getFLAG_SITU_ED() {
 		return FLAG_SITU_ED;
 	}

@@ -139,13 +139,13 @@ public interface ReceiptMapper{
 	public int countSearchStatusList(ReceiptSearchVO vo) throws Exception;
 	
 	//팝업 - 수정페이지 불러오기
-	public EditVO selectEditVO(String RECEIPT_ID) throws Exception;
+	public EditVO selectEditVO(@Param("RECEIPT_ID") String RECEIPT_ID , @Param("UPDATE_FLAG") String UPDATE_FLAG) throws Exception;
 	
 	//팝업 - 수정등록
 	public int updateReceipt(EditVO vo) throws Exception;
 	
 	//팝업 - 수정결과
-	public ReceivedStatusVO showEditResult(String RECEIPT_ID) throws Exception;
+	public ReceivedStatusVO showEditResult(@Param("RECEIPT_ID") String RECEIPT_ID , @Param("UPDATE_FLAG") String UPDATE_FLAG) throws Exception;
 	
 	//STT Flag update
 	public int updateFlagSTT(String MISSED_CALL_ID) throws Exception; 

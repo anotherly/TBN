@@ -66,6 +66,8 @@
 	var interval;
 	var editOpenTotal;
 
+	var updateFlag = ''; // 금일접수/전체접수 행 업데이트 구분용
+	
 	var pollingForCall; // 전체 전화 (픽업시 통신원반영)
 	var pollingForPickup; // 전체 전화목록
 	var pollingForMissedCall; // 부재중 전화

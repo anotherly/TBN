@@ -207,7 +207,7 @@ public class ReceiptController {
 	}
 	
 	@RequestMapping("/receipt/selectEditVO.do")
-	public ModelAndView selectEditVO(String RECEIPT_ID, String RNUM) throws Exception{
+	public ModelAndView selectEditVO(String RECEIPT_ID, String RNUM, String UPDATE_FLAG) throws Exception{
 		logger.info("------------------selectEditVO진입------------------");
 		ModelAndView mv = new ModelAndView("/receipt/editResultList");
 		//selectBox - 제보유형(대)
@@ -222,7 +222,7 @@ public class ReceiptController {
 		List<ReportMeanVO> reportMeanTypeList = receiptService.selectReportMean();
 		mv.addObject("reportMeanTypeList", reportMeanTypeList);
 		
-		EditVO vo = receiptService.selectEditVO(RECEIPT_ID);
+		EditVO vo = receiptService.selectEditVO(RECEIPT_ID, UPDATE_FLAG);
 		vo.setRNUM(RNUM);
 		mv.addObject("editVO", vo);
 		
@@ -230,10 +230,10 @@ public class ReceiptController {
 	}
 	
 	@RequestMapping("/receipt/cancleEditVO.do")
-	public ModelAndView cancleEditVO(String RECEIPT_ID, String RNUM) throws Exception{
+	public ModelAndView cancleEditVO(String RECEIPT_ID, String RNUM ,String UPDATE_FLAG) throws Exception{
 		logger.info("------------------cancleEditVO진입------------------");
 		ModelAndView mv = new ModelAndView("/receipt/showEditResult");
-		ReceivedStatusVO vo = receiptService.showEditResult(RECEIPT_ID);
+		ReceivedStatusVO vo = receiptService.showEditResult(RECEIPT_ID,UPDATE_FLAG);
 		vo.setRNUM(RNUM);
 		mv.addObject("editVO", vo);
 		return mv;
@@ -253,11 +253,11 @@ public class ReceiptController {
 	}
 	
 	@RequestMapping("/receipt/showEditResult.do")
-	public ModelAndView showEditResult(String RECEIPT_ID, String RNUM) throws Exception {
+	public ModelAndView showEditResult(String RECEIPT_ID, String RNUM ,String UPDATE_FLAG) throws Exception {
 		logger.info("------------------showEditResult진입------------------");
 		ModelAndView mv = new ModelAndView("/receipt/showEditResult");
 		
-		ReceivedStatusVO vo = receiptService.showEditResult(RECEIPT_ID);
+		ReceivedStatusVO vo = receiptService.showEditResult(RECEIPT_ID ,UPDATE_FLAG);
 		vo.setRNUM(RNUM);
 		System.out.println("showEditResult: " + vo.toString());
 		

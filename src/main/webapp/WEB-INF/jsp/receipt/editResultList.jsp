@@ -6,6 +6,11 @@
 <script type="text/javascript" charset="utf-8" src="<%=request.getContextPath()%>/js/receipt/receipt.js"></script>
 <script>
 var sflag = 0;//시민체크플레그
+
+$(document).ready(function(){
+	console.log("편집 진입");
+});
+
 	$(function(){
 		
 		console.log("editResultListjsp");

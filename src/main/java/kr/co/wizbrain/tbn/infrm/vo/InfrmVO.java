@@ -14,6 +14,7 @@ public class InfrmVO extends BaseVO{
 	 public String orgId;
 	 //소속기관코드 
 	 public String orgName;
+
 	//휴대폰번호 
 	 public String phoneCell;
 	//SUB기관코드 

@@ -181,7 +181,7 @@ $(document).ready(function() {
 				<div id="contentWrap" style="width:1400px;">
 
 					<!-- contents -->
-					<div id="contents">
+					<div id="conteknts">
 						<!-- 탭영역 -->
 <!-- 						<div id="pop_tab">
 							<ul>
@@ -207,17 +207,21 @@ $(document).ready(function() {
 	             </div>
 		<!-- 옵션 + 자동검색 영역 끝 -->
 		<!-- 검색조건 영역 시작 -->
-		<div style="width : 100%; height : 80px; margin-bottom : 15px;">
-			<h1 style="font-size : 24px; padding-top:25px;">모바일 앱 제보 내역</h1>
+		<div style="width : 100%; height : 80px; margin-bottom : 15px; display: flex; align-items: center; justify-content: space-between;">
+			<h1 style="font-size :30px; padding-top:25px;">모바일 앱 제보 내역</h1>
+			
+			<div style="width : auto; height : auto; border:1px solid rgba(0, 101, 225, 0.8); border-radius: 20px; background-color: rgba(50, 135, 239, 0.1); margin-left: 10px; margin-top: 32px;">
+				<p id="resultListTotal" style="font-size:15px; padding: 4px 10px 4px 10px; color:rgba(0, 101, 225, 0.8);">제보건수 <span style="margin-left:2px; font-weight:600; color:rgba(0, 101, 225, 0.8);"></span>건</p>
+			</div>
 		</div>
 		<!-- 검색조건 영역 끝 -->
 		<div style="display:flex;align-items: center;justify-content: space-between;">
-			<div>
+<!-- 			<div>
 				<p id="resultListTotal" style="width: 300px;">
 					<img src="../images/ico_result.gif" />
 					제보건수 <span style="font-weight:700;"></span>건
 				</p>
-			</div>
+			</div> -->
 <!-- 			<div>
 				<a href="javascript:goStats('stats/receiptDownToday.ajax');">
 					<img src="../images/btn_excel_down2.gif" alt="엑셀다운로드" style="width: 90px;"/>
@@ -226,20 +230,37 @@ $(document).ready(function() {
 		</div>		
 		<!-- 방송리스트 header 시작 -->
 		<div style="width: 1400px;">
-			<ul id="broadcastListHead" class="receiptPopListHead" style="width: 1400px;">
-				<li>
-					<span style="width:60px;">선택</span>
-					<span style="width:60px;">번호</span>
-					<span style="width:100px;">일자</span>
-					
-					<span style="width:100px;">제보시간</span>
-					<span style="width:100px;">유형(대)</span>
-					<span style="width:150px;">제보자</span>
-					<span style="width:500px;">내용</span>
-					
-					<span style="width:60px;">제보처</span>
-					<span>교통방송</span>
-				</li>
+			
+			<ul id="broadcastListHead"
+			    style="width:1400px;
+			           background:#ffffff;
+			           border-radius:16px 16px 0 0;
+			           overflow:hidden;
+			           box-shadow:0 8px 24px rgba(0,0,0,0.06);
+			           border:1px solid #e6ebf2;
+			           border-bottom:none;
+			           margin:0;
+			           padding:0;">
+			
+			    <li style="display:flex;
+			               align-items:center;
+			               height:45px;
+			               background:#f3f5f8;
+			               font-size:14px;
+			               font-weight:600;
+			               color:#4a5568;">
+			
+			        <span style="width:60px; text-align:center;">선택</span>
+			        <span style="width:60px; text-align:center;">번호</span>
+			        <span style="width:100px; text-align:center;">일자</span>
+			        <span style="width:100px; text-align:center;">제보시간</span>
+			        <span style="width:100px; text-align:center;">유형(대)</span>
+			        <span style="width:150px; text-align:center;">제보자</span>
+			        <span style="width:516px; text-align:center;">내용</span>
+			        <span style="width:80px; text-align:center;">제보처</span>
+			        <span style="flex:1; text-align:center;">교통방송</span>
+			
+			    </li>
 			</ul>
 		</div>
 		<!-- 방송리스트 header 끝 -->
@@ -254,13 +275,40 @@ $(document).ready(function() {
 				<!-- receivedStatusList.jsp -->
 			</div>
 		</form>
-		<img id="icoRcpExplain" src="../images/mobile_color.png" style="width : 580px; height : 30px;"/>
-		<span style="position:absolute; right:90px; bottom:-50px;">
-			<button id="appInsBtn" style="background:#3c6dc5;color:white;padding:8px 25px;border:none;border-radius:6px;font-size:15px;cursor:pointer;transition:0.2s;"onmouseover="this.style.background='#336ED4'"onmouseout="this.style.background='#3F82F7'">
-			    등록
-			</button>
-		</span>
-		
+		<!-- 모바일 앱 제보 범례 div 시작 -->
+		<div style="display:flex; align-items: center; margin-top: 10px; justify-content: space-between;">
+			<div style="display:flex;">
+				<div style="display:flex; align-items:center; gap:8px; padding:6px 14px; background:#dbeeff; border-radius:8px; height:32px;">
+				    <div style="width:18px; height:10px; background:aliceblue; border-radius:3px; border:1px solid #6ea8ff;"></div>
+				    <span style="font-size:14px; color:#2f4f6f; font-weight:500;">등록된 모바일 제보</span>
+				</div>
+				
+				<div style="display:flex; align-items:center; gap:8px; padding:6px 14px; background:#f1f3f6; border-radius:8px; height:32px; margin-left:10px;">
+				    <div style="width:18px; height:10px; background:#ffffff; border-radius:3px; border:1px solid #c5ccd6;"></div>
+				    <span style="font-size:14px; color:#4a5568; font-weight:500;">미등록된 모바일 제보</span>
+				</div>
+				
+				<div style="display:flex; align-items:center; gap:8px; padding:6px 14px; background:rgba(225, 227, 230, 0.8); border-radius:8px; height:32px; margin-left:10px;">
+				    <div style="width:18px; height:10px; background:#e0e4ea; border-radius:3px; border:1px solid #b8c0cc;"></div>
+				    <span style="font-size:14px; color:#4f5b6b; font-weight:500;">상황 해제된 모바일 제보</span>
+				</div>
+			</div>
+
+			<span style="margin-right:20px;">
+			    <button id="appInsBtn"
+			        style="display:flex; align-items:center; gap:8px; background:linear-gradient(135deg,#3b6fd8,#2f5fbf); color:#ffffff; padding:9px 20px; border:none; border-radius:8px; font-size:14px; font-weight:600; cursor:pointer; box-shadow:0 3px 10px rgba(47,95,191,0.25); transition:all 0.2s ease;"
+			        onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 14px rgba(47,95,191,0.3)';"
+			        onmouseout="this.style.transform='none'; this.style.boxShadow='0 3px 10px rgba(47,95,191,0.25)';">
+			
+			        <span style="display:inline-flex; align-items:center; justify-content:center; width:18px; height:18px; background:rgba(255,255,255,0.2); border-radius:50%; font-size:14px; font-weight:bold;">
+			            +
+			        </span>
+			
+			        등록
+			    </button>
+			</span>
+			</div>
+
 		<!-- 검색결과 끝 -->
 	</div>
 					</div>

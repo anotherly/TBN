@@ -21,7 +21,14 @@ public class EditVO {
 	private String REPORTER_TYPE; //제보처
 	private String REGION_ID; //교통방송
 	
-	
+	public String getUPDATE_FLAG() {
+		return UPDATE_FLAG;
+	}
+	public void setUPDATE_FLAG(String uPDATE_FLAG) {
+		UPDATE_FLAG = uPDATE_FLAG;
+	}
+	//제보접수 수정 flag
+	private String UPDATE_FLAG;
 	
 	public String getFLAG_DISASTOR() {
 		return FLAG_DISASTOR;

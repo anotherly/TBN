@@ -571,7 +571,7 @@ function editInformer(str){
     }
     var url = "/informer/editInformer.do" + param;
     var windowName = "통신원등록";
-    var popupW = 800;  // 팝업 넓이
+    var popupW = 1100;  // 팝업 넓이
     var popupH = 900;  // 팝업 높이
     var left = Math.ceil((window.screen.width - popupW)/2);
     var top = Math.ceil((window.screen.height - popupH)/2);
